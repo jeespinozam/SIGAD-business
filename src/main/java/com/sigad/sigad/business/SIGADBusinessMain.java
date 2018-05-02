@@ -29,9 +29,10 @@ public class SIGADBusinessMain {
         
         session.beginTransaction();
 
-        
+        Permiso permisoVerProducto = new Permiso("ver_producto");
         Grupo grupoCliente = new Grupo("Cliente");
-
+        
+        grupoCliente.getPermisos().add(permisoVerProducto);
 
         PersonaNatural persona1 = new PersonaNatural("19345678", "César Fabián",
                 "Orccón", "Chipana");
@@ -50,6 +51,7 @@ public class SIGADBusinessMain {
         session.save(usuarioPersona1);
         session.save(usuarioEmpresa1);
         session.save(grupoCliente);
+        session.save(permisoVerProducto);
 
         session.getTransaction().commit();
         

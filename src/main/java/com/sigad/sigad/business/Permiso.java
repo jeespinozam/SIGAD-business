@@ -8,7 +8,6 @@ package com.sigad.sigad.business;
 import com.sun.istack.internal.NotNull;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,35 +19,18 @@ import javax.persistence.ManyToMany;
  * @author cfoch
  */
 @Entity
-public class Grupo {
-
-    /**
-     * @return the permisos
-     */
-    public Set<Permiso> getPermisos() {
-        return permisos;
-    }
-
-    /**
-     * @param permisos the permisos to set
-     */
-    public void setPermisos(Set<Permiso> permisos) {
-        this.permisos = permisos;
-    }
+public class Permiso {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @NotNull
     private String nombre;
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<Usuario> usuarios;
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<Permiso> permisos;
-    
-    public Grupo(String nombre) {
+    @ManyToMany(mappedBy="permisos")
+    private Set<Grupo> grupos;
+
+    public Permiso(String nombre) {
         setNombre(nombre);
-        usuarios = new HashSet<>();
-        permisos = new HashSet<>();
+        grupos = new HashSet<>();
     }
 
     /**
@@ -80,17 +62,16 @@ public class Grupo {
     }
 
     /**
-     * @return the usuarios
+     * @return the grupos
      */
-    public Set<Usuario> getUsuarios() {
-        return usuarios;
+    public Set<Grupo> getGrupos() {
+        return grupos;
     }
 
     /**
-     * @param usuarios the usuarios to set
+     * @param grupos the grupos to set
      */
-    public void setUsuarios(Set<Usuario> usuarios) {
-        this.usuarios = usuarios;
+    public void setGrupos(Set<Grupo> grupos) {
+        this.grupos = grupos;
     }
-
 }
