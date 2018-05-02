@@ -1,0 +1,3 @@
+[submodule "SIGAD-common"]
+	path = SIGAD-common
+	url = https://github.com/cfoch/SIGAD-common
