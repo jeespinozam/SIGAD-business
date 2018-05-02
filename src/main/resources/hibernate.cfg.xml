@@ -32,5 +32,8 @@
         <mapping class="com.sigad.sigad.business.Usuario"/>
         <mapping class="com.sigad.sigad.business.Grupo"/>
         <mapping class="com.sigad.sigad.business.Permiso"/>
+        <mapping class="com.sigad.sigad.business.TarjetaCredito"/>
+        <mapping class="com.sigad.sigad.business.Vehiculo$Tipo"/>
+        <mapping class="com.sigad.sigad.business.Vehiculo"/>
     </session-factory>
 </hibernate-configuration>

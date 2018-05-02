@@ -43,6 +43,12 @@ public class SIGADBusinessMain {
         Usuario usuarioEmpresa1 = new Usuario(empresa1,
                 "admin@valleandino.com", "123456");
         
+        TarjetaCredito tarjetaCreditoPersona1 =
+                new TarjetaCredito(persona1, "4422324423449324");
+        
+        Vehiculo.Tipo vehiculoTipo1 = new Vehiculo.Tipo("BMW Azul", 13.4);
+        Vehiculo vehiculo1 = new Vehiculo(vehiculoTipo1, "YDEED-3242");
+
         grupoCliente.getUsuarios().add(usuarioPersona1);
         grupoCliente.getUsuarios().add(usuarioEmpresa1);
 
@@ -51,7 +57,10 @@ public class SIGADBusinessMain {
         session.save(usuarioPersona1);
         session.save(usuarioEmpresa1);
         session.save(grupoCliente);
+        session.save(tarjetaCreditoPersona1);
         session.save(permisoVerProducto);
+        session.save(vehiculoTipo1);
+        session.save(vehiculo1);
 
         session.getTransaction().commit();
         
