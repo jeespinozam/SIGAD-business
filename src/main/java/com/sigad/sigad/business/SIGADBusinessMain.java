@@ -48,6 +48,8 @@ public class SIGADBusinessMain {
         
         Vehiculo.Tipo vehiculoTipo1 = new Vehiculo.Tipo("BMW Azul", 13.4);
         Vehiculo vehiculo1 = new Vehiculo(vehiculoTipo1, "YDEED-3242");
+        
+        Empleado empleado1 = new Empleado(persona1);
 
         grupoCliente.getUsuarios().add(usuarioPersona1);
         grupoCliente.getUsuarios().add(usuarioEmpresa1);
@@ -61,6 +63,7 @@ public class SIGADBusinessMain {
         session.save(permisoVerProducto);
         session.save(vehiculoTipo1);
         session.save(vehiculo1);
+        session.save(empleado1);
 
         session.getTransaction().commit();
         

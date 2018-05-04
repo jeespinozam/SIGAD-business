@@ -26,12 +26,17 @@
 
 
         <!-- List of XML mapping files -->
-        <mapping class="com.sigad.sigad.business.Persona"/>
-        <mapping class="com.sigad.sigad.business.PersonaNatural"/>
-        <mapping class="com.sigad.sigad.business.PersonaJuridica"/>
         <mapping class="com.sigad.sigad.business.Usuario"/>
         <mapping class="com.sigad.sigad.business.Grupo"/>
         <mapping class="com.sigad.sigad.business.Permiso"/>
+        <mapping class="com.sigad.sigad.business.Persona"/>
+        <mapping class="com.sigad.sigad.business.PersonaNatural"/>
+        <mapping class="com.sigad.sigad.business.PersonaJuridica"/>
+        <mapping class="com.sigad.sigad.business.Cliente"/>
+        <mapping class="com.sigad.sigad.business.Empleado"/>
+        <mapping class="com.sigad.sigad.business.FechaImportante"/>
+        <mapping class="com.sigad.sigad.business.HorarioLaboral"/>
+        <mapping class="com.sigad.sigad.business.Locacion"/>
         <mapping class="com.sigad.sigad.business.TarjetaCredito"/>
         <mapping class="com.sigad.sigad.business.Vehiculo$Tipo"/>
         <mapping class="com.sigad.sigad.business.Vehiculo"/>

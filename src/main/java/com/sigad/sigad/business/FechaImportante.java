@@ -6,7 +6,7 @@
 package com.sigad.sigad.business;
 
 import com.sun.istack.internal.NotNull;
-import java.util.HashSet;
+import java.util.Date;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -14,27 +14,32 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.validation.constraints.NotBlank;
 
 /**
  *
  * @author cfoch
  */
 @Entity
-public class Grupo {
+public class FechaImportante {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @NotNull
+    private Date fecha;
+    @NotNull
+    @NotBlank
     private String nombre;
+    private String descripcion;
+    @NotNull
+    private boolean generica;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<Usuario> usuarios;
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<Permiso> permisos;
+    private Set<Cliente> clientes;
     
-    public Grupo(String nombre) {
+    public FechaImportante(Date fecha, String nombre) {
+        setFecha(fecha);
         setNombre(nombre);
-        usuarios = new HashSet<>();
-        permisos = new HashSet<>();
+        setGenerica(false);
     }
 
     /**
@@ -52,6 +57,20 @@ public class Grupo {
     }
 
     /**
+     * @return the fecha
+     */
+    public Date getFecha() {
+        return fecha;
+    }
+
+    /**
+     * @param fecha the fecha to set
+     */
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
+
+    /**
      * @return the nombre
      */
     public String getNombre() {
@@ -62,34 +81,34 @@ public class Grupo {
      * @param nombre the nombre to set
      */
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        this.setNombre(nombre);
     }
 
     /**
-     * @return the usuarios
+     * @return the descripcion
      */
-    public Set<Usuario> getUsuarios() {
-        return usuarios;
+    public String getDescripcion() {
+        return descripcion;
     }
 
     /**
-     * @param usuarios the usuarios to set
+     * @param descripcion the descripcion to set
      */
-    public void setUsuarios(Set<Usuario> usuarios) {
-        this.usuarios = usuarios;
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
     /**
-     * @return the permisos
+     * @return the generica
      */
-    public Set<Permiso> getPermisos() {
-        return permisos;
+    public boolean isGenerica() {
+        return generica;
     }
 
     /**
-     * @param permisos the permisos to set
+     * @param generica the generica to set
      */
-    public void setPermisos(Set<Permiso> permisos) {
-        this.permisos = permisos;
+    public void setGenerica(boolean generica) {
+        this.generica = generica;
     }
 }

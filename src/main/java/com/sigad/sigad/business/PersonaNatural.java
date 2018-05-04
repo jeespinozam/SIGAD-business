@@ -7,6 +7,7 @@ package com.sigad.sigad.business;
 
 import com.sun.istack.internal.NotNull;
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.Pattern;
 
 /**
@@ -23,6 +24,10 @@ public class PersonaNatural extends Persona {
     private String apellidoMaterno;
     @Pattern(regexp="[\\d]{8}")
     private String dni;
+    @OneToOne
+    private Empleado empleado;
+    @OneToOne
+    private Cliente cliente;
 
     public PersonaNatural(String dni, String nombres, String apellidoPaterno,
             String apellidoMaterno) {
@@ -86,6 +91,20 @@ public class PersonaNatural extends Persona {
      */
     public void setDni(String dni) {
         this.dni = dni;
+    }
+
+    /**
+     * @return the empleado
+     */
+    public Empleado getEmpleado() {
+        return empleado;
+    }
+
+    /**
+     * @param empleado the empleado to set
+     */
+    public void setEmpleado(Empleado empleado) {
+        this.empleado = empleado;
     }
 
 }
