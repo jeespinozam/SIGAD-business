@@ -10,27 +10,21 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 
 /**
  *
  * @author cfoch
  */
 @Entity
-public class Empleado {
+public class Perfil {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @NotNull
-    @OneToOne(mappedBy = "empleado")
-    private PersonaNatural persona;
-    private boolean esActivo;
-
-    public Empleado(PersonaNatural persona) {
-        setPersona(persona);
-        setEsActivo(true);
-        persona.setEmpleado(this);
-    }
+    private String nombre;
+    private String descripcion;
+    @NotNull
+    private boolean activo;
 
     /**
      * @return the id
@@ -47,31 +41,44 @@ public class Empleado {
     }
 
     /**
-     * @return the persona
+     * @return the nombre
      */
-    public PersonaNatural getPersona() {
-        return persona;
+    public String getNombre() {
+        return nombre;
     }
 
     /**
-     * @param persona the persona to set
+     * @param nombre the nombre to set
      */
-    public void setPersona(PersonaNatural persona) {
-        this.persona = persona;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     /**
-     * @return the esActivo
+     * @return the descripcion
      */
-    public boolean isEsActivo() {
-        return esActivo;
+    public String getDescripcion() {
+        return descripcion;
     }
 
     /**
-     * @param esActivo the esActivo to set
+     * @param descripcion the descripcion to set
      */
-    public void setEsActivo(boolean esActivo) {
-        this.esActivo = esActivo;
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
+    /**
+     * @return the activo
+     */
+    public boolean isActivo() {
+        return activo;
+    }
+
+    /**
+     * @param activo the activo to set
+     */
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
 }

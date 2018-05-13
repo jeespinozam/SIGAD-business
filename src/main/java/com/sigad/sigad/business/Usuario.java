@@ -12,9 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import org.hibernate.annotations.ColumnDefault;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -26,26 +25,29 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @NotNull
-    private String apodo;
+    private String nombres;
     @NotNull
-    private String clave;
+    private String apellidoPaterno;
     @NotNull
-    private String correo;
-    @ColumnDefault("true")
-    private boolean esActivo;
+    private String apellidoMaterno;
     @NotNull
     @ManyToOne
-    private Persona persona;
-    @ManyToMany(mappedBy="usuarios")
-    private Set<Grupo> grupos;
+    private Perfil perfil;
+    private String telefono;
+    @NotNull
+    private String dni;
+    private String celular;
+    @NotNull
+    private boolean activo;
+    private String correo;
+    private String intereses;
+    @OneToMany(mappedBy="usuario")
+    private Set<ClienteFecha> clienteFechas = new HashSet<>();
+    @OneToMany(mappedBy="usuario")
+    private Set<ClienteDireccion> clienteDirecciones = new HashSet<>();
+    @OneToMany(mappedBy="id.usuario")
+    private Set<CapacidadTienda> capacidadTiendas = new HashSet<>();
 
-    public Usuario(Persona persona, String correo, String clave) {
-        setPersona(persona);
-        setCorreo(correo);
-        setClave(clave);
-        grupos = new HashSet<>();
-    }
-    
     /**
      * @return the id
      */
@@ -61,17 +63,115 @@ public class Usuario {
     }
 
     /**
-     * @return the apodo
+     * @return the nombres
      */
-    public String getApodo() {
-        return apodo;
+    public String getNombres() {
+        return nombres;
     }
 
     /**
-     * @param apodo the apodo to set
+     * @param nombres the nombres to set
      */
-    public void setApodo(String apodo) {
-        this.apodo = apodo;
+    public void setNombres(String nombres) {
+        this.nombres = nombres;
+    }
+
+    /**
+     * @return the apellidoPaterno
+     */
+    public String getApellidoPaterno() {
+        return apellidoPaterno;
+    }
+
+    /**
+     * @param apellidoPaterno the apellidoPaterno to set
+     */
+    public void setApellidoPaterno(String apellidoPaterno) {
+        this.apellidoPaterno = apellidoPaterno;
+    }
+
+    /**
+     * @return the apellidoMaterno
+     */
+    public String getApellidoMaterno() {
+        return apellidoMaterno;
+    }
+
+    /**
+     * @param apellidoMaterno the apellidoMaterno to set
+     */
+    public void setApellidoMaterno(String apellidoMaterno) {
+        this.apellidoMaterno = apellidoMaterno;
+    }
+
+    /**
+     * @return the perfil
+     */
+    public Perfil getPerfil() {
+        return perfil;
+    }
+
+    /**
+     * @param perfil the perfil to set
+     */
+    public void setPerfil(Perfil perfil) {
+        this.perfil = perfil;
+    }
+
+    /**
+     * @return the telefono
+     */
+    public String getTelefono() {
+        return telefono;
+    }
+
+    /**
+     * @param telefono the telefono to set
+     */
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    /**
+     * @return the dni
+     */
+    public String getDni() {
+        return dni;
+    }
+
+    /**
+     * @param dni the dni to set
+     */
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
+
+    /**
+     * @return the celular
+     */
+    public String getCelular() {
+        return celular;
+    }
+
+    /**
+     * @param celular the celular to set
+     */
+    public void setCelular(String celular) {
+        this.celular = celular;
+    }
+
+    /**
+     * @return the activo
+     */
+    public boolean isActivo() {
+        return activo;
+    }
+
+    /**
+     * @param activo the activo to set
+     */
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 
     /**
@@ -89,58 +189,55 @@ public class Usuario {
     }
 
     /**
-     * @return the esActivo
+     * @return the intereses
      */
-    public boolean isEsActivo() {
-        return esActivo;
+    public String getIntereses() {
+        return intereses;
     }
 
     /**
-     * @param esActivo the esActivo to set
+     * @param intereses the intereses to set
      */
-    public void setEsActivo(boolean esActivo) {
-        this.esActivo = esActivo;
+    public void setIntereses(String intereses) {
+        this.intereses = intereses;
     }
 
     /**
-     * @return the persona
+     * @return the clienteFechas
      */
-    public Persona getPersona() {
-        return persona;
+    public Set<ClienteFecha> getClienteFechas() {
+        return clienteFechas;
     }
 
     /**
-     * @param persona the persona to set
+     * @return the clienteFechas
      */
-    public void setPersona(Persona persona) {
-        this.persona = persona;
+    public void addClienteFecha(ClienteFecha clienteFecha) {
+        if (clienteFecha.getUsuario() == this) {
+            clienteFechas.add(clienteFecha);
+        }
     }
 
     /**
-     * @return the clave
+     * @return the clienteDirecciones
      */
-    public String getClave() {
-        return clave;
+    public void addClienteDirecciones(ClienteDireccion clienteDireccion) {
+        if (clienteDireccion.getUsuario() == this) {
+            clienteDirecciones.add(clienteDireccion);
+        }
     }
 
     /**
-     * @param clave the clave to set
+     * @return the capacidadTiendas
      */
-    public void setClave(String clave) {
-        this.clave = clave;
+    public Set<CapacidadTienda> getCapacidadTiendas() {
+        return capacidadTiendas;
     }
 
     /**
-     * @return the grupos
+     * @param capacidadTienda the capacidadTienda to add
      */
-    public Set<Grupo> getGrupos() {
-        return grupos;
-    }
-
-    /**
-     * @param grupos the grupos to set
-     */
-    public void setGrupos(Set<Grupo> grupos) {
-        this.grupos = grupos;
+    public void addCapacidadTienda(CapacidadTienda capacidadTienda) {
+        capacidadTiendas.add(capacidadTienda);
     }
 }
