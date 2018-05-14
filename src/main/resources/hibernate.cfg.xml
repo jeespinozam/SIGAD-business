@@ -36,6 +36,16 @@
         <mapping class="com.sigad.sigad.business.CapacidadTienda"/>
         <mapping class="com.sigad.sigad.business.Vehiculo$Tipo"/>
         <mapping class="com.sigad.sigad.business.Vehiculo"/>
+        <mappign class="com.sigad.sigad.business.DetalleOrdenCompra"/>
+        <mappign class="com.sigad.sigad.business.DetalleOrdenCompra"/>
+        <mappign class="com.sigad.sigad.business.Insumo"/>
+        <mappign class="com.sigad.sigad.business.LoteInsumo"/>
+        <mappign class="com.sigad.sigad.business.LoteTienda"/>
+        <mappign class="com.sigad.sigad.business.OrdenCompra"/>
+        <mappign class="com.sigad.sigad.business.Producto"/>
+        <mappign class="com.sigad.sigad.business.ProductoPrecio"/>
+        <mappign class="com.sigad.sigad.business.ProductoCategoria"/>
+        <mappign class="com.sigad.sigad.business.ProductoFragilidad"/>
         <!--
         <mapping class="com.sigad.sigad.business.Grupo"/>
         <mapping class="com.sigad.sigad.business.Permiso"/>
