@@ -6,31 +6,34 @@
 package com.sigad.sigad.business;
 
 import com.sun.istack.internal.NotNull;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 /**
  *
- * @author cfoch
+ * @author jorgeespinoza
  */
-@Entity
-public class Insumo {
+public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @NotNull
     private String nombre;
+    @NotNull
+    private double precio;
+    private double peso;
     private String imagen;
     private String descripcion;
-    private int tiempoVida; //dias
-    private double precio; //ojo que esto puede variar
     @NotNull
     private int stock;
+    @ManyToOne
+    private ProductoCategoria categoria;
     @NotNull
     private boolean activo;
-    private boolean volumen;
+    private ProductoFragilidad fragilidad;
+    private double volumen;
 
     /**
      * @return the id
@@ -58,6 +61,34 @@ public class Insumo {
      */
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    /**
+     * @return the precio
+     */
+    public double getPrecio() {
+        return precio;
+    }
+
+    /**
+     * @param precio the precio to set
+     */
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
+    /**
+     * @return the peso
+     */
+    public double getPeso() {
+        return peso;
+    }
+
+    /**
+     * @param peso the peso to set
+     */
+    public void setPeso(double peso) {
+        this.peso = peso;
     }
 
     /**
@@ -89,34 +120,6 @@ public class Insumo {
     }
 
     /**
-     * @return the tiempoVida
-     */
-    public int getTiempoVida() {
-        return tiempoVida;
-    }
-
-    /**
-     * @param tiempoVida the tiempoVida to set
-     */
-    public void setTiempoVida(int tiempoVida) {
-        this.tiempoVida = tiempoVida;
-    }
-
-    /**
-     * @return the precio
-     */
-    public double getPrecio() {
-        return precio;
-    }
-
-    /**
-     * @param precio the precio to set
-     */
-    public void setPrecio(double precio) {
-        this.precio = precio;
-    }
-
-    /**
      * @return the stock
      */
     public int getStock() {
@@ -128,6 +131,20 @@ public class Insumo {
      */
     public void setStock(int stock) {
         this.stock = stock;
+    }
+
+    /**
+     * @return the categoria
+     */
+    public ProductoCategoria getCategoria() {
+        return categoria;
+    }
+
+    /**
+     * @param categoria the categoria to set
+     */
+    public void setCategoria(ProductoCategoria categoria) {
+        this.categoria = categoria;
     }
 
     /**
@@ -145,16 +162,30 @@ public class Insumo {
     }
 
     /**
+     * @return the fragilidad
+     */
+    public ProductoFragilidad getFragilidad() {
+        return fragilidad;
+    }
+
+    /**
+     * @param fragilidad the fragilidad to set
+     */
+    public void setFragilidad(ProductoFragilidad fragilidad) {
+        this.fragilidad = fragilidad;
+    }
+
+    /**
      * @return the volumen
      */
-    public boolean isVolumen() {
+    public double getVolumen() {
         return volumen;
     }
 
     /**
      * @param volumen the volumen to set
      */
-    public void setVolumen(boolean volumen) {
+    public void setVolumen(double volumen) {
         this.volumen = volumen;
     }
 }

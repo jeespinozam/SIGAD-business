@@ -6,31 +6,23 @@
 package com.sigad.sigad.business;
 
 import com.sun.istack.internal.NotNull;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
  *
- * @author cfoch
+ * @author jorgeespinoza
  */
-@Entity
-public class Insumo {
+class ProductoCategoria {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @NotNull
     private String nombre;
-    private String imagen;
     private String descripcion;
-    private int tiempoVida; //dias
-    private double precio; //ojo que esto puede variar
-    @NotNull
-    private int stock;
     @NotNull
     private boolean activo;
-    private boolean volumen;
 
     /**
      * @return the id
@@ -61,20 +53,6 @@ public class Insumo {
     }
 
     /**
-     * @return the imagen
-     */
-    public String getImagen() {
-        return imagen;
-    }
-
-    /**
-     * @param imagen the imagen to set
-     */
-    public void setImagen(String imagen) {
-        this.imagen = imagen;
-    }
-
-    /**
      * @return the descripcion
      */
     public String getDescripcion() {
@@ -89,48 +67,6 @@ public class Insumo {
     }
 
     /**
-     * @return the tiempoVida
-     */
-    public int getTiempoVida() {
-        return tiempoVida;
-    }
-
-    /**
-     * @param tiempoVida the tiempoVida to set
-     */
-    public void setTiempoVida(int tiempoVida) {
-        this.tiempoVida = tiempoVida;
-    }
-
-    /**
-     * @return the precio
-     */
-    public double getPrecio() {
-        return precio;
-    }
-
-    /**
-     * @param precio the precio to set
-     */
-    public void setPrecio(double precio) {
-        this.precio = precio;
-    }
-
-    /**
-     * @return the stock
-     */
-    public int getStock() {
-        return stock;
-    }
-
-    /**
-     * @param stock the stock to set
-     */
-    public void setStock(int stock) {
-        this.stock = stock;
-    }
-
-    /**
      * @return the activo
      */
     public boolean isActivo() {
@@ -142,19 +78,5 @@ public class Insumo {
      */
     public void setActivo(boolean activo) {
         this.activo = activo;
-    }
-
-    /**
-     * @return the volumen
-     */
-    public boolean isVolumen() {
-        return volumen;
-    }
-
-    /**
-     * @param volumen the volumen to set
-     */
-    public void setVolumen(boolean volumen) {
-        this.volumen = volumen;
     }
 }
