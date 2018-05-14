@@ -7,40 +7,27 @@ package com.sigad.sigad.business;
 
 import com.sun.istack.internal.NotNull;
 import java.util.Date;
-import java.util.Set;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.validation.constraints.NotBlank;
+import javax.persistence.ManyToOne;
 
 /**
  *
  * @author cfoch
  */
 @Entity
-public class FechaImportante {
+public class ClienteFecha {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+    @ManyToOne(optional=false)
+    private Usuario usuario;
     @NotNull
     private Date fecha;
     @NotNull
-    @NotBlank
     private String nombre;
-    private String descripcion;
-    @NotNull
-    private boolean generica;
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<Cliente> clientes;
-    
-    public FechaImportante(Date fecha, String nombre) {
-        setFecha(fecha);
-        setNombre(nombre);
-        setGenerica(false);
-    }
 
     /**
      * @return the id
@@ -54,6 +41,20 @@ public class FechaImportante {
      */
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     * @return the usuario
+     */
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    /**
+     * @param usuario the usuario to set
+     */
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     /**
@@ -81,34 +82,6 @@ public class FechaImportante {
      * @param nombre the nombre to set
      */
     public void setNombre(String nombre) {
-        this.setNombre(nombre);
-    }
-
-    /**
-     * @return the descripcion
-     */
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    /**
-     * @param descripcion the descripcion to set
-     */
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    /**
-     * @return the generica
-     */
-    public boolean isGenerica() {
-        return generica;
-    }
-
-    /**
-     * @param generica the generica to set
-     */
-    public void setGenerica(boolean generica) {
-        this.generica = generica;
+        this.nombre = nombre;
     }
 }

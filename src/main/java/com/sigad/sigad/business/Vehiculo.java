@@ -28,7 +28,7 @@ public class Vehiculo {
         private String nombre;
         private String descripcion;
         @NotNull
-        private double pesoSoportado;
+        private double capacidad;
         private String marca;
         private String modelo;
 
@@ -80,17 +80,17 @@ public class Vehiculo {
         }
 
         /**
-         * @return the pesoSoportado
+         * @return the capacidad
          */
-        public double getPesoSoportado() {
-            return pesoSoportado;
+        public double getCapacidad() {
+            return capacidad;
         }
 
         /**
-         * @param pesoSoportado the pesoSoportado to set
+         * @param capacidad the capacidad to set
          */
-        public void setPesoSoportado(double pesoSoportado) {
-            this.pesoSoportado = pesoSoportado;
+        public void setCapacidad(double capacidad) {
+            this.capacidad = capacidad;
         }
 
         /**
@@ -132,6 +132,7 @@ public class Vehiculo {
     @NotNull
     @NotBlank
     private String placa;
+    private String nombre;
     private String descripcion;
     
     public Vehiculo(Vehiculo.Tipo tipo, String placa) {
@@ -193,5 +194,19 @@ public class Vehiculo {
      */
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    /**
+     * @return the nombre
+     */
+    public String getNombre() {
+        return nombre;
+    }
+
+    /**
+     * @param nombre the nombre to set
+     */
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 }
