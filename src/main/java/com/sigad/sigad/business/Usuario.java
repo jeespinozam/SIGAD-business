@@ -8,10 +8,12 @@ package com.sigad.sigad.business;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -47,7 +49,17 @@ public class Usuario {
     private Set<ClienteDireccion> clienteDirecciones = new HashSet<>();
     @OneToMany(mappedBy="id.usuario")
     private Set<CapacidadTienda> capacidadTiendas = new HashSet<>();
-
+    
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Pedido> pedidoVentasCliente = new HashSet<>();
+    
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Pedido> pedidoVentasVendedor = new HashSet<>();
+    
+    
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<ProductoDescuento> descuentos = new HashSet<>();
+    
     /**
      * @return the id
      */
@@ -239,5 +251,47 @@ public class Usuario {
      */
     public void addCapacidadTienda(CapacidadTienda capacidadTienda) {
         capacidadTiendas.add(capacidadTienda);
+    }
+
+    /**
+     * @return the pedidoVentasCliente
+     */
+    public Set<Pedido> getPedidoVentasCliente() {
+        return pedidoVentasCliente;
+    }
+
+    /**
+     * @param pedidoVentasCliente the pedidoVentasCliente to set
+     */
+    public void setPedidoVentasCliente(Set<Pedido> pedidoVentasCliente) {
+        this.pedidoVentasCliente = pedidoVentasCliente;
+    }
+
+    /**
+     * @return the pedidoVentasVendedor
+     */
+    public Set<Pedido> getPedidoVentasVendedor() {
+        return pedidoVentasVendedor;
+    }
+
+    /**
+     * @param pedidoVentasVendedor the pedidoVentasVendedor to set
+     */
+    public void setPedidoVentasVendedor(Set<Pedido> pedidoVentasVendedor) {
+        this.pedidoVentasVendedor = pedidoVentasVendedor;
+    }
+
+    /**
+     * @return the descuentos
+     */
+    public Set<ProductoDescuento> getDescuentos() {
+        return descuentos;
+    }
+
+    /**
+     * @param descuentos the descuentos to set
+     */
+    public void setDescuentos(Set<ProductoDescuento> descuentos) {
+        this.descuentos = descuentos;
     }
 }
