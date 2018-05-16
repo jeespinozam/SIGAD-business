@@ -34,7 +34,7 @@ public class Vehiculo {
 
         public Tipo(String nombre, double pesoSoportado) {
             setNombre(nombre);
-            setPesoSoportado(pesoSoportado);
+            setCapacidad(pesoSoportado);
         }
 
         /**
