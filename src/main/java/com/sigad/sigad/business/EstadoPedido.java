@@ -33,6 +33,10 @@ public class EstadoPedido {
     @ManyToOne
     private PedidoEstado estado;
 
+    public EstadoPedido() {
+    }
+
+    
     /**
      * @return the id
      */

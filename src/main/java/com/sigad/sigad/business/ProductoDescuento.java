@@ -41,9 +41,12 @@ public class ProductoDescuento {
     @ManyToOne
     private Producto producto;
     
-    @ManyToMany(mappedBy = "usuario")
-    private Set<Usuario> descuentoClientes = new HashSet<>();
+    
 
+    public ProductoDescuento() {
+    }
+
+    
     /**
      * @return the id
      */
@@ -163,17 +166,4 @@ public class ProductoDescuento {
         this.producto = producto;
     }
 
-    /**
-     * @return the descuentoClientes
-     */
-    public Set<Usuario> getDescuentoClientes() {
-        return descuentoClientes;
-    }
-
-    /**
-     * @param descuentoClientes the descuentoClientes to set
-     */
-    public void setDescuentoClientes(Set<Usuario> descuentoClientes) {
-        this.descuentoClientes = descuentoClientes;
-    }
 }

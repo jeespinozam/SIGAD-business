@@ -20,6 +20,19 @@ import javax.validation.constraints.NotNull;
 @Entity
 public class PedidoEstado {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
+    @NotNull
+    private String nombre;
+
+    private String descripcion;
+
+    public PedidoEstado() {
+    }
+
+    
+    
     /**
      * @return the id
      */
@@ -54,13 +67,5 @@ public class PedidoEstado {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
-    @NotNull
-    private String nombre;
-    
-    private String descripcion;
-    
-    
+
 }

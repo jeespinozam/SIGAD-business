@@ -15,7 +15,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -40,9 +39,9 @@ public class DetallePedido {
     private Integer numEntregados;
     
     //Fk
-    @ManyToOne
-    private Pedido pedidoVenta;
-    @OneToOne(mappedBy = "detallePedido", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//    @ManyToOne
+//    private Pedido pedidoVenta;
+    @OneToOne( cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Producto producto;
     
     //Campos de auditoria
@@ -53,6 +52,10 @@ public class DetallePedido {
     @UpdateTimestamp
     private Date updatedOn;
 
+    public DetallePedido() {
+    }
+
+    
     /**
      * @return the id
      */
@@ -116,19 +119,19 @@ public class DetallePedido {
         this.numEntregados = numEntregados;
     }
 
-    /**
-     * @return the pedidoVenta
-     */
-    public Pedido getPedidoVenta() {
-        return pedidoVenta;
-    }
-
-    /**
-     * @param pedidoVenta the pedidoVenta to set
-     */
-    public void setPedidoVenta(Pedido pedidoVenta) {
-        this.pedidoVenta = pedidoVenta;
-    }
+//    /**
+//     * @return the pedidoVenta
+//     */
+//    public Pedido getPedidoVenta() {
+//        return pedidoVenta;
+//    }
+//
+//    /**
+//     * @param pedidoVenta the pedidoVenta to set
+//     */
+//    public void setPedidoVenta(Pedido pedidoVenta) {
+//        this.pedidoVenta = pedidoVenta;
+//    }
 
     /**
      * @return the producto

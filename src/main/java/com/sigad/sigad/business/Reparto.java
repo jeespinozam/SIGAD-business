@@ -41,6 +41,10 @@ public class Reparto {
     @OneToMany(mappedBy = "reparto", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<DetalleReparto> detallesReparto = new HashSet<>();
 
+    public Reparto() {
+    }
+    
+    
     /**
      * @return the id
      */

@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package com.sigad.sigad.business;
+
 import java.security.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,14 +14,17 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
 /**
  *
  * @author Alexandra
  */
 @Entity
 public class Pedido {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
@@ -31,38 +35,42 @@ public class Pedido {
     @NotNull
     private boolean activo;
     @NotNull
-    private boolean modificable ;
+    private boolean modificable;
 
-    private Timestamp horaIniEntrega ;
+    private Timestamp horaIniEntrega;
 
-    private Timestamp horaFinEntrega ;
+    private Timestamp horaFinEntrega;
     @NotNull
-    private String mensajeDescripicion ;
+    private String mensajeDescripicion;
     @NotNull
-    private String direccionDeEnvio ;
+    private String direccionDeEnvio;
     @NotNull
-    private double cooXDireccion ;
+    private double cooXDireccion;
     @NotNull
-    private double cooYDireccion ;
-    
-    private Timestamp horaEntrega ;
-    
+    private double cooYDireccion;
+
+    private Timestamp horaEntrega;
+
     //fk
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<DetallePedido> detallePedido = new HashSet<>();
-    
     @ManyToOne
     private Usuario vendedor;
-    
+
     @ManyToOne
     private Usuario cliente;
-    
+
     @ManyToOne
-    @NotNull
     private TipoPago tipoPago;
-    
-    @OneToMany (mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PedidoEstado> estadosPedido= new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "pedido_id")
+    private Set<EstadoPedido> estadosPedido = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "pedido_id")
+    private Set<DetallePedido> detallePedido = new HashSet<>();
+
+    public Pedido() {
+    }
 
     /**
      * @return the id
@@ -284,17 +292,15 @@ public class Pedido {
     /**
      * @return the estadosPedido
      */
-    public Set<PedidoEstado> getEstadosPedido() {
+    public Set<EstadoPedido> getEstadosPedido() {
         return estadosPedido;
     }
 
     /**
      * @param estadosPedido the estadosPedido to set
      */
-    public void setEstadosPedido(Set<PedidoEstado> estadosPedido) {
+    public void setEstadosPedido(Set<EstadoPedido> estadosPedido) {
         this.estadosPedido = estadosPedido;
     }
-    
-    
-    
+
 }

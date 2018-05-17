@@ -29,6 +29,11 @@ public class DetalleReparto {
     @ManyToOne
     private Pedido pedido;
 
+    public DetalleReparto() {
+    }
+    
+    
+
     /**
      * @return the id
      */
