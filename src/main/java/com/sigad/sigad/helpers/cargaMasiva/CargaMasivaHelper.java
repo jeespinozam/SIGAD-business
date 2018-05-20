@@ -32,7 +32,7 @@ public class CargaMasivaHelper {
     
     public void generarCargaMasivaTemplate(String tablaCarga, String destinoTemplate) {
         HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet(String.format("Carga Masiva de %s", tablaCarga));
+        HSSFSheet sheet = workbook.createSheet(tablaCarga);
         HSSFRow rowhead = sheet.createRow(0);
         int rowIndex = 0;
         // Definimos las cabeceras
@@ -44,6 +44,7 @@ public class CargaMasivaHelper {
                 break;
             // agregar aqui el resto de casos
             default:
+                LOGGER.log(Level.WARNING, "Tabla no reconocida, abortando ....");
                 return;
         }
         try {
@@ -88,7 +89,7 @@ public class CargaMasivaHelper {
         }
     }
     
-    public void CargaMasivaProceso(String tablaCarga, String archivoRuta) {
+    public void CargaMasivaProceso(String archivoRuta) {
         try {
             DataFormatter dataFormatter = new DataFormatter();
             Workbook workbook = WorkbookFactory.create(new File(archivoRuta));
@@ -110,7 +111,7 @@ public class CargaMasivaHelper {
             while (rowIterator.hasNext()) {
                 row = rowIterator.next();
                 Iterator<Cell> cellIterator = row.cellIterator();
-                if (this.SubirRegistroBD(tablaCarga, cellIterator, dataFormatter, session)) casosExitosos++;
+                if (this.SubirRegistroBD(sheet.getSheetName(), cellIterator, dataFormatter, session)) casosExitosos++;
                 else casosFallidos++;
             }
             session.close();
