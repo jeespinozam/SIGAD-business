@@ -5,26 +5,35 @@
  */
 package com.sigad.sigad.business;
 
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  *
- * @author cfoch
+ * @author jorgeespinoza
  */
 @Entity
-public class TipoPago {
+public class Proveedor {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+    private String nombre;
+    @NotNull
+    private int ruc; 
     private String descripcion;
-
+    @OneToMany(mappedBy = "proveedor")
+    private Set<OrdenCompra> ordenesCompra = new HashSet<OrdenCompra>();
+    
     /**
      * Constructor.
      */
-    public TipoPago() {
+    public Proveedor() {
     }
     
     /**
@@ -39,6 +48,34 @@ public class TipoPago {
      */
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     * @return the nombre
+     */
+    public String getNombre() {
+        return nombre;
+    }
+
+    /**
+     * @param nombre the nombre to set
+     */
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    /**
+     * @return the ruc
+     */
+    public Integer getRuc() {
+        return ruc;
+    }
+
+    /**
+     * @param ruc the ruc to set
+     */
+    public void setRuc(Integer ruc) {
+        this.ruc = ruc;
     }
 
     /**

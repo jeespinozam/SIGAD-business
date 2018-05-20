@@ -5,7 +5,6 @@
  */
 package com.sigad.sigad.business;
 
-//import com.sun.istack.internal.NotNull;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -36,6 +35,12 @@ public class ClienteDireccion {
     @ManyToOne(optional=false)
     private Usuario usuario;
 
+    /**
+     * Constructor.
+     */
+    public ClienteDireccion() {
+    }
+    
     /**
      * @return the id
      */

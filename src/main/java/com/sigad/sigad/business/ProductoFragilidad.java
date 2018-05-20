@@ -5,34 +5,36 @@
  */
 package com.sigad.sigad.business;
 
-import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  *
- * @author cfoch
+ * @author jorgeespinoza
  */
 @Entity
-public class Constante {
+public class ProductoFragilidad {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @NotNull
-    private String abreviatura;
-    @NotNull
+    private int valor;
     private String descripcion;
-    @NotNull
-    private double valor;
-
+    @OneToMany(mappedBy = "fragilidad")
+    private Set<Producto> productos = new HashSet<Producto>();
+    
     /**
      * Constructor.
      */
-    public Constante() {
+    public ProductoFragilidad() {
     }
-
+    
     /**
      * @return the id
      */
@@ -48,17 +50,17 @@ public class Constante {
     }
 
     /**
-     * @return the abreviatura
+     * @return the valor
      */
-    public String getAbreviatura() {
-        return abreviatura;
+    public int getValor() {
+        return valor;
     }
 
     /**
-     * @param abreviatura the abreviatura to set
+     * @param valor the valor to set
      */
-    public void setAbreviatura(String abreviatura) {
-        this.abreviatura = abreviatura;
+    public void setValor(int valor) {
+        this.valor = valor;
     }
 
     /**
@@ -76,16 +78,18 @@ public class Constante {
     }
 
     /**
-     * @return the valor
+     * @return the productos
      */
-    public double getValor() {
-        return valor;
+    public Set<Producto> getProductos() {
+        return productos;
     }
 
     /**
-     * @param valor the valor to set
+     * @param productos the productos to set
      */
-    public void setValor(double valor) {
-        this.valor = valor;
+    public void setProductos(Set<Producto> productos) {
+        this.productos = productos;
     }
+
+
 }

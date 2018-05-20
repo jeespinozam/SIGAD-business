@@ -5,34 +5,38 @@
  */
 package com.sigad.sigad.business;
 
-import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  *
- * @author cfoch
+ * @author jorgeespinoza
  */
 @Entity
-public class Constante {
+class ProductoCategoria {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @NotNull
-    private String abreviatura;
-    @NotNull
+    private String nombre;
     private String descripcion;
     @NotNull
-    private double valor;
-
+    private boolean activo;
+    @OneToMany(mappedBy = "categoria")
+    private Set<Producto> productos = new HashSet<Producto>();
+    
     /**
      * Constructor.
      */
-    public Constante() {
+    public ProductoCategoria() {
     }
-
+    
     /**
      * @return the id
      */
@@ -48,17 +52,17 @@ public class Constante {
     }
 
     /**
-     * @return the abreviatura
+     * @return the nombre
      */
-    public String getAbreviatura() {
-        return abreviatura;
+    public String getNombre() {
+        return nombre;
     }
 
     /**
-     * @param abreviatura the abreviatura to set
+     * @param nombre the nombre to set
      */
-    public void setAbreviatura(String abreviatura) {
-        this.abreviatura = abreviatura;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     /**
@@ -76,16 +80,30 @@ public class Constante {
     }
 
     /**
-     * @return the valor
+     * @return the activo
      */
-    public double getValor() {
-        return valor;
+    public boolean isActivo() {
+        return activo;
     }
 
     /**
-     * @param valor the valor to set
+     * @param activo the activo to set
      */
-    public void setValor(double valor) {
-        this.valor = valor;
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
+
+    /**
+     * @return the productos
+     */
+    public Set<Producto> getProductos() {
+        return productos;
+    }
+
+    /**
+     * @param productos the productos to set
+     */
+    public void setProductos(Set<Producto> productos) {
+        this.productos = productos;
     }
 }

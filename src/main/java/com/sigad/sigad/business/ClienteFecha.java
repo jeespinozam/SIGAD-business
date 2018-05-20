@@ -5,7 +5,6 @@
  */
 package com.sigad.sigad.business;
 
-//import com.sun.istack.internal.NotNull;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import javax.persistence.Entity;
@@ -30,6 +29,12 @@ public class ClienteFecha {
     @NotNull
     private String nombre;
 
+    /**
+     * Constructor.
+     */
+    public ClienteFecha() {
+    }
+    
     /**
      * @return the id
      */
