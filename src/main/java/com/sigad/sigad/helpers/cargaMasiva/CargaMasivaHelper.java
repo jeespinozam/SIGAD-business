@@ -30,22 +30,30 @@ public class CargaMasivaHelper {
     
     private final static Logger LOGGER = Logger.getLogger(CargaMasivaHelper.class.getName());
     
-    public void generarCargaMasivaTemplate(String destinoTemplate) {
+    public void generarCargaMasivaTemplate(String tablaCarga, String destinoTemplate) {
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet sheet = workbook.createSheet(String.format("Carga Masiva de %s", tablaCarga));
+        HSSFRow rowhead = sheet.createRow(0);
+        int rowIndex = 0;
+        // Definimos las cabeceras
+        switch(tablaCarga) {
+            case CargaMasivaConstantes.TABLA_PRODUCTOCATEGORIA:
+                rowhead.createCell(rowIndex).setCellValue("Nombre");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                break;
+            // agregar aqui el resto de casos
+            default:
+                return;
+        }
         try {
-            HSSFWorkbook workbook = new HSSFWorkbook();
-            HSSFSheet sheet = workbook.createSheet("CargaMasivaTemplate");
-            // definimos cabecera, es decir, las columnas
-            HSSFRow rowhead = sheet.createRow(0);
-            rowhead.createCell(0).setCellValue("Nombre");
-            rowhead.createCell(1).setCellValue("Descripcion");
-            //
             FileOutputStream fileOut = new FileOutputStream(destinoTemplate);
             workbook.write(fileOut);
             fileOut.close();
-            LOGGER.log(Level.INFO, "Archivo creado con exito");
+            LOGGER.log(Level.INFO, String.format("Plantilla de %s creada con exito", tablaCarga));
         }
         catch(Exception ex) {
-            LOGGER.log(Level.SEVERE, "Error en generar template de carga masiva");
+            LOGGER.log(Level.SEVERE, String.format("Error al generar plantilla de ", tablaCarga));
             System.out.print(ex);
         }
     }
