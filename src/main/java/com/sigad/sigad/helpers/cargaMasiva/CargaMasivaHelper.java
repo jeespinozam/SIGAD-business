@@ -5,7 +5,10 @@
  */
 package com.sigad.sigad.helpers.cargaMasiva;
 
+import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.ProductoCategoria;
+import com.sigad.sigad.business.Usuario;
+import com.sigad.sigad.business.Vehiculo;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Iterator;
@@ -42,13 +45,29 @@ public class CargaMasivaHelper {
                 rowIndex++;
                 rowhead.createCell(rowIndex).setCellValue("Descripcion");
                 break;
-            case CargaMasivaConstantes.TABLA_VEHICULOSTIPO:
+            case CargaMasivaConstantes.TABLA_PERFILES:
                 rowhead.createCell(rowIndex).setCellValue("Nombre");
                 rowIndex++;
                 rowhead.createCell(rowIndex).setCellValue("Descripcion");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Capacidad-Volumen (m3)");
                 break;
+            case CargaMasivaConstantes.TABLA_USUARIOS:
+                rowhead.createCell(rowIndex).setCellValue("Nombre(s)");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Apellido Paterno");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Apellido Materno");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Perfil");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Telefono Fijo");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("DNI");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Celular");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Correo Electronico");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Intereses");
             // agregar aqui el resto de casos
             default:
                 LOGGER.log(Level.WARNING, "Tabla no reconocida, abortando ....");
@@ -90,6 +109,35 @@ public class CargaMasivaHelper {
                     System.out.print(he);
                     return false;
                 }
+            case CargaMasivaConstantes.TABLA_PERFILES:
+                Perfil nuevoPerfil = new Perfil();
+                nuevoPerfil.setActivo(true);    // logica de negocio
+                cell = cellIterator.next();
+                nuevoPerfil.setNombre(dataFormatter.formatCellValue(cell));
+                cell = cellIterator.next();
+                nuevoPerfil.setDescripcion(dataFormatter.formatCellValue(cell));
+                try{
+                    Transaction tx = null;
+                    tx = session.beginTransaction();
+                    session.save(nuevoPerfil);
+                    tx.commit();
+                    LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoPerfil.getNombre()));
+                    return true;
+                }
+                catch(HibernateException he) {
+                    LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoPerfil.getNombre()));
+                    System.out.print(he);
+                    return false;
+                }
+            case CargaMasivaConstantes.TABLA_USUARIOS:
+                Usuario nuevoUsuario = new Usuario();
+                nuevoUsuario.setActivo(true);   // logica de negocio
+                cell = cellIterator.next();
+                nuevoUsuario.setNombres(dataFormatter.formatCellValue(cell));
+                cell = cellIterator.next();
+                nuevoUsuario.setApellidoPaterno(dataFormatter.formatCellValue(cell));
+                cell = cellIterator.next();
+                nuevoUsuario.setApellidoMaterno(dataFormatter.formatCellValue(cell));
             // colocar aqui los demas casos para el resto de tablas de carga masiva
             default:
                 return false;

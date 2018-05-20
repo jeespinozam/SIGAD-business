@@ -15,11 +15,12 @@ import javafx.collections.ObservableList;
 public class CargaMasivaConstantes {
     // Tablas a cargar mediante consulta masiva
     public static final String TABLA_PRODUCTOCATEGORIA = "Producto Categoria";
-    public static final String TABLA_VEHICULOSTIPO = "Vehiculos Tipo";
+    public static final String TABLA_PERFILES = "Perfiles";
+    public static final String TABLA_USUARIOS = "Usuarios";
     
     public static ObservableList<String> getList(){
         return FXCollections.observableArrayList(
-            TABLA_PRODUCTOCATEGORIA, TABLA_VEHICULOSTIPO
+            TABLA_PRODUCTOCATEGORIA, TABLA_PERFILES, TABLA_USUARIOS
         );
     };
 }
