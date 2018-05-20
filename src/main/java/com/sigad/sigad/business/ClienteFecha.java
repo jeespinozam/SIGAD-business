@@ -6,6 +6,7 @@
 package com.sigad.sigad.business;
 
 //import com.sun.istack.internal.NotNull;
+
 import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

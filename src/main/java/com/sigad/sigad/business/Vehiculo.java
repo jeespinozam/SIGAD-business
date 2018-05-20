@@ -6,6 +6,7 @@
 package com.sigad.sigad.business;
 
 //import com.sun.istack.internal.NotNull;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -36,6 +37,7 @@ public class Vehiculo {
         public Tipo(String nombre, double pesoSoportado) {
             setNombre(nombre);
             //setPesoSoportado(pesoSoportado);
+            setCapacidad(pesoSoportado);
         }
 
         /**
