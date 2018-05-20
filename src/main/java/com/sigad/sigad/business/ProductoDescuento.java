@@ -42,7 +42,7 @@ public class ProductoDescuento {
     //Fk
     @ManyToOne
     private Producto producto;
-    //@ManyToMany(targetEntity = com.sigad.sigad.business.Usuario.class , mappedBy = "descuentos")
+    @ManyToMany
     private Set<Usuario> usuarios = new HashSet<>();
 
     public ProductoDescuento() {

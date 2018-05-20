@@ -49,11 +49,11 @@ public class Usuario {
     private Set<ClienteDireccion> clienteDirecciones = new HashSet<ClienteDireccion>();
     @OneToMany(mappedBy="id.insumo")
     private Set<CapacidadTienda> capacidadTiendas = new HashSet<CapacidadTienda>();
-    //@OneToMany(mappedBy = "cliente")
-    //private Set<Pedido> pedidoCliente = new HashSet<Pedido>();
+    @OneToMany(mappedBy = "cliente")
+    private Set<Pedido> pedidoCliente = new HashSet<Pedido>();
     
-    //@ManyToMany(targetEntity = com.sigad.sigad.business.ProductoDescuento.class ,mappedBy = "usuarios", cascade = { CascadeType.ALL })
-    //private Set<ProductoDescuento> descuentos = new HashSet<ProductoDescuento>();
+    @ManyToMany(mappedBy = "usuarios", cascade = { CascadeType.ALL })
+    private Set<ProductoDescuento> descuentos = new HashSet<ProductoDescuento>();
     
     /**
      * Constructor.
