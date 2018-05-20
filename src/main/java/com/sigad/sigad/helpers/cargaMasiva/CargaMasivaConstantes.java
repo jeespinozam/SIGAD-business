@@ -5,6 +5,9 @@
  */
 package com.sigad.sigad.helpers.cargaMasiva;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 /**
  *
  * @author paul
@@ -12,4 +15,10 @@ package com.sigad.sigad.helpers.cargaMasiva;
 public class CargaMasivaConstantes {
     // Tablas a cargar mediante consulta masiva
     public static final String TABLA_PRODUCTOCATEGORIA = "Producto Categoria";
+    
+    public static ObservableList<String> getList(){
+        return FXCollections.observableArrayList(
+            TABLA_PRODUCTOCATEGORIA
+        );
+    };
 }
