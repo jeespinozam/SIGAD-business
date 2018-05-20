@@ -42,6 +42,13 @@ public class CargaMasivaHelper {
                 rowIndex++;
                 rowhead.createCell(rowIndex).setCellValue("Descripcion");
                 break;
+            case CargaMasivaConstantes.TABLA_VEHICULOSTIPO:
+                rowhead.createCell(rowIndex).setCellValue("Nombre");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Capacidad-Volumen (m3)");
+                break;
             // agregar aqui el resto de casos
             default:
                 LOGGER.log(Level.WARNING, "Tabla no reconocida, abortando ....");
