@@ -5,6 +5,7 @@
  */
 package com.sigad.sigad.business;
 
+import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,6 +22,7 @@ public class Perfil {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @NotNull
+    @Column(unique = true)
     private String nombre;
     private String descripcion;
     @NotNull
