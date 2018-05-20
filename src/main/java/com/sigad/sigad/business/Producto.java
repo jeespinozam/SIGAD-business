@@ -5,24 +5,29 @@
  */
 package com.sigad.sigad.business;
 
-import com.sun.istack.internal.NotNull;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 /**
  *
  * @author jorgeespinoza
  */
+@Entity
 public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @NotNull
     private String nombre;
-    @NotNull
-    private double precio;
+//    @OneToMany(mappedBy = "producto")
+//    private Set<ProductoPrecio> precios = new HashSet<ProductoPrecio>();
     private double peso;
     private String imagen;
     private String descripcion;
@@ -32,9 +37,16 @@ public class Producto {
     private ProductoCategoria categoria;
     @NotNull
     private boolean activo;
+    @ManyToOne
     private ProductoFragilidad fragilidad;
     private double volumen;
 
+    /**
+     * Constructor.
+     */
+    public Producto() {
+    }
+    
     /**
      * @return the id
      */
@@ -64,18 +76,18 @@ public class Producto {
     }
 
     /**
-     * @return the precio
+     * @return the precios
      */
-    public double getPrecio() {
-        return precio;
-    }
+//    public Set<ProductoPrecio> getPrecios() {
+//        return precios;
+//    }
 
     /**
-     * @param precio the precio to set
+     * @param precios the precios to set
      */
-    public void setPrecio(double precio) {
-        this.precio = precio;
-    }
+//    public void setPrecios(Set<ProductoPrecio> precios) {
+//        this.precios = precios;
+//    }
 
     /**
      * @return the peso
@@ -188,4 +200,6 @@ public class Producto {
     public void setVolumen(double volumen) {
         this.volumen = volumen;
     }
+
+    
 }

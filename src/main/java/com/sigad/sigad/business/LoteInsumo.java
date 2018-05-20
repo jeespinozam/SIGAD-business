@@ -5,17 +5,22 @@
  */
 package com.sigad.sigad.business;
 
-import com.sun.istack.internal.NotNull;
 import java.util.Date;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.validation.constraints.NotNull;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 /**
  *
  * @author jorgeespinoza
  */
+@Entity
 public class LoteInsumo {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -30,7 +35,18 @@ public class LoteInsumo {
     private Date fechaVencimiento;
     @NotNull
     private double costoUnitario;
-
+    //cascade: un lote tiene que tener un detalle orden, sino no tiene sentido
+    //cascade: se guardan automaticamente el loteInsumo en la creación de detalleCompra
+    //onetoone fetch default eager
+    @OneToOne(mappedBy = "loteInsumo",cascade = CascadeType.ALL, fetch = FetchType.LAZY) 
+    private DetalleOrdenCompra detalleOrdenCompra;
+    
+    /**
+     * Constructor.
+     */
+    public LoteInsumo() {
+    }
+    
     /**
      * @return the id
      */
@@ -99,5 +115,19 @@ public class LoteInsumo {
      */
     public void setCostoUnitario(double costoUnitario) {
         this.costoUnitario = costoUnitario;
+    }
+
+    /**
+     * @return the detalleOrdenCompra
+     */
+    public DetalleOrdenCompra getDetalleOrdenCompra() {
+        return detalleOrdenCompra;
+    }
+
+    /**
+     * @param detalleOrdenCompra the detalleOrdenCompra to set
+     */
+    public void setDetalleOrdenCompra(DetalleOrdenCompra detalleOrdenCompra) {
+        this.detalleOrdenCompra = detalleOrdenCompra;
     }
 }

@@ -28,8 +28,14 @@ public class Tienda {
     private String descripcion;
     private double capacidad;
     @OneToMany(mappedBy="id.tienda")
-    private Set<CapacidadTienda> capacidadTiendas = new HashSet<>();
+    private Set<CapacidadTienda> capacidadTiendas = new HashSet<CapacidadTienda>();
 
+    /**
+     * Constructor.
+     */
+    public Tienda() {
+    }
+    
     /**
      * @return the direccion
      */

@@ -5,7 +5,7 @@
  */
 package com.sigad.sigad.business;
 
-import com.sun.istack.internal.NotNull;
+import javax.validation.constraints.NotNull;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,6 +26,12 @@ public class Constante {
     private String descripcion;
     @NotNull
     private double valor;
+
+    /**
+     * Constructor.
+     */
+    public Constante() {
+    }
 
     /**
      * @return the id

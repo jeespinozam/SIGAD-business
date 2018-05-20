@@ -5,31 +5,49 @@
  */
 package com.sigad.sigad.business;
 
-import com.sigad.sigad.business.ids.DetalleOrdenCompraId;
-import com.sun.istack.internal.NotNull;
-import javax.persistence.EmbeddedId;
+import javax.validation.constraints.NotNull;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 /**
  *
  * @author jorgeespinoza
  */
+@Entity
 public class DetalleOrdenCompra {
-    @EmbeddedId
-    private DetalleOrdenCompraId id = new DetalleOrdenCompraId();
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private int id;
     @NotNull
     private double precioDetalle;
+    
+    //debe existir una orden de compra
+    @ManyToOne(optional = false)
+    private OrdenCompra orden;
+    @OneToOne
+    private LoteInsumo loteInsumo;
 
+    /**
+     * Constructor.
+     */
+    public DetalleOrdenCompra() {
+    }
+    
     /**
      * @return the id
      */
-    public DetalleOrdenCompraId getId() {
+    public int getId() {
         return id;
     }
 
     /**
      * @param id the id to set
      */
-    public void setId(DetalleOrdenCompraId id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -45,6 +63,34 @@ public class DetalleOrdenCompra {
      */
     public void setPrecioDetalle(double precioDetalle) {
         this.precioDetalle = precioDetalle;
+    }
+
+    /**
+     * @return the orden
+     */
+    public OrdenCompra getOrden() {
+        return orden;
+    }
+
+    /**
+     * @param orden the orden to set
+     */
+    public void setOrden(OrdenCompra orden) {
+        this.orden = orden;
+    }
+
+    /**
+     * @return the loteInsumo
+     */
+    public LoteInsumo getLoteInsumo() {
+        return loteInsumo;
+    }
+
+    /**
+     * @param loteInsumo the loteInsumo to set
+     */
+    public void setLoteInsumo(LoteInsumo loteInsumo) {
+        this.loteInsumo = loteInsumo;
     }
     
 }

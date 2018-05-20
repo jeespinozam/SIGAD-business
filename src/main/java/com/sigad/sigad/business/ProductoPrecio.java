@@ -5,8 +5,8 @@
  */
 package com.sigad.sigad.business;
 
-import com.sun.istack.internal.NotNull;
 import java.util.Date;
+import javax.validation.constraints.NotNull;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,8 +20,8 @@ public class ProductoPrecio {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-    
-    @ManyToOne(optional=false)
+    //no puede existir sin producto
+    @ManyToOne(optional = false)
     private Producto producto;
     @NotNull
     private double precio;
@@ -29,7 +29,17 @@ public class ProductoPrecio {
     private Date fechaInicio;
     @NotNull
     private Date fechaFin;
-
+    
+    //active para que no se crucen las fechas
+    @NotNull
+    private boolean activo; 
+    
+    /**
+     * Constructor.
+     */
+    public ProductoPrecio() {
+    }
+    
     /**
      * @return the id
      */

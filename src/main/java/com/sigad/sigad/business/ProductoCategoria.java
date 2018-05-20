@@ -5,15 +5,20 @@
  */
 package com.sigad.sigad.business;
 
-import com.sun.istack.internal.NotNull;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  *
  * @author jorgeespinoza
  */
+@Entity
 class ProductoCategoria {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -23,7 +28,15 @@ class ProductoCategoria {
     private String descripcion;
     @NotNull
     private boolean activo;
-
+    @OneToMany(mappedBy = "categoria")
+    private Set<Producto> productos = new HashSet<Producto>();
+    
+    /**
+     * Constructor.
+     */
+    public ProductoCategoria() {
+    }
+    
     /**
      * @return the id
      */
@@ -78,5 +91,19 @@ class ProductoCategoria {
      */
     public void setActivo(boolean activo) {
         this.activo = activo;
+    }
+
+    /**
+     * @return the productos
+     */
+    public Set<Producto> getProductos() {
+        return productos;
+    }
+
+    /**
+     * @param productos the productos to set
+     */
+    public void setProductos(Set<Producto> productos) {
+        this.productos = productos;
     }
 }

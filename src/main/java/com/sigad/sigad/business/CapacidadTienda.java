@@ -21,6 +21,11 @@ public class CapacidadTienda {
     private int cantidad;
 
     /**
+     * Constructor.
+     */
+    public CapacidadTienda() {
+    }
+    /**
      * @return the id
      */
     public CapacidadTiendaId getId() {
@@ -46,22 +51,6 @@ public class CapacidadTienda {
      */
     public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
-    }
-    
-    /**
-     * @return the Usuario
-     */
-    @Transient
-    public Usuario getUsuario() {
-        return id.getUsuario();
-    }
-
-
-    /**
-     * @param usuario the Usuario to set
-     */
-    public void setUsuario(Usuario usuario) {
-        id.setUsuario(usuario);
     }
 
     /**

@@ -6,19 +6,28 @@
 package com.sigad.sigad.business;
 
 import com.sigad.sigad.business.ids.LoteTiendaId;
-import com.sun.istack.internal.NotNull;
+import javax.validation.constraints.NotNull;
 import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 /**
  *
  * @author jorgeespinoza
  */
+@Entity
 public class LoteTienda {
     @EmbeddedId
     private LoteTiendaId id = new LoteTiendaId();
     @NotNull
     private int stock;
 
+    /**
+     * Constructor.
+     */
+    public LoteTienda() {
+    }
+    
     /**
      * @return the id
      */
@@ -45,6 +54,22 @@ public class LoteTienda {
      */
     public void setStock(int stock) {
         this.stock = stock;
+    }
+    
+    /**
+     * @return the Tienda
+     */
+    @Transient
+    public Tienda getTienda() {
+        return id.getTienda();
+    }
+
+
+    /**
+     * @param tienda the Tienda to set
+     */
+    public void setTienda(Tienda tienda) {
+        id.setTienda(tienda);
     }
     
 }

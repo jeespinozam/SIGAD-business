@@ -20,6 +20,12 @@ public class TipoPago {
     private String descripcion;
 
     /**
+     * Constructor.
+     */
+    public TipoPago() {
+    }
+    
+    /**
      * @return the id
      */
     public Long getId() {

@@ -5,15 +5,20 @@
  */
 package com.sigad.sigad.business;
 
-import com.sun.istack.internal.NotNull;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  *
  * @author jorgeespinoza
  */
+@Entity
 public class Proveedor {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -22,7 +27,15 @@ public class Proveedor {
     @NotNull
     private int ruc; 
     private String descripcion;
-
+    @OneToMany(mappedBy = "proveedor")
+    private Set<OrdenCompra> ordenesCompra = new HashSet<OrdenCompra>();
+    
+    /**
+     * Constructor.
+     */
+    public Proveedor() {
+    }
+    
     /**
      * @return the id
      */

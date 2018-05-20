@@ -5,15 +5,20 @@
  */
 package com.sigad.sigad.business;
 
-import com.sun.istack.internal.NotNull;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  *
  * @author jorgeespinoza
  */
+@Entity
 public class ProductoFragilidad {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -21,7 +26,15 @@ public class ProductoFragilidad {
     @NotNull
     private int valor;
     private String descripcion;
-
+    @OneToMany(mappedBy = "fragilidad")
+    private Set<Producto> productos = new HashSet<Producto>();
+    
+    /**
+     * Constructor.
+     */
+    public ProductoFragilidad() {
+    }
+    
     /**
      * @return the id
      */
@@ -63,4 +76,20 @@ public class ProductoFragilidad {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+
+    /**
+     * @return the productos
+     */
+    public Set<Producto> getProductos() {
+        return productos;
+    }
+
+    /**
+     * @param productos the productos to set
+     */
+    public void setProductos(Set<Producto> productos) {
+        this.productos = productos;
+    }
+
+
 }

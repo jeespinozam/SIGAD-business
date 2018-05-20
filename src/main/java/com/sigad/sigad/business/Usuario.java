@@ -5,7 +5,7 @@
  */
 package com.sigad.sigad.business;
 
-import com.sun.istack.internal.NotNull;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Entity;
@@ -42,12 +42,16 @@ public class Usuario {
     private String correo;
     private String intereses;
     @OneToMany(mappedBy="usuario")
-    private Set<ClienteFecha> clienteFechas = new HashSet<>();
+    private Set<ClienteFecha> clienteFechas = new HashSet<ClienteFecha>();
     @OneToMany(mappedBy="usuario")
-    private Set<ClienteDireccion> clienteDirecciones = new HashSet<>();
-    @OneToMany(mappedBy="id.usuario")
-    private Set<CapacidadTienda> capacidadTiendas = new HashSet<>();
+    private Set<ClienteDireccion> clienteDirecciones = new HashSet<ClienteDireccion>();
 
+    /**
+     * Constructor.
+     */
+    public Usuario() {
+    }
+    
     /**
      * @return the id
      */
@@ -227,17 +231,5 @@ public class Usuario {
         }
     }
 
-    /**
-     * @return the capacidadTiendas
-     */
-    public Set<CapacidadTienda> getCapacidadTiendas() {
-        return capacidadTiendas;
-    }
-
-    /**
-     * @param capacidadTienda the capacidadTienda to add
-     */
-    public void addCapacidadTienda(CapacidadTienda capacidadTienda) {
-        capacidadTiendas.add(capacidadTienda);
-    }
+    
 }

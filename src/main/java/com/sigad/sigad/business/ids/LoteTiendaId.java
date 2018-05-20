@@ -7,18 +7,23 @@ package com.sigad.sigad.business.ids;
 
 import com.sigad.sigad.business.LoteInsumo;
 import com.sigad.sigad.business.Tienda;
+import java.io.Serializable;
+import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 /**
  *
  * @author jorgeespinoza
  */
-public class LoteTiendaId {
+@Embeddable
+public class LoteTiendaId implements Serializable{
     @ManyToOne
     private Tienda tienda;
-    @ManyToOne
+    @OneToOne
     private LoteInsumo loteInsumo;
 
+    
     /**
      * @return the tienda
      */

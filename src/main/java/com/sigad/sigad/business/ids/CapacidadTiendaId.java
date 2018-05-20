@@ -5,8 +5,8 @@
  */
 package com.sigad.sigad.business.ids;
 
+import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.Tienda;
-import com.sigad.sigad.business.Usuario;
 import java.io.Serializable;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
@@ -18,23 +18,10 @@ import javax.persistence.ManyToOne;
 @Embeddable
 public class CapacidadTiendaId implements Serializable {
     @ManyToOne
-    private Usuario usuario;
+    private Insumo insumo;
     @ManyToOne
     private Tienda tienda;
 
-    /**
-     * @return the usuario
-     */
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    /**
-     * @param usuario the usuario to set
-     */
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
 
     /**
      * @return the tienda
@@ -48,5 +35,19 @@ public class CapacidadTiendaId implements Serializable {
      */
     public void setTienda(Tienda tienda) {
         this.tienda = tienda;
+    }
+
+    /**
+     * @return the insumo
+     */
+    public Insumo getInsumo() {
+        return insumo;
+    }
+
+    /**
+     * @param insumo the insumo to set
+     */
+    public void setInsumo(Insumo insumo) {
+        this.insumo = insumo;
     }
 }
