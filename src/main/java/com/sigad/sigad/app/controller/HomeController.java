@@ -5,9 +5,12 @@
  */
 package com.sigad.sigad.app.controller;
 
+import com.jfoenix.controls.JFXHamburger;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.input.MouseEvent;
 
 /**
  * FXML Controller class
@@ -21,11 +24,17 @@ public class HomeController implements Initializable {
      */
     
     public static String viewPath = "/com/sigad/sigad/app/view/home.fxml";
+    @FXML
+    private JFXHamburger hamburgerbtn;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
         
     }    
+
+    @FXML
+    private void showHamburger(MouseEvent event) {
+    }
     
 }
