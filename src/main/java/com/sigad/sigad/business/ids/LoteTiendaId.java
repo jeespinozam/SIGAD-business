@@ -5,24 +5,25 @@
  */
 package com.sigad.sigad.business.ids;
 
-import com.sigad.sigad.business.Insumo;
+import com.sigad.sigad.business.LoteInsumo;
 import com.sigad.sigad.business.Tienda;
 import java.io.Serializable;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 /**
  *
- * @author cfoch
+ * @author jorgeespinoza
  */
 @Embeddable
-public class CapacidadTiendaId implements Serializable {
-    @ManyToOne
-    private Insumo insumo;
+public class LoteTiendaId implements Serializable{
     @ManyToOne
     private Tienda tienda;
+    @OneToOne
+    private LoteInsumo loteInsumo;
 
-
+    
     /**
      * @return the tienda
      */
@@ -38,16 +39,16 @@ public class CapacidadTiendaId implements Serializable {
     }
 
     /**
-     * @return the insumo
+     * @return the loteInsumo
      */
-    public Insumo getInsumo() {
-        return insumo;
+    public LoteInsumo getLoteInsumo() {
+        return loteInsumo;
     }
 
     /**
-     * @param insumo the insumo to set
+     * @param loteInsumo the loteInsumo to set
      */
-    public void setInsumo(Insumo insumo) {
-        this.insumo = insumo;
+    public void setLoteInsumo(LoteInsumo loteInsumo) {
+        this.loteInsumo = loteInsumo;
     }
 }

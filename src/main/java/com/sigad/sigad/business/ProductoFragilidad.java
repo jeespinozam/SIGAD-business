@@ -5,35 +5,34 @@
  */
 package com.sigad.sigad.business;
 
-import javax.persistence.Column;
-import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.UniqueConstraint;
-import org.hibernate.validator.constraints.UniqueElements;
+import javax.persistence.OneToMany;
 
 /**
  *
- * @author cfoch
+ * @author jorgeespinoza
  */
 @Entity
-public class Perfil {
+public class ProductoFragilidad {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @NotNull
-    @Column(unique = true)
-    private String nombre;
+    private int valor;
     private String descripcion;
-    @NotNull
-    private boolean activo;
-
+    @OneToMany(mappedBy = "fragilidad")
+    private Set<Producto> productos = new HashSet<Producto>();
+    
     /**
      * Constructor.
      */
-    public Perfil() {
+    public ProductoFragilidad() {
     }
     
     /**
@@ -51,17 +50,17 @@ public class Perfil {
     }
 
     /**
-     * @return the nombre
+     * @return the valor
      */
-    public String getNombre() {
-        return nombre;
+    public int getValor() {
+        return valor;
     }
 
     /**
-     * @param nombre the nombre to set
+     * @param valor the valor to set
      */
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setValor(int valor) {
+        this.valor = valor;
     }
 
     /**
@@ -79,16 +78,18 @@ public class Perfil {
     }
 
     /**
-     * @return the activo
+     * @return the productos
      */
-    public boolean isActivo() {
-        return activo;
+    public Set<Producto> getProductos() {
+        return productos;
     }
 
     /**
-     * @param activo the activo to set
+     * @param productos the productos to set
      */
-    public void setActivo(boolean activo) {
-        this.activo = activo;
+    public void setProductos(Set<Producto> productos) {
+        this.productos = productos;
     }
+
+
 }

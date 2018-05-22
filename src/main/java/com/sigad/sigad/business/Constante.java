@@ -28,6 +28,12 @@ public class Constante {
     private double valor;
 
     /**
+     * Constructor.
+     */
+    public Constante() {
+    }
+
+    /**
      * @return the id
      */
     public Long getId() {

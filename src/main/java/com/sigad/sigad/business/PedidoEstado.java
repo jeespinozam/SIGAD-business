@@ -5,49 +5,39 @@
  */
 package com.sigad.sigad.business;
 
-import javax.persistence.Column;
-import javax.validation.constraints.NotNull;
+import java.sql.Time;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.UniqueConstraint;
-import org.hibernate.validator.constraints.UniqueElements;
+import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 
 /**
  *
- * @author cfoch
+ * @author Alexandra
  */
 @Entity
-public class Perfil {
+public class PedidoEstado {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @NotNull
-    @Column(unique = true)
     private String nombre;
-    private String descripcion;
-    @NotNull
-    private boolean activo;
 
-    /**
-     * Constructor.
-     */
-    public Perfil() {
+    private String descripcion;
+
+    public PedidoEstado() {
     }
+
+    
     
     /**
      * @return the id
      */
     public Long getId() {
         return id;
-    }
-
-    /**
-     * @param id the id to set
-     */
-    public void setId(Long id) {
-        this.id = id;
     }
 
     /**
@@ -78,17 +68,4 @@ public class Perfil {
         this.descripcion = descripcion;
     }
 
-    /**
-     * @return the activo
-     */
-    public boolean isActivo() {
-        return activo;
-    }
-
-    /**
-     * @param activo the activo to set
-     */
-    public void setActivo(boolean activo) {
-        this.activo = activo;
-    }
 }

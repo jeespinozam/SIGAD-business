@@ -30,6 +30,12 @@ public class ClienteFecha {
     private String nombre;
 
     /**
+     * Constructor.
+     */
+    public ClienteFecha() {
+    }
+    
+    /**
      * @return the id
      */
     public Long getId() {

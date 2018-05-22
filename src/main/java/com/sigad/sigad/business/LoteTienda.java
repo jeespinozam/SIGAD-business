@@ -5,54 +5,57 @@
  */
 package com.sigad.sigad.business;
 
-import com.sigad.sigad.business.ids.CapacidadTiendaId;
+import com.sigad.sigad.business.ids.LoteTiendaId;
+import javax.validation.constraints.NotNull;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 /**
  *
- * @author cfoch
+ * @author jorgeespinoza
  */
 @Entity
-public class CapacidadTienda {
+public class LoteTienda {
     @EmbeddedId
-    private CapacidadTiendaId id = new CapacidadTiendaId();
-    private int cantidad;
+    private LoteTiendaId id = new LoteTiendaId();
+    @NotNull
+    private int stock;
 
     /**
      * Constructor.
      */
-    public CapacidadTienda() {
+    public LoteTienda() {
     }
+    
     /**
      * @return the id
      */
-    public CapacidadTiendaId getId() {
+    public LoteTiendaId getId() {
         return id;
     }
 
     /**
      * @param id the id to set
      */
-    public void setId(CapacidadTiendaId id) {
+    public void setId(LoteTiendaId id) {
         this.id = id;
     }
 
     /**
-     * @return the cantidad
+     * @return the stock
      */
-    public int getCantidad() {
-        return cantidad;
+    public int getStock() {
+        return stock;
     }
 
     /**
-     * @param cantidad the cantidad to set
+     * @param stock the stock to set
      */
-    public void setCantidad(int cantidad) {
-        this.cantidad = cantidad;
+    public void setStock(int stock) {
+        this.stock = stock;
     }
-
+    
     /**
      * @return the Tienda
      */
@@ -68,4 +71,5 @@ public class CapacidadTienda {
     public void setTienda(Tienda tienda) {
         id.setTienda(tienda);
     }
+    
 }

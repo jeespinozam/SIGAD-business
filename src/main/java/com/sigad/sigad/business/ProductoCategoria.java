@@ -5,35 +5,36 @@
  */
 package com.sigad.sigad.business;
 
-import javax.persistence.Column;
-import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.UniqueConstraint;
-import org.hibernate.validator.constraints.UniqueElements;
+import javax.persistence.OneToMany;
 
 /**
  *
- * @author cfoch
+ * @author jorgeespinoza
  */
 @Entity
-public class Perfil {
+public class ProductoCategoria {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @NotNull
-    @Column(unique = true)
     private String nombre;
     private String descripcion;
     @NotNull
     private boolean activo;
-
+    @OneToMany(mappedBy = "categoria")
+    private Set<Producto> productos = new HashSet<Producto>();
+    
     /**
      * Constructor.
      */
-    public Perfil() {
+    public ProductoCategoria() {
     }
     
     /**
@@ -90,5 +91,19 @@ public class Perfil {
      */
     public void setActivo(boolean activo) {
         this.activo = activo;
+    }
+
+    /**
+     * @return the productos
+     */
+    public Set<Producto> getProductos() {
+        return productos;
+    }
+
+    /**
+     * @param productos the productos to set
+     */
+    public void setProductos(Set<Producto> productos) {
+        this.productos = productos;
     }
 }
