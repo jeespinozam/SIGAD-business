@@ -5,7 +5,6 @@
  */
 package com.sigad.sigad.app.controller;
 
-import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
@@ -30,46 +29,47 @@ import javafx.scene.text.Text;
  */
 public class LoginController implements Initializable {
 
-    @FXML
-    private JFXTextField usertxt;
-    @FXML
-    private JFXPasswordField passwordtxt;
-
     /**
      * Initializes the controller class.
      */
     public static String viewPath = "/com/sigad/sigad/app/view/login.fxml";
+    public static String windowName = "Login";
+    
     @FXML
-    private StackPane hiddensp;
+    private JFXTextField userTxt;
+    @FXML
+    private JFXPasswordField passwordTxt;
+    @FXML
+    private StackPane hiddenSp;
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
     }    
 
     @FXML
-    private void loginbtn(MouseEvent event) throws IOException {
-        System.out.println(usertxt.getText());
-        System.out.println(passwordtxt.getText());
+    private void loginClicked(MouseEvent event) throws IOException {
+        System.out.println(userTxt.getText());
+        System.out.println(passwordTxt.getText());
         
         if(validate()){
-            this.loadWindow(HomeController.viewPath, "Home");
+            this.loadWindow(HomeController.viewPath, HomeController.windowName);
         }else{
             JFXDialogLayout content =  new JFXDialogLayout();
             content.setHeading(new Text("Error"));
             content.setBody(new Text("Cuenta o contraseña incorrectas"));
 
             ErrorController error = new ErrorController();
-            error.loadDialog(content, hiddensp);
+            error.loadDialog(content, hiddenSp);
             
         }
     }
     
     private boolean validate() {
-       return usertxt.getText().equals("admin") && passwordtxt.getText().equals("admin");
+       return userTxt.getText().equals("admin") && passwordTxt.getText().equals("admin");
     }
     
     private void loadWindow(String viewPath, String windowTitle) throws IOException {
-       usertxt.getScene().getWindow().hide();
+       userTxt.getScene().getWindow().hide();
        Parent newRoot = FXMLLoader.load(getClass().getResource(viewPath));
        Stage stage = new Stage();
        stage.setTitle(windowTitle);
@@ -78,10 +78,10 @@ public class LoginController implements Initializable {
     }
 
     @FXML
-    private void recoverPassword(MouseEvent event) {
+    private void signupClicked(MouseEvent event) {
     }
 
     @FXML
-    private void signupbtn(MouseEvent event) {
+    private void recoverPasswordClicked(MouseEvent event) {
     }
 }

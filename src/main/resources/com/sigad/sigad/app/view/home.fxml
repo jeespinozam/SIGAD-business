@@ -1,36 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXDrawer?>
+<?import com.jfoenix.controls.JFXButton?>
 <?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
 <?import java.net.URL?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="AnchorPane" prefHeight="680.0" prefWidth="1010.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.app.controller.HomeController">
+<AnchorPane id="AnchorPane" prefHeight="720.0" prefWidth="1080.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.app.controller.HomeController">
     <stylesheets>
         <URL value="@/styles/home.css" />
     </stylesheets>
     <children>
-      <JFXDrawer defaultDrawerSize="200.0" prefHeight="551.0" prefWidth="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
-       <AnchorPane layoutX="24.0" layoutY="20.0" prefHeight="40.0" prefWidth="1080.0" style="-fx-background-color: #455A64;" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+       <AnchorPane layoutX="24.0" layoutY="20.0" prefHeight="40.0" prefWidth="1080.0" style="-fx-background-color: #455A64; -fx-padding: 0px;" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
           <children>
-             <Label layoutX="814.0" layoutY="11.0" text="Nombre Apellido" textFill="WHITE" AnchorPane.bottomAnchor="12.0" />
-            <MaterialDesignIconView fill="WHITE" glyphName="MENU" layoutX="7.0" layoutY="23.0" />
-            <MaterialDesignIconView fill="WHITE" glyphName="MENU_DOWN" layoutX="932.0" layoutY="24.0" size="20" AnchorPane.bottomAnchor="12.0" />
+            <JFXButton layoutX="10.0" layoutY="13.0" text="Menu" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <graphic>
+                  <MaterialDesignIconView fill="WHITE" glyphName="MENU" size="20" />
+               </graphic>
+            </JFXButton>
+            <JFXButton contentDisplay="RIGHT" layoutX="978.0" layoutY="7.0" text="Nombre Apellido" textFill="WHITE" textOverrun="CLIP" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <graphic>
+                  <MaterialDesignIconView fill="WHITE" glyphName="MENU_DOWN" size="20" />
+               </graphic>
+            </JFXButton>
           </children>
        </AnchorPane>
-       <AnchorPane layoutX="117.0" layoutY="78.0" prefHeight="200.0" prefWidth="1080.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+      <AnchorPane fx:id="firstPane" layoutX="127.0" layoutY="88.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1080.0" style="-fx-background-color: black; -fx-padding: 0px;" AnchorPane.leftAnchor="70.0" AnchorPane.topAnchor="40.0" />
+       <AnchorPane fx:id="secondPane" layoutX="117.0" layoutY="78.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1080.0" style="-fx-background-color: green;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0" />
+      <AnchorPane prefHeight="200.0" prefWidth="70.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <MaterialDesignIconView glyphName="ACCOUNT_MULTIPLE" layoutX="121.0" layoutY="234.0" size="20px" />
-            <MaterialDesignIconView glyphName="CLIPBOARD_TEXT" layoutX="121.0" layoutY="196.0" size="20px" />
-            <MaterialDesignIconView glyphName="ACCOUNT_CIRCLE" layoutX="118.0" layoutY="155.0" size="20px" />
-            <MaterialDesignIconView glyphName="ACCOUNT_SEARCH" layoutX="121.0" layoutY="267.0" size="20px" />
-            <MaterialDesignIconView glyphName="BACKUP_RESTORE" layoutX="121.0" layoutY="293.0" size="20px" />
-            <MaterialDesignIconView glyphName="CART" layoutX="122.0" layoutY="325.0" size="20px" />
-            <MaterialDesignIconView glyphName="EYE" layoutX="122.0" layoutY="350.0" size="20px" />
-            <MaterialDesignIconView glyphName="SETTINGS" layoutX="121.0" layoutY="373.0" size="20px" />
-            <MaterialDesignIconView glyphName="ELEVATION_RISE" layoutX="121.0" layoutY="401.0" size="20px" />
-            <MaterialDesignIconView glyphName="CAR" layoutX="122.0" layoutY="421.0" size="20px" />
-         </children></AnchorPane>
+            <JFXButton fx:id="profileBtn" layoutX="80.0" layoutY="152.0" onMouseClicked="#profileBtnClicked" prefHeight="70.0" prefWidth="70.0" text=" " AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="80.0">
+               <graphic>
+                  <MaterialDesignIconView glyphName="ACCOUNT_CIRCLE" size="30" />
+               </graphic>
+            </JFXButton>
+            <JFXButton fx:id="productoBtn" layoutX="10.0" layoutY="192.0" onMouseClicked="#productoBtnClicked" prefHeight="70.0" prefWidth="70.0" text=" " AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="150.0">
+               <graphic>
+                  <MaterialDesignIconView glyphName="ACCOUNT_CIRCLE" size="30" />
+               </graphic></JFXButton>
+         </children>
+      </AnchorPane>
     </children>
 </AnchorPane>
