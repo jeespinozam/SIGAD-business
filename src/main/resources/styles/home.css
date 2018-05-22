@@ -1,0 +1,22 @@
+/*
+ * Empty Stylesheet file.
+ */
+
+.mainFxmlClass {
+    #profileBtn{
+        background-color: red;
+    }
+    #profileBtn:hover{
+        
+    }
+    
+    .sidebarBtn:hover{
+        -fx-background-color: #F3F3F3;
+        -fx-cursor: hand;
+    }
+    
+    .sidebarLbl{
+        visibility: hidden;
+    }
+    
+}
