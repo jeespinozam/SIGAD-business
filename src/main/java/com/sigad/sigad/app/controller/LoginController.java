@@ -65,12 +65,13 @@ public class LoginController implements Initializable {
     }
     
     private boolean validate() {
-       return userTxt.getText().equals("admin") && passwordTxt.getText().equals("admin");
+       return true;
+       //return userTxt.getText().equals("admin") && passwordTxt.getText().equals("admin");
     }
     
     private void loadWindow(String viewPath, String windowTitle) throws IOException {
        userTxt.getScene().getWindow().hide();
-       Parent newRoot = FXMLLoader.load(getClass().getResource(HomeController.viewPath));
+       Parent newRoot = FXMLLoader.load(getClass().getResource(viewPath));
        Stage stage = new Stage();
        stage.setTitle(windowTitle);
        stage.setScene(new Scene(newRoot));
