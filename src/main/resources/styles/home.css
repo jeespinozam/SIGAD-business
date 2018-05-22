@@ -3,11 +3,9 @@
  */
 
 .mainFxmlClass {
-    #profileBtn{
-        background-color: red;
-    }
-    #profileBtn:hover{
-        
+    
+    .menuBtn:hover{
+        -fx-cursor: hand;
     }
     
     .sidebarBtn:hover{
@@ -15,8 +13,14 @@
         -fx-cursor: hand;
     }
     
-    .sidebarLbl{
+    .sidebarBtn.active .sidebarTooltip{
         visibility: hidden;
     }
+    
+    .sidebarTooltip{
+        
+        
+    }
+    
     
 }
