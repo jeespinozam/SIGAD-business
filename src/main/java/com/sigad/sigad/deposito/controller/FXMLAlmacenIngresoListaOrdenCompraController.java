@@ -10,6 +10,7 @@ import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import com.sigad.sigad.deposito.helper.DepositoHelper;
 import java.beans.EventHandler;
 import java.net.URL;
 import java.util.Date;
@@ -127,22 +128,11 @@ public class FXMLAlmacenIngresoListaOrdenCompraController implements Initializab
                 return param.getValue().getValue().getPrecio();
             }
         });
-        precioCol.setOnEditCommit(new javafx.event.EventHandler<TreeTableColumn.CellEditEvent<OrdenCompra, Number>>() {
-            @Override
-            public void handle(TreeTableColumn.CellEditEvent<OrdenCompra, Number> event) {
-                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                TreeItem<OrdenCompra> editingOrder = tblAlmacenOrdenesCompra.getTreeItem(event.getTreeTablePosition().getRow()) ;
-                editingOrder.getValue().setPrecio((Double)event.getNewValue());
-            }
-        });
         ObservableList<OrdenCompra> ordenes = FXCollections.observableArrayList();
         ordenes.add(new OrdenCompra("COD-GG", "10/10/2017",10.0));
         ordenes.add(new OrdenCompra("COD-GG", "10/10/2017",10.0));
         ordenes.add(new OrdenCompra("COD-GG", "10/10/2017",10.0));
         ordenes.add(new OrdenCompra("COD-GG", "10/10/2017",10.0));
-        
-        /*fechaCol.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
-        tblAlmacenOrdenesCompra.setEditable(true);*/
            
         final TreeItem<OrdenCompra> root = new RecursiveTreeItem<>(ordenes,RecursiveTreeObject::getChildren);
         tblAlmacenOrdenesCompra.getColumns().setAll(codCol,fechaCol,precioCol);

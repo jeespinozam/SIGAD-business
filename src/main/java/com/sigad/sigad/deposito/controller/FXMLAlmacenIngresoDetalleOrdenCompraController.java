@@ -41,20 +41,6 @@ public class FXMLAlmacenIngresoDetalleOrdenCompraController implements Initializ
     class OrdenCompraRecibida extends RecursiveTreeObject<OrdenCompraRecibida>{
 
         /**
-         * @return the fechaVencimiento
-         */
-        public SimpleStringProperty getFechaVencimiento() {
-            return fechaVencimiento;
-        }
-
-        /**
-         * @param fechaVencimiento the fechaVencimiento to set
-         */
-        public void setFechaVencimiento(SimpleStringProperty fechaVencimiento) {
-            this.fechaVencimiento = fechaVencimiento;
-        }
-
-        /**
          * @return the nombre
          */
         public SimpleStringProperty getNombre() {
@@ -62,68 +48,81 @@ public class FXMLAlmacenIngresoDetalleOrdenCompraController implements Initializ
         }
 
         /**
-         * @param nombre the nombre to set
-         */
-        public void setNombre(String nombre) {
-            this.nombre = new SimpleStringProperty(nombre);
-        }
-
-        /**
          * @return the precioLote
          */
-        public SimpleDoubleProperty getPrecioLote() {
+        public SimpleStringProperty getPrecioLote() {
             return precioLote;
-        }
-
-        /**
-         * @param precioLote the precioLote to set
-         */
-        public void setPrecioLote(Double precioLote) {
-            this.precioLote = new SimpleDoubleProperty(precioLote);
         }
 
         /**
          * @return the cantidadLote
          */
-        public SimpleIntegerProperty getCantidadLote() {
+        public SimpleStringProperty getCantidadLote() {
             return cantidadLote;
+        }
+
+        /**
+         * @return the fechaVencimiento
+         */
+        public SimpleStringProperty getFechaVencimiento() {
+            return fechaVencimiento;
+        }
+
+        /**
+         * @return the cantidadRecibida
+         */
+        public SimpleStringProperty getCantidadRecibida() {
+            return cantidadRecibida;
+        }
+
+        /**
+         * @param nombre the nombre to set
+         */
+        public void setNombre(SimpleStringProperty nombre) {
+            this.nombre = nombre;
+        }
+
+        /**
+         * @param precioLote the precioLote to set
+         */
+        public void setPrecioLote(String precioLote) {
+            this.precioLote = new SimpleStringProperty(precioLote);
         }
 
         /**
          * @param cantidadLote the cantidadLote to set
          */
-        public void setCantidadLote(Integer cantidadLote) {
-            this.cantidadLote = new SimpleIntegerProperty(cantidadLote);
+        public void setCantidadLote(String cantidadLote) {
+            this.cantidadLote = new SimpleStringProperty(cantidadLote);
         }
 
-
         /**
-         * @return the cantidadRecibida
+         * @param fechaVencimiento the fechaVencimiento to set
          */
-        public SimpleIntegerProperty getCantidadRecibida() {
-            return cantidadRecibida;
+        public void setFechaVencimiento(String fechaVencimiento) {
+            this.fechaVencimiento = new SimpleStringProperty(fechaVencimiento);
         }
 
         /**
          * @param cantidadRecibida the cantidadRecibida to set
          */
-        public void setCantidadRecibida(Integer cantidadRecibida) {
-            this.cantidadRecibida = new SimpleIntegerProperty(cantidadRecibida);
+        public void setCantidadRecibida(String cantidadRecibida) {
+            this.cantidadRecibida = new SimpleStringProperty(cantidadRecibida);
         }
         
         private SimpleStringProperty nombre;
-        private SimpleDoubleProperty  precioLote;
-        private SimpleIntegerProperty cantidadLote;
+        private SimpleStringProperty  precioLote;
+        private SimpleStringProperty cantidadLote;
         private SimpleStringProperty fechaVencimiento;
-        private SimpleIntegerProperty cantidadRecibida;
+        private SimpleStringProperty cantidadRecibida;
         
         
-        public OrdenCompraRecibida(String nombre,Double precioLote,Integer cantidadLote,String fechaVencimiento,Integer cantidadRecibida){
+        public OrdenCompraRecibida(String nombre,String precioLote,String cantidadLote,String fechaVencimiento,String cantidadRecibida){
             this.nombre = new SimpleStringProperty(nombre);
-            this.precioLote = new SimpleDoubleProperty(precioLote);
-            this.cantidadLote = new SimpleIntegerProperty(cantidadLote);
+            this.precioLote = new SimpleStringProperty(precioLote);
+            this.cantidadLote = new SimpleStringProperty(cantidadLote);
             this.fechaVencimiento = new SimpleStringProperty(fechaVencimiento);
-            this.cantidadRecibida = new SimpleIntegerProperty(cantidadRecibida);
+            this.cantidadRecibida = new SimpleStringProperty(cantidadRecibida);
         }
     }
     @Override
@@ -137,34 +136,34 @@ public class FXMLAlmacenIngresoDetalleOrdenCompraController implements Initializ
                 return param.getValue().getValue().getNombre();
             }
         });
-        JFXTreeTableColumn<OrdenCompraRecibida,Number> precioCol = new JFXTreeTableColumn<>("Precio");
-        precioCol.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<OrdenCompraRecibida, Number>, ObservableValue<Number>>(){
+        JFXTreeTableColumn<OrdenCompraRecibida,String> precioCol = new JFXTreeTableColumn<>("Precio");
+        precioCol.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<OrdenCompraRecibida,String>, ObservableValue<String>>(){
             @Override
-            public ObservableValue<Number> call(TreeTableColumn.CellDataFeatures<OrdenCompraRecibida, Number> param) {
+            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<OrdenCompraRecibida, String> param) {
                 //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 return param.getValue().getValue().getPrecioLote();
             }
         });
-        JFXTreeTableColumn<OrdenCompraRecibida,Number> cantidadCol = new JFXTreeTableColumn<>("Precio");
-        precioCol.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<OrdenCompraRecibida, Number>, ObservableValue<Number>>(){
+        JFXTreeTableColumn<OrdenCompraRecibida,String> cantidadCol = new JFXTreeTableColumn<>("Cantidad");
+        cantidadCol.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<OrdenCompraRecibida, String>, ObservableValue<String>>(){
             @Override
-            public ObservableValue<Number> call(TreeTableColumn.CellDataFeatures<OrdenCompraRecibida, Number> param) {
+            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<OrdenCompraRecibida, String> param) {
                 //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 return param.getValue().getValue().getCantidadLote();
             }
         });
         JFXTreeTableColumn<OrdenCompraRecibida,String> fechaCol = new JFXTreeTableColumn<>("Fecha Vencimiento");
-        nombCol.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<OrdenCompraRecibida, String>, ObservableValue<String>>(){
+        fechaCol.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<OrdenCompraRecibida, String>, ObservableValue<String>>(){
             @Override
             public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<OrdenCompraRecibida, String> param) {
                 //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 return param.getValue().getValue().getFechaVencimiento();
             }
         });
-        JFXTreeTableColumn<OrdenCompraRecibida,Number> cantidadRecCol = new JFXTreeTableColumn<>("Cantidad Recibida");
-        cantidadRecCol.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<OrdenCompraRecibida, Number>, ObservableValue<Number>>(){
+        JFXTreeTableColumn<OrdenCompraRecibida,String> cantidadRecCol = new JFXTreeTableColumn<>("Cantidad Recibida");
+        cantidadRecCol.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<OrdenCompraRecibida, String>, ObservableValue<String>>(){
             @Override
-            public ObservableValue<Number> call(TreeTableColumn.CellDataFeatures<OrdenCompraRecibida, Number> param) {
+            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<OrdenCompraRecibida, String> param) {
                 //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 return param.getValue().getValue().getCantidadRecibida();
             }
@@ -173,10 +172,11 @@ public class FXMLAlmacenIngresoDetalleOrdenCompraController implements Initializ
         nombCol.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
         ordenesTable.setEditable(true);
         ObservableList<OrdenCompraRecibida> ordenes = FXCollections.observableArrayList();
-        ordenes.add(new OrdenCompraRecibida("Insumo 1",10.0,10,"10/10/2017",10));
-        ordenes.add(new OrdenCompraRecibida("Insumo 2",10.0,10,"10/10/2017",10));
-        ordenes.add(new OrdenCompraRecibida("Insumo 3",10.0,10,"10/10/2017",10));
-        ordenes.add(new OrdenCompraRecibida("Insumo 4",10.0,10,"10/10/2017",10));
+        OrdenCompraRecibida  aux = new OrdenCompraRecibida("Insumo 1","10.0","10","10/10/2017","10");
+        ordenes.add(new OrdenCompraRecibida("Insumo 1","10.0","10","10/10/2017","10"));
+        ordenes.add(new OrdenCompraRecibida("Insumo 2","10.0","10","10/10/2017","10"));
+        ordenes.add(new OrdenCompraRecibida("Insumo 3","10.0","10","10/10/2017","10"));
+        ordenes.add(new OrdenCompraRecibida("Insumo 4","10.0","10","10/10/2017","10"));
         
         final TreeItem<OrdenCompraRecibida> root = new RecursiveTreeItem<>(ordenes,RecursiveTreeObject::getChildren);
         ordenesTable.getColumns().setAll(nombCol,precioCol,cantidadCol,fechaCol,cantidadRecCol);

@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 
 <AnchorPane id="AnchorPane" fx:id="containerPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1080.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.app.controller.HomeController">
     <stylesheets>
@@ -26,7 +27,10 @@
             </JFXButton>
           </children>
        </AnchorPane>
-      <AnchorPane fx:id="firstPanel" layoutX="127.0" layoutY="88.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="680.0" prefWidth="1010.0" style="-fx-background-color: #F3F3F3;" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="40.0" />
+      <AnchorPane fx:id="firstPanel" layoutX="127.0" layoutY="88.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="680.0" prefWidth="1031.0" style="-fx-background-color: #F3F3F3;" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="40.0">
+         <children>
+            <BorderPane fx:id="panelCnetral" layoutX="-2.0" layoutY="2.0" prefHeight="681.0" prefWidth="1034.0" />
+         </children></AnchorPane>
       <Label fx:id="profileLbl" styleClass="sidebarLbl" text="Perfil" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="110.0" />
       <Label fx:id="productLbl" layoutX="10.0" layoutY="10.0" styleClass="sidebarLbl" text="Productos" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="180.0" />
       <Label fx:id="offertLbl" layoutX="10.0" layoutY="10.0" styleClass="sidebarLbl" text="Promociones" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="250.0" />

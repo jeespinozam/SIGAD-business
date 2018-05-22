@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXDatePicker?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.JFXTimePicker?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane id="AnchorPane" prefHeight="680.0" prefWidth="1010.0" style="-fx-background-color: #fff;" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.141" fx:controller="com.sigad.sigad.deposito.controller.FXMLAlmacenSalidaInsumoController">
+    <stylesheets>
+        <URL value="@/styles/fxmlalmacensalidainsumo.css" />
+    </stylesheets>
+   <children>
+      <Label layoutX="310.0" layoutY="111.0" text="Nombre" />
+      <JFXTextField disable="true" layoutX="310.0" layoutY="128.0" />
+      <Label layoutX="310.0" layoutY="162.0" text="Tiempo de vida" />
+      <JFXTextField disable="true" layoutX="310.0" layoutY="179.0" />
+      <Label layoutX="310.0" layoutY="215.0" text="Volumen" />
+      <JFXTextField disable="true" layoutX="310.0" layoutY="232.0" />
+      <Label layoutX="507.0" layoutY="103.0" text="Descripcion" />
+      <JFXTextField disable="true" layoutX="504.0" layoutY="128.0" prefHeight="73.0" prefWidth="305.0" />
+      <Label layoutX="310.0" layoutY="292.0" text="Datos de salida del lote" />
+      <JFXTextField layoutX="310.0" layoutY="336.0" />
+      <Label layoutX="506.0" layoutY="315.0" text="Fecha de salida" />
+      <Label layoutX="683.0" layoutY="315.0" text="Hora de salida" />
+      <JFXDatePicker defaultColor="#455a64" layoutX="504.0" layoutY="336.0" prefHeight="27.0" prefWidth="144.0" />
+      <JFXTimePicker defaultColor="#455a64" layoutX="683.0" layoutY="336.0" prefHeight="27.0" prefWidth="144.0" />
+      <ImageView fitHeight="150.0" fitWidth="132.0" layoutX="94.0" layoutY="111.0" pickOnBounds="true" preserveRatio="true" />
+      <Label layoutX="312.0" layoutY="315.0" text="Cantidad" />
+      <Label layoutX="320.0" layoutY="385.0" text="Razon salida" />
+      <JFXTextField layoutX="317.0" layoutY="410.0" prefHeight="50.0" prefWidth="498.0" />
+   </children>
+</AnchorPane>
