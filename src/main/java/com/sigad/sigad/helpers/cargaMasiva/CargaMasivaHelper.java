@@ -5,10 +5,14 @@
  */
 package com.sigad.sigad.helpers.cargaMasiva;
 
+import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.ProductoCategoria;
+import com.sigad.sigad.business.Usuario;
+import com.sigad.sigad.business.Vehiculo;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -16,6 +20,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -32,7 +37,7 @@ public class CargaMasivaHelper {
     
     public static void generarCargaMasivaTemplate(String tablaCarga, String destinoTemplate) {
         HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet(String.format("Carga Masiva de %s", tablaCarga));
+        HSSFSheet sheet = workbook.createSheet(tablaCarga);
         HSSFRow rowhead = sheet.createRow(0);
         int rowIndex = 0;
         // Definimos las cabeceras
@@ -42,8 +47,33 @@ public class CargaMasivaHelper {
                 rowIndex++;
                 rowhead.createCell(rowIndex).setCellValue("Descripcion");
                 break;
+            case CargaMasivaConstantes.TABLA_PERFILES:
+                rowhead.createCell(rowIndex).setCellValue("Nombre");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                break;
+            case CargaMasivaConstantes.TABLA_USUARIOS:
+                rowhead.createCell(rowIndex).setCellValue("Nombre(s)");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Apellido Paterno");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Apellido Materno");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Perfil");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Telefono Fijo");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("DNI");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Celular");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Correo Electronico");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Intereses");
+                break;
             // agregar aqui el resto de casos
             default:
+                LOGGER.log(Level.WARNING, "Tabla no reconocida, abortando ....");
                 return;
         }
         try {
@@ -79,6 +109,64 @@ public class CargaMasivaHelper {
                 }
                 catch(HibernateException he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoProdCat.getNombre()));
+                    System.out.print(he);
+                    return false;
+                }
+            case CargaMasivaConstantes.TABLA_PERFILES:
+                Perfil nuevoPerfil = new Perfil();
+                nuevoPerfil.setActivo(true);    // logica de negocio
+                cell = cellIterator.next();
+                nuevoPerfil.setNombre(dataFormatter.formatCellValue(cell));
+                cell = cellIterator.next();
+                nuevoPerfil.setDescripcion(dataFormatter.formatCellValue(cell));
+                try{
+                    Transaction tx = null;
+                    tx = session.beginTransaction();
+                    session.save(nuevoPerfil);
+                    tx.commit();
+                    LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoPerfil.getNombre()));
+                    return true;
+                }
+                catch(HibernateException he) {
+                    LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoPerfil.getNombre()));
+                    System.out.print(he);
+                    return false;
+                }
+            case CargaMasivaConstantes.TABLA_USUARIOS:
+                Usuario nuevoUsuario = new Usuario();
+                nuevoUsuario.setActivo(true);   // logica de negocio
+                cell = cellIterator.next();
+                nuevoUsuario.setNombres(dataFormatter.formatCellValue(cell));
+                cell = cellIterator.next();
+                nuevoUsuario.setApellidoPaterno(dataFormatter.formatCellValue(cell));
+                cell = cellIterator.next();
+                nuevoUsuario.setApellidoMaterno(dataFormatter.formatCellValue(cell));
+                cell = cellIterator.next();
+                String perfilNombre = dataFormatter.formatCellValue(cell);
+                // Buscando el perfil elegido
+                String hqlQuery = String.format("from Perfil where nombre = '%s'", perfilNombre);
+                List<Perfil> busquedaPerfil= session.createQuery(hqlQuery).list();
+                nuevoUsuario.setPerfil(busquedaPerfil.get(0));
+                cell = cellIterator.next();
+                nuevoUsuario.setTelefono(dataFormatter.formatCellValue(cell));
+                cell = cellIterator.next();
+                nuevoUsuario.setDni(dataFormatter.formatCellValue(cell));
+                cell = cellIterator.next();
+                nuevoUsuario.setCelular(dataFormatter.formatCellValue(cell));
+                cell = cellIterator.next();
+                nuevoUsuario.setCorreo(dataFormatter.formatCellValue(cell));
+                cell = cellIterator.next();
+                nuevoUsuario.setIntereses(dataFormatter.formatCellValue(cell));
+                try{
+                    Transaction tx = null;
+                    tx = session.beginTransaction();
+                    session.save(nuevoUsuario);
+                    tx.commit();
+                    LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoUsuario.getNombres()));
+                    return true;
+                }
+                catch(HibernateException he) {
+                    LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoUsuario.getNombres()));
                     System.out.print(he);
                     return false;
                 }
