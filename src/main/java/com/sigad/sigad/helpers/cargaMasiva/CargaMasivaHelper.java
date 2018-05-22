@@ -70,6 +70,7 @@ public class CargaMasivaHelper {
                 rowhead.createCell(rowIndex).setCellValue("Correo Electronico");
                 rowIndex++;
                 rowhead.createCell(rowIndex).setCellValue("Intereses");
+                break;
             // agregar aqui el resto de casos
             default:
                 LOGGER.log(Level.WARNING, "Tabla no reconocida, abortando ....");
