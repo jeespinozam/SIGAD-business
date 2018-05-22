@@ -17,10 +17,11 @@ public class CargaMasivaConstantes {
     public static final String TABLA_PRODUCTOCATEGORIA = "Producto Categoria";
     public static final String TABLA_PERFILES = "Perfiles";
     public static final String TABLA_USUARIOS = "Usuarios";
+    public static final String TABLA_PROVEEDORES = "Proveedores";
     
     public static ObservableList<String> getList(){
         return FXCollections.observableArrayList(
-            TABLA_PRODUCTOCATEGORIA, TABLA_PERFILES, TABLA_USUARIOS
+            TABLA_PRODUCTOCATEGORIA, TABLA_PERFILES, TABLA_USUARIOS, TABLA_PROVEEDORES
         );
     };
 }

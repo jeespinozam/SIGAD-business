@@ -7,6 +7,7 @@ package com.sigad.sigad.helpers.cargaMasiva;
 
 import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.ProductoCategoria;
+import com.sigad.sigad.business.Proveedor;
 import com.sigad.sigad.business.Usuario;
 import com.sigad.sigad.business.Vehiculo;
 import java.io.File;
@@ -70,6 +71,13 @@ public class CargaMasivaHelper {
                 rowhead.createCell(rowIndex).setCellValue("Correo Electronico");
                 rowIndex++;
                 rowhead.createCell(rowIndex).setCellValue("Intereses");
+                break;
+            case CargaMasivaConstantes.TABLA_PROVEEDORES:
+                rowhead.createCell(rowIndex).setCellValue("Nombre");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Ruc");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Descripcion");
                 break;
             // agregar aqui el resto de casos
             default:
@@ -167,6 +175,27 @@ public class CargaMasivaHelper {
                 }
                 catch(HibernateException he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoUsuario.getNombres()));
+                    System.out.print(he);
+                    return false;
+                }
+            case CargaMasivaConstantes.TABLA_PROVEEDORES:
+                Proveedor nuevoProv = new Proveedor();
+                cell = cellIterator.next();
+                nuevoProv.setNombre(dataFormatter.formatCellValue(cell));
+                cell = cellIterator.next();
+                nuevoProv.setRuc(Integer.valueOf(dataFormatter.formatCellValue(cell)));
+                cell = cellIterator.next();
+                nuevoProv.setDescripcion(dataFormatter.formatCellValue(cell));
+                try{
+                    Transaction tx = null;
+                    tx = session.beginTransaction();
+                    session.save(nuevoProv);
+                    tx.commit();
+                    LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoProv.getNombre()));
+                    return true;
+                }
+                catch(HibernateException he) {
+                    LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoProv.getNombre()));
                     System.out.print(he);
                     return false;
                 }
