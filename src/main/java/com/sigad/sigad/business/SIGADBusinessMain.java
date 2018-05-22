@@ -10,6 +10,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import com.sigad.sigad.controller.*;
 import com.sigad.sigad.controller.cargaMasiva.CargaMasivaViewController;
+import com.sigad.sigad.helpers.cargaMasiva.CargaMasivaConstantes;
+import com.sigad.sigad.helpers.cargaMasiva.CargaMasivaHelper;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXML;
