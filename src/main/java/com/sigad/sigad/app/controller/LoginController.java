@@ -70,7 +70,7 @@ public class LoginController implements Initializable {
     
     private void loadWindow(String viewPath, String windowTitle) throws IOException {
        userTxt.getScene().getWindow().hide();
-       Parent newRoot = FXMLLoader.load(getClass().getResource(viewPath));
+       Parent newRoot = FXMLLoader.load(getClass().getResource(HomeController.viewPath));
        Stage stage = new Stage();
        stage.setTitle(windowTitle);
        stage.setScene(new Scene(newRoot));
