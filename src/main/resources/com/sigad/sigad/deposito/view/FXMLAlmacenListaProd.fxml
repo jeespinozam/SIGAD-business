@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXTreeTableView?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane id="AnchorPane" prefHeight="680.0" prefWidth="1010.0" style="-fx-background-color: #fff;" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.deposito.controller.FXMLAlmacenListaProdController">
+    <stylesheets>
+        <URL value="@/styles/fxmlalmacenlistaprod.css" />
+    </stylesheets>
+   <children>
+      <JFXTreeTableView layoutX="66.0" layoutY="94.0" prefHeight="538.0" prefWidth="877.0" />
+      <Label layoutX="70.0" layoutY="40.0" text="Productos en stock" />
+   </children>
+</AnchorPane>
