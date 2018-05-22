@@ -30,7 +30,7 @@ public class CargaMasivaHelper {
     
     private final static Logger LOGGER = Logger.getLogger(CargaMasivaHelper.class.getName());
     
-    public void generarCargaMasivaTemplate(String tablaCarga, String destinoTemplate) {
+    public static void generarCargaMasivaTemplate(String tablaCarga, String destinoTemplate) {
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet(String.format("Carga Masiva de %s", tablaCarga));
         HSSFRow rowhead = sheet.createRow(0);
@@ -59,7 +59,7 @@ public class CargaMasivaHelper {
     }
     
     // implementacion de logica para cada tipo de tabla a cargar en bd, por cada registro a escanear
-    private boolean SubirRegistroBD(String tablaCarga, Iterator<Cell> cellIterator, DataFormatter dataFormatter, Session session) {
+    private static boolean SubirRegistroBD(String tablaCarga, Iterator<Cell> cellIterator, DataFormatter dataFormatter, Session session) {
         Cell cell = null;
         switch(tablaCarga) {
             case CargaMasivaConstantes.TABLA_PRODUCTOCATEGORIA:
@@ -88,7 +88,7 @@ public class CargaMasivaHelper {
         }
     }
     
-    public void CargaMasivaProceso(String tablaCarga, String archivoRuta) {
+    public static void CargaMasivaProceso(String tablaCarga, String archivoRuta) {
         try {
             DataFormatter dataFormatter = new DataFormatter();
             Workbook workbook = WorkbookFactory.create(new File(archivoRuta));
@@ -110,7 +110,7 @@ public class CargaMasivaHelper {
             while (rowIterator.hasNext()) {
                 row = rowIterator.next();
                 Iterator<Cell> cellIterator = row.cellIterator();
-                if (this.SubirRegistroBD(tablaCarga, cellIterator, dataFormatter, session)) casosExitosos++;
+                if (CargaMasivaHelper.SubirRegistroBD(tablaCarga, cellIterator, dataFormatter, session)) casosExitosos++;
                 else casosFallidos++;
             }
             session.close();
