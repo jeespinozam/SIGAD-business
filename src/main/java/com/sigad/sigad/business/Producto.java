@@ -40,11 +40,18 @@ public class Producto {
     @ManyToOne
     private ProductoFragilidad fragilidad;
     private double volumen;
+    private Double precio;
 
     /**
      * Constructor.
      */
     public Producto() {
+    }
+    public Producto(String nombre, String imagen, Integer stock, Boolean activo) {
+        this.nombre = nombre;
+        this.imagen = imagen;
+        this.stock = stock;
+        this.activo = activo;
     }
     
     /**
@@ -199,5 +206,19 @@ public class Producto {
      */
     public void setVolumen(double volumen) {
         this.volumen = volumen;
+    }
+
+    /**
+     * @return the precio
+     */
+    public Double getPrecio() {
+        return precio;
+    }
+
+    /**
+     * @param precio the precio to set
+     */
+    public void setPrecio(Double precio) {
+        this.precio = precio;
     }
 }

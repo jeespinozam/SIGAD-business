@@ -21,7 +21,7 @@
                 <Font name="System Bold" size="18.0" />
             </font>
         </Label>
-        <JFXTreeTableView id="tablaProductos" fx:id="treeView" layoutX="18.0" layoutY="357.0" prefHeight="243.0" prefWidth="970.0" AnchorPane.leftAnchor="18.0" AnchorPane.rightAnchor="22.0">
+        <JFXTreeTableView id="tablaProductos" fx:id="treeView" layoutX="47.0" layoutY="354.0" prefHeight="243.0" prefWidth="916.0" AnchorPane.leftAnchor="47.0" AnchorPane.rightAnchor="47.0">
             <effect>
                 <DropShadow color="#00000093" />
             </effect>
@@ -52,7 +52,7 @@
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <JFXTreeTableView id="tablaPedidos" fx:id="treeViewPedido" layoutX="18.0" layoutY="86.0" prefHeight="219.0" prefWidth="335.0">
+      <JFXTreeTableView id="tablaPedidos" fx:id="treeViewPedido" layoutX="47.0" layoutY="70.0" prefHeight="219.0" prefWidth="678.0">
          <effect>
             <DropShadow color="#00000093" />
          </effect>

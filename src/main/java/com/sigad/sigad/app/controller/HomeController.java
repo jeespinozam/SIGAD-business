@@ -10,11 +10,14 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
-
+import com.sigad.sigad.pedido.controller.SeleccionarProductosController;
+import java.io.IOException;
 /**
  * FXML Controller class
  *
@@ -51,14 +54,14 @@ public class HomeController implements Initializable {
     }
 
     @FXML
-    private void handleButtonAction(ActionEvent event) {
+    private void handleButtonAction(ActionEvent event) throws IOException {
         if (event.getSource() == profileBtn) {
             //firstPanel.toFront();
         }
         if (event.getSource() == productoBtn) {
             Node node;
-            node = (Node) FXMLLoader.load(getClass().getResource("/view/MembresTableau.fxml"));
-            tmpPane.getChildren().setAll(node);
+            node = (Node) FXMLLoader.load(getClass().getResource(SeleccionarProductosController.viewPath));
+            firstPanel.getChildren().setAll(node);
         }
         System.out.println(event.getEventType());
     }
