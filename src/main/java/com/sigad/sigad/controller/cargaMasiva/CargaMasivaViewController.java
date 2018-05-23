@@ -46,6 +46,8 @@ import com.sigad.sigad.helpers.cargaMasiva.TreeObjectInterface;
  * @author paul
  */
 public class CargaMasivaViewController implements Initializable {
+    public static  String viewPath = "/com/sigad/sigad/cargaMasiva/view/cargaMasivaView.fxml";
+    
     private Desktop desktop = Desktop.getDesktop();
     private File loadedFile;
     
