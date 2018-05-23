@@ -18,8 +18,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import com.sigad.sigad.app.controller.HomeController;
-import com.sigad.sigad.app.controller.ErrorController;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 /**
