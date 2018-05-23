@@ -20,6 +20,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 /**
  * FXML Controller class
  *
@@ -30,9 +34,10 @@ public class LoginController implements Initializable {
     /**
      * Initializes the controller class.
      */
-    public static String viewPath = "/com/sigad/sigad/app/view/login.fxml";
+    public static final String viewPath = "/com/sigad/sigad/app/view/login.fxml";
     public static String windowName = "Login";
-    
+    private static Configuration config = null;
+    private static SessionFactory sessionFactory = null;
     @FXML
     private JFXTextField userTxt;
     @FXML
@@ -50,6 +55,7 @@ public class LoginController implements Initializable {
         System.out.println(passwordTxt.getText());
         
         if(validate()){
+            serviceInit();
             this.loadWindow(HomeController.viewPath, HomeController.windowName);
         }else{
             JFXDialogLayout content =  new JFXDialogLayout();
@@ -61,6 +67,38 @@ public class LoginController implements Initializable {
             
         }
     }
+    
+    public static Session serviceInit(){
+        Session session = null;
+        
+        if(config==null || sessionFactory==null) {
+            try {
+                config = new Configuration();
+                config.configure("hibernate.cfg.xml");
+                sessionFactory = config.buildSessionFactory();
+                session = sessionFactory.openSession();
+            } catch (HibernateException e) {
+                System.out.println(e.getMessage());
+            }
+        } else {
+            session = sessionFactory.openSession();
+        }
+        
+        return session;
+    }
+    
+    public static boolean serviceEnd(){
+        if(sessionFactory!=null){
+            try {
+                sessionFactory.close();
+            } catch (HibernateException e) {
+                System.out.println(e.getMessage());
+                return false;
+            }
+        }
+        
+        return true;
+    } 
     
     private boolean validate() {
        return true;
