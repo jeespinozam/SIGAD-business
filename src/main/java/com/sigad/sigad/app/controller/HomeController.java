@@ -74,6 +74,7 @@ public class HomeController implements Initializable {
         sidebarBtns.add(new JFXButton("Repartos"));
         sidebarBtns.add(new JFXButton("Pedidos"));
         sidebarBtns.add(new JFXButton("Estadísticas"));
+        sidebarBtns.add(new JFXButton("Carga Masiva"));
         sidebarBtns.add(new JFXButton("Configuraciones"));
         
         sidebarIcons.add(MaterialDesignIcon.ACCOUNT_CIRCLE);
@@ -82,7 +83,10 @@ public class HomeController implements Initializable {
         sidebarIcons.add(MaterialDesignIcon.CAR);
         sidebarIcons.add(MaterialDesignIcon.BACKUP_RESTORE);
         sidebarIcons.add(MaterialDesignIcon.ELEVATION_RISE);
+        sidebarIcons.add(MaterialDesignIcon.ARCHIVE);
         sidebarIcons.add(MaterialDesignIcon.SETTINGS);
+        
+        
         
         for (int i = 0; i < sidebarBtns.size(); i++) {
             setConfBtn(i, sidebarBtns.get(i), 70, 20, Pos.BASELINE_LEFT,
