@@ -27,16 +27,16 @@ public class ProductoHelper {
 
     public ProductoHelper() {
 
-//        config = new Configuration();
-//        config.configure("hibernate.cfg.xml");
-//        sessionFactory = config.buildSessionFactory();
-//        session = sessionFactory.openSession();
-//        session.beginTransaction();
+        config = new Configuration();
+        config.configure("hibernate.cfg.xml");
+        sessionFactory = config.buildSessionFactory();
+        session = sessionFactory.openSession();
+        session.beginTransaction();
         // Add new Employee object
-//        Producto prod = new Producto("Rosas", "/images/rosa.jpg", 15, Boolean.TRUE);
-//        Producto prod2 = new Producto("Chocolates", "/images/chocolate.jpg", 15, Boolean.TRUE);
-//        session.save(prod);
-//        session.save(prod2);
+        Producto prod = new Producto("Rosas", "/images/rosa.jpg", 15, 12.0,Boolean.TRUE);
+        Producto prod2 = new Producto("Chocolates", "/images/chocolate.jpg", 15,12.0, Boolean.TRUE);
+        session.save(prod);
+        session.save(prod2);
 
     }
     
@@ -46,8 +46,8 @@ public class ProductoHelper {
     };
 
     public void close() {
-//        session.getTransaction().commit();
-//        sessionFactory.close();
+        session.getTransaction().commit();
+        sessionFactory.close();
     }
 
 }

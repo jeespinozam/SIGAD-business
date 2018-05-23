@@ -47,11 +47,12 @@ public class Producto {
      */
     public Producto() {
     }
-    public Producto(String nombre, String imagen, Integer stock, Boolean activo) {
+    public Producto(String nombre, String imagen, Integer stock,Double precio, Boolean activo) {
         this.nombre = nombre;
         this.imagen = imagen;
         this.stock = stock;
         this.activo = activo;
+        this.precio = precio;
     }
     
     /**
