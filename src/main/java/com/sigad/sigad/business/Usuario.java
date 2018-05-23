@@ -18,6 +18,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.Email;
 
 /**
  *
@@ -43,6 +44,7 @@ public class Usuario {
     private String celular;
     @NotNull
     private boolean activo;
+    @Email(message = "{user.email.invalid}")
     private String correo;
     private String intereses;
     @OneToMany(mappedBy="usuario")
@@ -61,6 +63,22 @@ public class Usuario {
      * Constructor.
      */
     public Usuario() {
+    }
+
+    public Usuario(String nombres, String apellidoPaterno,
+            String apellidoMaterno, Perfil perfil, String telefono,
+            String dni, String celular, boolean activo, String correo,
+            String intereses) {
+        this.nombres = nombres;
+        this.apellidoPaterno = apellidoPaterno;
+        this.apellidoMaterno = apellidoMaterno;
+        this.perfil = perfil;
+        this.telefono = telefono;
+        this.dni = dni;
+        this.celular = celular;
+        this.activo = activo;
+        this.correo = correo;
+        this.intereses = intereses;
     }
     
     /**

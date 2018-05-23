@@ -17,6 +17,8 @@ import javafx.scene.Scene;
 import com.sigad.sigad.app.controller.HomeController;
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.insumos.controller.InsumoController;
+
+
 /**
  *
  * @author cfoch
