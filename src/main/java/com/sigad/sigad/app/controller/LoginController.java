@@ -10,6 +10,7 @@ import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
 import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Usuario;
+import com.sigad.sigad.usuarios.helper.UsuariosHelper;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -19,6 +20,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.scene.layout.StackPane;
@@ -49,6 +52,9 @@ public class LoginController implements Initializable {
     private JFXPasswordField passwordTxt;
     @FXML
     private StackPane hiddenSp;
+    
+    public static Usuario user = null;
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Create admin if not exist
@@ -84,7 +90,7 @@ public class LoginController implements Initializable {
             content.setBody(new Text("Cuenta o contraseña incorrectas"));
 
             ErrorController error = new ErrorController();
-            error.loadDialog(content, hiddenSp);
+            error.loadDialog(content,"Ok", hiddenSp);
             
         }
     }
@@ -122,7 +128,18 @@ public class LoginController implements Initializable {
     } 
     
     private boolean validate() {
-       return userTxt.getText().equals("admin") && passwordTxt.getText().equals("admin");
+        UsuariosHelper helper = new UsuariosHelper();
+        user = helper.getUser(userTxt.getText());
+        
+        if(user==null){
+            return false;
+        }else{
+            if(!passwordTxt.getText().equals(user.getPassword())){
+                return false;
+            }
+        }
+        
+        return true;
     }
     
     private void loadWindow(String viewPath, String windowTitle) throws IOException {
@@ -140,5 +157,12 @@ public class LoginController implements Initializable {
 
     @FXML
     private void recoverPasswordClicked(MouseEvent event) {
+    }
+
+    @FXML
+    private void passwordKeyPressed(KeyEvent event) throws IOException {
+        if(event.getCode() == KeyCode.ENTER){
+            loginClicked(null);
+        }
     }
 }

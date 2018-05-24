@@ -33,10 +33,10 @@ public class ErrorController implements Initializable {
     }
     
     @FXML
-    public void loadDialog(JFXDialogLayout content, StackPane stackpane) {
+    public void loadDialog(JFXDialogLayout content, String okText, StackPane stackpane) {
         
         JFXDialog dialog = new JFXDialog(stackpane, content, JFXDialog.DialogTransition.CENTER);
-        JFXButton button = new JFXButton("Okay");
+        JFXButton button = new JFXButton(okText);
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
