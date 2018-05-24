@@ -44,6 +44,7 @@ public class Usuario {
     @NotNull
     private boolean activo;
     private String correo;
+    private String password;
     private String intereses;
     @OneToMany(mappedBy="usuario")
     private Set<ClienteFecha> clienteFechas = new HashSet<ClienteFecha>();
@@ -254,6 +255,20 @@ public class Usuario {
      */
     public void addCapacidadTienda(CapacidadTienda capacidadTienda) {
         capacidadTiendas.add(capacidadTienda);
+    }
+
+    /**
+     * @return the password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     /**
