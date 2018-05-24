@@ -8,8 +8,11 @@ package com.sigad.sigad.app.controller;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
+import com.sigad.sigad.business.Perfil;
+import com.sigad.sigad.business.Usuario;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,7 +26,9 @@ import javafx.scene.text.Text;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
 /**
  * FXML Controller class
  *
@@ -46,16 +51,32 @@ public class LoginController implements Initializable {
     private StackPane hiddenSp;
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        // Create admin if not exist
+        serviceInit();
+        Session session;
+        session = sessionFactory.openSession();
+        
+        Query query  = session.createQuery("from Perfil p where p.nombre='Administrator'");
+        int count = query.list().size();
+        if(count == 0){
+            System.out.println("Primer inicio de sesión");
+            Transaction tx = session.beginTransaction();
+            Perfil adminProfile = new Perfil("Administrator", "Super user", true);
+            Usuario user = new Usuario("Juan", "Tonos", "Tonos", adminProfile,
+                    "123456789", "71067346", "943821232", true,
+                    "admin@asigad.net", "admin", "");
+            session.save(adminProfile);
+            session.save(user);
+            tx.commit();
+        }
+        
+        session.close();
     }    
 
     @FXML
     private void loginClicked(MouseEvent event) throws IOException {
-        System.out.println(userTxt.getText());
-        System.out.println(passwordTxt.getText());
         
         if(validate()){
-            serviceInit();
             this.loadWindow(HomeController.viewPath, HomeController.windowName);
         }else{
             JFXDialogLayout content =  new JFXDialogLayout();
@@ -101,8 +122,7 @@ public class LoginController implements Initializable {
     } 
     
     private boolean validate() {
-       return true;
-       //return userTxt.getText().equals("admin") && passwordTxt.getText().equals("admin");
+       return userTxt.getText().equals("admin") && passwordTxt.getText().equals("admin");
     }
     
     private void loadWindow(String viewPath, String windowTitle) throws IOException {

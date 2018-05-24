@@ -7,6 +7,7 @@ package com.sigad.sigad.app.controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPopup;
+import com.sigad.sigad.cuentas.controller.CuentasController;
 import com.sigad.sigad.pedido.controller.SeleccionarProductosController;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
@@ -102,6 +103,19 @@ public class HomeController implements Initializable {
                 try {
                     Node node;
                     node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(SeleccionarProductosController.viewPath));
+                    firstPanel.getChildren().setAll(node);
+                }catch (IOException ex) {
+                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "", ex);
+                }
+            }
+        });
+        
+        sidebarBtns.get(2).setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    Node node;
+                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(CuentasController.viewPath));
                     firstPanel.getChildren().setAll(node);
                 }catch (IOException ex) {
                     Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "", ex);

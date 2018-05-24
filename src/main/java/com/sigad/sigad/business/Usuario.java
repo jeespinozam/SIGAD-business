@@ -46,6 +46,7 @@ public class Usuario {
     private boolean activo;
     @Email(message = "{user.email.invalid}")
     private String correo;
+    private String password;
     private String intereses;
     @OneToMany(mappedBy="usuario")
     private Set<ClienteFecha> clienteFechas = new HashSet<ClienteFecha>();
@@ -68,7 +69,7 @@ public class Usuario {
     public Usuario(String nombres, String apellidoPaterno,
             String apellidoMaterno, Perfil perfil, String telefono,
             String dni, String celular, boolean activo, String correo,
-            String intereses) {
+            String password, String intereses) {
         this.nombres = nombres;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
@@ -78,6 +79,7 @@ public class Usuario {
         this.celular = celular;
         this.activo = activo;
         this.correo = correo;
+        this.password = password;
         this.intereses = intereses;
     }
     
