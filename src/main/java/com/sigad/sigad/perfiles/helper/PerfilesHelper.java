@@ -2,6 +2,7 @@ package com.sigad.sigad.perfiles.helper;
 
 import com.sigad.sigad.usuarios.helper.*;
 import com.sigad.sigad.app.controller.LoginController;
+import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Usuario;
 import java.util.ArrayList;
 import org.hibernate.Session;
@@ -26,7 +27,7 @@ public class PerfilesHelper {
     }
     
     /*Get all*/
-    public ArrayList<Usuario> getProfiles(){
+    public ArrayList<Perfil> getProfiles(){
         String cad;
         cad = "from Perfil";
         
@@ -34,13 +35,13 @@ public class PerfilesHelper {
         return new ArrayList<>( query.list());
     };
     
-    /*Get user by id, if nothin then null*/
-    public Usuario getProfile(int id){
+    /*Get profile by id, if nothin then null*/
+    public Perfil getProfile(int id){
         Query query = session.createQuery("from Perfil where id=" + Integer.toString(id));
         if(query.list().size()==0){
             return null;
         }
-        return (Usuario) query.list().get(0);
+        return (Perfil) query.list().get(0);
     }
     
     /*Close session*/

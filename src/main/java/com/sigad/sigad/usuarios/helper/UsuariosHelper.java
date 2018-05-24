@@ -1,9 +1,11 @@
 package com.sigad.sigad.usuarios.helper;
 
+import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Usuario;
 import java.util.ArrayList;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
 /*
@@ -50,11 +52,42 @@ public class UsuariosHelper {
     
     /*Get user by email*/
     public Usuario getUser(String email){
-        Query query = session.createQuery("from Usuario where correo=" + email);
-        if(query.list().size()==0){
+        Query query = null;
+        try {
+            query = session.createQuery("from Usuario where correo='" + email + "'");
+            
+            if(query.list().isEmpty()){
+                return null;
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
             return null;
         }
+        
         return (Usuario) query.list().get(0);
+    }
+    
+    /*Add email as index*/
+    public boolean existUserEmail(String email){
+        Query query = null;
+        try {
+            query = session.createQuery("from Usuario where correo='" + email + "'");
+            
+            if(query.list().isEmpty()){
+                return false;
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public void saveUser(Usuario newUser){
+        Transaction tx = session.beginTransaction();
+        session.save(newUser);
+        tx.commit();
     }
 
     public void close(){

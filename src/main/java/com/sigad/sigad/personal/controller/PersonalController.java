@@ -44,6 +44,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
@@ -79,8 +80,11 @@ public class PersonalController implements Initializable {
     private JFXPopup popup;
     @FXML
     private StackPane hiddenSp;
+    @FXML
+    public static JFXDialog dialog;
     
-    public static int selectedIndex;
+    public static boolean isCreate;
+    public static User selectedUser;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -195,6 +199,7 @@ public class PersonalController implements Initializable {
                         new SimpleStringProperty(u.getNombres()),
                         new SimpleStringProperty(u.getApellidoMaterno()),
                         new SimpleStringProperty(u.getApellidoPaterno()),
+                        new SimpleStringProperty(u.getCorreo()),
                         new SimpleStringProperty(u.getDni()),
                         new SimpleStringProperty(u.getTelefono()),
                         new SimpleStringProperty(u.getCelular()),
@@ -210,19 +215,21 @@ public class PersonalController implements Initializable {
     private void handleAction(ActionEvent event) {
         if(event.getSource() == addBtn){
             try {
-                CreateEdditUserDialog();
+                CreateEdditUserDialog(true);
             } catch (IOException ex) {
                 Logger.getLogger(PersonalController.class.getName()).log(Level.SEVERE, "handleAction()", ex);
             }
         }else if(event.getSource() == moreBtn){
-            selectedIndex = userTbl.getSelectionModel().getSelectedIndex();
-            if(selectedIndex<0){
-                JFXDialogLayout content =  new JFXDialogLayout();
-                content.setHeading(new Text("Atención"));
-                content.setBody(new Text("Debe seleccionar un registro de la tabla"));
+            int count = userTbl.getSelectionModel().getSelectedCells().size();
+            if( count > 1){
                 ErrorController error = new ErrorController();
-                error.loadDialog(content, "Ok", hiddenSp);
+                error.loadDialog("Atención", "Debe seleccionar solo un registro de la tabla", "Ok", hiddenSp);
+            }else if(count<=0){
+                ErrorController error = new ErrorController();
+                error.loadDialog("Atención", "Debe seleccionar al menos un registro de la tabla", "Ok", hiddenSp);
             }else{
+                int selected  = userTbl.getSelectionModel().getSelectedIndex();
+                selectedUser = (User) userTbl.getSelectionModel().getModelItem(selected).getValue();
                 initPopup();
                 popup.show(moreBtn, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.RIGHT);
             }
@@ -231,76 +238,70 @@ public class PersonalController implements Initializable {
     }
     
     private void initPopup(){
-        JFXButton bl = new JFXButton("Editar");
-        JFXButton bl1 = new JFXButton("Eliminar");
+        JFXButton edit = new JFXButton("Editar");
+        JFXButton delete = new JFXButton("Eliminar");
         
-        bl.setOnAction(new EventHandler<ActionEvent>() {
+        edit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                popup.hide();
                 try {
-                    CreateEdditUserDialog();
+                    CreateEdditUserDialog(false);
                 } catch (IOException ex) {
-                    Logger.getLogger(PersonalController.class.getName()).log(Level.SEVERE, "initPopup()", ex);
+                    Logger.getLogger(PersonalController.class.getName()).log(Level.SEVERE, "initPopup(): CreateEdditUserDialog()", ex);
                 }
             }
         });
         
-        bl1.setOnAction(new EventHandler<ActionEvent>() {
+        delete.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                popup.hide();
                 deleteUserDialog();
             }
         });
         
-        bl.setPadding(new Insets(20));
-        bl1.setPadding(new Insets(20));
+        edit.setPadding(new Insets(20));
+        delete.setPadding(new Insets(20));
         
-        bl.setPrefHeight(40);
-        bl1.setPrefHeight(40);
+        edit.setPrefHeight(40);
+        delete.setPrefHeight(40);
         
-        bl.setPrefWidth(145);
-        bl1.setPrefWidth(145);
+        edit.setPrefWidth(145);
+        delete.setPrefWidth(145);
         
-        VBox vBox = new VBox(bl, bl1);
+        VBox vBox = new VBox(edit, delete);
         
         
         popup = new JFXPopup();
         popup.setPopupContent(vBox);
     }
     
-    public void CreateEdditUserDialog() throws IOException {
+    public void CreateEdditUserDialog(boolean iscreate) throws IOException {
+        isCreate = iscreate;
+        
         JFXDialogLayout content =  new JFXDialogLayout();
-        content.setHeading(new Text("Editar Usuario"));
+        
+        if(isCreate){
+            content.setHeading(new Text("Crear Usuario"));
+        }else{
+            content.setHeading(new Text("Editar Usuario"));
+            
+            UsuariosHelper helper = new UsuariosHelper();
+            if(!helper.existUserEmail(PersonalController.selectedUser.correo.getValue())){
+                ErrorController error = new ErrorController();
+                error.loadDialog("Error", "No se pudo obtener el usuario", "Ok", hiddenSp);
+                System.out.println("Error al obtener el usuario");
+                return;
+            }
+        }
         
         Node node;
         node = (Node) FXMLLoader.load(PersonalController.this.getClass().getResource(EditarForm.viewPath));
-        
-//        Parent root;
-//        root = FXMLLoader.load(getClass().getResource(EditarForm.viewPath));
-        
         content.setBody(node);
         content.setPrefSize(400,400);
                 
-        JFXDialog dialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
-        
-        JFXButton save = new JFXButton("Guardar");
-        save.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                dialog.close();
-                //save to bd
-                
-            }
-        });
-        JFXButton cancel = new JFXButton("Cancelar");
-        cancel.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                dialog.close();
-            }
-        });
-        content.setActions(save);
-        content.setActions(cancel);
+        dialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
         dialog.show();
     }  
     
@@ -322,11 +323,12 @@ public class PersonalController implements Initializable {
     }
     
     /*Class for table*/
-    class User extends RecursiveTreeObject<User> {
+    public class User extends RecursiveTreeObject<User> {
 
         StringProperty nombres;
         StringProperty apellidoMaterno;
         StringProperty apellidoPaterno;
+        StringProperty correo;
         StringProperty dni;
         StringProperty telefono;
         StringProperty celular;
@@ -334,10 +336,11 @@ public class PersonalController implements Initializable {
         StringProperty profileDesc;
         boolean activo;
 
-        public User(StringProperty nombres, StringProperty apellidoMaterno, StringProperty apellidoPaterno, StringProperty dni, StringProperty telefono, StringProperty celular, StringProperty profileName, StringProperty profileDesc, boolean activo) {
+        public User(StringProperty nombres, StringProperty apellidoMaterno, StringProperty apellidoPaterno, StringProperty correo, StringProperty dni, StringProperty telefono, StringProperty celular, StringProperty profileName, StringProperty profileDesc, boolean activo) {
             this.nombres = nombres;
             this.apellidoMaterno = apellidoMaterno;
             this.apellidoPaterno = apellidoPaterno;
+            this.correo = correo;
             this.dni = dni;
             this.telefono = telefono;
             this.celular = celular;
@@ -345,6 +348,8 @@ public class PersonalController implements Initializable {
             this.profileDesc = profileDesc;
             this.activo = activo;
         }
+
+        
 
         
 
