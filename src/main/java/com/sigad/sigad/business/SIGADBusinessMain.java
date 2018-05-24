@@ -5,6 +5,8 @@
  */
 package com.sigad.sigad.business;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -14,7 +16,7 @@ import org.hibernate.cfg.Configuration;
  * @author cfoch
  */
 public class SIGADBusinessMain {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NoSuchAlgorithmException {
         Configuration config;
         SessionFactory sessionFactory;
         Session session;
@@ -27,12 +29,13 @@ public class SIGADBusinessMain {
         session.beginTransaction();
 
         
-        Perfil perfil1 = new Perfil();
-        perfil1.setNombre("cliente");
-        perfil1.setDescripcion("Perfil de cliente");
-        perfil1.setActivo(true);
-
-        session.save(perfil1);
+        Usuario u= new Usuario();
+        MessageDigest digest=MessageDigest.getInstance("MD5");
+        String pass="test";
+        digest.update(pass.getBytes());
+        String hash=digest.digest().toString();
+        u.setPassword(hash);
+        session.save(u);
 
         session.getTransaction().commit();
         

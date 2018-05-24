@@ -46,8 +46,7 @@ public class Usuario {
     @NotNull
     private boolean activo;
     private String correo;
-    @Column
-    @ColumnTransformer(read = "pgp_sym_decrypt(password, 'mySecretKey')”, write = “pgp_sym_encrypt(?, 'mySecretKey')")
+    @Column(nullable = false)
     private String password;
     private String intereses;
     @OneToMany(mappedBy="usuario")
@@ -274,6 +273,8 @@ public class Usuario {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    
 
     /**
      * @return the pedidoCliente
