@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javafx.fxml.FXML;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,6 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import org.hibernate.annotations.ColumnTransformer;
 
 /**
  *
@@ -44,6 +46,8 @@ public class Usuario {
     @NotNull
     private boolean activo;
     private String correo;
+    @Column
+    @ColumnTransformer(read = "pgp_sym_decrypt(password, 'mySecretKey')”, write = “pgp_sym_encrypt(?, 'mySecretKey')")
     private String password;
     private String intereses;
     @OneToMany(mappedBy="usuario")
