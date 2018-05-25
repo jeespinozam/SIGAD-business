@@ -7,6 +7,7 @@ package com.sigad.sigad.business;
 
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 import javax.persistence.GeneratedValue;
@@ -26,8 +27,6 @@ public class Producto {
     private Long id;
     @NotNull
     private String nombre;
-//    @OneToMany(mappedBy = "producto")
-//    private Set<ProductoPrecio> precios = new HashSet<ProductoPrecio>();
     private double peso;
     private String imagen;
     private String descripcion;
@@ -42,6 +41,8 @@ public class Producto {
     private double volumen;
     private Double precio;
 
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProductosCombos> combos = new HashSet<>();
     /**
      * Constructor.
      */

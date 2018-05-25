@@ -66,11 +66,11 @@ public class PersonalController implements Initializable {
      */
     public static final String viewPath = "/com/sigad/sigad/personal/view/personal.fxml";
     public static String windowName = "Cuentas";
-    
+
     @FXML
     private JFXTreeTableView userTbl;
 
-    ObservableList<User> data = FXCollections.observableArrayList();
+    static ObservableList<User> data = FXCollections.observableArrayList();
     
     @FXML
     private JFXButton addBtn;
@@ -81,13 +81,170 @@ public class PersonalController implements Initializable {
     @FXML
     private StackPane hiddenSp;
     @FXML
-    public static JFXDialog dialog;
+    public static JFXDialog userDialog;
     
-    public static boolean isCreate;
-    public static User selectedUser;
+    public static boolean isUserCreate;
+    public static User selectedUser = null;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        
+        initUserTbl();
+        
+    }    
+    
+    public static void updateTable(Usuario u) {
+        data.add(
+                new User(
+                        new SimpleStringProperty(u.getNombres()),
+                        new SimpleStringProperty(u.getApellidoMaterno()),
+                        new SimpleStringProperty(u.getApellidoPaterno()),
+                        new SimpleStringProperty(u.getCorreo()),
+                        new SimpleStringProperty(u.getDni()),
+                        new SimpleStringProperty(u.getTelefono()),
+                        new SimpleStringProperty(u.getCelular()),
+                        new SimpleStringProperty(u.getPerfil().getNombre()),
+                        new SimpleStringProperty(u.getPerfil().getDescripcion()),
+                        true
+                ));
+    }
+
+    private void getDataFromDB() {
+        UsuariosHelper userHelper = new UsuariosHelper();
+        
+        ArrayList<?> lista = userHelper.getUsers(-1);
+        lista.forEach((p) -> {
+            Usuario u = (Usuario) p;
+            //System.out.println(u.getNombres() + u.getApellidoMaterno() + u.getApellidoPaterno());
+            data.add(
+                new User(
+                        new SimpleStringProperty(u.getNombres()),
+                        new SimpleStringProperty(u.getApellidoMaterno()),
+                        new SimpleStringProperty(u.getApellidoPaterno()),
+                        new SimpleStringProperty(u.getCorreo()),
+                        new SimpleStringProperty(u.getDni()),
+                        new SimpleStringProperty(u.getTelefono()),
+                        new SimpleStringProperty(u.getCelular()),
+                        new SimpleStringProperty(u.getPerfil().getNombre()),
+                        new SimpleStringProperty(u.getPerfil().getDescripcion()),
+                        true
+                ));
+        });
+        userHelper.close();
+    }
+
+    @FXML
+    private void handleAction(ActionEvent event) {
+        if(event.getSource() == addBtn){
+            try {
+                CreateEdditUserDialog(true);
+            } catch (IOException ex) {
+                Logger.getLogger(PersonalController.class.getName()).log(Level.SEVERE, "handleAction()", ex);
+            }
+        }else if(event.getSource() == moreBtn){
+            int count = userTbl.getSelectionModel().getSelectedCells().size();
+            if( count > 1){
+                ErrorController error = new ErrorController();
+                error.loadDialog("Atención", "Debe seleccionar solo un registro de la tabla", "Ok", hiddenSp);
+            }else if(count<=0){
+                ErrorController error = new ErrorController();
+                error.loadDialog("Atención", "Debe seleccionar al menos un registro de la tabla", "Ok", hiddenSp);
+            }else{
+                int selected  = userTbl.getSelectionModel().getSelectedIndex();
+                selectedUser = (User) userTbl.getSelectionModel().getModelItem(selected).getValue();
+                initPopup();
+                popup.show(moreBtn, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.RIGHT);
+            }
+            
+        }
+    }
+    
+    private void initPopup(){
+        JFXButton edit = new JFXButton("Editar");
+        JFXButton delete = new JFXButton("Eliminar");
+        
+        edit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                popup.hide();
+                try {
+                    CreateEdditUserDialog(false);
+                } catch (IOException ex) {
+                    Logger.getLogger(PersonalController.class.getName()).log(Level.SEVERE, "initPopup(): CreateEdditUserDialog()", ex);
+                }
+            }
+        });
+        
+        delete.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                popup.hide();
+                deleteUserDialog();
+            }
+        });
+        
+        edit.setPadding(new Insets(20));
+        delete.setPadding(new Insets(20));
+        
+        edit.setPrefHeight(40);
+        delete.setPrefHeight(40);
+        
+        edit.setPrefWidth(145);
+        delete.setPrefWidth(145);
+        
+        VBox vBox = new VBox(edit, delete);
+        
+        
+        popup = new JFXPopup();
+        popup.setPopupContent(vBox);
+    }
+    
+    public void CreateEdditUserDialog(boolean iscreate) throws IOException {
+        isUserCreate = iscreate;
+        
+        JFXDialogLayout content =  new JFXDialogLayout();
+        
+        if(isUserCreate){
+            content.setHeading(new Text("Crear Usuario"));
+        }else{
+            content.setHeading(new Text("Editar Usuario"));
+            
+            UsuariosHelper helper = new UsuariosHelper();
+            if(!helper.existUserEmail(PersonalController.selectedUser.correo.getValue())){
+                ErrorController error = new ErrorController();
+                error.loadDialog("Error", "No se pudo obtener el usuario", "Ok", hiddenSp);
+                System.out.println("Error al obtener el usuario");
+                return;
+            }
+        }
+        
+        Node node;
+        node = (Node) FXMLLoader.load(PersonalController.this.getClass().getResource(CrearEditarUsuarioController.viewPath));
+        content.setBody(node);
+        //content.setPrefSize(400,400);
+                
+        userDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
+        userDialog.show();
+    }  
+    
+    private void deleteUserDialog() {
+        JFXDialogLayout content =  new JFXDialogLayout();
+        content.setHeading(new Text("Error"));
+        content.setBody(new Text("Cuenta o contraseña incorrectas"));
+                
+        JFXDialog dialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
+        JFXButton button = new JFXButton("Okay");
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                dialog.close();
+            }
+        });
+        content.setActions(button);
+        dialog.show();
+    }
+
+    private void initUserTbl() {
         JFXTreeTableColumn name = new JFXTreeTableColumn("Nombre");
         name.setPrefWidth(50);
         name.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<User, String>, ObservableValue<String>>() {
@@ -184,146 +341,10 @@ public class PersonalController implements Initializable {
         userTbl.getColumns().setAll(name,apellidoMaterno,apellidoPaterno, dni, telephone, cellphone, profile, profileDesc);
         userTbl.setRoot(root);
         userTbl.setShowRoot(false);
-        
-    }    
-
-    private void getDataFromDB() {
-        UsuariosHelper userHelper = new UsuariosHelper();
-        
-        ArrayList<?> lista = userHelper.getUsers(-1);
-        lista.forEach((p) -> {
-            Usuario u = (Usuario) p;
-            //System.out.println(u.getNombres() + u.getApellidoMaterno() + u.getApellidoPaterno());
-            data.add(
-                new User(
-                        new SimpleStringProperty(u.getNombres()),
-                        new SimpleStringProperty(u.getApellidoMaterno()),
-                        new SimpleStringProperty(u.getApellidoPaterno()),
-                        new SimpleStringProperty(u.getCorreo()),
-                        new SimpleStringProperty(u.getDni()),
-                        new SimpleStringProperty(u.getTelefono()),
-                        new SimpleStringProperty(u.getCelular()),
-                        new SimpleStringProperty(u.getPerfil().getNombre()),
-                        new SimpleStringProperty(u.getPerfil().getDescripcion()),
-                        true
-                ));
-        });
-        userHelper.close();
-    }
-
-    @FXML
-    private void handleAction(ActionEvent event) {
-        if(event.getSource() == addBtn){
-            try {
-                CreateEdditUserDialog(true);
-            } catch (IOException ex) {
-                Logger.getLogger(PersonalController.class.getName()).log(Level.SEVERE, "handleAction()", ex);
-            }
-        }else if(event.getSource() == moreBtn){
-            int count = userTbl.getSelectionModel().getSelectedCells().size();
-            if( count > 1){
-                ErrorController error = new ErrorController();
-                error.loadDialog("Atención", "Debe seleccionar solo un registro de la tabla", "Ok", hiddenSp);
-            }else if(count<=0){
-                ErrorController error = new ErrorController();
-                error.loadDialog("Atención", "Debe seleccionar al menos un registro de la tabla", "Ok", hiddenSp);
-            }else{
-                int selected  = userTbl.getSelectionModel().getSelectedIndex();
-                selectedUser = (User) userTbl.getSelectionModel().getModelItem(selected).getValue();
-                initPopup();
-                popup.show(moreBtn, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.RIGHT);
-            }
-            
-        }
-    }
-    
-    private void initPopup(){
-        JFXButton edit = new JFXButton("Editar");
-        JFXButton delete = new JFXButton("Eliminar");
-        
-        edit.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                popup.hide();
-                try {
-                    CreateEdditUserDialog(false);
-                } catch (IOException ex) {
-                    Logger.getLogger(PersonalController.class.getName()).log(Level.SEVERE, "initPopup(): CreateEdditUserDialog()", ex);
-                }
-            }
-        });
-        
-        delete.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                popup.hide();
-                deleteUserDialog();
-            }
-        });
-        
-        edit.setPadding(new Insets(20));
-        delete.setPadding(new Insets(20));
-        
-        edit.setPrefHeight(40);
-        delete.setPrefHeight(40);
-        
-        edit.setPrefWidth(145);
-        delete.setPrefWidth(145);
-        
-        VBox vBox = new VBox(edit, delete);
-        
-        
-        popup = new JFXPopup();
-        popup.setPopupContent(vBox);
-    }
-    
-    public void CreateEdditUserDialog(boolean iscreate) throws IOException {
-        isCreate = iscreate;
-        
-        JFXDialogLayout content =  new JFXDialogLayout();
-        
-        if(isCreate){
-            content.setHeading(new Text("Crear Usuario"));
-        }else{
-            content.setHeading(new Text("Editar Usuario"));
-            
-            UsuariosHelper helper = new UsuariosHelper();
-            if(!helper.existUserEmail(PersonalController.selectedUser.correo.getValue())){
-                ErrorController error = new ErrorController();
-                error.loadDialog("Error", "No se pudo obtener el usuario", "Ok", hiddenSp);
-                System.out.println("Error al obtener el usuario");
-                return;
-            }
-        }
-        
-        Node node;
-        node = (Node) FXMLLoader.load(PersonalController.this.getClass().getResource(EditarForm.viewPath));
-        content.setBody(node);
-        content.setPrefSize(400,400);
-                
-        dialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
-        dialog.show();
-    }  
-    
-    private void deleteUserDialog() {
-        JFXDialogLayout content =  new JFXDialogLayout();
-        content.setHeading(new Text("Error"));
-        content.setBody(new Text("Cuenta o contraseña incorrectas"));
-                
-        JFXDialog dialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
-        JFXButton button = new JFXButton("Okay");
-        button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                dialog.close();
-            }
-        });
-        content.setActions(button);
-        dialog.show();
     }
     
     /*Class for table*/
-    public class User extends RecursiveTreeObject<User> {
+    public static class User extends RecursiveTreeObject<User> {
 
         StringProperty nombres;
         StringProperty apellidoMaterno;
@@ -348,10 +369,6 @@ public class PersonalController implements Initializable {
             this.profileDesc = profileDesc;
             this.activo = activo;
         }
-
-        
-
-        
 
         @Override
         public boolean equals(Object o) {

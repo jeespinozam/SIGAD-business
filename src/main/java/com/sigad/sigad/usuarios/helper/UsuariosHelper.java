@@ -2,11 +2,14 @@ package com.sigad.sigad.usuarios.helper;
 
 import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.app.controller.LoginController;
+import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Usuario;
+import com.sigad.sigad.perfiles.helper.PerfilesHelper;
 import java.util.ArrayList;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import sun.java2d.cmm.Profile;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -21,6 +24,7 @@ import org.hibernate.query.Query;
 public class UsuariosHelper {
 
     Session session = null;
+    private String errorMessage = "";
     
     public UsuariosHelper() {
         session = LoginController.serviceInit();
@@ -61,13 +65,14 @@ public class UsuariosHelper {
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
+            this.errorMessage = e.getMessage();
             return null;
         }
         
         return (Usuario) query.list().get(0);
     }
     
-    /*Add email as index*/
+    /*verify if this field exits, it must be an index*/
     public boolean existUserEmail(String email){
         Query query = null;
         try {
@@ -78,19 +83,47 @@ public class UsuariosHelper {
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
+            this.errorMessage = e.getMessage();
             return false;
         }
         
         return true;
     }
     
-    public void saveUser(Usuario newUser){
-        Transaction tx = session.beginTransaction();
-        session.save(newUser);
-        tx.commit();
+    public boolean saveUser(Usuario newUser){
+        try {
+            Transaction tx = session.beginTransaction();
+        
+            PerfilesHelper helper = new PerfilesHelper();
+            boolean existProfile = helper.existProfileName(newUser.getPerfil().getNombre());
+
+            if(existProfile){
+                Perfil p = helper.getProfile(newUser.getPerfil().getNombre());
+                newUser.setPerfil(p);
+                session.save(newUser);
+            }else{
+                tx.commit();
+                return false;
+            }
+            tx.commit();
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            this.errorMessage = e.getMessage();
+            return false;
+        }
+        
+        return true;
     }
 
     public void close(){
         session.close();
+    }
+
+    /**
+     * @return the errorMessage
+     */
+    public String getErrorMessage() {
+        return errorMessage;
     }
 }
