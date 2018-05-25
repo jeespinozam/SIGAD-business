@@ -5,6 +5,7 @@
  */
 package com.sigad.sigad.helpers.cargaMasiva;
 
+import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.ProductoCategoria;
 import com.sigad.sigad.business.Proveedor;
@@ -78,6 +79,16 @@ public class CargaMasivaHelper {
                 rowhead.createCell(rowIndex).setCellValue("Ruc");
                 rowIndex++;
                 rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                break;
+            case CargaMasivaConstantes.TABLA_INSUMOS:
+                rowhead.createCell(rowIndex).setCellValue("Nombre");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Tiempo de Vida");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Volumen");
+                rowIndex++;
                 break;
             // agregar aqui el resto de casos
             default:
@@ -199,6 +210,12 @@ public class CargaMasivaHelper {
                     System.out.print(he);
                     return false;
                 }
+            case CargaMasivaConstantes.TABLA_INSUMOS:
+                Insumo nuevoInsumo = new Insumo();
+                nuevoInsumo.setActivo(true);    // logica de negocio
+                cell = cellIterator.next();
+                nuevoInsumo.setNombre(dataFormatter.formatCellValue(cell));
+                
             // colocar aqui los demas casos para el resto de tablas de carga masiva
             default:
                 return false;
