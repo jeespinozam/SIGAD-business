@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javafx.fxml.FXML;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.Email;
+import org.hibernate.annotations.ColumnTransformer;
 
 /**
  *
@@ -46,6 +47,7 @@ public class Usuario {
     private boolean activo;
     @Email(message = "{user.email.invalid}")
     private String correo;
+    @Column(nullable = false)
     private String password;
     private String intereses;
     @OneToMany(mappedBy="usuario")
@@ -275,6 +277,22 @@ public class Usuario {
     public void addCapacidadTienda(CapacidadTienda capacidadTienda) {
         capacidadTiendas.add(capacidadTienda);
     }
+
+    /**
+     * @return the password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    
 
     /**
      * @return the pedidoCliente

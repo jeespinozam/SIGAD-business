@@ -5,6 +5,8 @@
  */
 package com.sigad.sigad.business;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -23,23 +25,31 @@ import com.sigad.sigad.insumos.controller.InsumoController;
  *
  * @author cfoch
  */
-public class SIGADBusinessMain extends Application{
-    
-    @Override
-	public void start(Stage stage) {
-            try {
-                    Parent root = FXMLLoader.load(getClass().getResource(LoginController.viewPath));
-                    Scene scene = new Scene(root);
-                    //scene.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
-                    stage.setScene(scene);
-                    stage.show();
-            } catch(Exception e) {
-                    e.printStackTrace();
-            }
-	}
-	
-	public static void main(String[] args) {
-            launch(args);
-	}
+public class SIGADBusinessMain {
+    public static void main(String[] args) throws NoSuchAlgorithmException {
+        Configuration config;
+        SessionFactory sessionFactory;
+        Session session;
+
+        config = new Configuration();
+        config.configure("hibernate.cfg.xml");
+        sessionFactory = config.buildSessionFactory();
+        session = sessionFactory.openSession();
+
+        session.beginTransaction();
+
         
+        Usuario u= new Usuario();
+        MessageDigest digest=MessageDigest.getInstance("MD5");
+        String pass="test";
+        digest.update(pass.getBytes());
+        String hash=digest.digest().toString();
+        u.setPassword(hash);
+        session.save(u);
+
+        session.getTransaction().commit();
+        
+        session.close();
+        sessionFactory.close();
+    }
 }
