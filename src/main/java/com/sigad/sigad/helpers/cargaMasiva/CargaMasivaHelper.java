@@ -9,6 +9,7 @@ import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.ProductoCategoria;
 import com.sigad.sigad.business.Proveedor;
+import com.sigad.sigad.business.Tienda;
 import com.sigad.sigad.business.Usuario;
 import com.sigad.sigad.business.Vehiculo;
 import java.io.File;
@@ -86,9 +87,17 @@ public class CargaMasivaHelper {
                 rowhead.createCell(rowIndex).setCellValue("Descripcion");
                 rowIndex++;
                 rowhead.createCell(rowIndex).setCellValue("Tiempo de Vida");
+                break;
+            case CargaMasivaConstantes.TABLA_TIENDAS:
+                rowhead.createCell(rowIndex).setCellValue("Direccion");
                 rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Volumen");
+                rowhead.createCell(rowIndex).setCellValue("Ubicacion, Eje X");
                 rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Ubicacion, Eje Y");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Capacidad en peso");
                 break;
             // agregar aqui el resto de casos
             default:
@@ -213,9 +222,52 @@ public class CargaMasivaHelper {
             case CargaMasivaConstantes.TABLA_INSUMOS:
                 Insumo nuevoInsumo = new Insumo();
                 nuevoInsumo.setActivo(true);    // logica de negocio
+                nuevoInsumo.setStock(0);        // logica de negocio
+                nuevoInsumo.setVolumen(true);   // no estoy seguro para q sirve esta webada
                 cell = cellIterator.next();
                 nuevoInsumo.setNombre(dataFormatter.formatCellValue(cell));
-                
+                cell = cellIterator.next();
+                nuevoInsumo.setDescripcion(dataFormatter.formatCellValue(cell));
+                cell = cellIterator.next();
+                nuevoInsumo.setTiempoVida(Integer.valueOf(dataFormatter.formatCellValue(cell)));
+                try{
+                    Transaction tx = null;
+                    tx = session.beginTransaction();
+                    session.save(nuevoInsumo);
+                    tx.commit();
+                    LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoInsumo.getNombre()));
+                    return true;
+                }
+                catch(HibernateException he) {
+                    LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoInsumo.getNombre()));
+                    System.out.print(he);
+                    return false;
+                }
+            case CargaMasivaConstantes.TABLA_TIENDAS:
+                Tienda nuevaTienda = new Tienda();
+                cell = cellIterator.next();
+                nuevaTienda.setDireccion(dataFormatter.formatCellValue(cell));
+                cell = cellIterator.next();
+                nuevaTienda.setCooXDireccion(Float.valueOf(dataFormatter.formatCellValue(cell)));
+                cell = cellIterator.next();
+                nuevaTienda.setCooYDireccion(Float.valueOf(dataFormatter.formatCellValue(cell)));
+                cell = cellIterator.next();
+                nuevaTienda.setDescripcion(dataFormatter.formatCellValue(cell));
+                cell = cellIterator.next();
+                nuevaTienda.setCapacidad(Float.valueOf(dataFormatter.formatCellValue(cell)));
+                try{
+                    Transaction tx = null;
+                    tx = session.beginTransaction();
+                    session.save(nuevaTienda);
+                    tx.commit();
+                    LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevaTienda.getDireccion()));
+                    return true;
+                }
+                catch(HibernateException he) {
+                    LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevaTienda.getDireccion()));
+                    System.out.print(he);
+                    return false;
+                }
             // colocar aqui los demas casos para el resto de tablas de carga masiva
             default:
                 return false;
