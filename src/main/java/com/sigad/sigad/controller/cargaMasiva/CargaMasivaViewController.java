@@ -7,6 +7,7 @@ package com.sigad.sigad.controller.cargaMasiva;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
@@ -39,6 +40,11 @@ import javafx.scene.control.TreeTableColumn;
 import javafx.stage.DirectoryChooser;
 import javafx.util.Callback;
 import com.sigad.sigad.helpers.cargaMasiva.TreeObjectInterface;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import javafx.event.Event;
+import javafx.scene.control.SelectionMode;
 
 /**
  * FXML Controller class
@@ -63,6 +69,9 @@ public class CargaMasivaViewController implements Initializable {
     private JFXButton guardarBtn;
      @FXML
     private JFXTreeTableView<Insumo> tablaPrevia;
+    @FXML
+    private JFXListView<String> entidadesListView;
+    private ArrayList<String> entidadesSeleccionadas;
 
     /**
      * Initializes the controller class.
@@ -71,6 +80,33 @@ public class CargaMasivaViewController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         ObservableList<String> options = CargaMasivaConstantes.getList();
         comboEntidad.getItems().addAll(options);
+        
+        //entidadesListView.getItems().addAll(options);
+        for (Iterator<String> iterator = options.iterator(); iterator.hasNext();) {
+            String next = iterator.next();
+            entidadesListView.getItems().add(next);
+        }
+        
+        entidadesListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+
+         entidadesListView.setOnMouseClicked(new EventHandler<Event>() {
+
+             @Override
+             public void handle(Event event) {
+                 ObservableList<String> selectedItems =  entidadesListView.getSelectionModel().getSelectedItems();
+                 entidadesSeleccionadas.clear();
+                 for(String s : selectedItems){
+                     entidadesSeleccionadas.add(s);
+                 }
+
+                 for (Iterator<String> iterator = entidadesSeleccionadas.iterator(); iterator.hasNext();) {
+                     String next = iterator.next();
+                     System.out.println(next);
+                 }
+             }
+
+         });
         
         plantillaBtn.setOnAction(new EventHandler<ActionEvent>(){
             @Override
@@ -118,7 +154,7 @@ public class CargaMasivaViewController implements Initializable {
     public void downloadTemplate(ActionEvent event){
         Window currentStage = getCurrentStage(event);
         String templateName = comboEntidad.getSelectionModel().getSelectedItem().toString();
-        
+        // Add code to send array list
         if(templateName != null){
             DirectoryChooser dirChooser = new DirectoryChooser();
             String downloadDir = dirChooser.showDialog(currentStage).getAbsolutePath() + "/template.xls";

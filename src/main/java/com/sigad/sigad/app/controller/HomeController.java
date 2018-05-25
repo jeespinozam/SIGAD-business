@@ -7,17 +7,24 @@ package com.sigad.sigad.app.controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPopup;
+import com.sigad.sigad.controller.cargaMasiva.CargaMasivaViewController;
+import com.sigad.sigad.pedido.controller.SeleccionarProductosController;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -93,6 +100,25 @@ public class HomeController implements Initializable {
                     sidebarIcons.get(i), "30");
         }
         
+        sidebarBtns.get(1).setOnAction((event) -> {
+            try {
+                Node node;
+                node = (Node) FXMLLoader.load(getClass().getResource(SeleccionarProductosController.viewPath));
+                firstPanel.getChildren().setAll(node);
+            } catch (IOException ex) {
+                Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        sidebarBtns.get(6).setOnAction((event) -> {
+            try {
+                Node node;
+                node = (Node) FXMLLoader.load(getClass().getResource(CargaMasivaViewController.viewPath));
+                firstPanel.getChildren().setAll(node);
+            } catch (IOException ex) {
+                Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });        
     }
     
     private void setConfBtn(
@@ -120,9 +146,13 @@ public class HomeController implements Initializable {
     }
 
     @FXML
-    private void handleButtonAction(ActionEvent event) {
+    private void handleButtonAction(ActionEvent event) throws IOException {
+        
         if(event.getSource() == profileBtn){
             //firstPanel.toFront();
+        }if (event.getSource() == sidebarBtns.get(1)) {
+            System.err.println(">>>>");
+            
         }
         
         System.out.println(event.getEventType());
