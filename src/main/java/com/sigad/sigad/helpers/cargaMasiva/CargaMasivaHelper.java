@@ -10,6 +10,7 @@ import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.ProductoCategoria;
 import com.sigad.sigad.business.Proveedor;
 import com.sigad.sigad.business.Tienda;
+import com.sigad.sigad.business.TipoMovimiento;
 import com.sigad.sigad.business.Usuario;
 import com.sigad.sigad.business.Vehiculo;
 import java.io.File;
@@ -98,6 +99,11 @@ public class CargaMasivaHelper {
                 rowhead.createCell(rowIndex).setCellValue("Descripcion");
                 rowIndex++;
                 rowhead.createCell(rowIndex).setCellValue("Capacidad en peso");
+                break;
+            case CargaMasivaConstantes.TABLA_TIPOMOV:
+                rowhead.createCell(rowIndex).setCellValue("Nombre");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Descripcion");
                 break;
             // agregar aqui el resto de casos
             default:
@@ -265,6 +271,25 @@ public class CargaMasivaHelper {
                 }
                 catch(HibernateException he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevaTienda.getDireccion()));
+                    System.out.print(he);
+                    return false;
+                }
+            case CargaMasivaConstantes.TABLA_TIPOMOV:
+                TipoMovimiento nuevoTipoMov = new TipoMovimiento();
+                cell = cellIterator.next();
+                nuevoTipoMov.setNombre(dataFormatter.formatCellValue(cell));
+                cell = cellIterator.next();
+                nuevoTipoMov.setDescripcion(dataFormatter.formatCellValue(cell));
+                try{
+                    Transaction tx = null;
+                    tx = session.beginTransaction();
+                    session.save(nuevoTipoMov);
+                    tx.commit();
+                    LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoTipoMov.getNombre()));
+                    return true;
+                }
+                catch(HibernateException he) {
+                    LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoTipoMov.getNombre()));
                     System.out.print(he);
                     return false;
                 }

@@ -14,17 +14,18 @@ import javafx.collections.ObservableList;
  */
 public class CargaMasivaConstantes {
     // Tablas a cargar mediante consulta masiva
-    public static final String TABLA_PRODUCTOCATEGORIA = "Producto Categoria";
+    public static final String TABLA_PRODUCTOCATEGORIA = "Categoria de Productos";
     public static final String TABLA_PERFILES = "Perfiles";
     public static final String TABLA_USUARIOS = "Usuarios";
     public static final String TABLA_PROVEEDORES = "Proveedores";
     public static final String TABLA_INSUMOS = "Insumos";
     public static final String TABLA_TIENDAS = "Tiendas";
-    
+    public static final String TABLA_TIPOMOV = "Tipo de Movimientos";
     
     public static ObservableList<String> getList(){
         return FXCollections.observableArrayList(
-            TABLA_PRODUCTOCATEGORIA, TABLA_PERFILES, TABLA_USUARIOS, TABLA_PROVEEDORES, TABLA_INSUMOS, TABLA_TIENDAS
+                TABLA_PRODUCTOCATEGORIA, TABLA_PERFILES, TABLA_USUARIOS, TABLA_PROVEEDORES, TABLA_INSUMOS, TABLA_TIENDAS, 
+                TABLA_TIPOMOV
         );
     };
 }
