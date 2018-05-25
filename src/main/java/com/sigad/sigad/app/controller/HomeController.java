@@ -7,6 +7,7 @@ package com.sigad.sigad.app.controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPopup;
+import com.sigad.sigad.cuentas.controller.CuentasController;
 import com.sigad.sigad.pedido.controller.SeleccionarProductosController;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
@@ -18,6 +19,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -40,7 +42,7 @@ public class HomeController implements Initializable {
      * Initializes the controller class.
      */
     
-    public static String viewPath = "/com/sigad/sigad/app/view/home.fxml";
+    public static final String viewPath = "/com/sigad/sigad/app/view/home.fxml";
     public static String windowName = "Home";
     @FXML
     private JFXButton profileBtn, productoBtn,offertBtn;
@@ -95,13 +97,29 @@ public class HomeController implements Initializable {
                     sidebarIcons.get(i), "30");
         }
         
-        sidebarBtns.get(1).setOnAction((event) -> {
-            try {
-                Node node;
-                node = (Node) FXMLLoader.load(getClass().getResource(SeleccionarProductosController.viewPath));
-                firstPanel.getChildren().setAll(node);
-            } catch (IOException ex) {
-                Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, ex);
+        sidebarBtns.get(1).setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    Node node;
+                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(SeleccionarProductosController.viewPath));
+                    firstPanel.getChildren().setAll(node);
+                }catch (IOException ex) {
+                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "", ex);
+                }
+            }
+        });
+        
+        sidebarBtns.get(2).setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    Node node;
+                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(CuentasController.viewPath));
+                    firstPanel.getChildren().setAll(node);
+                }catch (IOException ex) {
+                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "", ex);
+                }
             }
         });
     }
@@ -224,5 +242,7 @@ public class HomeController implements Initializable {
         popup = new JFXPopup();
         popup.setPopupContent(vBox);
     }
+    
+    
     
 }

@@ -46,7 +46,7 @@ import javafx.util.Callback;
  * @author Alexandra
  */
 public class SeleccionarProductosController implements Initializable {
-
+    
     public static final String viewPath = "/com/sigad/sigad/pedido/view/seleccionarProductos.fxml";
     /**
      * Initializes the controller class.
