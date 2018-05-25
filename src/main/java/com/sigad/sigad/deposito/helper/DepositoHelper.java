@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.sigad.sigad.deposito.helper;
 
 import java.io.File;
@@ -18,35 +13,51 @@ import com.sigad.sigad.business.Proveedor;
 import com.sigad.sigad.business.Usuario;
 import com.sigad.sigad.business.Perfil;
 import java.util.Date;
+import com.sigad.sigad.app.controller.LoginController;
 /**
  *
  * @author chrs
  */
 public class DepositoHelper {
-//    Configuration config;
-//    SessionFactory sessionFactory;
-//    Session session;
+    public static Configuration config;
+    public static SessionFactory sessionFactory;
+    public static Session session;
 
     public DepositoHelper() {
-//        config = new Configuration();
-//        config.configure("hibernate.cfg.xml");
-//        sessionFactory = config.buildSessionFactory();
-//        session = sessionFactory.openSession();
-//        session.beginTransaction();
         
-
+        session = LoginController.serviceInit();
+        session.beginTransaction();
 //        Proveedor prov = new Proveedor();
 //        prov.setDescripcion("Descripcion");
 //        prov.setNombre("Nombre");
 //        prov.setRuc(123489021);
 //        session.save(prov);
-//        
+
+////
 //        Perfil perf = new Perfil();
 //        perf.setActivo(true);
 //        perf.setNombre("Admin");
 //        perf.setDescripcion("Rol de adminstrador");
 //        session.save(perf);
-//        
+//
+//        //session.getTransaction().commit();
+//
+//        String hql = String.format("from Perfil");
+//        Query queryHql = this.session.createQuery(hql);
+//        List<Object []> perfiles = queryHql.list();
+//        for (Object entidad : perfiles) {
+//            Perfil po = (Perfil)entidad;
+////            OrdenCompra oc = (OrdenCompra) entidad[0];
+////            Proveedor prov = (Proveedor) entidad[1];
+//            System.out.println("id " + po.getId());
+//            System.out.println("nombre " + po.getNombre());
+//        }
+
+
+        //session.save(perf);
+//
+//        Perfil p = new Perfil("Cliente", true);
+//
 //        Usuario us = new Usuario();
 //        us.setActivo(true);
 //        us.setNombres("Juan");
@@ -56,28 +67,74 @@ public class DepositoHelper {
 //        us.setDni("87965436");
 //        us.setIntereses("Flores");
 //        us.setTelefono("874987987");
+//        us.setPerfil(p);
+//        session.save(p);
 //        session.save(us);
-//      
-//        us.setPerfil(perf);
-//        
-//        //test order 
+        Usuario u;
+        u =  (Usuario) session.get(Usuario.class, new Long(25));
+        System.out.println("Perfil papu:" + u.getPerfil().getNombre());
+//        try {
+//            u =  (Usuario) session.get(Usuario.class, new Long(25));
+//            System.out.println("Perfil papu:" + u.getPerfil().getNombre());
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
+        Proveedor p =  (Proveedor) session.get(Proveedor.class, new Long(32));
+        System.out.println("Perfil papu:" + p.getNombre());
+//        try {
+//            p =  (Proveedor) session.get(Proveedor.class, new Long(32));
+//            System.out.println("Perfil papu:" + p.getNombre());
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
+
+        
+//
+
 //        OrdenCompra ord = new OrdenCompra();
 //        //ord.setDetalleOrdenCompra(detallesOrden);
 //        ord.setFecha(new Date());
 //        ord.setPrecioTotal(30.5);
-//        ord.setProveedor(prov);
-//        ord.setUsuario(us);
+//        ord.setProveedor(p);
+//        ord.setUsuario(u);
 //        session.save(ord);
-
+        
+//
+        
+        //getOrdenes(u.getId());
+        session.getTransaction().commit();
+//        close();
     }
-    
+
 //    public ArrayList<Producto> getProducts(){
 //        Query query  = session.createQuery("from Producto");
 //        return new ArrayList<>( query.list());
 //    };
 
-//    public void close() {
-//        session.getTransaction().commit();
-//        sessionFactory.close();
-//    }
+    public List<OrdenCompra> getOrdenes(){
+        String hql = String.format("from OrdenCompra OC");
+        Query queryHql = this.session.createQuery(hql);
+        List<OrdenCompra> ordenesResultado = queryHql.list();
+        for (OrdenCompra entidad : ordenesResultado) {
+            OrdenCompra oc = entidad;
+            //System.out.println("Orden de compra " + oc.getFecha() + " " + oc.getPrecioTotal());
+//            System.out.print("Proveedor " + prov.getNombre());
         }
+
+        return ordenesResultado;
+        //        String hql = String.format("from Perfil");
+//        Query queryHql = this.session.createQuery(hql);
+//        List<Object []> perfiles = queryHql.list();
+//        for (Object entidad : perfiles) {
+//            Perfil po = (Perfil)entidad;
+////            OrdenCompra oc = (OrdenCompra) entidad[0];
+////            Proveedor prov = (Proveedor) entidad[1];
+//            System.out.println("id " + po.getId());
+//            System.out.println("nombre " + po.getNombre());
+//        }
+    }
+    public void close() {
+        session.getTransaction().commit();
+        sessionFactory.close();
+    }
+}

@@ -9,6 +9,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPopup;
 import com.sigad.sigad.cuentas.controller.CuentasController;
 import com.sigad.sigad.pedido.controller.SeleccionarProductosController;
+import com.sigad.sigad.deposito.controller.FXMLAlmacenIngresoListaOrdenCompraController;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class HomeController implements Initializable {
     @FXML
     private JFXButton menuBtn,menuProfile;
     @FXML
-    private AnchorPane containerPane, firstPanel;
+    private static AnchorPane containerPane, firstPanel;
     @FXML
     private AnchorPane sidebarPane;
     @FXML
@@ -118,6 +119,18 @@ public class HomeController implements Initializable {
                     node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(CuentasController.viewPath));
                     firstPanel.getChildren().setAll(node);
                 }catch (IOException ex) {
+                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "", ex);
+                }
+            }
+        });
+        sidebarBtns.get(3).setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    Node node;
+                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(FXMLAlmacenIngresoListaOrdenCompraController.viewPath));
+                    firstPanel.getChildren().setAll(node);
+                } catch (IOException ex) {
                     Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "", ex);
                 }
             }
@@ -243,6 +256,9 @@ public class HomeController implements Initializable {
         popup.setPopupContent(vBox);
     }
     
+    public static void changeChildren(Node node){
+        firstPanel.getChildren().setAll(node);
+    }
     
     
 }

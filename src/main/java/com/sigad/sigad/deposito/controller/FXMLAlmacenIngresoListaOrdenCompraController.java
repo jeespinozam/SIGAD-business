@@ -7,14 +7,22 @@ package com.sigad.sigad.deposito.controller;
 
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTreeTableColumn;
+import com.jfoenix.controls.JFXTreeTableRow;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import com.sigad.sigad.app.controller.HomeController;
+import com.sigad.sigad.business.OrdenCompra;
 import com.sigad.sigad.deposito.helper.DepositoHelper;
 import java.beans.EventHandler;
+import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 //import java.util.logging.Logger;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleFloatProperty;
@@ -24,10 +32,13 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
+import javafx.scene.input.MouseButton;
 import javafx.util.Callback;
 
 /**
@@ -42,9 +53,9 @@ public class FXMLAlmacenIngresoListaOrdenCompraController implements Initializab
     
     public static final String viewPath="/com/sigad/sigad/deposito/view/FXMLAlmacenIngresoListaOrdenCompra.fxml";
     @FXML
-    private JFXTreeTableView<OrdenCompra> tblAlmacenOrdenesCompra;
+    private JFXTreeTableView<OrdenCompraViewer> tblAlmacenOrdenesCompra;
     
-    class OrdenCompra extends RecursiveTreeObject<OrdenCompra>{
+    class OrdenCompraViewer extends RecursiveTreeObject<OrdenCompraViewer>{
 
         /**
          * @return the codigo
@@ -91,7 +102,7 @@ public class FXMLAlmacenIngresoListaOrdenCompraController implements Initializab
         private SimpleStringProperty fecha;
         private SimpleDoubleProperty  precio;
         
-        public OrdenCompra(String codigo,String fecha,Double precio){
+        public OrdenCompraViewer(String codigo,String fecha,Double precio){
             this.codigo = new SimpleStringProperty(codigo);
             this.fecha = new SimpleStringProperty(fecha);
             this.precio = new SimpleDoubleProperty(precio);
@@ -100,44 +111,70 @@ public class FXMLAlmacenIngresoListaOrdenCompraController implements Initializab
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-        JFXTreeTableColumn<OrdenCompra,String> codCol = new JFXTreeTableColumn<>("Codigo");
+        JFXTreeTableColumn<OrdenCompraViewer,String> codCol = new JFXTreeTableColumn<>("Codigo");
         codCol.setPrefWidth(425);
-        codCol.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<OrdenCompra, String>, ObservableValue<String>>(){
+        codCol.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<OrdenCompraViewer, String>, ObservableValue<String>>(){
             @Override
-            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<OrdenCompra, String> param) {
+            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<OrdenCompraViewer, String> param) {
                 //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 return param.getValue().getValue().getCodigo();
             }
         });
         
-        JFXTreeTableColumn<OrdenCompra,String> fechaCol = new JFXTreeTableColumn<>("Fecha Compra");
+        JFXTreeTableColumn<OrdenCompraViewer,String> fechaCol = new JFXTreeTableColumn<>("Fecha Compra");
         fechaCol.setPrefWidth(200);
-        fechaCol.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<OrdenCompra, String>, ObservableValue<String>>(){
+        fechaCol.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<OrdenCompraViewer, String>, ObservableValue<String>>(){
             @Override
-            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<OrdenCompra, String> param) {
+            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<OrdenCompraViewer, String> param) {
                 //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 return param.getValue().getValue().getFecha();
             }
         });
-        JFXTreeTableColumn<OrdenCompra,Number> precioCol = new JFXTreeTableColumn<>("Precio");
+        JFXTreeTableColumn<OrdenCompraViewer,Number> precioCol = new JFXTreeTableColumn<>("Precio");
         precioCol.setPrefWidth(200);
-        precioCol.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<OrdenCompra, Number>, ObservableValue<Number>>(){
+        precioCol.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<OrdenCompraViewer, Number>, ObservableValue<Number>>(){
             @Override
-            public ObservableValue<Number> call(TreeTableColumn.CellDataFeatures<OrdenCompra, Number> param) {
+            public ObservableValue<Number> call(TreeTableColumn.CellDataFeatures<OrdenCompraViewer, Number> param) {
                 //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 return param.getValue().getValue().getPrecio();
             }
         });
-        ObservableList<OrdenCompra> ordenes = FXCollections.observableArrayList();
-        ordenes.add(new OrdenCompra("COD-GG", "10/10/2017",10.0));
-        ordenes.add(new OrdenCompra("COD-GG", "10/10/2017",10.0));
-        ordenes.add(new OrdenCompra("COD-GG", "10/10/2017",10.0));
-        ordenes.add(new OrdenCompra("COD-GG", "10/10/2017",10.0));
+        
+        //Double click on row
+        tblAlmacenOrdenesCompra.setRowFactory(ord -> {
+            JFXTreeTableRow<OrdenCompraViewer> row = new JFXTreeTableRow<>();
+            row.setOnMouseClicked((event) -> {
+                if (! row.isEmpty() && event.getButton()==MouseButton.PRIMARY 
+                     && event.getClickCount() == 2) {
+                    OrdenCompraViewer clickedRow = row.getItem();
+                    System.out.println(clickedRow.getCodigo());
+//                    try {
+//                        Node node;
+//                        node = (Node) FXMLLoader.load(FXMLAlmacenIngresoListaOrdenCompraController.this.getClass().getResource(FXMLAlmacenIngresoDetalleOrdenCompraController.viewPath));
+//                        HomeController.changeChildren(node);
+//                    } catch (IOException ex) {
+//                        Logger.getLogger(FXMLAlmacenIngresoListaOrdenCompraController.class.getName()).log(Level.SEVERE, null, ex);
+//                    }                  
+                }
+            });
+            return row;
+        });        
+        
+        ObservableList<OrdenCompraViewer> ordenes = FXCollections.observableArrayList();
            
-        final TreeItem<OrdenCompra> root = new RecursiveTreeItem<>(ordenes,RecursiveTreeObject::getChildren);
+        final TreeItem<OrdenCompraViewer> root = new RecursiveTreeItem<>(ordenes,RecursiveTreeObject::getChildren);
         tblAlmacenOrdenesCompra.getColumns().setAll(codCol,fechaCol,precioCol);
         tblAlmacenOrdenesCompra.setRoot(root);
         tblAlmacenOrdenesCompra.setShowRoot(false);
+        DepositoHelper depositoHelper = new DepositoHelper();
+        List<OrdenCompra> ordenesBD= depositoHelper.getOrdenes();
+        SimpleDateFormat sdf = new SimpleDateFormat("DD-MM-YYYY");
+        ordenesBD.forEach((orden)->{
+            OrdenCompraViewer ordenViewer = new OrdenCompraViewer(Integer.toString(orden.getId()),sdf.format(orden.getFecha()),orden.getPrecioTotal());
+            ordenes.add(ordenViewer);
+            System.out.println(orden.getId() + " " + orden.getPrecioTotal() + " " + orden.getFecha());
+            
+        });
     }    
     
 }
