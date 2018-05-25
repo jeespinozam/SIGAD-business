@@ -57,7 +57,7 @@ public class DepositoHelper {
 //        us.setIntereses("Flores");
 //        us.setTelefono("874987987");
 //        session.save(us);
-//              
+//      
 //        us.setPerfil(perf);
 //        
 //        //test order 
@@ -68,7 +68,7 @@ public class DepositoHelper {
 //        ord.setProveedor(prov);
 //        ord.setUsuario(us);
 //        session.save(ord);
-        
+
     }
     
 //    public ArrayList<Producto> getProducts(){
@@ -80,4 +80,4 @@ public class DepositoHelper {
 //        session.getTransaction().commit();
 //        sessionFactory.close();
 //    }
-}
+        }
