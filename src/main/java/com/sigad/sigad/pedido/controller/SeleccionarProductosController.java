@@ -7,16 +7,22 @@ package com.sigad.sigad.pedido.controller;
 
 import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import com.sigad.sigad.app.controller.HomeController;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.pedido.helper.ProductoHelper;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -27,17 +33,30 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableRow;
+import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.CheckBoxTreeTableCell;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Border;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 
 /**
@@ -46,23 +65,52 @@ import javafx.util.Callback;
  * @author Alexandra
  */
 public class SeleccionarProductosController implements Initializable {
-    
+
     public static final String viewPath = "/com/sigad/sigad/pedido/view/seleccionarProductos.fxml";
     /**
      * Initializes the controller class.
      */
-
+    @FXML
+    private AnchorPane anchorPane;
+    //Tabla productos 
     @FXML
     private JFXTreeTableView<ProductoLista> treeView;
 
+    JFXTreeTableColumn<ProductoLista, Boolean> select = new JFXTreeTableColumn<>("Seleccionar");
+
+    JFXTreeTableColumn<ProductoLista, Image> imagen = new JFXTreeTableColumn<>("Imagen");
+
+    JFXTreeTableColumn<ProductoLista, String> nombre = new JFXTreeTableColumn<>("Nombre");
+
+    JFXTreeTableColumn<ProductoLista, String> precio = new JFXTreeTableColumn<>("Precio");
+
+    JFXTreeTableColumn<ProductoLista, String> stock = new JFXTreeTableColumn<>("Stock");
+
+    JFXTreeTableColumn<ProductoLista, String> categoria = new JFXTreeTableColumn<>("Categoria");
+
+    JFXTreeTableColumn<ProductoLista, String> almacen = new JFXTreeTableColumn<>("Almacen");
+
     @FXML
     private JFXTreeTableView<PedidoLista> treeViewPedido;
+    JFXTreeTableColumn<PedidoLista, Boolean> eliminar = new JFXTreeTableColumn<>("Eliminar");
 
+    JFXTreeTableColumn<PedidoLista, String> nombrePedido = new JFXTreeTableColumn<>("Nombre");
+
+    JFXTreeTableColumn<PedidoLista, String> precioPedido = new JFXTreeTableColumn<>("Precio");
+
+    JFXTreeTableColumn<PedidoLista, String> subTotalPedido = new JFXTreeTableColumn<>("SubTotal");
+
+    JFXTreeTableColumn<PedidoLista, Integer> cantidadPedido = new JFXTreeTableColumn<>("Cantidad");
+
+    JFXTreeTableColumn<PedidoLista, String> descuentoPedido = new JFXTreeTableColumn<>("Descuentos");
     @FXML
     private JFXTextField filtro;
 
     @FXML
     private JFXButton btnContinuar;
+
+    @FXML
+    private Label lblTotal;
 
     private final ObservableList<PedidoLista> pedidos = FXCollections.observableArrayList();
 
@@ -71,87 +119,54 @@ public class SeleccionarProductosController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-        JFXTreeTableColumn<PedidoLista, Boolean> eliminar = new JFXTreeTableColumn<>("Eliminar");
-        eliminar.setPrefWidth(80);
-        eliminar.setCellValueFactory(
-                new Callback<TreeTableColumn.CellDataFeatures<PedidoLista, Boolean>, ObservableValue<Boolean>>() {
+        columnasPedidos();
+        columnasProductos();
+        agregarColumnasTablasPedidos();
+        agregarColumnasTablasProductos();
+        clickBotonContinuar();
+        agregarFiltro();
 
-            @Override
-            public ObservableValue<Boolean> call(TreeTableColumn.CellDataFeatures<PedidoLista, Boolean> p) {
-                return new SimpleBooleanProperty(p.getValue() != null);
-            }
+        //Basede datos
+        ProductoHelper gest = new ProductoHelper();
+        ArrayList<Producto> productosDB = gest.getProducts();
+        productosDB.forEach((p) -> {
+            Producto t = (Producto) p;
+            System.out.println(t.getPrecio());
+            prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), Integer.toString(t.getStock()), t.getCategoria().getNombre(), "", t.getImagen(), t.getId().intValue()));
         });
+        gest.close();
 
-        //Adding the Button to the cell
-        eliminar.setCellFactory(new Callback<TreeTableColumn<PedidoLista, Boolean>, TreeTableCell<PedidoLista, Boolean>>() {
-            @Override
-            public TreeTableCell<PedidoLista, Boolean> call(TreeTableColumn<PedidoLista, Boolean> p) {
-                return new ButtonCell();
-            }
+    }
 
+    public void agregarFiltro() {
+        filtro.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            treeView.setPredicate((TreeItem<ProductoLista> t) -> {
+                Boolean flag = t.getValue().nombre.getValue().contains(newValue) || t.getValue().categoria.getValue().contains(newValue);
+                return flag;
+            });
         });
-//        eliminar.setCellFactory(new Callback<TreeTableColumn<PedidoLista, Image>, TreeTableCell<PedidoLista, Image>>() {
-//            @Override
-//            public TreeTableCell<PedidoLista, Image> call(TreeTableColumn<PedidoLista, Image> param) {
-//                final ImageView imageview = new ImageView();
-//                imageview.setFitHeight(50);
-//                imageview.setFitWidth(50);
-//
-//                return new TreeTableCell<PedidoLista, Image>() {
-//                    @Override
-//                    protected void updateItem(Image item, boolean empty) {
-//                        super.updateItem(item, empty);
-//
-//                        if (item != null) {  // choice of image is based on values from item, but it doesn't matter now
-//                            imageview.setImage(item);
-//                        } else {
-//                            imageview.setImage(null);
-//                        }
-//                        this.setGraphic(imageview);
-//                    }
-//                };
-//            }
-//        });
+    }
 
-        JFXTreeTableColumn<PedidoLista, String> nombrePedido = new JFXTreeTableColumn<>("Nombre");
-        nombrePedido.setPrefWidth(80);
-        nombrePedido.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<PedidoLista, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<PedidoLista, String> param) {
-                return param.getValue().getValue().nombre;
-            }
+    public void clickBotonContinuar() {
+        btnContinuar.addEventHandler(EventType.ROOT, (event) -> {
+
+            pedidos.forEach((next) -> {
+                System.out.println(next.nombre + next.cantidad.toString() + next.subtotal.toString());
+            });
         });
+    }
 
-        JFXTreeTableColumn<PedidoLista, String> cantidadPedido = new JFXTreeTableColumn<>("Cantidad");
-        cantidadPedido.setPrefWidth(80);
-        cantidadPedido.setCellValueFactory((TreeTableColumn.CellDataFeatures<PedidoLista, String> param) -> param.getValue().getValue().cantidad);
-        cantidadPedido.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
-        cantidadPedido.setOnEditCommit((TreeTableColumn.CellEditEvent<PedidoLista, String> event) -> {
-            TreeItem<PedidoLista> productoEditado = treeViewPedido.getTreeItem(event.getTreeTablePosition().getRow());
-            if (isNumeric(event.getNewValue())) {
-                Double subtotal = Double.valueOf(event.getNewValue()) * Double.valueOf(productoEditado.getValue().precio.getValue());
-                productoEditado.getValue().subtotal = new SimpleStringProperty(subtotal.toString());
-                productoEditado.getValue().cantidad = new SimpleStringProperty(event.getNewValue());
-            } else {
+    public boolean isNumeric(String input) {
+        try {
+            Integer.parseInt(input);
+            return true;
+        } catch (NumberFormatException e) {
+            // s is not numeric
+            return false;
+        }
+    }
 
-            }
-
-        });
-
-        JFXTreeTableColumn<PedidoLista, String> precioPedido = new JFXTreeTableColumn<>("Precio");
-        precioPedido.setPrefWidth(80);
-        precioPedido.setCellValueFactory((TreeTableColumn.CellDataFeatures<PedidoLista, String> param) -> param.getValue().getValue().precio);
-
-        JFXTreeTableColumn<PedidoLista, String> subTotalPedido = new JFXTreeTableColumn<>("SubTotal");
-        subTotalPedido.setPrefWidth(80);
-        subTotalPedido.setCellValueFactory((TreeTableColumn.CellDataFeatures<PedidoLista, String> param) -> param.getValue().getValue().subtotal);
-        
-        JFXTreeTableColumn<PedidoLista, String> descuentos = new JFXTreeTableColumn<>("Descuentos");
-        subTotalPedido.setPrefWidth(80);
-        subTotalPedido.setCellValueFactory((TreeTableColumn.CellDataFeatures<PedidoLista, String> param) -> param.getValue().getValue().descuento);
-
-
-        JFXTreeTableColumn<ProductoLista, Boolean> select = new JFXTreeTableColumn<>("Seleccionar");
+    public void columnasProductos() {
         select.setPrefWidth(80);
         select.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, Boolean> param) -> param.getValue().getValue().seleccion);
         //select.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(select));
@@ -161,7 +176,6 @@ public class SeleccionarProductosController implements Initializable {
             return cell;
         });
 
-        JFXTreeTableColumn<ProductoLista, Image> imagen = new JFXTreeTableColumn<>("Imagen");
         imagen.setPrefWidth(120);
         imagen.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, Image> param) -> param.getValue().getValue().imagen.imageProperty());
         imagen.setCellFactory((TreeTableColumn<ProductoLista, Image> param) -> {
@@ -183,34 +197,98 @@ public class SeleccionarProductosController implements Initializable {
             };
         });
 
-        JFXTreeTableColumn<ProductoLista, String> nombre = new JFXTreeTableColumn<>("Nombre");
         nombre.setPrefWidth(120);
         nombre.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, String> param) -> param.getValue().getValue().nombre);
 
-        JFXTreeTableColumn<ProductoLista, String> precio = new JFXTreeTableColumn<>("Precio");
         precio.setPrefWidth(120);
         precio.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, String> param) -> param.getValue().getValue().precio);
 
-        JFXTreeTableColumn<ProductoLista, String> stock = new JFXTreeTableColumn<>("Stock");
         stock.setPrefWidth(120);
         stock.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, String> param) -> param.getValue().getValue().stock);
-        JFXTreeTableColumn<ProductoLista, String> categoria = new JFXTreeTableColumn<>("Categoria");
+
         categoria.setPrefWidth(120);
         categoria.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, String> param) -> param.getValue().getValue().categoria);
-        JFXTreeTableColumn<ProductoLista, String> almacen = new JFXTreeTableColumn<>("Almacen");
+
         almacen.setPrefWidth(120);
         almacen.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, String> param) -> param.getValue().getValue().almacen);
+    }
 
-        //Basede datos
-        ProductoHelper gest = new ProductoHelper();
-        ArrayList<Producto> productosDB = gest.getProducts();
-        productosDB.forEach((p) -> {
-            Producto t = (Producto) p;
-            System.out.println(t.getPrecio());
-            prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), Integer.toString(t.getStock()), "", "", t.getImagen(), t.getId().intValue()));
+    public void columnasPedidos() {
+        eliminar.setPrefWidth(80);
+        eliminar.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<PedidoLista, Boolean>, ObservableValue<Boolean>>() {
+            @Override
+            public ObservableValue<Boolean> call(TreeTableColumn.CellDataFeatures<PedidoLista, Boolean> p) {
+                return new SimpleBooleanProperty(p.getValue() != null);
+            }
         });
-        gest.close();
+        //Adding the Button to the cell
+        eliminar.setCellFactory(new Callback<TreeTableColumn<PedidoLista, Boolean>, TreeTableCell<PedidoLista, Boolean>>() {
+            @Override
+            public TreeTableCell<PedidoLista, Boolean> call(TreeTableColumn<PedidoLista, Boolean> p) {
+                return new ButtonCell();
+            }
 
+        });
+
+        nombrePedido.setPrefWidth(80);
+        nombrePedido.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<PedidoLista, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<PedidoLista, String> param) {
+                return param.getValue().getValue().nombre;
+            }
+        });
+
+        cantidadPedido.setPrefWidth(80);
+        cantidadPedido.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<PedidoLista, Integer>, ObservableValue<Integer>>() {
+            @Override
+            public ObservableValue<Integer> call(TreeTableColumn.CellDataFeatures<PedidoLista, Integer> param) {
+                return param.getValue().getValue().cantidad.asObject();
+            }
+        });
+        cantidadPedido.setCellFactory(new Callback<TreeTableColumn<PedidoLista, Integer>, TreeTableCell<PedidoLista, Integer>>() {
+            @Override
+            public TreeTableCell<PedidoLista, Integer> call(TreeTableColumn<PedidoLista, Integer> param) {
+                return new EditingCell();
+            }
+        });
+        cantidadPedido.setOnEditCommit(new EventHandler<TreeTableColumn.CellEditEvent<PedidoLista, Integer>>() {
+            @Override
+            public void handle(TreeTableColumn.CellEditEvent<PedidoLista, Integer> event) {
+                PedidoLista nuevo = new PedidoLista(event.getRowValue().getValue().nombre.getValue(), event.getRowValue().getValue().precio.getValue(),
+                        event.getNewValue(), String.valueOf(Float.valueOf(event.getRowValue().getValue().precio.get()) * Float.valueOf(event.getNewValue())),
+                        event.getRowValue().getValue().codigo, "");
+                Integer i = pedidos.indexOf(nuevo);
+                pedidos.remove(nuevo);
+                pedidos.add(i, nuevo);
+                calcularTotal();
+
+            }
+        });
+//        cantidadPedido.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
+//        cantidadPedido.setOnEditCommit((TreeTableColumn.CellEditEvent<PedidoLista, String> event) -> {
+//            TreeItem<PedidoLista> productoEditado = treeViewPedido.getTreeItem(event.getTreeTablePosition().getRow());
+//            if (isNumeric(event.getNewValue())) {
+//                Double subtotal = Double.valueOf(event.getNewValue()) * Double.valueOf(productoEditado.getValue().precio.getValue());
+//                productoEditado.getValue().subtotal = new SimpleStringProperty(subtotal.toString());
+//                productoEditado.getValue().cantidad = new SimpleStringProperty(event.getNewValue());
+//            } else {
+//
+//            }
+//
+//        });
+
+        precioPedido.setPrefWidth(80);
+        precioPedido.setCellValueFactory((TreeTableColumn.CellDataFeatures<PedidoLista, String> param) -> param.getValue().getValue().precio);
+
+        subTotalPedido.setPrefWidth(80);
+        subTotalPedido.setCellValueFactory((TreeTableColumn.CellDataFeatures<PedidoLista, String> param) -> param.getValue().getValue().subtotal);
+
+        descuentoPedido.setPrefWidth(80);
+        descuentoPedido.setCellValueFactory((TreeTableColumn.CellDataFeatures<PedidoLista, String> param) -> param.getValue().getValue().descuento);
+
+    }
+
+    public void agregarColumnasTablasProductos() {
         final TreeItem<ProductoLista> root = new RecursiveTreeItem<>(prod, RecursiveTreeObject::getChildren);
 
         treeView.setEditable(true);
@@ -219,46 +297,70 @@ public class SeleccionarProductosController implements Initializable {
         treeView.setRoot(root);
         treeView.setShowRoot(false);
 
-        final TreeItem<PedidoLista> rootPedido = new RecursiveTreeItem<>(pedidos, RecursiveTreeObject::getChildren);
+        treeView.setRowFactory(new Callback<TreeTableView<ProductoLista>, TreeTableRow<ProductoLista>>() {
+            @Override
+            public TreeTableRow<ProductoLista> call(TreeTableView<ProductoLista> param) {
+                TreeTableRow<ProductoLista> row = new TreeTableRow<>();
+                row.setOnMouseClicked((event) -> {
+                    if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                        try {
+                            ProductoLista rowData = row.getItem();
+                            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(DescripcionProductosController.viewPath));
+                            Parent root1 = fxmlLoader.load();
+                            fxmlLoader.<DescripcionProductosController>getController().setIdProducto(rowData.codigo);
+                            Stage stage = new Stage();
+                            stage.setTitle("Seleccionar producto");
+                            stage.setScene(new Scene(root1));
+                            stage.show();
+                            //FXMLLoader loader = new FXMLLoader(SeleccionarProductosController.this.getClass().getResource(DescripcionProductosController.viewPath));
+                            //DescripcionProductosController desc = loader.getController();
+//                        desc.setIdProducto(rowData.codigo);
+//                        System.out.println(rowData.codigo);
+//                        Stage stage = new Stage();
+//                        stage.initOwner(treeView.getScene().getWindow());
+//                        try {
+//                            stage.setScene(new Scene((Parent) loader.load()));
+//                        } catch (IOException ex) {
+//                            Logger.getLogger(SeleccionarProductosController.class.getName()).log(Level.SEVERE, null, ex);
+//                        }
 
-        treeViewPedido.setEditable(true);
-        treeViewPedido.getColumns().setAll(nombrePedido, precioPedido, cantidadPedido, descuentos, subTotalPedido, eliminar);
-        treeViewPedido.setRoot(rootPedido);
-        treeViewPedido.setShowRoot(false);
+// showAndWait will block execution until the window closes...
+//stage.showAndWait();
 
-        filtro.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            treeView.setPredicate((TreeItem<ProductoLista> t) -> {
-                Boolean flag = t.getValue().nombre.getValue().contains(newValue) || t.getValue().categoria.getValue().contains(newValue);
-                return flag;
-            });
+//                        DescripcionProductosController controller = loader.getController();
+//                        text1.setText(controller.getText());
+
+//                        try {
+//                            Node node;
+//                            node = (Node) FXMLLoader.load(SeleccionarProductosController.this.getClass().getResource(DescripcionProductosController.viewPath));
+//                            anchorPane.getChildren().setAll(node);
+//                        } catch (IOException ex) {
+//                            Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "", ex);
+//                        }
+                        } catch (IOException ex) {
+                            Logger.getLogger(SeleccionarProductosController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
+                return row; //To change body of generated lambdas, choose Tools | Templates.
+            }
         });
-        btnContinuar.addEventHandler(EventType.ROOT, (event) -> {
-
-            pedidos.forEach((next) -> {
-                System.out.println(next.nombre + next.cantidad.toString());
-            }); //            for (Iterator<ProductoLista> iterator = prod.iterator(); iterator.hasNext();) {
-//
-//                ProductoLista next = iterator.next();
-//                System.out.println(next.nombre + next.seleccion.toString());
-//            }
-        });
-        //Para seleccionar 
-//        treeView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-//            if (newSelection != null) {
-//                tableview2.getSelectionModel().clearSelection();
-//            }
-//        });
-
     }
 
-    public boolean isNumeric(String input) {
-        try {
-            Integer.parseInt(input);
-            return true;
-        } catch (NumberFormatException e) {
-            // s is not numeric
-            return false;
+    public void calcularTotal() {
+        Double total = 0.0;
+        for (PedidoLista pedido : pedidos) {
+            total = Double.valueOf(pedido.subtotal.getValue()) + total;
         }
+        lblTotal.setText(total.toString());
+    }
+
+    public void agregarColumnasTablasPedidos() {
+        final TreeItem<PedidoLista> rootPedido = new RecursiveTreeItem<>(pedidos, RecursiveTreeObject::getChildren);
+        treeViewPedido.setEditable(true);
+        treeViewPedido.getColumns().setAll(nombrePedido, precioPedido, cantidadPedido, descuentoPedido, subTotalPedido, eliminar);
+        treeViewPedido.setRoot(rootPedido);
+        treeViewPedido.setShowRoot(false);
     }
 
     class ProductoLista extends RecursiveTreeObject<ProductoLista> {
@@ -283,15 +385,14 @@ public class SeleccionarProductosController implements Initializable {
             this.seleccion = new SimpleBooleanProperty(false);
             this.codigo = codigo;
             seleccion.addListener((observable, oldValue, newValue) -> {
-                System.out.println(newValue);
-                System.out.println(oldValue);
-                System.out.println(observable);
+                calcularTotal();
                 if (newValue) {
-                    pedidos.add(new PedidoLista(nombre, precio, "", "", codigo));
+                    pedidos.add(new PedidoLista(nombre, precio, 0, "0", codigo, "0"));
                     //prod.remove(this);
                 } else {
-                    pedidos.remove(new PedidoLista(nombre, precio, "", "", codigo));
+                    pedidos.remove(new PedidoLista(nombre, precio, 0, "0", codigo, "0"));
                 }
+                calcularTotal();
             });
         }
 
@@ -314,17 +415,18 @@ public class SeleccionarProductosController implements Initializable {
 
         StringProperty nombre;
         StringProperty precio;
-        StringProperty cantidad;
+        IntegerProperty cantidad;
         StringProperty subtotal;
         StringProperty descuento;
         Integer codigo;
 
-        public PedidoLista(String nombre, String precio, String cantidad, String subtotal, Integer codigo) {
+        public PedidoLista(String nombre, String precio, Integer cantidad, String subtotal, Integer codigo, String descuento) {
             this.nombre = new SimpleStringProperty(nombre);
             this.precio = new SimpleStringProperty(precio);
-            this.cantidad = new SimpleStringProperty(cantidad);
+            this.cantidad = new SimpleIntegerProperty(cantidad);
             this.subtotal = new SimpleStringProperty(subtotal);
             this.codigo = codigo;
+            this.descuento = new SimpleStringProperty(descuento);
         }
 
         @Override
@@ -343,6 +445,79 @@ public class SeleccionarProductosController implements Initializable {
             return hash;
         }
 
+    }
+
+    class EditingCell extends TreeTableCell<PedidoLista, Integer> {
+
+        private JFXTextField textField;
+
+        public EditingCell() {
+        }
+
+        @Override
+        public void startEdit() {
+            super.startEdit();
+
+            if (textField == null) {
+                createTextField();
+            }
+
+            setGraphic(textField);
+            setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            textField.selectAll();
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+
+            setText(String.valueOf(getItem()));
+            setContentDisplay(ContentDisplay.TEXT_ONLY);
+        }
+
+        @Override
+        public void updateItem(Integer item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (textField != null) {
+                        textField.setText(getString());
+                    }
+                    setGraphic(textField);
+                    setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                } else {
+                    setText(getString());
+                    setContentDisplay(ContentDisplay.TEXT_ONLY);
+                }
+            }
+        }
+
+        private void createTextField() {
+            textField = new JFXTextField(getString());
+            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+            textField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+                @Override
+                public void handle(KeyEvent t) {
+                    if (t.getCode() == KeyCode.ENTER) {
+                        if (isNumeric(textField.getText())) {
+
+                            commitEdit(Integer.parseInt(textField.getText()));
+                        }
+
+                    } else if (t.getCode() == KeyCode.ESCAPE) {
+                        cancelEdit();
+                    }
+                }
+            });
+        }
+
+        private String getString() {
+            return getItem() == null ? "" : getItem().toString();
+        }
     }
 
     private class ButtonCell extends TreeTableCell<PedidoLista, Boolean> {
@@ -378,4 +553,5 @@ public class SeleccionarProductosController implements Initializable {
             }
         }
     }
+
 }

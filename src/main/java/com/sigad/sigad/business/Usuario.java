@@ -9,7 +9,6 @@ import com.jfoenix.controls.JFXComboBox;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
-import javafx.fxml.FXML;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,7 +18,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import org.hibernate.annotations.ColumnTransformer;
+import javax.validation.constraints.Email;
 
 /**
  *

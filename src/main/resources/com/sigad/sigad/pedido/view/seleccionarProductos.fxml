@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="680.0" prefWidth="1010.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.pedido.controller.SeleccionarProductosController">
+<AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="680.0" prefWidth="1010.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.pedido.controller.SeleccionarProductosController">
     <stylesheets>
         <URL value="@/styles/pedido.css" />
     </stylesheets>
@@ -57,5 +57,7 @@
             <DropShadow color="#00000093" />
          </effect>
       </JFXTreeTableView>
+      <Label layoutX="755.0" layoutY="90.0" prefHeight="27.0" prefWidth="40.0" text="Total :" />
+      <Label id="lblTotal" fx:id="lblTotal" layoutX="795.0" layoutY="95.0" text="0.0" />
     </children>
 </AnchorPane>
