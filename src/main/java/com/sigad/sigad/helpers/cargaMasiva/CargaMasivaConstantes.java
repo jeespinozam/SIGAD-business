@@ -21,11 +21,13 @@ public class CargaMasivaConstantes {
     public static final String TABLA_INSUMOS = "Insumos";
     public static final String TABLA_TIENDAS = "Tiendas";
     public static final String TABLA_TIPOMOV = "Tipo de Movimientos";
+    public static final String TABLA_PERMISOS = "Permisos";
+    public static final String TABLA_PERFILXPERMISO = "Perfil x Permiso";
     
     public static ObservableList<String> getList(){
         return FXCollections.observableArrayList(
                 TABLA_PRODUCTOCATEGORIA, TABLA_PERFILES, TABLA_USUARIOS, TABLA_PROVEEDORES, TABLA_INSUMOS, TABLA_TIENDAS, 
-                TABLA_TIPOMOV
+                TABLA_TIPOMOV, TABLA_PERMISOS, TABLA_PERFILXPERMISO
         );
     };
 }

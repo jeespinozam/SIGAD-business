@@ -7,6 +7,7 @@ package com.sigad.sigad.helpers.cargaMasiva;
 
 import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.Perfil;
+import com.sigad.sigad.business.Permiso;
 import com.sigad.sigad.business.ProductoCategoria;
 import com.sigad.sigad.business.Proveedor;
 import com.sigad.sigad.business.Tienda;
@@ -15,8 +16,11 @@ import com.sigad.sigad.business.Usuario;
 import com.sigad.sigad.business.Vehiculo;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -105,6 +109,15 @@ public class CargaMasivaHelper {
                 rowIndex++;
                 rowhead.createCell(rowIndex).setCellValue("Descripcion");
                 break;
+            case CargaMasivaConstantes.TABLA_PERMISOS:
+                rowhead.createCell(rowIndex).setCellValue("Opcion");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                break;
+            case CargaMasivaConstantes.TABLA_PERFILXPERMISO:
+                rowhead.createCell(rowIndex).setCellValue("Nombre de Perfil");
+                rowIndex++;
+                rowhead.createCell(rowIndex).setCellValue("Opcion de Permiso");
             // agregar aqui el resto de casos
             default:
                 LOGGER.log(Level.WARNING, "Tabla no reconocida, abortando ....");
@@ -120,6 +133,21 @@ public class CargaMasivaHelper {
             LOGGER.log(Level.SEVERE, String.format("Error al generar plantilla de ", tablaCarga));
             System.out.print(ex);
         }
+    }
+    
+    // solo retornara el primero que encuentre
+    private static Object busquedaGeneral(Session session, String nombreEntidad, String [] condiciones, String [] valoresCondiciones) {
+        String hqlQuery = String.format("from %s where %s='%s'", nombreEntidad, condiciones[0], valoresCondiciones[0]);
+        for (int i=1;i<condiciones.length;i++)
+            hqlQuery += String.format(" and %s='%s'", condiciones[i], valoresCondiciones[i]);
+        List<Object> resultadoBusqueda = session.createQuery(hqlQuery).list();
+        return resultadoBusqueda.get(0);
+    }
+    
+    private static Perfil buscarPerfil(Session session, String nombre) {
+        String hqlQuery = String.format("from Perfil where nombre = '%s'", nombre);
+        List<Perfil> busquedaPerfil= session.createQuery(hqlQuery).list();
+        return busquedaPerfil.get(0);
     }
     
     // implementacion de logica para cada tipo de tabla a cargar en bd, por cada registro a escanear
@@ -290,6 +318,62 @@ public class CargaMasivaHelper {
                 }
                 catch(HibernateException he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoTipoMov.getNombre()));
+                    System.out.print(he);
+                    return false;
+                }
+            case CargaMasivaConstantes.TABLA_PERMISOS:
+                Permiso nuevoPermiso = new Permiso();
+                cell = cellIterator.next();
+                nuevoPermiso.setOpcion(dataFormatter.formatCellValue(cell));
+                cell = cellIterator.next();
+                nuevoPermiso.setDescripcion(dataFormatter.formatCellValue(cell));
+                try{
+                    Transaction tx = null;
+                    tx = session.beginTransaction();
+                    session.save(nuevoPermiso);
+                    tx.commit();
+                    LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoPermiso.getOpcion()));
+                    return true;
+                }
+                catch(HibernateException he) {
+                    LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoPermiso.getOpcion()));
+                    System.out.print(he);
+                    return false;
+                }
+            case CargaMasivaConstantes.TABLA_PERFILXPERMISO:
+                cell = cellIterator.next();
+                String perfilNombreAux = dataFormatter.formatCellValue(cell);
+                String permisoOpcionAux = null;
+                Perfil perfilAsociado = (Perfil) CargaMasivaHelper.busquedaGeneral(session, "Perfil", new String [] {"nombre"}, new String [] {perfilNombreAux});
+                if (perfilAsociado!=null) { // si el perfil mencionado fue encontrado entonces se continua con el proceso
+                    LOGGER.log(Level.INFO, String.format("Perfil %s encontrado con exito", perfilNombreAux));
+                    Set<Permiso> permisosAsociados = new HashSet<>();
+                    while (cellIterator.hasNext()) {
+                        cell = cellIterator.next();
+                        permisoOpcionAux = dataFormatter.formatCellValue(cell);
+                        Permiso permisoAux = (Permiso) CargaMasivaHelper.busquedaGeneral(session, "Permiso", new String [] {"opcion"}, new String [] {permisoOpcionAux});
+                        if (permisoAux!=null) {
+                            LOGGER.log(Level.INFO, String.format("Permiso %s encontrado con exito", permisoOpcionAux));
+                            permisosAsociados.add(permisoAux);
+                        }
+                        else
+                            LOGGER.log(Level.WARNING, String.format("Permiso %s no encontrado, este permiso no sera considerado", permisoOpcionAux));
+                    }
+                    perfilAsociado.setPermisos(permisosAsociados);
+                }
+                else {
+                    LOGGER.log(Level.SEVERE, String.format("Perfil %s no encontrado, cancelando operacion", perfilNombreAux));
+                    return false;
+                }
+                try{
+                    Transaction tx = session.beginTransaction();
+                    session.update(perfilAsociado);
+                    tx.commit();
+                    LOGGER.log(Level.INFO, String.format("Carga relacion perfil x permisos %s, exitosa", perfilAsociado.getNombre()));
+                    return true;
+                }
+                catch(HibernateException he) {
+                    LOGGER.log(Level.SEVERE, String.format("Error en carga de relaciones perfil x persmisos de %s", perfilAsociado.getNombre()));
                     System.out.print(he);
                     return false;
                 }
