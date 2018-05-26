@@ -27,11 +27,11 @@ public class DepositoHelper {
         
         session = LoginController.serviceInit();
         session.beginTransaction();
-//        Proveedor prov = new Proveedor();
-//        prov.setDescripcion("Descripcion");
-//        prov.setNombre("Nombre");
-//        prov.setRuc(123489021);
-//        session.save(prov);
+        Proveedor prov = new Proveedor();
+        prov.setDescripcion("Distribuidor de rosas");
+        prov.setNombre("Rosas SA");
+        prov.setRuc(123489021);
+        session.save(prov);
 
 ////
 //        Perfil perf = new Perfil();
@@ -70,17 +70,41 @@ public class DepositoHelper {
 //        us.setPerfil(p);
 //        session.save(p);
 //        session.save(us);
-        Usuario u;
-        u =  (Usuario) session.get(Usuario.class, new Long(25));
-        System.out.println("Perfil papu:" + u.getPerfil().getNombre());
+
+        String hql = String.format("from Usuario");
+        Query queryHql = this.session.createQuery(hql);
+        List<Object> usuarios = queryHql.list();
+        Usuario us=null;
+        for (Object entidad : usuarios) {
+            us = (Usuario)entidad;
+//            OrdenCompra oc = (OrdenCompra) entidad[0];
+//            Proveedor prov = (Proveedor) entidad[1];
+            System.out.println("id " + us.getId());
+            System.out.println("nombre " + us.getNombres());
+        }
+        
+        String hql2 = String.format("from Proveedor");
+        Query queryHql2 = this.session.createQuery(hql2);
+        List<Object > proveedores = queryHql2.list();
+        Proveedor pr=null;
+        for (Object entidad2 : proveedores) {
+            pr = (Proveedor)entidad2;
+//            OrdenCompra oc = (OrdenCompra) entidad[0];
+//            Proveedor prov = (Proveedor) entidad[1];
+            System.out.println("id prov" + pr.getId());
+            System.out.println("nombre prov " + pr.getNombre());
+        }
+//        Usuario u;
+//        u =  (Usuario) session.get(Usuario.class, new Long(25));
+//        System.out.println("Perfil papu:" + u.getPerfil().getNombre());
 //        try {
 //            u =  (Usuario) session.get(Usuario.class, new Long(25));
 //            System.out.println("Perfil papu:" + u.getPerfil().getNombre());
 //        } catch (Exception e) {
 //            System.out.println(e.getMessage());
 //        }
-        Proveedor p =  (Proveedor) session.get(Proveedor.class, new Long(32));
-        System.out.println("Perfil papu:" + p.getNombre());
+//        Proveedor p =  (Proveedor) session.get(Proveedor.class, new Long(32));
+//        System.out.println("Perfil papu:" + p.getNombre());
 //        try {
 //            p =  (Proveedor) session.get(Proveedor.class, new Long(32));
 //            System.out.println("Perfil papu:" + p.getNombre());
@@ -91,13 +115,13 @@ public class DepositoHelper {
         
 //
 
-//        OrdenCompra ord = new OrdenCompra();
-//        //ord.setDetalleOrdenCompra(detallesOrden);
-//        ord.setFecha(new Date());
-//        ord.setPrecioTotal(30.5);
-//        ord.setProveedor(p);
-//        ord.setUsuario(u);
-//        session.save(ord);
+        OrdenCompra ord = new OrdenCompra();
+        //ord.setDetalleOrdenCompra(detallesOrden);
+        ord.setFecha(new Date());
+        ord.setPrecioTotal(30.5);
+        ord.setProveedor(pr);
+        ord.setUsuario(us);
+        session.save(ord);
         
 //
         
