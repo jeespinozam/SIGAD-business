@@ -34,7 +34,7 @@ public class SIGADBusinessMain extends Application{
     @Override
 	public void start(Stage stage) {
             try {
-                    Parent root = FXMLLoader.load(getClass().getResource(LoginController.viewPath));
+                    Parent root = FXMLLoader.load(getClass().getResource(PerfilController.viewPath));
                     Scene scene = new Scene(root);
                     //scene.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
                     stage.setScene(scene);
