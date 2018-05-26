@@ -249,8 +249,9 @@ public class CargaMasivaHelper {
                 nuevoPerfil.setActivo(true);    // logica de negocio
                 cell = cellIterator.next();
                 nuevoPerfil.setNombre(dataFormatter.formatCellValue(cell));
-                cell = cellIterator.next();
+                cell = cellIterator.next(); 
                 nuevoPerfil.setDescripcion(dataFormatter.formatCellValue(cell));
+                
                 try{
                     Transaction tx = null;
                     tx = session.beginTransaction();
@@ -417,19 +418,20 @@ public class CargaMasivaHelper {
                 Perfil perfilAsociado = (Perfil) CargaMasivaHelper.busquedaGeneral(session, "Perfil", new String [] {"nombre"}, new String [] {perfilNombreAux});
                 if (perfilAsociado!=null) { // si el perfil mencionado fue encontrado entonces se continua con el proceso
                     LOGGER.log(Level.INFO, String.format("Perfil %s encontrado con exito", perfilNombreAux));
-                    Set<Permiso> permisosAsociados = new HashSet<>();
+                    //Set<Permiso> permisosAsociados = new HashSet<>();
                     while (cellIterator.hasNext()) {
                         cell = cellIterator.next();
                         permisoOpcionAux = dataFormatter.formatCellValue(cell);
                         Permiso permisoAux = (Permiso) CargaMasivaHelper.busquedaGeneral(session, "Permiso", new String [] {"opcion"}, new String [] {permisoOpcionAux});
                         if (permisoAux!=null) {
                             LOGGER.log(Level.INFO, String.format("Permiso %s encontrado con exito", permisoOpcionAux));
-                            permisosAsociados.add(permisoAux);
+                            //permisosAsociados.add(permisoAux);
+                            perfilAsociado.getPermisos().add(permisoAux);
                         }
                         else
                             LOGGER.log(Level.WARNING, String.format("Permiso %s no encontrado, este permiso no sera considerado", permisoOpcionAux));
                     }
-                    perfilAsociado.setPermisos(permisosAsociados);
+                    //perfilAsociado.setPermisos(permisosAsociados);
                 }
                 else {
                     LOGGER.log(Level.SEVERE, String.format("Perfil %s no encontrado, cancelando operacion", perfilNombreAux));
