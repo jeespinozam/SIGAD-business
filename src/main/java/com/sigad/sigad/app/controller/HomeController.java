@@ -138,7 +138,7 @@ public class HomeController implements Initializable {
                 }
             }
         });
-        sidebarBtns.get(3).setOnAction(new EventHandler<ActionEvent>() {
+        sidebarBtns.get(4).setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 try {
