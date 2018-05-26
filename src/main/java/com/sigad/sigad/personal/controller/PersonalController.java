@@ -17,7 +17,7 @@ import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.app.controller.HomeController;
 import com.sigad.sigad.business.Usuario;
 import com.sigad.sigad.pedido.controller.SeleccionarProductosController;
-import com.sigad.sigad.usuarios.helper.UsuariosHelper;
+import com.sigad.sigad.business.helpers.UsuarioHelper;
 import com.sun.javafx.geom.BaseBounds;
 import com.sun.javafx.geom.transform.BaseTransform;
 import com.sun.javafx.jmx.MXNodeAlgorithm;
@@ -66,12 +66,9 @@ public class PersonalController implements Initializable {
      */
     public static final String viewPath = "/com/sigad/sigad/personal/view/personal.fxml";
     public static String windowName = "Cuentas";
-
     @FXML
     private JFXTreeTableView userTbl;
-
     static ObservableList<User> data = FXCollections.observableArrayList();
-    
     @FXML
     private JFXButton addBtn;
     @FXML
@@ -110,26 +107,14 @@ public class PersonalController implements Initializable {
     }
 
     private void getDataFromDB() {
-        UsuariosHelper userHelper = new UsuariosHelper();
+        UsuarioHelper userHelper = new UsuarioHelper();
         
-        ArrayList<?> lista = userHelper.getUsers(-1);
-        lista.forEach((p) -> {
-            Usuario u = (Usuario) p;
-            //System.out.println(u.getNombres() + u.getApellidoMaterno() + u.getApellidoPaterno());
-            data.add(
-                new User(
-                        new SimpleStringProperty(u.getNombres()),
-                        new SimpleStringProperty(u.getApellidoMaterno()),
-                        new SimpleStringProperty(u.getApellidoPaterno()),
-                        new SimpleStringProperty(u.getCorreo()),
-                        new SimpleStringProperty(u.getDni()),
-                        new SimpleStringProperty(u.getTelefono()),
-                        new SimpleStringProperty(u.getCelular()),
-                        new SimpleStringProperty(u.getPerfil().getNombre()),
-                        new SimpleStringProperty(u.getPerfil().getDescripcion()),
-                        true
-                ));
-        });
+        ArrayList<Usuario> lista = userHelper.getUsers();
+        if(lista != null){
+            lista.forEach((p) -> {
+                updateTable(p);
+            });
+        }
         userHelper.close();
     }
 
@@ -184,16 +169,11 @@ public class PersonalController implements Initializable {
         });
         
         edit.setPadding(new Insets(20));
+        edit.setPrefSize(145, 40);
         delete.setPadding(new Insets(20));
-        
-        edit.setPrefHeight(40);
-        delete.setPrefHeight(40);
-        
-        edit.setPrefWidth(145);
-        delete.setPrefWidth(145);
+        delete.setPrefSize(145, 40);
         
         VBox vBox = new VBox(edit, delete);
-        
         
         popup = new JFXPopup();
         popup.setPopupContent(vBox);
@@ -209,8 +189,9 @@ public class PersonalController implements Initializable {
         }else{
             content.setHeading(new Text("Editar Usuario"));
             
-            UsuariosHelper helper = new UsuariosHelper();
-            if(!helper.existUserEmail(PersonalController.selectedUser.correo.getValue())){
+            UsuarioHelper helper = new UsuarioHelper();
+            Usuario u = helper.getUser(PersonalController.selectedUser.correo.getValue());
+            if(u == null){
                 ErrorController error = new ErrorController();
                 error.loadDialog("Error", "No se pudo obtener el usuario", "Ok", hiddenSp);
                 System.out.println("Error al obtener el usuario");

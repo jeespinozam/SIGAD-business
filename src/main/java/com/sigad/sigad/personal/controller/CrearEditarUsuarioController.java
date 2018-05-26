@@ -7,61 +7,31 @@ package com.sigad.sigad.personal.controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
-import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXListView;
-import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXTextField;
-import com.jfoenix.controls.JFXTreeTableColumn;
-import com.jfoenix.controls.JFXTreeTableView;
-import com.jfoenix.controls.RecursiveTreeItem;
-import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.jfoenix.validation.RequiredFieldValidator;
 import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.business.Perfil;
+import com.sigad.sigad.business.Tienda;
 import com.sigad.sigad.business.Usuario;
-import com.sigad.sigad.pedido.controller.SeleccionarProductosController;
-import com.sigad.sigad.perfiles.helper.PerfilesHelper;
-import static com.sigad.sigad.personal.controller.PersonalController.selectedUser;
-import com.sigad.sigad.usuarios.helper.UsuariosHelper;
-import com.sun.org.apache.xerces.internal.util.DOMUtil;
+import com.sigad.sigad.business.helpers.PerfilHelper;
+import com.sigad.sigad.business.helpers.TiendaHelper;
+import com.sigad.sigad.business.helpers.UsuarioHelper;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.cell.CheckBoxTreeTableCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
-import static com.sigad.sigad.personal.controller.PersonalController.isUserCreate;
-import static com.sigad.sigad.personal.controller.PersonalController.userDialog;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
 
 /**
  *
@@ -72,20 +42,13 @@ public class CrearEditarUsuarioController implements Initializable {
     public static final String viewPath = "/com/sigad/sigad/personal/view/crearEditarUsuario.fxml";
     @FXML
     private JFXTextField nameTxt,appTxt,apmTxt,dniTxt,telephoneTxt,cellphoneTxt;
-    
     public static Usuario user = null;
-    
-//    public static ObservableList<Profile> data = FXCollections.observableArrayList();
-    
     @FXML
     private StackPane hiddenSp;
     @FXML
     private AnchorPane containerPane;
-    
-//    public static Profile selectedProfile = null;
     public static boolean isProfileCreate;
-    public static JFXDialog profileDialog;
-    
+    public static JFXDialog profileDialog;    
     @FXML
     private JFXTextField emailTxt;
     @FXML
@@ -93,6 +56,7 @@ public class CrearEditarUsuarioController implements Initializable {
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        //Add the buttons of the static dialog
         addDialogBtns();
         
         //validate edit or create option in order to set user
@@ -125,17 +89,15 @@ public class CrearEditarUsuarioController implements Initializable {
                 if(validateFields()){
                     System.out.println("VALIDADO ALL FIELDS");
                     updateFields();
-                    UsuariosHelper helper = new UsuariosHelper();
-                    boolean success = helper.saveUser(CrearEditarUsuarioController.user);
-                    if(success){
+                    UsuarioHelper helper = new UsuarioHelper();
+                    Long id = helper.saveUser(CrearEditarUsuarioController.user);
+                    if(id != null){
                         PersonalController.updateTable(CrearEditarUsuarioController.user);
+                        PersonalController.userDialog.close();
                     }else{
                         ErrorController error = new ErrorController();
                         error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
                     }
-                    
-                    PersonalController.userDialog.close();
-                    
                     
                 }
             }
@@ -158,8 +120,8 @@ public class CrearEditarUsuarioController implements Initializable {
     
     private void loadFields() {
         
-        UsuariosHelper helper = new UsuariosHelper();
-        user = helper.getUser(PersonalController.selectedUser.correo.getValue());
+        UsuarioHelper usuarioHelper = new UsuarioHelper();
+        user = usuarioHelper.getUser(PersonalController.selectedUser.correo.getValue());
         
         if(user != null){
             nameTxt.setText(user.getNombres());
@@ -312,208 +274,41 @@ public class CrearEditarUsuarioController implements Initializable {
     }
 
     private void initProfilePicker() {
+        JFXListView<Label> profilesListView = new JFXListView<>();
         
-        JFXListView<Label> profilesList = new JFXListView<>();
+        //load profiles
+        PerfilHelper helper = new PerfilHelper();
+        ArrayList<Perfil> perfilList = helper.getProfiles();
         
-        Label lbl = new Label("Buttons");
-        profilesList.getItems().add(lbl);
-        profilesList.getItems().add(lbl);
-        profilesList.getItems().add(lbl);
-        profilesList.getItems().add(lbl);
+        if(perfilList != null){
+            for (int i = 0; i < perfilList.size(); i++) {
+                Label lbl = new Label(perfilList.get(i).getNombre());
+                profilesListView.getItems().add(lbl);
+            }
+        }
         
-        profilesList.getStyleClass().add("mylistview");
-        profilesList.setStyle("-fx-background-color:WHITE");
-        GridPane.setConstraints(profilesList, 1, 3);
+        profilesListView.getStyleClass().add("mylistview");
+        profilesListView.setStyle("-fx-background-color:WHITE");
+        GridPane.setConstraints(profilesListView, 1, 3);
     }
 
     private void initStorePicker() {
-        JFXListView<Label> storesList = new JFXListView<>();
+        JFXListView<Label> storesListView = new JFXListView<>();
         
-        Label lbl = new Label("Buttons");
-        storesList.getItems().add(lbl);
-        storesList.getItems().add(lbl);
-        storesList.getItems().add(lbl);
-        storesList.getItems().add(lbl);
+        //load stores
+        TiendaHelper helper = new TiendaHelper();
+        ArrayList<Tienda> tiendaList = helper.getStores();
         
-        storesList.getStyleClass().add("mylistview");
-        storesList.setStyle("-fx-background-color:WHITE");
-        GridPane.setConstraints(storesList, 3, 3);
+        if(tiendaList != null){
+            for (int i = 0; i < tiendaList.size(); i++) {
+                Label lbl = new Label(tiendaList.get(i).getDireccion());
+                storesListView.getItems().add(lbl);
+            }
+        }
+        
+        storesListView.getStyleClass().add("mylistview");
+        storesListView.setStyle("-fx-background-color:WHITE");
+        GridPane.setConstraints(storesListView, 3, 3);
     }
 
-    
-    
-    
-    
-    
-    //    @FXML
-//    void handleAction(ActionEvent event) {
-//        if(event.getSource() == addBtn){
-//            data.add(new Profile(
-//                    new SimpleStringProperty("Test"), 
-//                    new SimpleStringProperty("Test"), 
-//                    new SimpleBooleanProperty(false))
-//            );
-//            
-//        }else if(event.getSource() == moreBtn){
-//            int count = profilesTbl.getSelectionModel().getSelectedCells().size();
-//            if( count > 1){
-//                ErrorController error = new ErrorController();
-//                error.loadDialog("Atención", "Debe seleccionar solo un registro de la tabla", "Ok", hiddenSp);
-//            }else if(count<=0){
-//                ErrorController error = new ErrorController();
-//                error.loadDialog("Atención", "Debe seleccionar al menos un registro de la tabla", "Ok", hiddenSp);
-//            }else{
-//                int selected  = profilesTbl.getSelectionModel().getSelectedIndex();
-//                selectedProfile = (CrearEditarUsuarioController.Profile) profilesTbl.getSelectionModel().getModelItem(selected).getValue();
-//                initPopup();
-//                popup.show(moreBtn, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.RIGHT);
-//            }
-//        }
-//    }
-    
-//        private void initProfileTable() {
-//        JFXTreeTableColumn<Profile, Boolean> select = new JFXTreeTableColumn<>("Seleccionar");
-//        select.setPrefWidth(80);
-//        select.setCellValueFactory((TreeTableColumn.CellDataFeatures<Profile, Boolean> param) -> param.getValue().getValue().seleccion);
-//        select.setCellFactory((TreeTableColumn<Profile, Boolean> p) -> {
-//            CheckBoxTreeTableCell<Profile, Boolean> cell = new CheckBoxTreeTableCell<>();
-//            cell.setAlignment(Pos.CENTER);
-//            return cell;
-//        });
-//        
-//        JFXTreeTableColumn<Profile, String> nombre = new JFXTreeTableColumn<>("Nombre");
-//        nombre.setPrefWidth(120);
-//        nombre.setCellValueFactory((TreeTableColumn.CellDataFeatures<Profile, String> param) -> param.getValue().getValue().profileName);
-//        
-//        JFXTreeTableColumn<Profile, String> description = new JFXTreeTableColumn<>("Descripción");
-//        description.setPrefWidth(120);
-//        description.setCellValueFactory((TreeTableColumn.CellDataFeatures<Profile, String> param) -> param.getValue().getValue().profileName);
-//        
-//        PerfilesHelper helper = new PerfilesHelper();
-//        ArrayList<Perfil> list = helper.getProfiles();
-//        list.forEach(p -> {
-//            Perfil profile = (Perfil) p;
-//            System.out.println(p.getNombre());
-//            data.add(new Profile(
-//                    new SimpleStringProperty(profile.getNombre()), 
-//                    new SimpleStringProperty(profile.getDescripcion()), 
-//                    new SimpleBooleanProperty(profile.isActivo())));
-//        });
-//        
-//        final TreeItem<Profile> root = new RecursiveTreeItem<>(data, RecursiveTreeObject::getChildren);
-//        
-//        profilesTbl.setEditable(true);
-//        profilesTbl.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-//        profilesTbl.getColumns().setAll(select, nombre, description);
-//        profilesTbl.setRoot(root);
-//        profilesTbl.setShowRoot(false);        
-//    }
-    
-//    private void initPopup(){
-//        JFXButton edit = new JFXButton("Editar");
-//        JFXButton delete = new JFXButton("Eliminar");
-//        
-//        edit.setOnAction(new EventHandler<ActionEvent>() {
-//            @Override
-//            public void handle(ActionEvent event) {
-//                popup.hide();
-//                try {
-//                    CreateEdditProfileDialog(false);
-//                } catch (IOException ex) {
-//                    Logger.getLogger(PersonalController.class.getName()).log(Level.SEVERE, "initPopup(): CreateEdditProfileDialog()", ex);
-//                }
-//            }
-//        });
-//        
-//        delete.setOnAction(new EventHandler<ActionEvent>() {
-//            @Override
-//            public void handle(ActionEvent event) {
-//                popup.hide();
-//                deleteProfileDialog();
-//            }
-//        });
-//        
-//        edit.setPadding(new Insets(20));
-//        delete.setPadding(new Insets(20));
-//        
-//        edit.setPrefHeight(40);
-//        delete.setPrefHeight(40);
-//        
-//        edit.setPrefWidth(145);
-//        delete.setPrefWidth(145);
-//        
-//        VBox vBox = new VBox(edit, delete);
-//        
-//        
-//        popup = new JFXPopup();
-//        popup.setPopupContent(vBox);
-//    }
-//    
-//    public void CreateEdditProfileDialog(boolean iscreate) throws IOException {
-//        isProfileCreate = iscreate;
-//        
-//        JFXDialogLayout content =  new JFXDialogLayout();
-//        
-//        if(isProfileCreate){
-//            content.setHeading(new Text("Crear Perfil"));
-//        }else{
-//            content.setHeading(new Text("Editar Perfil"));
-//            
-//            PerfilesHelper helper = new PerfilesHelper();
-//            if(!helper.existProfileName(CrearEditarUsuarioController.selectedProfile.profileName.getValue())){
-//                ErrorController error = new ErrorController();
-//                error.loadDialog("Error", "No se pudo obtener el perfil", "Ok", hiddenSp);
-//                System.out.println("Error al obtener el perfil" + CrearEditarUsuarioController.selectedProfile.profileName.getValue());
-//                return;
-//            }
-//        }
-//        
-//        Node node;
-//        node = (Node) FXMLLoader.load(CrearEditarUsuarioController.this.getClass().getResource(CrearEditarPerfilController.viewPath));
-//        content.setBody(node);
-//        content.setPrefSize(400,400);
-//                
-//        profileDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
-//        profileDialog.show();
-//    }  
-//    
-//    private void deleteProfileDialog() {
-//        JFXDialogLayout content =  new JFXDialogLayout();
-//        content.setHeading(new Text("Error"));
-//        content.setBody(new Text("Cuenta o contraseña incorrectas"));
-//                
-//        JFXDialog dialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
-//        JFXButton button = new JFXButton("Okay");
-//        button.setOnAction(new EventHandler<ActionEvent>() {
-//            @Override
-//            public void handle(ActionEvent event) {
-//                dialog.close();
-//            }
-//        });
-//        content.setActions(button);
-//        dialog.show();
-//    }
-//    
-//    public class Profile extends RecursiveTreeObject<Profile> {
-//
-//        StringProperty profileName;
-//        StringProperty profileDesc;
-//        BooleanProperty seleccion;
-//
-//        public Profile(StringProperty profileName, StringProperty profileDesc, BooleanProperty seleccion) {
-//            this.profileName = profileName;
-//            this.profileDesc = profileDesc;
-//            this.seleccion = seleccion;
-//        }
-//
-//        @Override
-//        public boolean equals(Object o) {
-//            if (o instanceof Profile) {
-//                Profile u = (Profile) o;
-//                return u.profileName.equals(profileName);
-//            }
-//            return super.equals(o); //To change body of generated methods, choose Tools | Templates.
-//        }
-//
-//    }
 }

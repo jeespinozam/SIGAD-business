@@ -10,7 +10,7 @@ import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
 import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Usuario;
-import com.sigad.sigad.usuarios.helper.UsuariosHelper;
+import com.sigad.sigad.business.helpers.UsuarioHelper;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -140,7 +140,7 @@ public class LoginController implements Initializable {
     } 
     
     private boolean validate(){
-        UsuariosHelper helper = new UsuariosHelper();
+        UsuarioHelper helper = new UsuarioHelper();
         user = helper.getUser(userTxt.getText());
         
         if(user==null){

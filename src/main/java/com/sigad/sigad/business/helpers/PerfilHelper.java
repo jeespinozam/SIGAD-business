@@ -1,6 +1,5 @@
-package com.sigad.sigad.perfiles.helper;
+package com.sigad.sigad.business.helpers;
 
-import com.sigad.sigad.usuarios.helper.*;
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Usuario;
@@ -19,92 +18,13 @@ import org.hibernate.query.Query;
  *
  * @author jorgeespinoza
  */
-public class PerfilesHelper {
+public class PerfilHelper {
 
     Session session = null;
     private static String errorMessage = "";
     
-    public PerfilesHelper() {
+    public PerfilHelper() {
         session = LoginController.serviceInit();
-    }
-    
-    /*Get all*/
-    public ArrayList<Perfil> getProfiles(){
-        String cad;
-        cad = "from Perfil";
-        
-        Query query = session.createQuery(cad);
-        return new ArrayList<>( query.list());
-    };
-    
-    /*Get profile by id, if nothin then null*/
-    public Perfil getProfile(int id){
-        Query query = session.createQuery("from Perfil where id=" + Integer.toString(id));
-        if(query.list().size()==0){
-            return null;
-        }
-        return (Perfil) query.list().get(0);
-    }
-    
-    /*Get profile by name, if nothin then null*/
-    public Perfil getProfile(String nombre){
-        Query query = null;
-        try {
-            query = session.createQuery("from Perfil where nombre='" + nombre + "'");
-            
-            if(query.list().isEmpty()){
-                return null;
-            }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
-        return (Perfil) query.list().get(0);
-    }
-    
-    /*verify if this field exits, it must be an index*/
-    public boolean existProfileName(String nombre){
-        Query query = null;
-        try {
-            query = session.createQuery("from Perfil where nombre='" + nombre + "'");
-            
-            if(query.list().isEmpty()){
-                return false;
-            }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return false;
-        }
-        
-        return true;
-    }
-    
-    public boolean saveProfile(Perfil p){
-        try {
-            Transaction tx = session.getTransaction();
-            Long id = (Long) session.save(p);
-            tx.commit();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return false;
-        }
-        return true;
-    }
-    
-    public boolean updateProfile(Perfil pOld){
-        try {
-            Transaction tx = session.getTransaction();
-            Perfil pNew = session.load(Perfil.class, pOld.getId());
-            pNew.setNombre(pOld.getNombre());
-            pNew.setDescripcion(pOld.getDescripcion());
-            pNew.setPermisos(pOld.getPermisos());
-            pNew.setActivo(pOld.isActivo());
-            tx.commit();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return false;
-        }
-        return true;
     }
     
     /*Close session*/
@@ -115,7 +35,91 @@ public class PerfilesHelper {
     /**
      * @return the errorMessage
      */
-    public static String getErrorMessage() {
+    public String getErrorMessage() {
         return errorMessage;
+    }
+    
+    /*Get all*/
+    public ArrayList<Perfil> getProfiles(){
+        ArrayList<Perfil> profiles = null;
+        Query query = null;
+        try {
+            query = session.createQuery("from Perfil");
+            
+            if(!query.list().isEmpty()){
+               profiles = (ArrayList<Perfil>)( query.list());
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            errorMessage = e.getMessage();
+        } finally{
+            return profiles;
+        }
+    };
+    
+    /*Get profile by id, if nothin then null*/
+    public Perfil getProfile(int id){
+        Perfil p = null;
+        Query query = null;
+        try {
+            query = session.createQuery("from Perfil where id=" + Integer.toString(id));
+            
+            if(!query.list().isEmpty()){
+                p = (Perfil) query.list().get(0);
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        } finally{
+            return p;
+        }
+    }
+    
+    /*Get profile by name, if nothin then null*/
+    public Perfil getProfile(String nombre){
+        Perfil p = null;
+        Query query = null;
+        try {
+            query = session.createQuery("from Perfil where nombre='" + nombre + "'");
+            
+            if(!query.list().isEmpty()){
+                p = (Perfil) query.list().get(0);
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        } finally{
+            return p;
+        }
+    }
+    
+    public Long saveProfile(Perfil p){
+        Long id = new Long(-1);
+        try {
+            Transaction tx = session.getTransaction();
+            id = (Long) session.save(p);
+            tx.commit();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return id;
+    }
+    
+    public boolean updateProfile(Perfil pOld){
+        boolean ok = false;
+        try {
+            Transaction tx = session.getTransaction();
+            Perfil pNew = session.load(Perfil.class, pOld.getId());
+            
+            pNew.setNombre(pOld.getNombre());
+            pNew.setDescripcion(pOld.getDescripcion());
+            pNew.setPermisos(pOld.getPermisos());
+            pNew.setActivo(pOld.isActivo());
+            
+            tx.commit();
+            ok = true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            this.errorMessage = e.getMessage();
+        }
+        return ok;
     }
 }

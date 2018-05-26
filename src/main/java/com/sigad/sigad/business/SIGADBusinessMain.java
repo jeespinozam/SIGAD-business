@@ -19,6 +19,7 @@ import javafx.scene.Scene;
 import com.sigad.sigad.app.controller.HomeController;
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.insumos.controller.InsumoController;
+import com.sigad.sigad.perfil.controller.PerfilController;
 import com.sigad.sigad.personal.controller.CrearEditarUsuarioController;
 import com.sigad.sigad.personal.controller.PersonalController;
 
@@ -33,7 +34,7 @@ public class SIGADBusinessMain extends Application{
     @Override
 	public void start(Stage stage) {
             try {
-                    Parent root = FXMLLoader.load(getClass().getResource(PersonalController.viewPath));
+                    Parent root = FXMLLoader.load(getClass().getResource(LoginController.viewPath));
                     Scene scene = new Scene(root);
                     //scene.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
                     stage.setScene(scene);
