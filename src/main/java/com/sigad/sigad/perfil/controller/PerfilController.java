@@ -57,6 +57,7 @@ public class PerfilController implements Initializable {
     public static final String viewPath = "/com/sigad/sigad/personal/view/perfil.fxml";
     
     static ObservableList<PerfilController.Profile> dataPerfilTbl = FXCollections.observableArrayList();
+    @FXML
     private JFXTreeTableView profilesTbl;
     @FXML
     private JFXButton addBtn;
