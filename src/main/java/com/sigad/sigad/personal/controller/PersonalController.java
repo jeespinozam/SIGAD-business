@@ -10,6 +10,7 @@ import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXTreeTableColumn;
+import com.jfoenix.controls.JFXTreeTableRow;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
@@ -18,6 +19,7 @@ import com.sigad.sigad.app.controller.HomeController;
 import com.sigad.sigad.business.Usuario;
 import com.sigad.sigad.pedido.controller.SeleccionarProductosController;
 import com.sigad.sigad.business.helpers.UsuarioHelper;
+import com.sigad.sigad.perfil.controller.PerfilController;
 import com.sun.javafx.geom.BaseBounds;
 import com.sun.javafx.geom.transform.BaseTransform;
 import com.sun.javafx.jmx.MXNodeAlgorithm;
@@ -48,6 +50,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -68,7 +71,7 @@ public class PersonalController implements Initializable {
     public static String windowName = "Cuentas";
     @FXML
     private JFXTreeTableView userTbl;
-    static ObservableList<User> data = FXCollections.observableArrayList();
+    static ObservableList<User> data;
     @FXML
     private JFXButton addBtn;
     @FXML
@@ -85,7 +88,7 @@ public class PersonalController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+        data = FXCollections.observableArrayList();
         initUserTbl();
         
     }    
@@ -314,6 +317,27 @@ public class PersonalController implements Initializable {
         
         //DB
         getDataFromDB();
+        
+        //Double click on row
+        userTbl.setRowFactory(ord -> {
+            JFXTreeTableRow<PersonalController.User> row = new JFXTreeTableRow<>();
+            row.setOnMouseClicked((event) -> {
+                if (! row.isEmpty() && event.getButton()==MouseButton.PRIMARY 
+                     && event.getClickCount() == 2) {
+                    PersonalController.User clickedRow = row.getItem();
+                    System.out.println(clickedRow.nombres);
+                    
+                    selectedUser = clickedRow;
+                    
+                    try {
+                        CreateEdditUserDialog(false);
+                    } catch (IOException ex) {
+                        Logger.getLogger(PersonalController.class.getName()).log(Level.SEVERE, "initUserTbl(): CreateEdditUserDialog()", ex);
+                    }
+                }
+            });
+            return row;
+        });
         
         final TreeItem<PersonalController.User> root = new RecursiveTreeItem<>(data, RecursiveTreeObject::getChildren);
         

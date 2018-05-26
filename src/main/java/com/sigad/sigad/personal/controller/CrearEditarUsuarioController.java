@@ -47,8 +47,6 @@ public class CrearEditarUsuarioController implements Initializable {
     private StackPane hiddenSp;
     @FXML
     private AnchorPane containerPane;
-    public static boolean isProfileCreate;
-    public static JFXDialog profileDialog;    
     @FXML
     private JFXTextField emailTxt;
     @FXML
@@ -89,16 +87,29 @@ public class CrearEditarUsuarioController implements Initializable {
                 if(validateFields()){
                     System.out.println("VALIDADO ALL FIELDS");
                     updateFields();
-                    UsuarioHelper helper = new UsuarioHelper();
-                    Long id = helper.saveUser(CrearEditarUsuarioController.user);
-                    if(id != null){
-                        PersonalController.updateTable(CrearEditarUsuarioController.user);
-                        PersonalController.userDialog.close();
-                    }else{
-                        ErrorController error = new ErrorController();
-                        error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
-                    }
                     
+                    UsuarioHelper helper = new UsuarioHelper();
+                    if(!PersonalController.isUserCreate){
+                        boolean ok = helper.updateUser(CrearEditarUsuarioController.user);
+                        if(ok){
+                            PersonalController.updateTable(CrearEditarUsuarioController.user);
+                            PersonalController.userDialog.close();
+                        }else{
+                            ErrorController error = new ErrorController();
+                            error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
+                        }
+                    }else{
+                        
+                        Long id = helper.saveUser(CrearEditarUsuarioController.user);
+                        if(id != null){
+                            PersonalController.updateTable(CrearEditarUsuarioController.user);
+                            PersonalController.userDialog.close();
+                        }else{
+                            ErrorController error = new ErrorController();
+                            error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
+                        }
+
+                    }
                 }
             }
         });
@@ -130,9 +141,13 @@ public class CrearEditarUsuarioController implements Initializable {
             dniTxt.setText(user.getDni());
             telephoneTxt.setText(user.getTelefono());
             cellphoneTxt.setText(user.getCelular());
+            emailTxt.setText(user.getCorreo());
+            passwordTxt.setText(user.getPassword());
+            
+            passwordTxt.setEditable(false);
+            passwordTxt.setOpacity(0.5);
         }
     }
-    
     
     public boolean validateFields() {
         if(!nameTxt.validate()){

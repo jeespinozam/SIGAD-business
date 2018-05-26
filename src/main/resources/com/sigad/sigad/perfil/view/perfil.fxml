@@ -21,8 +21,11 @@
             <GridPane prefHeight="679.0" prefWidth="1011.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="330.8389587402344" minWidth="0.0" prefWidth="35.411977767944336" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="946.1797485351562" minWidth="10.0" prefWidth="923.5880222320557" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="152.8389892578125" minWidth="10.0" prefWidth="39.74908447265625" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="946.1797485351562" minWidth="10.0" prefWidth="88.09337615966797" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="946.1797485351562" minWidth="10.0" prefWidth="364.1471862792969" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="492.0418395996094" minWidth="10.0" prefWidth="57.852813720703125" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="666.9972534179688" minWidth="10.0" prefWidth="595.218017578125" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="473.76080322265625" minWidth="10.0" prefWidth="87.781982421875" />
               </columnConstraints>
               <rowConstraints>
                   <RowConstraints maxHeight="220.8389434814453" minHeight="10.0" prefHeight="54.78278350830078" vgrow="SOMETIMES" />
@@ -33,21 +36,42 @@
                   <RowConstraints maxHeight="111.83892822265625" minHeight="10.0" prefHeight="52.69287109375" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <JFXTreeTableView fx:id="profilesTbl" prefHeight="390.0" prefWidth="918.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                  <AnchorPane prefHeight="56.0" prefWidth="927.0" style="-fx-background-color: #ECEFF1; -fx-border-color: #C8C8C8;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  <AnchorPane prefHeight="33.0" prefWidth="927.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                  <JFXTreeTableView fx:id="profilesTbl" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                  <AnchorPane prefHeight="56.0" prefWidth="927.0" style="-fx-background-color: #ECEFF1; -fx-border-color: #C8C8C8;" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                  <AnchorPane prefHeight="33.0" prefWidth="927.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;" GridPane.columnIndex="2" GridPane.rowIndex="1">
                      <children>
                         <Label layoutX="29.0" layoutY="11.0" prefHeight="17.0" prefWidth="145.0" text="Perfiles" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="5.0" />
-                        <JFXButton fx:id="moreBtn" layoutX="847.0" layoutY="-2.0" onAction="#handleAction" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
+                        <JFXButton fx:id="perfilMoreBtn" layoutX="847.0" layoutY="-2.0" onAction="#handleAction" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
                            <graphic>
                               <MaterialDesignIconView glyphName="DOTS_VERTICAL" />
                            </graphic>
                         </JFXButton>
                      </children>
                   </AnchorPane>
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="4">
                      <children>
-                        <JFXButton fx:id="addBtn" alignment="CENTER" layoutX="833.0" layoutY="5.0" onAction="#handleAction" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
+                        <JFXButton fx:id="perfilAddBtn" alignment="CENTER" layoutX="833.0" layoutY="5.0" onAction="#handleAction" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
+                           <graphic>
+                              <MaterialDesignIconView glyphName="PLUS" />
+                           </graphic>
+                        </JFXButton>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane prefHeight="33.0" prefWidth="927.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;" GridPane.columnIndex="4" GridPane.rowIndex="1">
+                     <children>
+                        <Label layoutX="29.0" layoutY="11.0" prefHeight="17.0" prefWidth="145.0" text="Permiso" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="5.0" />
+                        <JFXButton fx:id="permisoMoreBtn" layoutX="847.0" layoutY="-2.0" onAction="#handleAction" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
+                           <graphic>
+                              <MaterialDesignIconView glyphName="DOTS_VERTICAL" />
+                           </graphic>
+                        </JFXButton>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane prefHeight="56.0" prefWidth="927.0" style="-fx-background-color: #ECEFF1; -fx-border-color: #C8C8C8;" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                  <JFXTreeTableView fx:id="permissionTbl" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="4">
+                     <children>
+                        <JFXButton fx:id="permisoAddBtn" alignment="CENTER" layoutX="833.0" layoutY="5.0" onAction="#handleAction" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
                            <graphic>
                               <MaterialDesignIconView glyphName="PLUS" />
                            </graphic>

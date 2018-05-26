@@ -5,6 +5,7 @@ import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Usuario;
 import java.util.ArrayList;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
@@ -94,18 +95,20 @@ public class UsuarioHelper {
     }
     
     public Long saveUser(Usuario newUser){
-        Long id = new Long(-1);
+        Long id = null;
         try {
-            Transaction tx = session.beginTransaction();
-        
             PerfilHelper helper = new PerfilHelper();
             Perfil perfil = helper.getProfile(newUser.getPerfil().getNombre());
 
+            Transaction tx = session.beginTransaction();
             if(perfil != null){
-                newUser.setPerfil(perfil);    
+                //newUser.setPerfil(perfil);    
             }
             
-            id = (Long) session.save(newUser);
+            session.save(newUser);
+            if(newUser.getId() != null){
+                id = newUser.getId();
+            }
             tx.commit();
 
         } catch (Exception e) {
@@ -119,8 +122,8 @@ public class UsuarioHelper {
     public boolean updateUser(Usuario uOld){
         boolean ok = false;
         try {
-            Transaction tx = session.getTransaction();
-            Usuario uNew = session.load(Usuario.class, uOld.getId());
+            Transaction tx = session.beginTransaction();
+            Usuario uNew = session.get(Usuario.class, uOld.getId());
             
             uNew.setNombres(uOld.getNombres());
             uNew.setApellidoPaterno(errorMessage);
@@ -130,9 +133,10 @@ public class UsuarioHelper {
             uNew.setDni(uOld.getDni());
             uNew.setIntereses(uOld.getIntereses());
             uNew.setPassword(uOld.getPassword());
-            uNew.setPerfil(uOld.getPerfil());
+            //uNew.setPerfil(uOld.getPerfil());
             uNew.setTelefono(uOld.getTelefono());
             
+            session.update(uNew);
             tx.commit();
             ok = true;
         } catch (Exception e) {

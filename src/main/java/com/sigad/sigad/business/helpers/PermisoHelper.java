@@ -1,29 +1,26 @@
-package com.sigad.sigad.business.helpers;
-
-import com.sigad.sigad.app.controller.LoginController;
-import com.sigad.sigad.business.Perfil;
-import com.sigad.sigad.business.Usuario;
-import java.util.ArrayList;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.query.Query;
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package com.sigad.sigad.business.helpers;
+
+import com.sigad.sigad.app.controller.LoginController;
+import com.sigad.sigad.business.Permiso;
+import java.util.ArrayList;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 /**
  *
  * @author jorgeespinoza
  */
-public class PerfilHelper {
-
+public class PermisoHelper {
     Session session = null;
     private static String errorMessage = "";
     
-    public PerfilHelper() {
+    public PermisoHelper() {
         session = LoginController.serviceInit();
     }
     
@@ -40,32 +37,32 @@ public class PerfilHelper {
     }
     
     /*Get all*/
-    public ArrayList<Perfil> getProfiles(){
-        ArrayList<Perfil> profiles = null;
+    public ArrayList<Permiso> getPermissions(){
+        ArrayList<Permiso> permissions = null;
         Query query = null;
         try {
-            query = session.createQuery("from Perfil");
+            query = session.createQuery("from Permiso");
             
             if(!query.list().isEmpty()){
-               profiles = (ArrayList<Perfil>)( query.list());
+               permissions = (ArrayList<Permiso>)( query.list());
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             errorMessage = e.getMessage();
         } finally{
-            return profiles;
+            return permissions;
         }
     };
     
-    /*Get profile by id, if nothin then null*/
-    public Perfil getProfile(int id){
-        Perfil p = null;
+    /*Get permission by id, if nothin then null*/
+    public Permiso getPermission(int id){
+        Permiso p = null;
         Query query = null;
         try {
-            query = session.createQuery("from Perfil where id=" + Integer.toString(id));
+            query = session.createQuery("from Permiso where id=" + Integer.toString(id));
             
             if(!query.list().isEmpty()){
-                p = (Perfil) query.list().get(0);
+                p = (Permiso) query.list().get(0);
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
@@ -74,15 +71,15 @@ public class PerfilHelper {
         }
     }
     
-    /*Get profile by name, if nothin then null*/
-    public Perfil getProfile(String nombre){
-        Perfil p = null;
+    /*Get permission by name, if nothin then null*/
+    public Permiso getPermission(String nombre){
+        Permiso p = null;
         Query query = null;
         try {
-            query = session.createQuery("from Perfil where nombre='" + nombre + "'");
+            query = session.createQuery("from Permiso where opcion='" + nombre + "'");
             
             if(!query.list().isEmpty()){
-                p = (Perfil) query.list().get(0);
+                p = (Permiso) query.list().get(0);
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
@@ -91,7 +88,7 @@ public class PerfilHelper {
         }
     }
     
-    public Long saveProfile(Perfil p){
+    public Long savePermission(Permiso p){
         Long id = null;
         try {
             Transaction tx = session.beginTransaction();
@@ -106,16 +103,14 @@ public class PerfilHelper {
         return id;
     }
     
-    public boolean updateProfile(Perfil pOld){
+    public boolean updatePermission(Permiso pOld){
         boolean ok = false;
         try {
             Transaction tx = session.beginTransaction();
-            Perfil pNew = session.load(Perfil.class, pOld.getId());
+            Permiso pNew = session.load(Permiso.class, pOld.getId());
             
-            pNew.setNombre(pOld.getNombre());
+            pNew.setOpcion(pOld.getOpcion());
             pNew.setDescripcion(pOld.getDescripcion());
-            pNew.setPermisos(pOld.getPermisos());
-            pNew.setActivo(pOld.isActivo());
             
             session.save(pNew);
             tx.commit();
