@@ -123,6 +123,7 @@ public class CargaMasivaHelper {
                         rowhead.createCell(rowIndex).setCellValue("Nombre de Perfil");
                         rowIndex++;
                         rowhead.createCell(rowIndex).setCellValue("Opcion de Permiso");
+                        break;
                     // agregar aqui el resto de casos
                     default:
                         LOGGER.log(Level.WARNING, "Tabla no reconocida, abortando ....");
@@ -155,7 +156,7 @@ public class CargaMasivaHelper {
             Iterator<Row> rowIterator = null;
             Iterator<Cell> cellIterator = null;
             int casosExitosos, casosFallidos;
-            int hojasReconocidas = 0, hojasNoReconocidas = 0;
+            int hojasReconocidas = 0;
             // Abriendo conexion a Base de Datos
             Configuration config;
             SessionFactory sessionFactory;
@@ -165,10 +166,11 @@ public class CargaMasivaHelper {
             sessionFactory = config.buildSessionFactory();
             session = sessionFactory.openSession();
             LOGGER.log(Level.INFO, "Se procede a inspeccionar archivo ...");
-            while (sheetIterator.hasNext()) {
-                sheet = sheetIterator.next();
-                sheetName = sheet.getSheetName();
-                if (CargaMasivaConstantes.getList().contains(sheetName)) {
+            // se itera sobre la prioridad establecida en CargaMasivaConstantes
+            for (String tablaEnCola : CargaMasivaConstantes.getList()) {
+                sheet = workbook.getSheet(tablaEnCola);
+                if (sheet!=null) {
+                    sheetName = sheet.getSheetName();
                     LOGGER.log(Level.INFO, String.format("Hoja %s reconocida, iniciando proceso ...", sheetName));
                     hojasReconocidas++;
                     rowIterator = sheet.rowIterator();
@@ -187,18 +189,13 @@ public class CargaMasivaHelper {
                     LOGGER.log(Level.INFO, String.format("Casos Exitosos : %d", casosExitosos));
                     LOGGER.log(Level.INFO, String.format("Casos Fallidos : %d", casosFallidos));
                 }
-                else{
-                    LOGGER.log(Level.INFO, String.format("Hoja %s no reconocida, abortando proceso ...", sheetName));
-                    hojasNoReconocidas++;
-                }
             }
             // Cerrando conexion a Base de Datos
             session.close();
             sessionFactory.close();
             workbook.close();
             LOGGER.log(Level.INFO, "Procesamiento Finalizado, reporte final :");
-            LOGGER.log(Level.INFO, String.format("Hojas Reconocidas : %s", hojasReconocidas));
-            LOGGER.log(Level.INFO, String.format("Hojas No Reconocidas : %s", hojasNoReconocidas));
+            LOGGER.log(Level.INFO, String.format("Cantidad de Hojas Procesadas : %s", hojasReconocidas));
         }
         catch(Exception ex) {
             LOGGER.log(Level.SEVERE, "Error al cargar masivamente, revisar la ruta del archivo");
