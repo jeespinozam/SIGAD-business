@@ -13,10 +13,8 @@ import com.sigad.sigad.business.Proveedor;
 import com.sigad.sigad.business.Tienda;
 import com.sigad.sigad.business.TipoMovimiento;
 import com.sigad.sigad.business.Usuario;
-import com.sigad.sigad.business.Vehiculo;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +26,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -43,97 +40,146 @@ public class CargaMasivaHelper {
     
     private final static Logger LOGGER = Logger.getLogger(CargaMasivaHelper.class.getName());
     
-    public static void generarCargaMasivaTemplate(String tablaCarga, String destinoTemplate) {
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet(tablaCarga);
-        HSSFRow rowhead = sheet.createRow(0);
-        int rowIndex = 0;
-        // Definimos las cabeceras
-        switch(tablaCarga) {
-            case CargaMasivaConstantes.TABLA_PRODUCTOCATEGORIA:
-                rowhead.createCell(rowIndex).setCellValue("Nombre");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Descripcion");
-                break;
-            case CargaMasivaConstantes.TABLA_PERFILES:
-                rowhead.createCell(rowIndex).setCellValue("Nombre");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Descripcion");
-                break;
-            case CargaMasivaConstantes.TABLA_USUARIOS:
-                rowhead.createCell(rowIndex).setCellValue("Nombre(s)");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Apellido Paterno");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Apellido Materno");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Perfil");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Telefono Fijo");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("DNI");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Celular");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Correo Electronico");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Intereses");
-                break;
-            case CargaMasivaConstantes.TABLA_PROVEEDORES:
-                rowhead.createCell(rowIndex).setCellValue("Nombre");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Ruc");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Descripcion");
-                break;
-            case CargaMasivaConstantes.TABLA_INSUMOS:
-                rowhead.createCell(rowIndex).setCellValue("Nombre");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Descripcion");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Tiempo de Vida");
-                break;
-            case CargaMasivaConstantes.TABLA_TIENDAS:
-                rowhead.createCell(rowIndex).setCellValue("Direccion");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Ubicacion, Eje X");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Ubicacion, Eje Y");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Descripcion");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Capacidad en peso");
-                break;
-            case CargaMasivaConstantes.TABLA_TIPOMOV:
-                rowhead.createCell(rowIndex).setCellValue("Nombre");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Descripcion");
-                break;
-            case CargaMasivaConstantes.TABLA_PERMISOS:
-                rowhead.createCell(rowIndex).setCellValue("Opcion");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Descripcion");
-                break;
-            case CargaMasivaConstantes.TABLA_PERFILXPERMISO:
-                rowhead.createCell(rowIndex).setCellValue("Nombre de Perfil");
-                rowIndex++;
-                rowhead.createCell(rowIndex).setCellValue("Opcion de Permiso");
-            // agregar aqui el resto de casos
-            default:
-                LOGGER.log(Level.WARNING, "Tabla no reconocida, abortando ....");
-                return;
+    /* Incio : Metodos disponibles */
+    
+    /* forma de consumo : se pasa como parametros la lista des tablas de las cuales se quieren generar sus plantillas
+    y la ruta donde se quiere guardar el archivo, cabe senialar que la ruta debe contener el nombre del archivo con el formato xls (Excel)*/
+    public static void generarCargaMasivaTemplate(List<String> listaTablaCarga, String destinoTemplate) {
+        if (listaTablaCarga != null && !listaTablaCarga.isEmpty()) {
+            HSSFWorkbook workbook = new HSSFWorkbook();
+            int rowIndex;
+            for (String tablaCarga : listaTablaCarga) {
+                HSSFSheet sheet = workbook.createSheet(tablaCarga);
+                HSSFRow rowhead = sheet.createRow(0);
+                rowIndex = 0;
+                // Definimos las cabeceras
+                switch(tablaCarga) {
+                    case CargaMasivaConstantes.TABLA_PRODUCTOCATEGORIA:
+                        rowhead.createCell(rowIndex).setCellValue("Nombre");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                        break;
+                    case CargaMasivaConstantes.TABLA_PERFILES:
+                        rowhead.createCell(rowIndex).setCellValue("Nombre");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                        break;
+                    case CargaMasivaConstantes.TABLA_USUARIOS:
+                        rowhead.createCell(rowIndex).setCellValue("Nombre(s)");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Apellido Paterno");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Apellido Materno");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Perfil");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Telefono Fijo");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("DNI");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Celular");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Correo Electronico");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Intereses");
+                        break;
+                    case CargaMasivaConstantes.TABLA_PROVEEDORES:
+                        rowhead.createCell(rowIndex).setCellValue("Nombre");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Ruc");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                        break;
+                    case CargaMasivaConstantes.TABLA_INSUMOS:
+                        rowhead.createCell(rowIndex).setCellValue("Nombre");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Tiempo de Vida");
+                        break;
+                    case CargaMasivaConstantes.TABLA_TIENDAS:
+                        rowhead.createCell(rowIndex).setCellValue("Direccion");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Ubicacion, Eje X");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Ubicacion, Eje Y");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Capacidad en peso");
+                        break;
+                    case CargaMasivaConstantes.TABLA_TIPOMOV:
+                        rowhead.createCell(rowIndex).setCellValue("Nombre");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                        break;
+                    case CargaMasivaConstantes.TABLA_PERMISOS:
+                        rowhead.createCell(rowIndex).setCellValue("Opcion");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                        break;
+                    case CargaMasivaConstantes.TABLA_PERFILXPERMISO:
+                        rowhead.createCell(rowIndex).setCellValue("Nombre de Perfil");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Opcion de Permiso");
+                    // agregar aqui el resto de casos
+                    default:
+                        LOGGER.log(Level.WARNING, "Tabla no reconocida, abortando ....");
+                        return;
+                }
+            }
+            try {
+                FileOutputStream fileOut = new FileOutputStream(destinoTemplate);
+                workbook.write(fileOut);
+                fileOut.close();
+                LOGGER.log(Level.INFO, "Plantilla(s) creada(s) con exito");
+                }
+            catch(Exception ex) {
+                LOGGER.log(Level.SEVERE, "Error al generar la(s) plantilla(s)");
+                System.out.print(ex);
+            }
         }
+    }
+    
+    public static void CargaMasivaProceso(String tablaCarga, String archivoRuta) {
         try {
-            FileOutputStream fileOut = new FileOutputStream(destinoTemplate);
-            workbook.write(fileOut);
-            fileOut.close();
-            LOGGER.log(Level.INFO, String.format("Plantilla de %s creada con exito", tablaCarga));
+            DataFormatter dataFormatter = new DataFormatter();
+            Workbook workbook = WorkbookFactory.create(new File(archivoRuta));
+            Sheet sheet = workbook.getSheetAt(0);   // coge siempre la primera hoja del archivo
+            Iterator<Row> rowIterator = sheet.rowIterator();
+            // nos saltamos la cabecera
+            rowIterator.next();
+            Row row = null;
+            // Abrir conexion bd
+            Configuration config;
+            SessionFactory sessionFactory;
+            Session session;
+            config = new Configuration();
+            config.configure("hibernate.cfg.xml");
+            sessionFactory = config.buildSessionFactory();
+            session = sessionFactory.openSession();
+            int casosExitosos = 0;
+            int casosFallidos = 0;
+            while (rowIterator.hasNext()) {
+                row = rowIterator.next();
+                Iterator<Cell> cellIterator = row.cellIterator();
+                if (CargaMasivaHelper.SubirRegistroBD(tablaCarga, cellIterator, dataFormatter, session)) casosExitosos++;
+                else casosFallidos++;
+            }
+            session.close();
+            sessionFactory.close();
+            workbook.close();
+            LOGGER.log(Level.INFO, "Procesamiento Finalizado");
+            LOGGER.log(Level.INFO, String.format("Casos Exitosos %d", casosExitosos));
+            LOGGER.log(Level.INFO, String.format("Casos Fallidos %d", casosFallidos));
         }
         catch(Exception ex) {
-            LOGGER.log(Level.SEVERE, String.format("Error al generar plantilla de ", tablaCarga));
+            LOGGER.log(Level.SEVERE, "Error al cargar masivamente");
             System.out.print(ex);
         }
     }
+    
+    /* Fin : Metodos disponibles */
     
     // solo retornara el primero que encuentre
     private static Object busquedaGeneral(Session session, String nombreEntidad, String [] condiciones, String [] valoresCondiciones) {
@@ -383,42 +429,5 @@ public class CargaMasivaHelper {
         }
     }
     
-    public static void CargaMasivaProceso(String tablaCarga, String archivoRuta) {
-        try {
-            DataFormatter dataFormatter = new DataFormatter();
-            Workbook workbook = WorkbookFactory.create(new File(archivoRuta));
-            Sheet sheet = workbook.getSheetAt(0);   // coge siempre la primera hoja del archivo
-            Iterator<Row> rowIterator = sheet.rowIterator();
-            // nos saltamos la cabecera
-            rowIterator.next();
-            Row row = null;
-            // Abrir conexion bd
-            Configuration config;
-            SessionFactory sessionFactory;
-            Session session;
-            config = new Configuration();
-            config.configure("hibernate.cfg.xml");
-            sessionFactory = config.buildSessionFactory();
-            session = sessionFactory.openSession();
-            int casosExitosos = 0;
-            int casosFallidos = 0;
-            while (rowIterator.hasNext()) {
-                row = rowIterator.next();
-                Iterator<Cell> cellIterator = row.cellIterator();
-                if (CargaMasivaHelper.SubirRegistroBD(tablaCarga, cellIterator, dataFormatter, session)) casosExitosos++;
-                else casosFallidos++;
-            }
-            session.close();
-            sessionFactory.close();
-            workbook.close();
-            LOGGER.log(Level.INFO, "Procesamiento Finalizado");
-            LOGGER.log(Level.INFO, String.format("Casos Exitosos %d", casosExitosos));
-            LOGGER.log(Level.INFO, String.format("Casos Fallidos %d", casosFallidos));
-        }
-        catch(Exception ex) {
-            LOGGER.log(Level.SEVERE, "Error al cargar masivamente");
-            System.out.print(ex);
-        }
-    }
     
 }
