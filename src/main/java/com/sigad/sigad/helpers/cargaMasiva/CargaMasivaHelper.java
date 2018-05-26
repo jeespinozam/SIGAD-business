@@ -141,16 +141,21 @@ public class CargaMasivaHelper {
         }
     }
     
-    public static void CargaMasivaProceso(String tablaCarga, String archivoRuta) {
+    /* forma de consumo : se pasa como unico parametro la ruta del archivo, el metodo identificara las hojas del archivo e iniciara la carga masiva */
+    public static void CargaMasivaProceso(String archivoRuta) {
         try {
+            // Declarando e inicializando variables a utilizar
             DataFormatter dataFormatter = new DataFormatter();
             Workbook workbook = WorkbookFactory.create(new File(archivoRuta));
-            Sheet sheet = workbook.getSheetAt(0);   // coge siempre la primera hoja del archivo
-            Iterator<Row> rowIterator = sheet.rowIterator();
-            // nos saltamos la cabecera
-            rowIterator.next();
+            Iterator<Sheet> sheetIterator = workbook.sheetIterator();
+            Sheet sheet = null;
+            String sheetName = null;
             Row row = null;
-            // Abrir conexion bd
+            Iterator<Row> rowIterator = null;
+            Iterator<Cell> cellIterator = null;
+            int casosExitosos, casosFallidos;
+            int hojasReconocidas = 0, hojasNoReconocidas = 0;
+            // Abriendo conexion a Base de Datos
             Configuration config;
             SessionFactory sessionFactory;
             Session session;
@@ -158,23 +163,45 @@ public class CargaMasivaHelper {
             config.configure("hibernate.cfg.xml");
             sessionFactory = config.buildSessionFactory();
             session = sessionFactory.openSession();
-            int casosExitosos = 0;
-            int casosFallidos = 0;
-            while (rowIterator.hasNext()) {
-                row = rowIterator.next();
-                Iterator<Cell> cellIterator = row.cellIterator();
-                if (CargaMasivaHelper.SubirRegistroBD(tablaCarga, cellIterator, dataFormatter, session)) casosExitosos++;
-                else casosFallidos++;
+            LOGGER.log(Level.INFO, "Se procede a inspeccionar archivo ...");
+            while (sheetIterator.hasNext()) {
+                sheet = sheetIterator.next();
+                sheetName = sheet.getSheetName();
+                
+                if (CargaMasivaConstantes.getList().contains(sheetName)) {
+                    LOGGER.log(Level.INFO, String.format("Hoja %s reconocida, iniciando proceso ...", sheetName));
+                    hojasReconocidas++;
+                    rowIterator = sheet.rowIterator();
+                    rowIterator.next(); // nos saltamos la cabecera
+                    // inicializamos contadores
+                    casosExitosos = 0;
+                    casosFallidos = 0;
+                    // a este punto ya estamos en la fila inicial para comenzar a leer y cargar datos
+                    while (rowIterator.hasNext()) {
+                        row = rowIterator.next();
+                        cellIterator = row.cellIterator();
+                        if (CargaMasivaHelper.SubirRegistroBD(sheetName, cellIterator, dataFormatter, session)) casosExitosos++;
+                        else casosFallidos++;
+                    }
+                    LOGGER.log(Level.INFO, String.format("Hoja %s finalizada, reporte :", sheetName));
+                    LOGGER.log(Level.INFO, String.format("Casos Exitosos : %d", casosExitosos));
+                    LOGGER.log(Level.INFO, String.format("Casos Fallidos : %d", casosFallidos));
+                }
+                else{
+                    LOGGER.log(Level.INFO, String.format("Hoja %s no reconocida, abortando proceso ...", sheetName));
+                    hojasNoReconocidas++;
+                }
             }
+            // Cerrando conexion a Base de Datos
             session.close();
             sessionFactory.close();
             workbook.close();
-            LOGGER.log(Level.INFO, "Procesamiento Finalizado");
-            LOGGER.log(Level.INFO, String.format("Casos Exitosos %d", casosExitosos));
-            LOGGER.log(Level.INFO, String.format("Casos Fallidos %d", casosFallidos));
+            LOGGER.log(Level.INFO, "Procesamiento Finalizado, reporte final :");
+            LOGGER.log(Level.INFO, String.format("Hojas Reconocidas : %s", hojasReconocidas));
+            LOGGER.log(Level.INFO, String.format("Hojas No Reconocidas : %s", hojasNoReconocidas));
         }
         catch(Exception ex) {
-            LOGGER.log(Level.SEVERE, "Error al cargar masivamente");
+            LOGGER.log(Level.SEVERE, "Error al cargar masivamente, revisar la ruta del archivo");
             System.out.print(ex);
         }
     }

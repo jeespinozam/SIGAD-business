@@ -28,12 +28,15 @@ import javafx.scene.Scene;
 import com.sigad.sigad.app.controller.HomeController;
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.insumos.controller.InsumoController;
+import java.util.ArrayList;
+import java.util.List;
 /**
  *
  * @author cfoch
  */
-public class SIGADBusinessMain extends Application{
-//    public static void main(String[] args) {
+public class SIGADBusinessMain {
+    
+    public static void main(String[] args) {
 //        Configuration config;
 //        SessionFactory sessionFactory;
 //        Session session;
@@ -57,8 +60,16 @@ public class SIGADBusinessMain extends Application{
 //        
 //        session.close();
 //        sessionFactory.close();
-//    }
+
+    List<String> lista = new ArrayList<>();
+    lista.add(CargaMasivaConstantes.TABLA_PERMISOS);
+    lista.add(CargaMasivaConstantes.TABLA_PRODUCTOCATEGORIA);
+    lista.add(CargaMasivaConstantes.TABLA_TIENDAS);
+    CargaMasivaHelper.generarCargaMasivaTemplate(lista, "/home/paul/pruebaTemplate.xls");
+
+    }
     
+    /*
     @Override
 	public void start(Stage stage) {
             try {
@@ -75,4 +86,5 @@ public class SIGADBusinessMain extends Application{
 	public static void main(String[] args) {
             launch(args);
 	}
+*/
 }

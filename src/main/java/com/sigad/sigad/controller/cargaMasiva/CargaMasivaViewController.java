@@ -98,7 +98,7 @@ public class CargaMasivaViewController implements Initializable {
             public void handle(ActionEvent event){
                 String filePath = loadedFile.getAbsolutePath();
                 String templateName = comboEntidad.getSelectionModel().getSelectedItem().toString();
-                CargaMasivaHelper.CargaMasivaProceso(templateName, filePath);
+                CargaMasivaHelper.CargaMasivaProceso(filePath);
             }
         });
     }
@@ -123,7 +123,7 @@ public class CargaMasivaViewController implements Initializable {
             DirectoryChooser dirChooser = new DirectoryChooser();
             String downloadDir = dirChooser.showDialog(currentStage).getAbsolutePath() + "/template.xls";
             if(downloadDir != null){
-                CargaMasivaHelper.generarCargaMasivaTemplate(templateName, downloadDir);   
+                CargaMasivaHelper.generarCargaMasivaTemplate(null, downloadDir);   
             }
         }        
     }
