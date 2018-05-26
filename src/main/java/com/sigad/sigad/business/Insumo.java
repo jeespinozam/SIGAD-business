@@ -35,7 +35,7 @@ public class Insumo {
     private int stock;
     @NotNull
     private boolean activo;
-    private boolean volumen;
+    private Double volumen;
     
     @OneToMany(mappedBy = "insumo")
     private Set<LoteInsumo> lotesInsumo = new HashSet<LoteInsumo>();
@@ -161,14 +161,14 @@ public class Insumo {
     /**
      * @return the volumen
      */
-    public boolean isVolumen() {
+    public Double isVolumen() {
         return volumen;
     }
 
     /**
      * @param volumen the volumen to set
      */
-    public void setVolumen(boolean volumen) {
+    public void setVolumen(Double volumen) {
         this.volumen = volumen;
     }
 
