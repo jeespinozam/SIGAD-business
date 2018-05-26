@@ -43,8 +43,33 @@ import com.sigad.sigad.deposito.controller.FXMLAlmacenIngresoListaOrdenCompraCon
  */
 
 public class SIGADBusinessMain extends Application{
-    
-    @Override
+//    public static void main(String[] args) throws NoSuchAlgorithmException {
+//        Configuration config;
+//        SessionFactory sessionFactory;
+//        Session session;
+//
+//        config = new Configuration();
+//        config.configure("hibernate.cfg.xml");
+//        sessionFactory = config.buildSessionFactory();
+//        session = sessionFactory.openSession();
+//
+//        session.beginTransaction();
+//
+//        
+//        Usuario u= new Usuario();
+//        MessageDigest digest=MessageDigest.getInstance("MD5");
+//        String pass="test";
+//        digest.update(pass.getBytes());
+//        String hash=digest.digest().toString();
+//        u.setPassword(hash);
+//        session.save(u);
+//
+//        session.getTransaction().commit();
+//        
+//        session.close();
+//        sessionFactory.close();
+//    }
+     @Override
 	public void start(Stage stage) {
             try {
                     Parent root = FXMLLoader.load(getClass().getResource(LoginController.viewPath));
@@ -60,6 +85,4 @@ public class SIGADBusinessMain extends Application{
 	public static void main(String[] args) {        
             launch(args);
 	}
-
-    
 }

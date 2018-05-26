@@ -23,15 +23,24 @@ public class ProductoHelper {
         session = LoginController.serviceInit();
         session.beginTransaction();
         // Add new Employee object
-        Producto prod = new Producto("Rosas", "/images/rosa.jpg", 15, 12.0,Boolean.TRUE);
-        Producto prod2 = new Producto("Chocolates", "/images/chocolate.jpg", 15,12.0, Boolean.TRUE);
-        session.save(prod);
-        session.save(prod2);
+//        Producto prod = new Producto("Rosas", "/images/rosa.jpg", 15, 12.0,Boolean.TRUE);
+//        Producto prod2 = new Producto("Chocolates", "/images/chocolate.jpg", 15,12.0, Boolean.TRUE);
+//        session.save(prod);
+//        session.save(prod2);
     }
     
     public ArrayList<Producto> getProducts(){
-        Query query  = session.createQuery("from Producto");
-        return new ArrayList<>( query.list());
+        ArrayList<Producto> list = null;
+        try {
+            Query query  = session.createQuery("from Producto");
+            
+            if(!query.list().isEmpty()){
+                list= (ArrayList<Producto>) query.list();
+            }
+        } catch (Exception e) {
+        }
+        
+        return list;
     };
 
     public void close(){
