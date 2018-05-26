@@ -55,7 +55,7 @@ public class HomeController implements Initializable {
     @FXML
     private JFXButton menuBtn,menuProfile;
     @FXML
-    private static AnchorPane containerPane, firstPanel;
+    private AnchorPane containerPane, firstPanel;
     @FXML
     private AnchorPane sidebarPane;
     @FXML
@@ -256,9 +256,9 @@ public class HomeController implements Initializable {
         popup.setPopupContent(vBox);
     }
     
-    public static void changeChildren(Node node){
-        firstPanel.getChildren().setAll(node);
-    }
+//    public static void changeChildren(Node node){
+//        firstPanel.getChildren().setAll(node);
+//    }
     
     
 }
