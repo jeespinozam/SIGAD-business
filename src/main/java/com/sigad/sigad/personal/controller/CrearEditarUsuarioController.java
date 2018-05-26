@@ -191,7 +191,11 @@ public class CrearEditarUsuarioController implements Initializable {
         user.setCorreo(emailTxt.getText());
         user.setPassword(passwordTxt.getText());
         
-        user.setPerfil(new Perfil("Usuario", "GG", true));
+        PerfilHelper helper = new PerfilHelper();
+        Perfil p = helper.getProfile("Usuario");
+        if(p!= null){
+            user.setPerfil(p);
+        }
     }
 
     private void initValidator() {

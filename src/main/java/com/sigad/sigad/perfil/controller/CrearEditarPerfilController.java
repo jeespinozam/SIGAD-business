@@ -11,6 +11,7 @@ import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.business.Perfil;
+import com.sigad.sigad.business.helpers.PerfilHelper;
 import com.sigad.sigad.business.helpers.UsuarioHelper;
 import com.sigad.sigad.personal.controller.CrearEditarUsuarioController;
 import static com.sigad.sigad.personal.controller.CrearEditarUsuarioController.user;
@@ -73,7 +74,7 @@ public class CrearEditarPerfilController implements Initializable {
     private void addDialogBtns() {
         JFXButton save = new JFXButton("Guardar");
         save.setPrefSize(80, 25);
-        AnchorPane.setBottomAnchor(save, -20.0);
+        AnchorPane.setBottomAnchor(save, -30.0);
         AnchorPane.setRightAnchor(save, 0.0);
         save.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -81,11 +82,12 @@ public class CrearEditarPerfilController implements Initializable {
                 if(validateFields()){
                     System.out.println("VALIDADO ALL FIELDS");
                     updateFields();
-                    UsuarioHelper helper = new UsuarioHelper();
-                    Long id = helper.saveUser(CrearEditarUsuarioController.user);
+                    
+                    PerfilHelper helper = new PerfilHelper();
+                    Long id = helper.saveProfile(CrearEditarPerfilController.perfil);
                     if(id != null){
-                        PersonalController.updateTable(CrearEditarUsuarioController.user);
-                        PersonalController.userDialog.close();
+                        PerfilController.updateProfileData(CrearEditarPerfilController.perfil);
+                        PerfilController.profileDialog.close();
                     }else{
                         ErrorController error = new ErrorController();
                         error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
@@ -97,12 +99,12 @@ public class CrearEditarPerfilController implements Initializable {
         
         JFXButton cancel = new JFXButton("Cancelar");
         cancel.setPrefSize(80, 25);
-        AnchorPane.setBottomAnchor(cancel, -20.0);
+        AnchorPane.setBottomAnchor(cancel, -30.0);
         AnchorPane.setRightAnchor(cancel, 85.0);
         cancel.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                PersonalController.userDialog.close();
+                PerfilController.profileDialog.close();
             }
         });
         
@@ -121,5 +123,6 @@ public class CrearEditarPerfilController implements Initializable {
     public void updateFields() {
         perfil.setNombre(nameTxt.getText());
         perfil.setDescripcion(descriptionTXt.getText());
+        perfil.setActivo(true);
     }
 }

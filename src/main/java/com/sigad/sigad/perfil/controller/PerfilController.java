@@ -96,7 +96,7 @@ public class PerfilController implements Initializable {
         );
     }
     
-    private static void updatePermissionData(Permiso p) {
+    public static void updatePermissionData(Permiso p) {
         dataPermisoTbl.add(new Permission(
                         new SimpleStringProperty(p.getOpcion()), 
                         new SimpleStringProperty(p.getDescripcion()),

@@ -9,6 +9,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.business.Permiso;
+import com.sigad.sigad.business.helpers.PermisoHelper;
 import com.sigad.sigad.business.helpers.UsuarioHelper;
 import com.sigad.sigad.personal.controller.CrearEditarUsuarioController;
 import com.sigad.sigad.personal.controller.PersonalController;
@@ -66,7 +67,7 @@ public class CrearEditarPermisoController implements Initializable {
     private void addDialogBtns() {
         JFXButton save = new JFXButton("Guardar");
         save.setPrefSize(80, 25);
-        AnchorPane.setBottomAnchor(save, -20.0);
+        AnchorPane.setBottomAnchor(save, -50.0);
         AnchorPane.setRightAnchor(save, 0.0);
         save.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -74,11 +75,12 @@ public class CrearEditarPermisoController implements Initializable {
                 if(validateFields()){
                     System.out.println("VALIDADO ALL FIELDS");
                     updateFields();
-                    UsuarioHelper helper = new UsuarioHelper();
-                    Long id = helper.saveUser(CrearEditarUsuarioController.user);
+                    
+                    PermisoHelper helper = new PermisoHelper();
+                    Long id = helper.savePermission(CrearEditarPermisoController.permiso);
                     if(id != null){
-                        PersonalController.updateTable(CrearEditarUsuarioController.user);
-                        PersonalController.userDialog.close();
+                        PerfilController.updatePermissionData(CrearEditarPermisoController.permiso);
+                        PerfilController.permissionDialog.close();
                     }else{
                         ErrorController error = new ErrorController();
                         error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
@@ -90,12 +92,12 @@ public class CrearEditarPermisoController implements Initializable {
         
         JFXButton cancel = new JFXButton("Cancelar");
         cancel.setPrefSize(80, 25);
-        AnchorPane.setBottomAnchor(cancel, -20.0);
+        AnchorPane.setBottomAnchor(cancel, -50.0);
         AnchorPane.setRightAnchor(cancel, 85.0);
         cancel.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                PersonalController.userDialog.close();
+                PerfilController.permissionDialog.close();
             }
         });
         
