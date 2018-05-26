@@ -54,7 +54,7 @@ public class PerfilController implements Initializable {
     /**
      * Initializes the controller class.
      */
-    public static final String viewPath = "/com/sigad/sigad/personal/view/perfil.fxml";
+    public static final String viewPath = "/com/sigad/sigad/perfil/view/perfil.fxml";
     
     static ObservableList<PerfilController.Profile> dataPerfilTbl = FXCollections.observableArrayList();
     @FXML
@@ -75,8 +75,8 @@ public class PerfilController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
-    }
+        initProfileTable();
+        }
     public static void updateTable(Perfil p) {
         dataPerfilTbl.add(new Profile(
             new SimpleStringProperty(p.getNombre()), 
@@ -85,7 +85,8 @@ public class PerfilController implements Initializable {
         );
     }
     
-    void handleAction(ActionEvent event) {
+    @FXML
+    private void handleAction(ActionEvent event) {
         if(event.getSource() == addBtn){
             
         }else if(event.getSource() == moreBtn){
@@ -106,15 +107,6 @@ public class PerfilController implements Initializable {
     }
     
     private void initProfileTable() {
-        JFXTreeTableColumn<Profile, Boolean> select = new JFXTreeTableColumn<>("Seleccionar");
-        select.setPrefWidth(80);
-        select.setCellValueFactory((TreeTableColumn.CellDataFeatures<Profile, Boolean> param) -> param.getValue().getValue().seleccion);
-        select.setCellFactory((TreeTableColumn<Profile, Boolean> p) -> {
-            CheckBoxTreeTableCell<Profile, Boolean> cell = new CheckBoxTreeTableCell<>();
-            cell.setAlignment(Pos.CENTER);
-            return cell;
-        });
-        
         JFXTreeTableColumn<Profile, String> nombre = new JFXTreeTableColumn<>("Nombre");
         nombre.setPrefWidth(120);
         nombre.setCellValueFactory((TreeTableColumn.CellDataFeatures<Profile, String> param) -> param.getValue().getValue().profileName);

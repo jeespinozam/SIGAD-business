@@ -27,7 +27,7 @@ public class CrearEditarPerfilController implements Initializable {
     /**
      * Initializes the controller class.
      */
-    public static final String viewPath = "/com/sigad/sigad/personal/view/crearEditarPerfil.fxml";
+    public static final String viewPath = "/com/sigad/sigad/perfil/view/crearEditarPerfil.fxml";
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {

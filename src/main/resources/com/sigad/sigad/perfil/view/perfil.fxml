@@ -33,7 +33,7 @@
                   <RowConstraints maxHeight="111.83892822265625" minHeight="10.0" prefHeight="52.69287109375" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <JFXTreeTableView fx:id="profileTbl" prefHeight="390.0" prefWidth="918.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <JFXTreeTableView fx:id="profilesTbl" prefHeight="390.0" prefWidth="918.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                   <AnchorPane prefHeight="56.0" prefWidth="927.0" style="-fx-background-color: #ECEFF1; -fx-border-color: #C8C8C8;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                   <AnchorPane prefHeight="33.0" prefWidth="927.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <children>
