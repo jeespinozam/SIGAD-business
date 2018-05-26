@@ -6,21 +6,14 @@
 package com.sigad.sigad.perfil.controller;
 
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
-import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sigad.sigad.app.controller.ErrorController;
-import com.sigad.sigad.business.Perfil;
+import com.sigad.sigad.business.Permiso;
 import com.sigad.sigad.business.helpers.UsuarioHelper;
 import com.sigad.sigad.personal.controller.CrearEditarUsuarioController;
-import static com.sigad.sigad.personal.controller.CrearEditarUsuarioController.user;
 import com.sigad.sigad.personal.controller.PersonalController;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -34,21 +27,21 @@ import javafx.scene.paint.Color;
  *
  * @author jorgeespinoza
  */
-public class CrearEditarPerfilController implements Initializable {
+public class CrearEditarPermisoController implements Initializable {
 
     /**
      * Initializes the controller class.
      */
-    public static final String viewPath = "/com/sigad/sigad/perfil/view/crearEditarPerfil.fxml";
-    public static Perfil perfil = null;
+    public static final String viewPath = "/com/sigad/sigad/perfil/view/crearEditarPermiso.fxml";
+    public static Permiso permiso = null;
     @FXML
     private JFXTextField nameTxt;
-    @FXML
-    private JFXTextArea descriptionTXt;
     @FXML
     private AnchorPane containerPane;
     @FXML
     private StackPane hiddenSp;
+    @FXML
+    private JFXTextField iconNameTxt;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -56,11 +49,11 @@ public class CrearEditarPerfilController implements Initializable {
         addDialogBtns();
         
         //validate edit or create option in order to set user
-        if(!PerfilController.isProfileCreate){
-            System.out.println(PerfilController.selectedProfile.name);
+        if(!PerfilController.isPermissionCreate){
+            System.out.println(PerfilController.selectedPermission.option);
             //loadFields();
         }else{
-            perfil = new Perfil();
+            permiso = new Permiso();
         }
         
         //Inmediate validations
@@ -68,8 +61,8 @@ public class CrearEditarPerfilController implements Initializable {
         
         //initProfileTable();
         //initProfilePicker();
-    }
-
+    }    
+    
     private void addDialogBtns() {
         JFXButton save = new JFXButton("Guardar");
         save.setPrefSize(80, 25);
@@ -119,7 +112,7 @@ public class CrearEditarPerfilController implements Initializable {
     }
     
     public void updateFields() {
-        perfil.setNombre(nameTxt.getText());
-        perfil.setDescripcion(descriptionTXt.getText());
+        permiso.setOpcion(nameTxt.getText());
+        permiso.setDescripcion(iconNameTxt.getText());
     }
 }

@@ -9,6 +9,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPopup;
 import com.sigad.sigad.personal.controller.PersonalController;
 import com.sigad.sigad.pedido.controller.SeleccionarProductosController;
+import com.sigad.sigad.perfil.controller.PerfilController;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.io.IOException;
@@ -107,6 +108,19 @@ public class HomeController implements Initializable {
                     firstPanel.getChildren().setAll(node);
                 }catch (IOException ex) {
                     Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "sidebarBtns.get(1).setOnAction", ex);
+                }
+            }
+        });
+        
+        sidebarBtns.get(5).setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    Node node;
+                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PerfilController.viewPath));
+                    firstPanel.getChildren().setAll(node);
+                }catch (IOException ex) {
+                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "sidebarBtns.get(5).setOnAction", ex);
                 }
             }
         });

@@ -90,10 +90,14 @@ public class TiendaHelper {
     }
     
     public Long saveStore(Tienda t){
-        Long id = new Long(-1);
+        Long id = null;
         try {
-            Transaction tx = session.getTransaction();
-            id = (Long) session.save(t);
+            Transaction tx = session.beginTransaction();
+            session.save(t);
+            
+            if(t.getId() != null){
+                id = t.getId();
+            }
             tx.commit();
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -104,7 +108,7 @@ public class TiendaHelper {
     public boolean updateStore(Tienda tOld){
         boolean ok = false;
         try {
-            Transaction tx = session.getTransaction();
+            Transaction tx = session.beginTransaction();
             Tienda tNew = session.load(Tienda.class, tOld.getId());
             
             tNew.setCapacidad(tOld.getCapacidad());
@@ -113,6 +117,7 @@ public class TiendaHelper {
             tNew.setDescripcion(tOld.getDescripcion());
             tNew.setDireccion(tOld.getDireccion());
             
+            session.save(tNew);
             tx.commit();
             ok = true;
         } catch (Exception e) {

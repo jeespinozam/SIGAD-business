@@ -76,7 +76,7 @@ public class LoginController implements Initializable {
         Session session;
         session = sessionFactory.openSession();
         
-        Query query  = session.createQuery("from Perfil p where p.nombre='Administrator'");
+        Query query  = session.createQuery("from Perfil p where p.nombre='SuperAdmin'");
         int count = query.list().size();
         if(count == 0){
             System.out.println("Primer inicio de sesión");
