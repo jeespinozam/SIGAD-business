@@ -34,9 +34,9 @@ import java.util.List;
  *
  * @author cfoch
  */
-public class SIGADBusinessMain {
+public class SIGADBusinessMain extends Application{
     
-    public static void main(String[] args) {
+//    public static void main(String[] args) {
 //        Configuration config;
 //        SessionFactory sessionFactory;
 //        Session session;
@@ -61,15 +61,15 @@ public class SIGADBusinessMain {
 //        session.close();
 //        sessionFactory.close();
 
-    List<String> lista = new ArrayList<>();
-    lista.add(CargaMasivaConstantes.TABLA_PERMISOS);
-    lista.add(CargaMasivaConstantes.TABLA_PRODUCTOCATEGORIA);
-    lista.add(CargaMasivaConstantes.TABLA_TIENDAS);
-    CargaMasivaHelper.generarCargaMasivaTemplate(lista, "/home/paul/pruebaTemplate.xls");
+//    List<String> lista = new ArrayList<>();
+//    lista.add(CargaMasivaConstantes.TABLA_PERMISOS);
+//    lista.add(CargaMasivaConstantes.TABLA_PRODUCTOCATEGORIA);
+//    lista.add(CargaMasivaConstantes.TABLA_TIENDAS);
+//    CargaMasivaHelper.generarCargaMasivaTemplate(lista, "/home/paul/pruebaTemplate.xls");
 
-    }
+//    }
     
-    /*
+    
     @Override
 	public void start(Stage stage) {
             try {
@@ -86,5 +86,6 @@ public class SIGADBusinessMain {
 	public static void main(String[] args) {
             launch(args);
 	}
-*/
+
+    
 }
