@@ -62,8 +62,6 @@ public class CargaMasivaViewController implements Initializable {
     @FXML
     private JFXButton cargaMasivaBtn;
     @FXML
-    private JFXComboBox<String> comboEntidad;
-    @FXML
     private JFXTextField archivoNombre;
     @FXML
     private JFXButton guardarBtn;
@@ -79,9 +77,7 @@ public class CargaMasivaViewController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         ObservableList<String> options = CargaMasivaConstantes.getList();
-        comboEntidad.getItems().addAll(options);
         
-        //entidadesListView.getItems().addAll(options);
         for (Iterator<String> iterator = options.iterator(); iterator.hasNext();) {
             String next = iterator.next();
             entidadesListView.getItems().add(next);
@@ -133,7 +129,7 @@ public class CargaMasivaViewController implements Initializable {
             @Override
             public void handle(ActionEvent event){
                 String filePath = loadedFile.getAbsolutePath();
-                String templateName = comboEntidad.getSelectionModel().getSelectedItem().toString();
+//                String templateName = comboEntidad.getSelectionModel().getSelectedItem().toString();
                 CargaMasivaHelper.CargaMasivaProceso(filePath);
             }
         });
@@ -153,8 +149,8 @@ public class CargaMasivaViewController implements Initializable {
     
     public void downloadTemplate(ActionEvent event){
         Window currentStage = getCurrentStage(event);
-        String templateName = comboEntidad.getSelectionModel().getSelectedItem().toString();
         // Add code to send array list
+        String templateName = "";
         if(templateName != null){
             DirectoryChooser dirChooser = new DirectoryChooser();
             String downloadDir = dirChooser.showDialog(currentStage).getAbsolutePath() + "/template.xls";

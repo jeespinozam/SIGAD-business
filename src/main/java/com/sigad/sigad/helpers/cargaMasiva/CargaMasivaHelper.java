@@ -167,7 +167,6 @@ public class CargaMasivaHelper {
             while (sheetIterator.hasNext()) {
                 sheet = sheetIterator.next();
                 sheetName = sheet.getSheetName();
-                
                 if (CargaMasivaConstantes.getList().contains(sheetName)) {
                     LOGGER.log(Level.INFO, String.format("Hoja %s reconocida, iniciando proceso ...", sheetName));
                     hojasReconocidas++;
