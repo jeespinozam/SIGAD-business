@@ -15,6 +15,7 @@ import com.sigad.sigad.business.TipoMovimiento;
 import com.sigad.sigad.business.Usuario;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -44,7 +45,7 @@ public class CargaMasivaHelper {
     
     /* forma de consumo : se pasa como parametros la lista des tablas de las cuales se quieren generar sus plantillas
     y la ruta donde se quiere guardar el archivo, cabe senialar que la ruta debe contener el nombre del archivo con el formato xls (Excel)*/
-    public static void generarCargaMasivaTemplate(List<String> listaTablaCarga, String destinoTemplate) {
+    public static void generarCargaMasivaTemplate(ArrayList<String> listaTablaCarga, String destinoTemplate) {
         if (listaTablaCarga != null && !listaTablaCarga.isEmpty()) {
             HSSFWorkbook workbook = new HSSFWorkbook();
             int rowIndex;

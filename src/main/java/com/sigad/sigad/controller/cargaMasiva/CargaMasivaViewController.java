@@ -30,6 +30,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import com.sigad.sigad.business.*;
 import com.sigad.sigad.helpers.cargaMasiva.*;
+import static com.sigad.sigad.helpers.cargaMasiva.CargaMasivaHelper.generarCargaMasivaTemplate;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
@@ -91,15 +92,20 @@ public class CargaMasivaViewController implements Initializable {
              @Override
              public void handle(Event event) {
                  ObservableList<String> selectedItems =  entidadesListView.getSelectionModel().getSelectedItems();
-                 entidadesSeleccionadas.clear();
+                 //entidadesSeleccionadas.clear();
+                 ArrayList<String> selectedList = new ArrayList<String>();
                  for(String s : selectedItems){
-                     entidadesSeleccionadas.add(s);
+                     //entidadesSeleccionadas.add(s);
+                     selectedList.add(s);
+                     System.out.println(s);
                  }
-
+                 updateList(selectedList);
+                 /*
                  for (Iterator<String> iterator = entidadesSeleccionadas.iterator(); iterator.hasNext();) {
                      String next = iterator.next();
                      System.out.println(next);
                  }
+                 */
              }
 
          });
@@ -129,7 +135,6 @@ public class CargaMasivaViewController implements Initializable {
             @Override
             public void handle(ActionEvent event){
                 String filePath = loadedFile.getAbsolutePath();
-//                String templateName = comboEntidad.getSelectionModel().getSelectedItem().toString();
                 CargaMasivaHelper.CargaMasivaProceso(filePath);
             }
         });
@@ -149,13 +154,11 @@ public class CargaMasivaViewController implements Initializable {
     
     public void downloadTemplate(ActionEvent event){
         Window currentStage = getCurrentStage(event);
-        // Add code to send array list
-        String templateName = "";
-        if(templateName != null){
+        if(entidadesSeleccionadas != null){
             DirectoryChooser dirChooser = new DirectoryChooser();
             String downloadDir = dirChooser.showDialog(currentStage).getAbsolutePath() + "/template.xls";
             if(downloadDir != null){
-                CargaMasivaHelper.generarCargaMasivaTemplate(null, downloadDir);   
+                generarCargaMasivaTemplate(entidadesSeleccionadas,downloadDir);
             }
         }        
     }
@@ -171,6 +174,10 @@ public class CargaMasivaViewController implements Initializable {
                 }       
             }).start();
         }
+    }
+    
+    private void updateList(ArrayList<String> options){
+        this.entidadesSeleccionadas = options;
     }
 
     private void initializeGrid(File file){
