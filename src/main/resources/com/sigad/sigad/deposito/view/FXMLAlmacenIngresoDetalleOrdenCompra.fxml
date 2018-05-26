@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXDatePicker?>
+<?import com.jfoenix.controls.JFXTimePicker?>
+<?import com.jfoenix.controls.JFXTreeTableView?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.deposito.controller.FXMLAlmacenIngresoDetalleOrdenCompraController">
+   <children>
+      <GridPane>
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="294.5983581542969" minWidth="10.0" prefWidth="34.590126037597656" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="549.706298828125" minWidth="10.0" prefWidth="529.9945068359375" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="520.5672149658203" minWidth="10.0" prefWidth="36.0054931640625" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="130.39889526367188" minHeight="10.0" prefHeight="25.39615821838379" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="363.5013732910156" minHeight="10.0" prefHeight="324.99725341796875" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="54.105224609375" minHeight="10.0" prefHeight="50.00274658203125" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <AnchorPane prefHeight="338.0" prefWidth="529.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <children>
+                  <Label layoutX="288.0" layoutY="46.0" text="Fecha" AnchorPane.topAnchor="46.0">
+                     <font>
+                        <Font size="11.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="42.0" layoutY="46.0" text="Hora" AnchorPane.topAnchor="46.0">
+                     <font>
+                        <Font size="11.0" />
+                     </font>
+                  </Label>
+                  <JFXDatePicker defaultColor="#455a64" layoutX="285.0" layoutY="66.0" />
+                  <JFXTimePicker defaultColor="#455a64" layoutX="43.0" layoutY="66.0" />
+                  <Label layoutX="44.0" layoutY="13.0" text="Datos de ingreso">
+                     <font>
+                        <Font size="11.0" />
+                     </font>
+                  </Label>
+                  <JFXTreeTableView fx:id="ordenesTable" layoutX="31.0" layoutY="137.0" prefHeight="168.0" prefWidth="477.0" AnchorPane.bottomAnchor="19.0" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="21.0" />
+                  <Label layoutX="44.0" layoutY="107.0" text="Insumos">
+                     <font>
+                        <Font size="11.0" />
+                     </font>
+                  </Label>
+               </children>
+            </AnchorPane>
+            <AnchorPane prefHeight="35.0" prefWidth="529.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <children>
+                  <JFXButton layoutX="452.0" layoutY="12.0" text="Guardar">
+                     <font>
+                        <Font size="11.0" />
+                     </font>
+                  </JFXButton>
+                  <JFXButton layoutX="383.0" layoutY="12.0" text="Cancelar">
+                     <font>
+                        <Font size="11.0" />
+                     </font>
+                  </JFXButton>
+               </children>
+            </AnchorPane>
+         </children>
+      </GridPane>
+   </children>
+</StackPane>

@@ -328,7 +328,7 @@ public class CargaMasivaHelper {
                 Insumo nuevoInsumo = new Insumo();
                 nuevoInsumo.setActivo(true);    // logica de negocio
                 nuevoInsumo.setStock(0);        // logica de negocio
-                nuevoInsumo.setVolumen(true);   // no estoy seguro para q sirve esta webada
+                nuevoInsumo.setVolumen(0.00);   // no estoy seguro para q sirve esta webada
                 cell = cellIterator.next();
                 nuevoInsumo.setNombre(dataFormatter.formatCellValue(cell));
                 cell = cellIterator.next();

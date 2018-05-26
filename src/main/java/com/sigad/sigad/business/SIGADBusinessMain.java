@@ -5,6 +5,8 @@
  */
 package com.sigad.sigad.business;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -28,47 +30,19 @@ import javafx.scene.Scene;
 import com.sigad.sigad.app.controller.HomeController;
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.insumos.controller.InsumoController;
+
 import java.util.ArrayList;
 import java.util.List;
+import com.sigad.sigad.perfil.controller.PerfilController;
+import com.sigad.sigad.personal.controller.CrearEditarUsuarioController;
+import com.sigad.sigad.personal.controller.PersonalController;
+import com.sigad.sigad.deposito.controller.FXMLAlmacenIngresoListaOrdenCompraController;
 /**
  *
  * @author cfoch
  */
+
 public class SIGADBusinessMain extends Application{
-    
-//    public static void main(String[] args) {
-//        Configuration config;
-//        SessionFactory sessionFactory;
-//        Session session;
-//
-//        config = new Configuration();
-//        config.configure("hibernate.cfg.xml");
-//        sessionFactory = config.buildSessionFactory();
-//        session = sessionFactory.openSession();
-//
-//        session.beginTransaction();
-//
-//        
-//        Perfil perfil1 = new Perfil();
-//        perfil1.setNombre("cliente");
-//        perfil1.setDescripcion("Perfil de cliente");
-//        perfil1.setActivo(true);
-//
-//        session.save(perfil1);
-//
-//        session.getTransaction().commit();
-//        
-//        session.close();
-//        sessionFactory.close();
-
-//    List<String> lista = new ArrayList<>();
-//    lista.add(CargaMasivaConstantes.TABLA_PERMISOS);
-//    lista.add(CargaMasivaConstantes.TABLA_PRODUCTOCATEGORIA);
-//    lista.add(CargaMasivaConstantes.TABLA_TIENDAS);
-//    CargaMasivaHelper.generarCargaMasivaTemplate(lista, "/home/paul/pruebaTemplate.xls");
-
-//    }
-    
     
     @Override
 	public void start(Stage stage) {
@@ -83,7 +57,7 @@ public class SIGADBusinessMain extends Application{
             }
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) {        
             launch(args);
 	}
 

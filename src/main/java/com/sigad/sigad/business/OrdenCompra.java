@@ -71,7 +71,8 @@ public class OrdenCompra {
      * @param precioTotal the precioTotal to set
      */
     public void setPrecioTotal(double precioTotal) {
-        this.setPrecioTotal(precioTotal);
+        this.precioTotal = precioTotal;
+        //this.setPrecioTotal(precioTotal);
     }
 
     /**
@@ -85,7 +86,7 @@ public class OrdenCompra {
      * @param fecha the fecha to set
      */
     public void setFecha(Date fecha) {
-        this.setFecha(fecha);
+        this.fecha = fecha;
     }
 
     /**

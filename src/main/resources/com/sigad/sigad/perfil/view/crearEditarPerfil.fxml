@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+
+
+<StackPane fx:id="hiddenSp" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.perfil.controller.CrearEditarPerfilController">
+   <children>
+      <AnchorPane id="AnchorPane" fx:id="containerPane" prefHeight="160.0" prefWidth="400.0" styleClass="mainFxmlClass">
+          <stylesheets>
+              <URL value="@/styles/perfil.css" />
+          </stylesheets>
+         <children>
+            <JFXTextField fx:id="nameTxt" layoutX="150.0" layoutY="16.0" />
+            <JFXTextArea fx:id="descriptionTXt" layoutX="150.0" layoutY="47.0" prefHeight="63.0" prefWidth="229.0" />
+            <Label layoutX="23.0" layoutY="25.0" prefHeight="27.0" prefWidth="119.0" text="Nombre del Perfil" AnchorPane.leftAnchor="23.0" />
+            <Label layoutX="23.0" layoutY="85.0" prefHeight="27.0" prefWidth="119.0" text="Descripción" AnchorPane.leftAnchor="23.0" />
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>

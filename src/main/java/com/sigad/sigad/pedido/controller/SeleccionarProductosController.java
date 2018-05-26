@@ -11,15 +11,12 @@ import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.pedido.helper.ProductoHelper;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.function.Predicate;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -46,26 +43,20 @@ import javafx.util.Callback;
  * @author Alexandra
  */
 public class SeleccionarProductosController implements Initializable {
-
+    
     public static final String viewPath = "/com/sigad/sigad/pedido/view/seleccionarProductos.fxml";
     /**
      * Initializes the controller class.
      */
-
     @FXML
     private JFXTreeTableView<ProductoLista> treeView;
-
     @FXML
     private JFXTreeTableView<PedidoLista> treeViewPedido;
-
     @FXML
     private JFXTextField filtro;
-
     @FXML
     private JFXButton btnContinuar;
-
     private final ObservableList<PedidoLista> pedidos = FXCollections.observableArrayList();
-
     private final ObservableList<ProductoLista> prod = FXCollections.observableArrayList();
 
     @Override

@@ -5,6 +5,7 @@
  */
 package com.sigad.sigad.business;
 
+import javax.persistence.Column;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -36,6 +37,12 @@ public class Perfil {
      * Constructor.
      */
     public Perfil() {
+    }
+
+    public Perfil(String nombre, String descripcion, boolean activo) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.activo = activo;
     }
     
     /**

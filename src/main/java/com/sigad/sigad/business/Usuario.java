@@ -5,11 +5,10 @@
  */
 package com.sigad.sigad.business;
 
-
 import java.util.HashSet;
 import java.util.Set;
-import javafx.fxml.FXML;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,6 +17,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Email;
 
 /**
  *
@@ -43,7 +43,10 @@ public class Usuario {
     private String celular;
     @NotNull
     private boolean activo;
+    @Email(message = "{user.email.invalid}")
     private String correo;
+    @Column(nullable = false)
+    private String password;
     private String intereses;
     @OneToMany(mappedBy="usuario")
     private Set<ClienteFecha> clienteFechas = new HashSet<ClienteFecha>();
@@ -61,6 +64,23 @@ public class Usuario {
      * Constructor.
      */
     public Usuario() {
+    }
+
+    public Usuario(String nombres, String apellidoPaterno,
+            String apellidoMaterno, Perfil perfil, String telefono,
+            String dni, String celular, boolean activo, String correo,
+            String password, String intereses) {
+        this.nombres = nombres;
+        this.apellidoPaterno = apellidoPaterno;
+        this.apellidoMaterno = apellidoMaterno;
+        this.perfil = perfil;
+        this.telefono = telefono;
+        this.dni = dni;
+        this.celular = celular;
+        this.activo = activo;
+        this.correo = correo;
+        this.password = password;
+        this.intereses = intereses;
     }
     
     /**
@@ -256,6 +276,20 @@ public class Usuario {
         capacidadTiendas.add(capacidadTienda);
     }
 
+    /**
+     * @return the password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    
     /**
      * @return the pedidoCliente
      */
