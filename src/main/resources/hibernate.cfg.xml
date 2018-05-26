@@ -58,6 +58,11 @@
         <mapping class="com.sigad.sigad.business.Reparto"/>
         <mapping class="com.sigad.sigad.business.Pedido"/>
         <mapping class="com.sigad.sigad.business.TipoPago"/>
+        <mapping class="com.sigad.sigad.business.ProductosCombos"/>
+        <mapping class="com.sigad.sigad.business.ComboPromocion"/>
+        <mapping class="com.sigad.sigad.business.MovimientosTienda"/>
+        <mapping class="com.sigad.sigad.business.TipoMovimiento"/>
+        <mapping class="com.sigad.sigad.business.Permiso"/>
         
         <!--
         <mapping class="com.sigad.sigad.business.Grupo"/>

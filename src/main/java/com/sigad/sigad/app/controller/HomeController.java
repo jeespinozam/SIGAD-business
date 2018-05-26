@@ -7,7 +7,7 @@ package com.sigad.sigad.app.controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPopup;
-import com.sigad.sigad.cuentas.controller.CuentasController;
+import com.sigad.sigad.personal.controller.PersonalController;
 import com.sigad.sigad.pedido.controller.SeleccionarProductosController;
 import com.sigad.sigad.deposito.controller.FXMLAlmacenIngresoListaOrdenCompraController;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
@@ -77,6 +77,7 @@ public class HomeController implements Initializable {
     }   
     
     private void initsidebar(){
+        
         sidebarBtns.add(new JFXButton("Perfil"));
         sidebarBtns.add(new JFXButton("Productos"));
         sidebarBtns.add(new JFXButton("Personal"));
@@ -106,7 +107,7 @@ public class HomeController implements Initializable {
                     node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(SeleccionarProductosController.viewPath));
                     firstPanel.getChildren().setAll(node);
                 }catch (IOException ex) {
-                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "", ex);
+                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "sidebarBtns.get(1).setOnAction", ex);
                 }
             }
         });
@@ -116,10 +117,10 @@ public class HomeController implements Initializable {
             public void handle(ActionEvent event) {
                 try {
                     Node node;
-                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(CuentasController.viewPath));
+                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PersonalController.viewPath));
                     firstPanel.getChildren().setAll(node);
                 }catch (IOException ex) {
-                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "", ex);
+                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "sidebarBtns.get(2).setOnAction", ex);
                 }
             }
         });

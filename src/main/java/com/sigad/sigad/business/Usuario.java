@@ -5,12 +5,11 @@
  */
 package com.sigad.sigad.business;
 
-import com.jfoenix.controls.JFXComboBox;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
-import javafx.fxml.FXML;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -46,6 +45,7 @@ public class Usuario {
     private boolean activo;
     @Email(message = "{user.email.invalid}")
     private String correo;
+    @Column(nullable = false)
     private String password;
     private String intereses;
     @OneToMany(mappedBy="usuario")
@@ -276,6 +276,20 @@ public class Usuario {
         capacidadTiendas.add(capacidadTienda);
     }
 
+    /**
+     * @return the password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    
     /**
      * @return the pedidoCliente
      */
