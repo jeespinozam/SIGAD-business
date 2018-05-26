@@ -5,15 +5,21 @@
  */
 package com.sigad.sigad.deposito.controller;
 
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXDialogLayout;
+import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableRow;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.app.controller.HomeController;
 import com.sigad.sigad.business.OrdenCompra;
 import com.sigad.sigad.deposito.helper.DepositoHelper;
+import com.sun.org.apache.bcel.internal.generic.AALOAD;
 import java.beans.EventHandler;
 import java.io.IOException;
 import java.net.URL;
@@ -31,6 +37,7 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -39,6 +46,8 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 import javafx.util.Callback;
 
 /**
@@ -54,6 +63,16 @@ public class FXMLAlmacenIngresoListaOrdenCompraController implements Initializab
     public static final String viewPath="/com/sigad/sigad/deposito/view/FXMLAlmacenIngresoListaOrdenCompra.fxml";
     @FXML
     private JFXTreeTableView<OrdenCompraViewer> tblAlmacenOrdenesCompra;
+    @FXML
+    private JFXButton moreBtn;
+    @FXML
+    private JFXPopup popup;
+    @FXML
+    private StackPane hiddenSp;
+    @FXML
+    public static JFXDialog attendOrder;
+    
+    public static OrdenCompraViewer selectedOrder = null;
     
     class OrdenCompraViewer extends RecursiveTreeObject<OrdenCompraViewer>{
 
@@ -147,14 +166,14 @@ public class FXMLAlmacenIngresoListaOrdenCompraController implements Initializab
                 if (! row.isEmpty() && event.getButton()==MouseButton.PRIMARY 
                      && event.getClickCount() == 2) {
                     OrdenCompraViewer clickedRow = row.getItem();
-                    System.out.println(clickedRow.getCodigo());
-//                    try {
-//                        Node node;
-//                        node = (Node) FXMLLoader.load(FXMLAlmacenIngresoListaOrdenCompraController.this.getClass().getResource(FXMLAlmacenIngresoDetalleOrdenCompraController.viewPath));
-//                        HomeController.changeChildren(node);
-//                    } catch (IOException ex) {
-//                        Logger.getLogger(FXMLAlmacenIngresoListaOrdenCompraController.class.getName()).log(Level.SEVERE, null, ex);
-//                    }                  
+                    System.out.println(clickedRow.getCodigo().getValue());
+                    try {
+                        selectedOrder = clickedRow;
+                        AttendOrder(clickedRow);                    
+                        
+                    } catch (IOException ex) {
+                        Logger.getLogger(FXMLAlmacenIngresoListaOrdenCompraController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             });
             return row;
@@ -168,13 +187,32 @@ public class FXMLAlmacenIngresoListaOrdenCompraController implements Initializab
         tblAlmacenOrdenesCompra.setShowRoot(false);
         DepositoHelper depositoHelper = new DepositoHelper();
         List<OrdenCompra> ordenesBD= depositoHelper.getOrdenes();
-        SimpleDateFormat sdf = new SimpleDateFormat("DD-MM-YYYY");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-YYYY");
         ordenesBD.forEach((orden)->{
             OrdenCompraViewer ordenViewer = new OrdenCompraViewer(Integer.toString(orden.getId()),sdf.format(orden.getFecha()),orden.getPrecioTotal());
             ordenes.add(ordenViewer);
             System.out.println(orden.getId() + " " + orden.getPrecioTotal() + " " + orden.getFecha());
             
         });
-    }    
+    }
+    
+    private void AttendOrder(OrdenCompraViewer ord) throws IOException {
+
+        DepositoHelper dephelper = new DepositoHelper();
+        //System.out.println(selectedOrder.getCodigo().getValue());
+        OrdenCompra orden = dephelper.getOrden(Integer.parseInt(selectedOrder.getCodigo().getValue()));
+        //System.out.println(orden.getId()+ " " + orden.getProveedor().getNombre());
+        
+        JFXDialogLayout content =  new JFXDialogLayout();
+        content.setHeading(new Text("Orden de compra" + orden.getId()));
+        
+        FXMLAlmacenIngresoDetalleOrdenCompraController.ordenElegida = orden;
+        Node node = (Node) FXMLLoader.load(FXMLAlmacenIngresoListaOrdenCompraController.this.getClass().getResource(FXMLAlmacenIngresoDetalleOrdenCompraController.viewPath));
+        content.setBody(node);
+
+        attendOrder = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
+        attendOrder.show();
+                       
+    } 
     
 }

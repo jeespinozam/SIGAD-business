@@ -132,7 +132,7 @@ public class PerfilController implements Initializable {
         
         profilesTbl.setEditable(true);
         profilesTbl.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        profilesTbl.getColumns().setAll(select, nombre, description);
+        profilesTbl.getColumns().setAll(nombre, description);
         profilesTbl.setRoot(root);
         profilesTbl.setShowRoot(false);        
     }

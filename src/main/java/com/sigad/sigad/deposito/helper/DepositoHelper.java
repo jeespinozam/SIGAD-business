@@ -111,6 +111,12 @@ public class DepositoHelper {
 //        return new ArrayList<>( query.list());
 //    };
 
+    public OrdenCompra getOrden(Integer id){
+        session.beginTransaction();
+        OrdenCompra orden =  (OrdenCompra)session.get(OrdenCompra.class, id);
+        session.getTransaction().commit();
+        return orden;
+    }
     public List<OrdenCompra> getOrdenes(){
         String hql = String.format("from OrdenCompra OC");
         Query queryHql = this.session.createQuery(hql);

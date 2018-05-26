@@ -9,6 +9,7 @@ import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import com.sigad.sigad.business.OrdenCompra;
 import java.net.URL;
 import java.util.Date;
 import java.util.ResourceBundle;
@@ -37,6 +38,8 @@ public class FXMLAlmacenIngresoDetalleOrdenCompraController implements Initializ
      */
     @FXML
     private JFXTreeTableView<OrdenCompraRecibida> ordenesTable;
+    
+    public static OrdenCompra ordenElegida;
     
     class OrdenCompraRecibida extends RecursiveTreeObject<OrdenCompraRecibida>{
 
@@ -125,6 +128,16 @@ public class FXMLAlmacenIngresoDetalleOrdenCompraController implements Initializ
             this.cantidadRecibida = new SimpleStringProperty(cantidadRecibida);
         }
     }
+    
+    
+    public String getViewPath() {
+        return viewPath;
+    }
+    
+    public void setOrder(OrdenCompra ord) {
+        ordenElegida = ord;
+    }
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
@@ -178,11 +191,15 @@ public class FXMLAlmacenIngresoDetalleOrdenCompraController implements Initializ
         ordenes.add(new OrdenCompraRecibida("Insumo 3","10.0","10","10/10/2017","10"));
         ordenes.add(new OrdenCompraRecibida("Insumo 4","10.0","10","10/10/2017","10"));
         
+        System.out.println("waaaaa" + ordenElegida.getId());
+        
         final TreeItem<OrdenCompraRecibida> root = new RecursiveTreeItem<>(ordenes,RecursiveTreeObject::getChildren);
         ordenesTable.getColumns().setAll(nombCol,precioCol,cantidadCol,fechaCol,cantidadRecCol);
         ordenesTable.setRoot(root);
         ordenesTable.setShowRoot(false);
         
     }    
+   
+    
     
 }

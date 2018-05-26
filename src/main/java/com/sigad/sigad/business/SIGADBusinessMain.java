@@ -22,6 +22,7 @@ import com.sigad.sigad.insumos.controller.InsumoController;
 import com.sigad.sigad.perfil.controller.PerfilController;
 import com.sigad.sigad.personal.controller.CrearEditarUsuarioController;
 import com.sigad.sigad.personal.controller.PersonalController;
+import com.sigad.sigad.deposito.controller.FXMLAlmacenIngresoListaOrdenCompraController;
 
 
 /**
@@ -34,7 +35,7 @@ public class SIGADBusinessMain extends Application{
     @Override
 	public void start(Stage stage) {
             try {
-                    Parent root = FXMLLoader.load(getClass().getResource(PerfilController.viewPath));
+                    Parent root = FXMLLoader.load(getClass().getResource(FXMLAlmacenIngresoListaOrdenCompraController.viewPath));
                     Scene scene = new Scene(root);
                     //scene.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
                     stage.setScene(scene);
