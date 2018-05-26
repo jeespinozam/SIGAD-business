@@ -95,17 +95,9 @@ public class CargaMasivaViewController implements Initializable {
                  //entidadesSeleccionadas.clear();
                  ArrayList<String> selectedList = new ArrayList<String>();
                  for(String s : selectedItems){
-                     //entidadesSeleccionadas.add(s);
                      selectedList.add(s);
-                     System.out.println(s);
                  }
                  updateList(selectedList);
-                 /*
-                 for (Iterator<String> iterator = entidadesSeleccionadas.iterator(); iterator.hasNext();) {
-                     String next = iterator.next();
-                     System.out.println(next);
-                 }
-                 */
              }
 
          });
@@ -153,6 +145,12 @@ public class CargaMasivaViewController implements Initializable {
     }
     
     public void downloadTemplate(ActionEvent event){
+        System.out.println("La lista es:");
+        for (Iterator<String> iterator = entidadesSeleccionadas.iterator(); iterator.hasNext();) {
+            String next = iterator.next();
+            System.out.println(next);
+        }
+                 
         Window currentStage = getCurrentStage(event);
         if(entidadesSeleccionadas != null){
             DirectoryChooser dirChooser = new DirectoryChooser();
