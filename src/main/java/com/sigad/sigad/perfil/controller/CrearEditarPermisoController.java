@@ -8,7 +8,9 @@ package com.sigad.sigad.perfil.controller;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import com.sigad.sigad.app.controller.ErrorController;
+import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Permiso;
+import com.sigad.sigad.business.helpers.PerfilHelper;
 import com.sigad.sigad.business.helpers.PermisoHelper;
 import com.sigad.sigad.business.helpers.UsuarioHelper;
 import com.sigad.sigad.personal.controller.CrearEditarUsuarioController;
@@ -116,5 +118,11 @@ public class CrearEditarPermisoController implements Initializable {
     public void updateFields() {
         permiso.setOpcion(nameTxt.getText());
         permiso.setDescripcion(iconNameTxt.getText());
+        
+        PerfilHelper helper = new PerfilHelper();
+        Perfil p = helper.getProfile(PerfilController.selectedProfile.name.getValue());
+        if(p!= null){
+            permiso.setPerfil(p);
+        }
     }
 }

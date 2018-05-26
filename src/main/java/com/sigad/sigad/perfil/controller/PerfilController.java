@@ -127,6 +127,19 @@ public class PerfilController implements Initializable {
                 popup.show(perfilMoreBtn, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.RIGHT);
             }
         }else if(event.getSource() == permisoAddBtn){
+            int count = profilesTbl.getSelectionModel().getSelectedCells().size();
+            if( count > 1){
+                ErrorController error = new ErrorController();
+                error.loadDialog("Atención", "Debe seleccionar solo un registro de la tabla Perfiles", "Ok", hiddenSp);
+            }else if(count<=0){
+                ErrorController error = new ErrorController();
+                error.loadDialog("Atención", "Debe seleccionar al menos un registro de la tabla Perfiles", "Ok", hiddenSp);
+            }else{
+                int selected  = profilesTbl.getSelectionModel().getSelectedIndex();
+                selectedProfile = (Profile) profilesTbl.getSelectionModel().getModelItem(selected).getValue();
+                profileInitPopup();
+                popup.show(perfilMoreBtn, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.RIGHT);
+            }
             try {
                 CreateEdditPermissionDialog(true);
             } catch (IOException ex) {
@@ -342,7 +355,7 @@ public class PerfilController implements Initializable {
             }
         }
         
-        Node node = (Node) FXMLLoader.load(PerfilController.this.getClass().getResource(CrearEditarPerfilController.viewPath));
+        Node node = (Node) FXMLLoader.load(PerfilController.this.getClass().getResource(CrearEditarPermisoController.viewPath));
         content.setBody(node);
         content.setPrefSize(400,160);
                 

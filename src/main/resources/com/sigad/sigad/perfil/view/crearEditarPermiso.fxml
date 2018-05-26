@@ -8,7 +8,7 @@
 
 <StackPane fx:id="hiddenSp" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.perfil.controller.CrearEditarPermisoController">
    <children>
-      <AnchorPane id="AnchorPane" fx:id="containerPane" prefHeight="160.0" prefWidth="400.0" styleClass="mainFxmlClass">
+      <AnchorPane id="AnchorPane" fx:id="containerPane" prefHeight="190.0" prefWidth="400.0" styleClass="mainFxmlClass">
           <stylesheets>
               <URL value="@/styles/perfil.css" />
           </stylesheets>
