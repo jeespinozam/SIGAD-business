@@ -96,6 +96,8 @@ public class CargaMasivaHelper {
                         rowIndex++;
                         rowhead.createCell(rowIndex).setCellValue("Descripcion");
                         rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Precio");
+                        rowIndex++;
                         rowhead.createCell(rowIndex).setCellValue("Tiempo de Vida");
                         rowIndex++;
                         rowhead.createCell(rowIndex).setCellValue("Volumen por Unidad");
@@ -244,7 +246,7 @@ public class CargaMasivaHelper {
                     LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoProdCat.getNombre()));
                     return true;
                 }
-                catch(HibernateException he) {
+                catch(Exception he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoProdCat.getNombre()));
                     System.out.print(he);
                     return false;
@@ -264,7 +266,7 @@ public class CargaMasivaHelper {
                     LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoPerfil.getNombre()));
                     return true;
                 }
-                catch(HibernateException he) {
+                catch(Exception he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoPerfil.getNombre()));
                     System.out.print(he);
                     return false;
@@ -301,7 +303,7 @@ public class CargaMasivaHelper {
                     LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoUsuario.getNombres()));
                     return true;
                 }
-                catch(HibernateException he) {
+                catch(Exception he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoUsuario.getNombres()));
                     System.out.print(he);
                     return false;
@@ -321,7 +323,7 @@ public class CargaMasivaHelper {
                     LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoProv.getNombre()));
                     return true;
                 }
-                catch(HibernateException he) {
+                catch(Exception he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoProv.getNombre()));
                     System.out.print(he);
                     return false;
@@ -335,6 +337,8 @@ public class CargaMasivaHelper {
                 cell = cellIterator.next();
                 nuevoInsumo.setDescripcion(dataFormatter.formatCellValue(cell));
                 cell = cellIterator.next();
+                nuevoInsumo.setPrecio(Double.valueOf(dataFormatter.formatCellValue(cell)));
+                cell = cellIterator.next();
                 nuevoInsumo.setTiempoVida(Integer.valueOf(dataFormatter.formatCellValue(cell)));
                 cell = cellIterator.next();
                 nuevoInsumo.setVolumen(Double.valueOf(dataFormatter.formatCellValue(cell)));
@@ -347,7 +351,7 @@ public class CargaMasivaHelper {
                     LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoInsumo.getNombre()));
                     return true;
                 }
-                catch(HibernateException he) {
+                catch(Exception he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoInsumo.getNombre()));
                     System.out.print(he);
                     return false;
@@ -371,7 +375,7 @@ public class CargaMasivaHelper {
                     LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevaTienda.getDireccion()));
                     return true;
                 }
-                catch(HibernateException he) {
+                catch(Exception he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevaTienda.getDireccion()));
                     System.out.print(he);
                     return false;
@@ -389,7 +393,7 @@ public class CargaMasivaHelper {
                     LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoTipoMov.getNombre()));
                     return true;
                 }
-                catch(HibernateException he) {
+                catch(Exception he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoTipoMov.getNombre()));
                     System.out.print(he);
                     return false;
@@ -407,7 +411,7 @@ public class CargaMasivaHelper {
                     LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoPermiso.getOpcion()));
                     return true;
                 }
-                catch(HibernateException he) {
+                catch(Exception he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoPermiso.getOpcion()));
                     System.out.print(he);
                     return false;
@@ -442,7 +446,7 @@ public class CargaMasivaHelper {
                     LOGGER.log(Level.INFO, String.format("Carga relacion perfil x permisos %s, exitosa", perfilAsociado.getNombre()));
                     return true;
                 }
-                catch(HibernateException he) {
+                catch(Exception he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de relaciones perfil x persmisos de %s", perfilAsociado.getNombre()));
                     System.out.print(he);
                     return false;
