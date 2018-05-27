@@ -31,7 +31,9 @@ public class Producto {
     private String imagen;
     private String descripcion;
     @NotNull
-    private int stock;
+    private int stockLogico;
+    @NotNull
+    private int stockFisico;
     @ManyToOne
     private ProductoCategoria categoria;
     @NotNull
@@ -39,6 +41,7 @@ public class Producto {
     @ManyToOne
     private ProductoFragilidad fragilidad;
     private double volumen;
+    private Double precio;
 
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProductosCombos> combos = new HashSet<>();
@@ -46,6 +49,13 @@ public class Producto {
      * Constructor.
      */
     public Producto() {
+    }
+    public Producto(String nombre, String imagen, Integer stock,Double precio, Boolean activo) {
+        this.nombre = nombre;
+        this.imagen = imagen;
+        this.stockFisico = stock;
+        this.activo = activo;
+        this.precio = precio;
     }
     
     /**
@@ -133,20 +143,6 @@ public class Producto {
     }
 
     /**
-     * @return the stock
-     */
-    public int getStock() {
-        return stock;
-    }
-
-    /**
-     * @param stock the stock to set
-     */
-    public void setStock(int stock) {
-        this.stock = stock;
-    }
-
-    /**
      * @return the categoria
      */
     public ProductoCategoria getCategoria() {
@@ -200,5 +196,47 @@ public class Producto {
      */
     public void setVolumen(double volumen) {
         this.volumen = volumen;
+    }
+
+    /**
+     * @return the precio
+     */
+    public Double getPrecio() {
+        return precio;
+    }
+
+    /**
+     * @param precio the precio to set
+     */
+    public void setPrecio(Double precio) {
+        this.precio = precio;
+    }
+
+    /**
+     * @return the stockLogico
+     */
+    public int getStockLogico() {
+        return stockLogico;
+    }
+
+    /**
+     * @param stockLogico the stockLogico to set
+     */
+    public void setStockLogico(int stockLogico) {
+        this.stockLogico = stockLogico;
+    }
+
+    /**
+     * @return the stockFisico
+     */
+    public int getStockFisico() {
+        return stockFisico;
+    }
+
+    /**
+     * @param stockFisico the stockFisico to set
+     */
+    public void setStockFisico(int stockFisico) {
+        this.stockFisico = stockFisico;
     }
 }
