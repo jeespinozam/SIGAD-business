@@ -12,6 +12,7 @@ import com.sigad.sigad.personal.controller.PersonalController;
 import com.sigad.sigad.pedido.controller.SeleccionarProductosController;
 import com.sigad.sigad.deposito.controller.FXMLAlmacenIngresoListaOrdenCompraController;
 import com.sigad.sigad.perfil.controller.PerfilController;
+import com.sigad.sigad.productos.controller.ProductosSubmenuController;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.io.IOException;
@@ -110,7 +111,7 @@ public class HomeController implements Initializable {
             public void handle(ActionEvent event) {
                 try {
                     Node node;
-                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(SeleccionarProductosController.viewPath));
+                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(ProductosSubmenuController.viewPath));
                     firstPanel.getChildren().setAll(node);
                 }catch (IOException ex) {
                     Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "sidebarBtns.get(1).setOnAction", ex);

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.JFXTreeTableView?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="780.0" prefWidth="1010.0" style="-fx-background-color: white;" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.productos.controller.ProductosNuevoController">
+   <children>
+      <Label layoutX="280.0" layoutY="54.0" prefHeight="16.0" prefWidth="200.0" text="Nombre" />
+      <JFXTextField id="txtNombre" fx:id="txtNombre" layoutX="280.0" layoutY="71.0" prefHeight="26.0" prefWidth="224.0" />
+      <Label layoutX="278.0" layoutY="129.0" prefHeight="17.0" prefWidth="200.0" text="Categoria" />
+      <Label layoutX="280.0" layoutY="217.0" text="Fragilidad" />
+      <Label layoutX="566.0" layoutY="58.0" text="Descripcion" />
+      <ImageView id="imageProducto" fx:id="imageProducto" fitHeight="150.0" fitWidth="200.0" layoutX="36.0" layoutY="66.0" pickOnBounds="true" preserveRatio="true">
+         <effect>
+            <DropShadow color="#000000bc" />
+         </effect>
+      </ImageView>
+      <JFXTextField layoutX="288.0" layoutY="327.0" prefHeight="26.0" prefWidth="224.0" />
+      <Label layoutX="279.0" layoutY="301.0" text="Margen de Ganancia" />
+      <JFXTextArea layoutX="568.0" layoutY="94.0" prefHeight="89.0" prefWidth="380.0" />
+      <Label layoutX="568.0" layoutY="217.0" text="Medido en" />
+      <Label layoutX="789.0" layoutY="217.0" text="Peso" />
+      <JFXComboBox layoutX="278.0" layoutY="164.0" prefHeight="26.0" prefWidth="224.0" />
+      <JFXComboBox layoutX="281.0" layoutY="245.0" prefHeight="26.0" prefWidth="224.0" />
+      <JFXTreeTableView layoutX="281.0" layoutY="425.0" prefHeight="214.0" prefWidth="655.0" />
+      <Label layoutX="280.0" layoutY="384.0" prefHeight="16.0" prefWidth="234.0" text="INSUMOS">
+         <font>
+            <Font size="17.0" />
+         </font>
+      </Label>
+      <Label layoutX="653.0" layoutY="386.0" text="Buscar" />
+      <JFXTextField layoutX="737.0" layoutY="377.0" prefHeight="26.0" prefWidth="200.0" />
+      <JFXTextField layoutX="560.0" layoutY="248.0" prefHeight="26.0" prefWidth="158.0" />
+      <JFXTextField layoutX="787.0" layoutY="250.0" prefHeight="26.0" prefWidth="158.0" />
+      <JFXTextField disable="true" layoutX="734.0" layoutY="664.0" prefHeight="26.0" prefWidth="200.0" />
+      <Label layoutX="652.0" layoutY="672.0" text="Precio Base" />
+      <JFXButton buttonType="RAISED" layoutX="864.0" layoutY="722.0" style="-fx-background-color: #FFFFFF;" text="Guardar">
+         <font>
+            <Font size="15.0" />
+         </font>
+         <effect>
+            <DropShadow />
+         </effect>
+      </JFXButton>
+   </children>
+</AnchorPane>
