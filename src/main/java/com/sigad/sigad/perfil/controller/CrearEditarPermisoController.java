@@ -122,7 +122,7 @@ public class CrearEditarPermisoController implements Initializable {
         PerfilHelper helper = new PerfilHelper();
         Perfil p = helper.getProfile(PerfilController.selectedProfile.name.getValue());
         if(p!= null){
-            permiso.setPerfil(p);
+            permiso.addPerfil(p);
         }
     }
 }

@@ -9,7 +9,7 @@ import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sigad.sigad.app.controller.HomeController;
 import com.sigad.sigad.business.Producto;
-import com.sigad.sigad.pedido.helper.ProductoHelper;
+import com.sigad.sigad.business.helpers.ProductoHelper;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
