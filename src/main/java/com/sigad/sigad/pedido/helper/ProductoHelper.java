@@ -30,8 +30,17 @@ public class ProductoHelper {
     }
     
     public ArrayList<Producto> getProducts(){
-        Query query  = session.createQuery("from Producto");
-        return new ArrayList<>( query.list());
+        ArrayList<Producto> list = null;
+        try {
+            Query query  = session.createQuery("from Producto");
+            
+            if(!query.list().isEmpty()){
+                list= (ArrayList<Producto>) query.list();
+            }
+        } catch (Exception e) {
+        }
+        
+        return list;
     };
 
     public void close(){

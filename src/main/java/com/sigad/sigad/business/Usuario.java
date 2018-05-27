@@ -5,8 +5,6 @@
  */
 package com.sigad.sigad.business;
 
-import com.jfoenix.controls.JFXComboBox;
-import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -18,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Email;
 
 /**
@@ -290,9 +289,7 @@ public class Usuario {
     public void setPassword(String password) {
         this.password = password;
     }
-
     
-
     /**
      * @return the pedidoCliente
      */

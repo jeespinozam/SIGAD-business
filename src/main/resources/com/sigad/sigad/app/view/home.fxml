@@ -28,3 +28,4 @@
       <AnchorPane fx:id="sidebarPane" minWidth="-Infinity" prefHeight="720.0" prefWidth="50.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
     </children>
 </AnchorPane>
+

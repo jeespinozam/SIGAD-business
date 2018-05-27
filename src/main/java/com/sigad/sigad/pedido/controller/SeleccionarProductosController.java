@@ -13,10 +13,8 @@ import com.sigad.sigad.pedido.helper.ProductoHelper;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
@@ -25,7 +23,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -70,50 +67,49 @@ public class SeleccionarProductosController implements Initializable {
     /**
      * Initializes the controller class.
      */
-    @FXML
-    private AnchorPane anchorPane;
-    //Tabla productos 
+
     @FXML
     private JFXTreeTableView<ProductoLista> treeView;
-
-    JFXTreeTableColumn<ProductoLista, Boolean> select = new JFXTreeTableColumn<>("Seleccionar");
-
-    JFXTreeTableColumn<ProductoLista, Image> imagen = new JFXTreeTableColumn<>("Imagen");
-
-    JFXTreeTableColumn<ProductoLista, String> nombre = new JFXTreeTableColumn<>("Nombre");
-
-    JFXTreeTableColumn<ProductoLista, String> precio = new JFXTreeTableColumn<>("Precio");
-
-    JFXTreeTableColumn<ProductoLista, String> stock = new JFXTreeTableColumn<>("Stock");
-
-    JFXTreeTableColumn<ProductoLista, String> categoria = new JFXTreeTableColumn<>("Categoria");
-
-    JFXTreeTableColumn<ProductoLista, String> almacen = new JFXTreeTableColumn<>("Almacen");
-
     @FXML
     private JFXTreeTableView<PedidoLista> treeViewPedido;
+
+    @FXML
+    private AnchorPane anchorPane;
+    @FXML
+    JFXTreeTableColumn<ProductoLista, Boolean> select = new JFXTreeTableColumn<>("Seleccionar");
+    @FXML
+    JFXTreeTableColumn<ProductoLista, Image> imagen = new JFXTreeTableColumn<>("Imagen");
+    @FXML
+    JFXTreeTableColumn<ProductoLista, String> nombre = new JFXTreeTableColumn<>("Nombre");
+    @FXML
+    JFXTreeTableColumn<ProductoLista, String> precio = new JFXTreeTableColumn<>("Precio");
+    @FXML
+    JFXTreeTableColumn<ProductoLista, String> stock = new JFXTreeTableColumn<>("Stock");
+    @FXML
+    JFXTreeTableColumn<ProductoLista, String> categoria = new JFXTreeTableColumn<>("Categoria");
+    @FXML
+    JFXTreeTableColumn<ProductoLista, String> almacen = new JFXTreeTableColumn<>("Almacen");
+    @FXML
     JFXTreeTableColumn<PedidoLista, Boolean> eliminar = new JFXTreeTableColumn<>("Eliminar");
-
+    @FXML
     JFXTreeTableColumn<PedidoLista, String> nombrePedido = new JFXTreeTableColumn<>("Nombre");
-
+    @FXML
     JFXTreeTableColumn<PedidoLista, String> precioPedido = new JFXTreeTableColumn<>("Precio");
-
+    @FXML
     JFXTreeTableColumn<PedidoLista, String> subTotalPedido = new JFXTreeTableColumn<>("SubTotal");
-
+    @FXML
     JFXTreeTableColumn<PedidoLista, Integer> cantidadPedido = new JFXTreeTableColumn<>("Cantidad");
-
+    @FXML
     JFXTreeTableColumn<PedidoLista, String> descuentoPedido = new JFXTreeTableColumn<>("Descuentos");
+
     @FXML
     private JFXTextField filtro;
-
     @FXML
     private JFXButton btnContinuar;
-
     @FXML
     private Label lblTotal;
-
+    
     private final ObservableList<PedidoLista> pedidos = FXCollections.observableArrayList();
-
     private final ObservableList<ProductoLista> prod = FXCollections.observableArrayList();
 
     @Override
@@ -129,11 +125,13 @@ public class SeleccionarProductosController implements Initializable {
         //Basede datos
         ProductoHelper gest = new ProductoHelper();
         ArrayList<Producto> productosDB = gest.getProducts();
-        productosDB.forEach((p) -> {
-            Producto t = (Producto) p;
-            System.out.println(t.getPrecio());
-            prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), Integer.toString(t.getStock()), t.getCategoria().getNombre(), "", t.getImagen(), t.getId().intValue()));
-        });
+        if(productosDB != null){
+            productosDB.forEach((p) -> {
+                Producto t = p;
+                System.out.println(t.getPrecio());
+                prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), Integer.toString(t.getStock()), /*t.getCategoria().getNombre()*/ "Hola", "", t.getImagen(), t.getId().intValue()));
+            });
+        }
         gest.close();
 
     }

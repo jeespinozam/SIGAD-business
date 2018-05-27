@@ -7,8 +7,11 @@ package com.sigad.sigad.app.controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPopup;
-import com.sigad.sigad.cuentas.controller.CuentasController;
+import com.sigad.sigad.controller.cargaMasiva.CargaMasivaViewController;
+import com.sigad.sigad.personal.controller.PersonalController;
 import com.sigad.sigad.pedido.controller.SeleccionarProductosController;
+import com.sigad.sigad.deposito.controller.FXMLAlmacenIngresoListaOrdenCompraController;
+import com.sigad.sigad.perfil.controller.PerfilController;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.io.IOException;
@@ -76,12 +79,14 @@ public class HomeController implements Initializable {
     }   
     
     private void initsidebar(){
+        
         sidebarBtns.add(new JFXButton("Perfil"));
         sidebarBtns.add(new JFXButton("Productos"));
         sidebarBtns.add(new JFXButton("Personal"));
         sidebarBtns.add(new JFXButton("Repartos"));
         sidebarBtns.add(new JFXButton("Pedidos"));
         sidebarBtns.add(new JFXButton("Estadísticas"));
+        sidebarBtns.add(new JFXButton("Carga Masiva"));
         sidebarBtns.add(new JFXButton("Configuraciones"));
         
         sidebarIcons.add(MaterialDesignIcon.ACCOUNT_CIRCLE);
@@ -90,7 +95,10 @@ public class HomeController implements Initializable {
         sidebarIcons.add(MaterialDesignIcon.CAR);
         sidebarIcons.add(MaterialDesignIcon.BACKUP_RESTORE);
         sidebarIcons.add(MaterialDesignIcon.ELEVATION_RISE);
+        sidebarIcons.add(MaterialDesignIcon.ARCHIVE);
         sidebarIcons.add(MaterialDesignIcon.SETTINGS);
+        
+        
         
         for (int i = 0; i < sidebarBtns.size(); i++) {
             setConfBtn(i, sidebarBtns.get(i), 70, 20, Pos.BASELINE_LEFT,
@@ -105,7 +113,20 @@ public class HomeController implements Initializable {
                     node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(SeleccionarProductosController.viewPath));
                     firstPanel.getChildren().setAll(node);
                 }catch (IOException ex) {
-                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "", ex);
+                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "sidebarBtns.get(1).setOnAction", ex);
+                }
+            }
+        });
+        
+        sidebarBtns.get(5).setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    Node node;
+                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PerfilController.viewPath));
+                    firstPanel.getChildren().setAll(node);
+                }catch (IOException ex) {
+                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "sidebarBtns.get(5).setOnAction", ex);
                 }
             }
         });
@@ -115,13 +136,35 @@ public class HomeController implements Initializable {
             public void handle(ActionEvent event) {
                 try {
                     Node node;
-                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(CuentasController.viewPath));
+                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PersonalController.viewPath));
                     firstPanel.getChildren().setAll(node);
                 }catch (IOException ex) {
+                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "sidebarBtns.get(2).setOnAction", ex);
+                }
+            }
+        });
+        sidebarBtns.get(4).setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    Node node;
+                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(FXMLAlmacenIngresoListaOrdenCompraController.viewPath));
+                    firstPanel.getChildren().setAll(node);
+                } catch (IOException ex) {
                     Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "", ex);
                 }
             }
         });
+        
+        sidebarBtns.get(6).setOnAction((event) -> {
+            try {
+                Node node;
+                node = (Node) FXMLLoader.load(getClass().getResource(CargaMasivaViewController.viewPath));
+                firstPanel.getChildren().setAll(node);
+            } catch (IOException ex) {
+                Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });        
     }
     
     private void setConfBtn(
@@ -243,6 +286,9 @@ public class HomeController implements Initializable {
         popup.setPopupContent(vBox);
     }
     
+//    public static void changeChildren(Node node){
+//        firstPanel.getChildren().setAll(node);
+//    }
     
     
 }

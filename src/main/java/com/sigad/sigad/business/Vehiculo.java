@@ -5,13 +5,13 @@
  */
 package com.sigad.sigad.business;
 
-import javax.validation.constraints.NotNull;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -34,6 +34,7 @@ public class Vehiculo {
 
         public Tipo(String nombre, double pesoSoportado) {
             setNombre(nombre);
+            //setPesoSoportado(pesoSoportado);
             setCapacidad(pesoSoportado);
         }
         
@@ -120,7 +121,7 @@ public class Vehiculo {
         public void setModelo(String modelo) {
             this.modelo = modelo;
         }
-        
+
     }
 
     @Id
@@ -134,7 +135,7 @@ public class Vehiculo {
     private String placa;
     private String nombre;
     private String descripcion;
-    
+
     public Vehiculo(Vehiculo.Tipo tipo, String placa) {
         setTipo(tipo);
         setPlaca(placa);
