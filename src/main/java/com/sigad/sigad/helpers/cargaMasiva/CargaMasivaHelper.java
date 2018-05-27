@@ -8,7 +8,9 @@ package com.sigad.sigad.helpers.cargaMasiva;
 import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Permiso;
+import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoCategoria;
+import com.sigad.sigad.business.ProductoFragilidad;
 import com.sigad.sigad.business.Proveedor;
 import com.sigad.sigad.business.Tienda;
 import com.sigad.sigad.business.TipoMovimiento;
@@ -131,11 +133,36 @@ public class CargaMasivaHelper {
                         rowIndex++;
                         rowhead.createCell(rowIndex).setCellValue("Opcion de Permiso");
                         break;
+                    case CargaMasivaConstantes.TABLA_FRAGILIDAD:
+                        rowhead.createCell(rowIndex).setCellValue("Valor de Fragilidad");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                        break;
+                    case CargaMasivaConstantes.TABLA_PRODUCTOS:
+                        rowhead.createCell(rowIndex).setCellValue("Nombre");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Precio Unitario");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Peso");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Imagen (Direccion Web)");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Categoria");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Nivel de Fragilidad");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Volumen");
+                        break;
                     // agregar aqui el resto de casos
                     default:
                         LOGGER.log(Level.WARNING, "Tabla no reconocida, abortando ....");
                         return;
                 }
+                // dar formato a celdas
+                for (int i=0;i<=rowIndex;i++)
+                    sheet.autoSizeColumn(i);
             }
             try {
                 FileOutputStream fileOut = new FileOutputStream(destinoTemplate);
@@ -214,8 +241,17 @@ public class CargaMasivaHelper {
     
     /* Inicio : Metodos de Apoyo */
     
+    // solo retorna el primero que encuentra
+    private static Object busquedaGeneralInt(Session session, String nombreEntidad, String [] condiciones, int [] valoresCondiciones) {
+        String hqlQuery = String.format("from %s where %s = %d", nombreEntidad, condiciones[0], valoresCondiciones[0]);
+        for (int i=1;i<condiciones.length;i++)
+            hqlQuery += String.format(" and %s = %d", condiciones[i], valoresCondiciones[i]);
+        List<Object> resultadoBusqueda = session.createQuery(hqlQuery).list();
+        return resultadoBusqueda.get(0);
+    }
+    
     // solo retornara el primero que encuentre
-    private static Object busquedaGeneral(Session session, String nombreEntidad, String [] condiciones, String [] valoresCondiciones) {
+    private static Object busquedaGeneralString(Session session, String nombreEntidad, String [] condiciones, String [] valoresCondiciones) {
         String hqlQuery = String.format("from %s where %s='%s'", nombreEntidad, condiciones[0], valoresCondiciones[0]);
         for (int i=1;i<condiciones.length;i++)
             hqlQuery += String.format(" and %s='%s'", condiciones[i], valoresCondiciones[i]);
@@ -287,7 +323,7 @@ public class CargaMasivaHelper {
                 List<Perfil> busquedaPerfil= session.createQuery(hqlQuery).list();
                 nuevoUsuario.setPerfil(busquedaPerfil.get(0));
                 */
-                Perfil perfilBuscado = (Perfil) CargaMasivaHelper.busquedaGeneral(session, "Perfil", new String [] {"nombre"}, new String [] {perfilNombre});
+                Perfil perfilBuscado = (Perfil) CargaMasivaHelper.busquedaGeneralString(session, "Perfil", new String [] {"nombre"}, new String [] {perfilNombre});
                 nuevoUsuario.setPerfil(perfilBuscado);
                 cell = cellIterator.next();
                 nuevoUsuario.setTelefono(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
@@ -438,13 +474,13 @@ public class CargaMasivaHelper {
                 cell = cellIterator.next();
                 String perfilNombreAux = StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell));
                 String permisoOpcionAux = null;
-                Perfil perfilAsociado = (Perfil) CargaMasivaHelper.busquedaGeneral(session, "Perfil", new String [] {"nombre"}, new String [] {perfilNombreAux});
+                Perfil perfilAsociado = (Perfil) CargaMasivaHelper.busquedaGeneralString(session, "Perfil", new String [] {"nombre"}, new String [] {perfilNombreAux});
                 if (perfilAsociado!=null) { // si el perfil mencionado fue encontrado entonces se continua con el proceso
                     LOGGER.log(Level.INFO, String.format("Perfil %s encontrado con exito", perfilNombreAux));
                     while (cellIterator.hasNext()) {
                         cell = cellIterator.next();
                         permisoOpcionAux = StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell));
-                        Permiso permisoAux = (Permiso) CargaMasivaHelper.busquedaGeneral(session, "Permiso", new String [] {"opcion"}, new String [] {permisoOpcionAux});
+                        Permiso permisoAux = (Permiso) CargaMasivaHelper.busquedaGeneralString(session, "Permiso", new String [] {"opcion"}, new String [] {permisoOpcionAux});
                         if (permisoAux!=null) {
                             LOGGER.log(Level.INFO, String.format("Permiso %s encontrado con exito", permisoOpcionAux));
                             perfilAsociado.getPermisos().add(permisoAux);
@@ -471,9 +507,98 @@ public class CargaMasivaHelper {
                     return false;
                 }*/
                 return CargaMasivaHelper.actualizarObjeto(perfilAsociado, session);
+            case CargaMasivaConstantes.TABLA_FRAGILIDAD:
+                ProductoFragilidad nuevaFrag = new ProductoFragilidad();
+                cell = cellIterator.next();
+                String valorCandea = StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell));
+                Integer valorParseado = (Integer) CargaMasivaHelper.validarParsing(valorCandea, true);
+                if (valorParseado!=null)
+                    nuevaFrag.setValor(valorParseado);
+                cell = cellIterator.next();
+                nuevaFrag.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
+                Transaction tx = null;
+                try{
+                    tx = session.beginTransaction();
+                    session.update(nuevaFrag);
+                    tx.commit();
+                    LOGGER.log(Level.INFO, String.format("Carga fragilidad %s, exitosa", nuevaFrag.getDescripcion()));
+                    return true;
+                }
+                catch(Exception he) {
+                    if (tx!=null)   tx.rollback();
+                    LOGGER.log(Level.SEVERE, String.format("Error en carga de fragilidad de %s", nuevaFrag.getDescripcion()));
+                    System.out.println("====================================================================");
+                    System.out.println(he);
+                    System.out.println("====================================================================");
+                    return false;
+                }
+                //return CargaMasivaHelper.guardarObjeto(nuevaFrag, session);
+            case CargaMasivaConstantes.TABLA_PRODUCTOS:
+                Producto nuevoProd = new Producto();
+                nuevoProd.setActivo(true);  // logica de negocio
+                nuevoProd.setStock(0);  // logica de negocio
+                cell = cellIterator.next();
+                nuevoProd.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
+                cell = cellIterator.next();
+                nuevoProd.setPrecio(Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell))));
+                cell = cellIterator.next();
+                nuevoProd.setPeso(Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell))));
+                cell = cellIterator.next();
+                nuevoProd.setImagen(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
+                cell = cellIterator.next();
+                nuevoProd.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
+                cell = cellIterator.next();
+                String nombreCategoriaAsociada = StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell));
+                if (StringUtils.isNotBlank(nombreCategoriaAsociada)) {
+                    ProductoCategoria categoriaAsociada = (ProductoCategoria) CargaMasivaHelper.busquedaGeneralString(session, "ProductoCategoria", new String[] {"nombre"}, new String[] {nombreCategoriaAsociada});
+                    if (categoriaAsociada!=null){
+                        LOGGER.log(Level.INFO, String.format("Categoria %s encontrado con exito", nombreCategoriaAsociada));
+                        nuevoProd.setCategoria(categoriaAsociada);
+                    }
+                    else
+                        LOGGER.log(Level.SEVERE, String.format("Categoria %s no encontrada, no se tendra en consideracion", nombreCategoriaAsociada));
+                }
+                else
+                    LOGGER.log(Level.WARNING, String.format("No se especifico categoria para producto %s, se continua el proceso", nuevoProd.getNombre()));
+                cell = cellIterator.next();
+                String intensidadAsociada = StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell));
+                if (StringUtils.isNotBlank(intensidadAsociada)) {
+                    Integer valorIntensidadAsociada = (Integer) validarParsing(intensidadAsociada, true);
+                    if (valorIntensidadAsociada != null) {
+                        ProductoFragilidad fragilidadAsociada = (ProductoFragilidad) CargaMasivaHelper.busquedaGeneralInt(session, "ProductoFragilidad", new String [] {"valor"}, new int [] {valorIntensidadAsociada});
+                        if (fragilidadAsociada!=null) {
+                            LOGGER.log(Level.INFO, String.format("Fragilidad %s encontrada con exito", intensidadAsociada));
+                            nuevoProd.setFragilidad(fragilidadAsociada);
+                        }
+                        else
+                            LOGGER.log(Level.SEVERE, String.format("Fragibilidad %s no encontrada, no se tendra en consideracion", intensidadAsociada));
+                    }
+                }
+                else
+                    LOGGER.log(Level.WARNING, String.format("No se especifico fragilidad para producto %s, se continua el proceso", nuevoProd.getNombre()));
+                cell = cellIterator.next();
+                String volumenCadena = StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell));
+                Double volumenValor = (Double) CargaMasivaHelper.validarParsing(volumenCadena, false);
+                if (volumenValor!=null)
+                    nuevoProd.setVolumen(volumenValor);
+                return CargaMasivaHelper.guardarObjeto(nuevoProd, session);
             // colocar aqui los demas casos para el resto de tablas de carga masiva
             default:
                 return false;
+        }
+    }
+    
+    public static Object validarParsing(String numero, boolean esInteger) {
+        try {
+            System.out.println(String.format("Valor a ser parseado %s", numero));
+            if (esInteger)
+                return Integer.valueOf(numero);
+            else
+                return Double.valueOf(numero);
+        }
+        catch(Exception e) {
+            LOGGER.log(Level.SEVERE, String.format("Error en el parseo, revisar el valor : %s", numero));
+            return null;
         }
     }
     
@@ -488,7 +613,7 @@ public class CargaMasivaHelper {
         catch(Exception he) {
             LOGGER.log(Level.SEVERE, "Error al intentar actualizar objeto");
             System.out.println("====================================================================");
-            System.out.print(he);
+            System.out.println(he);
             System.out.println("====================================================================");
             return false;
         }
@@ -505,7 +630,7 @@ public class CargaMasivaHelper {
         catch(Exception he) {
             LOGGER.log(Level.SEVERE, "Error al intentar guardar objeto");
             System.out.println("====================================================================");
-            System.out.print(he);
+            System.out.println(he);
             System.out.println("====================================================================");
             return false;
         }
