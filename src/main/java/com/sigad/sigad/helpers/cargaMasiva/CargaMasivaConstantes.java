@@ -29,7 +29,7 @@ public class CargaMasivaConstantes {
     public static ObservableList<String> getList(){
         return FXCollections.observableArrayList(
                 TABLA_PRODUCTOCATEGORIA, TABLA_PERFILES, TABLA_USUARIOS, TABLA_PROVEEDORES, TABLA_INSUMOS, TABLA_TIENDAS, 
-                TABLA_TIPOMOV, TABLA_PERMISOS
+                TABLA_TIPOMOV, TABLA_PERMISOS, TABLA_PERFILXPERMISO
         );
     };
 }
