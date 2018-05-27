@@ -5,10 +5,14 @@
  */
 package com.sigad.sigad.business;
 
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 /**
@@ -18,13 +22,15 @@ import javax.persistence.ManyToOne;
 @Entity
 public class Permiso {
 
+    
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String opcion;
     private String descripcion;
-    @ManyToOne
-    private Perfil perfil;
+    @ManyToMany(mappedBy = "permisos", cascade = { CascadeType.ALL })
+    private Set<Perfil> perfiles = new HashSet<>();
 
     public Permiso() {
     }
@@ -44,7 +50,7 @@ public class Permiso {
     }
 
     /**
-     * @return the opcion
+     * @return the opcionmany
      */
     public String getOpcion() {
         return opcion;
@@ -70,19 +76,26 @@ public class Permiso {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-
+    
     /**
      * @return the perfil
      */
-    public Perfil getPerfil() {
-        return perfil;
+    public Set<Perfil> getPerfil() {
+        return perfiles;
     }
 
     /**
      * @param perfil the perfil to set
      */
-    public void setPerfil(Perfil perfil) {
-        this.perfil = perfil;
+    public void setPerfil(Set<Perfil> perfil) {
+        this.perfiles = perfil;
     }
-    
+
+    /**
+     * @param perfil the perfil to set
+     */
+    public void addPerfil(Perfil perfil) {
+        this.perfiles.add(perfil);
+    }
+   
 }
