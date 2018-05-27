@@ -91,5 +91,11 @@ public class Permiso {
         this.perfiles = perfil;
     }
 
+    /**
+     * @param perfil the perfil to set
+     */
+    public void addPerfil(Perfil perfil) {
+        this.perfiles.add(perfil);
+    }
    
 }
