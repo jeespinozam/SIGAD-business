@@ -27,15 +27,15 @@ public class Perfil {
     /**
      * @return the perfil
      */
-    public Set<Permiso> getPerfil() {
+    public Set<Permiso> getPermisos() {
         return permisos;
     }
 
     /**
-     * @param perfil the perfil to set
+     * @param permisos
      */
-    public void setPerfil(Set<Permiso> perfil) {
-        this.permisos = perfil;
+    public void setPermisos(Set<Permiso> permisos) {
+        this.permisos = permisos;
     }
 
     @Id
