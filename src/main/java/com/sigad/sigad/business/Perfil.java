@@ -115,5 +115,9 @@ public class Perfil {
         this.permisos = permisos;
     }
 
+     
+    public void addPermiso(Permiso permiso) {
+        this.permisos.add(permiso);
+    }
    
 }
