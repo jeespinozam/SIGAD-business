@@ -14,6 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 /**
@@ -22,6 +23,21 @@ import javax.persistence.OneToMany;
  */
 @Entity
 public class Perfil {
+
+    /**
+     * @return the perfil
+     */
+    public Set<Permiso> getPerfil() {
+        return permisos;
+    }
+
+    /**
+     * @param perfil the perfil to set
+     */
+    public void setPerfil(Set<Permiso> perfil) {
+        this.permisos = perfil;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
@@ -31,7 +47,7 @@ public class Perfil {
     private String descripcion;
     @NotNull
     private boolean activo;
-    @OneToMany(mappedBy = "perfil", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
     private Set<Permiso> permisos = new HashSet<>();
 
     /**
@@ -39,7 +55,7 @@ public class Perfil {
      */
     public Perfil() {
     }
-    
+
     /**
      * @return the id
      */
@@ -99,14 +115,5 @@ public class Perfil {
     /**
      * @return the permisos
      */
-    public Set<Permiso> getPermisos() {
-        return permisos;
-    }
-
-    /**
-     * @param permisos the permisos to set
-     */
-    public void setPermisos(Set<Permiso> permisos) {
-        this.permisos = permisos;
-    }
+   
 }
