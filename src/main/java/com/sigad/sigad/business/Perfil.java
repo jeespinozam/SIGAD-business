@@ -23,21 +23,6 @@ import javax.persistence.OneToMany;
  */
 @Entity
 public class Perfil {
-
-    /**
-     * @return the perfil
-     */
-    public Set<Permiso> getPermisos() {
-        return permisos;
-    }
-
-    /**
-     * @param permisos
-     */
-    public void setPermisos(Set<Permiso> permisos) {
-        this.permisos = permisos;
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
@@ -49,13 +34,17 @@ public class Perfil {
     private boolean activo;
     @ManyToMany
     private Set<Permiso> permisos = new HashSet<>();
-
     /**
      * Constructor.
      */
     public Perfil() {
     }
-
+    public Perfil(String nombre, String descripcion, boolean activo) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.activo = activo;
+    }
+    
     /**
      * @return the id
      */
@@ -115,5 +104,17 @@ public class Perfil {
     /**
      * @return the permisos
      */
+    
+    public Set<Permiso> getPermisos() {
+        return permisos;
+    }
+
+    /**
+     * @param permisos
+     */
+    public void setPermisos(Set<Permiso> permisos) {
+        this.permisos = permisos;
+    }
+
    
 }
