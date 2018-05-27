@@ -24,6 +24,8 @@ public class CargaMasivaConstantes {
     public static final String TABLA_PERMISOS = "Permisos";
     public static final String TABLA_PERFILXPERMISO = "Perfil x Permiso";
     
+    
+    /* mantener esta lista ordenada de la siguiente manera : primero aquellas entidades que no tienen FK, luego aquellas que si tiene FK */
     public static ObservableList<String> getList(){
         return FXCollections.observableArrayList(
                 TABLA_PRODUCTOCATEGORIA, TABLA_PERFILES, TABLA_USUARIOS, TABLA_PROVEEDORES, TABLA_INSUMOS, TABLA_TIENDAS, 
