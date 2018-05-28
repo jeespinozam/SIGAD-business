@@ -38,12 +38,11 @@ import org.hibernate.cfg.Configuration;
  * @author paul
  */
 public class CargaMasivaHelper {
-    
+
     private final static Logger LOGGER = Logger.getLogger(CargaMasivaHelper.class.getName());
-    
+
     /* Incio : Metodos disponibles */
-    
-    /* forma de consumo : se pasa como parametros la lista des tablas de las cuales se quieren generar sus plantillas
+ /* forma de consumo : se pasa como parametros la lista des tablas de las cuales se quieren generar sus plantillas
     y la ruta donde se quiere guardar el archivo, cabe senialar que la ruta debe contener el nombre del archivo con el formato xls (Excel)*/
     public static void generarCargaMasivaTemplate(ArrayList<String> listaTablaCarga, String destinoTemplate) {
         if (listaTablaCarga != null && !listaTablaCarga.isEmpty()) {
@@ -54,7 +53,7 @@ public class CargaMasivaHelper {
                 HSSFRow rowhead = sheet.createRow(0);
                 rowIndex = 0;
                 // Definimos las cabeceras
-                switch(tablaCarga) {
+                switch (tablaCarga) {
                     case CargaMasivaConstantes.TABLA_PRODUCTOCATEGORIA:
                         rowhead.createCell(rowIndex).setCellValue("Nombre");
                         rowIndex++;
@@ -135,14 +134,13 @@ public class CargaMasivaHelper {
                 workbook.write(fileOut);
                 fileOut.close();
                 LOGGER.log(Level.INFO, "Plantilla(s) creada(s) con exito");
-                }
-            catch(Exception ex) {
+            } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, "Error al generar la(s) plantilla(s)");
                 System.out.print(ex);
             }
         }
     }
-    
+
     /* forma de consumo : se pasa como unico parametro la ruta del archivo, el metodo identificara las hojas del archivo e iniciara la carga masiva */
     public static void CargaMasivaProceso(String archivoRuta) {
         try {
@@ -169,7 +167,7 @@ public class CargaMasivaHelper {
             // se itera sobre la prioridad establecida en CargaMasivaConstantes
             for (String tablaEnCola : CargaMasivaConstantes.getList()) {
                 sheet = workbook.getSheet(tablaEnCola);
-                if (sheet!=null) {
+                if (sheet != null) {
                     sheetName = sheet.getSheetName();
                     LOGGER.log(Level.INFO, String.format("Hoja %s reconocida, iniciando proceso ...", sheetName));
                     hojasReconocidas++;
@@ -182,8 +180,11 @@ public class CargaMasivaHelper {
                     while (rowIterator.hasNext()) {
                         row = rowIterator.next();
                         cellIterator = row.cellIterator();
-                        if (CargaMasivaHelper.SubirRegistroBD(sheetName, cellIterator, dataFormatter, session)) casosExitosos++;
-                        else casosFallidos++;
+                        if (CargaMasivaHelper.SubirRegistroBD(sheetName, cellIterator, dataFormatter, session)) {
+                            casosExitosos++;
+                        } else {
+                            casosFallidos++;
+                        }
                     }
                     LOGGER.log(Level.INFO, String.format("Hoja %s finalizada, reporte :", sheetName));
                     LOGGER.log(Level.INFO, String.format("Casos Exitosos : %d", casosExitosos));
@@ -196,34 +197,33 @@ public class CargaMasivaHelper {
             workbook.close();
             LOGGER.log(Level.INFO, "Procesamiento Finalizado, reporte final :");
             LOGGER.log(Level.INFO, String.format("Cantidad de Hojas Procesadas : %s", hojasReconocidas));
-        }
-        catch(Exception ex) {
+        } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error al cargar masivamente, revisar la ruta del archivo");
             System.out.print(ex);
         }
     }
-    
+
     /* Fin : Metodos disponibles */
-    
     // solo retornara el primero que encuentre
-    private static Object busquedaGeneral(Session session, String nombreEntidad, String [] condiciones, String [] valoresCondiciones) {
+    private static Object busquedaGeneral(Session session, String nombreEntidad, String[] condiciones, String[] valoresCondiciones) {
         String hqlQuery = String.format("from %s where %s='%s'", nombreEntidad, condiciones[0], valoresCondiciones[0]);
-        for (int i=1;i<condiciones.length;i++)
+        for (int i = 1; i < condiciones.length; i++) {
             hqlQuery += String.format(" and %s='%s'", condiciones[i], valoresCondiciones[i]);
+        }
         List<Object> resultadoBusqueda = session.createQuery(hqlQuery).list();
         return resultadoBusqueda.get(0);
     }
-    
+
     private static Perfil buscarPerfil(Session session, String nombre) {
         String hqlQuery = String.format("from Perfil where nombre = '%s'", nombre);
-        List<Perfil> busquedaPerfil= session.createQuery(hqlQuery).list();
+        List<Perfil> busquedaPerfil = session.createQuery(hqlQuery).list();
         return busquedaPerfil.get(0);
     }
-    
+
     // implementacion de logica para cada tipo de tabla a cargar en bd, por cada registro a escanear
     private static boolean SubirRegistroBD(String tablaCarga, Iterator<Cell> cellIterator, DataFormatter dataFormatter, Session session) {
         Cell cell = null;
-        switch(tablaCarga) {
+        switch (tablaCarga) {
             case CargaMasivaConstantes.TABLA_PRODUCTOCATEGORIA:
                 ProductoCategoria nuevoProdCat = new ProductoCategoria();
                 nuevoProdCat.setActivo(true);   // logica de negocio
@@ -231,15 +231,14 @@ public class CargaMasivaHelper {
                 nuevoProdCat.setNombre(dataFormatter.formatCellValue(cell));
                 cell = cellIterator.next();
                 nuevoProdCat.setDescripcion(dataFormatter.formatCellValue(cell));
-                try{
+                try {
                     Transaction tx = null;
                     tx = session.beginTransaction();
                     session.save(nuevoProdCat);
                     tx.commit();
                     LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoProdCat.getNombre()));
                     return true;
-                }
-                catch(HibernateException he) {
+                } catch (HibernateException he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoProdCat.getNombre()));
                     System.out.print(he);
                     return false;
@@ -249,18 +248,17 @@ public class CargaMasivaHelper {
                 nuevoPerfil.setActivo(true);    // logica de negocio
                 cell = cellIterator.next();
                 nuevoPerfil.setNombre(dataFormatter.formatCellValue(cell));
-                cell = cellIterator.next(); 
+                cell = cellIterator.next();
                 nuevoPerfil.setDescripcion(dataFormatter.formatCellValue(cell));
-                
-                try{
+
+                try {
                     Transaction tx = null;
                     tx = session.beginTransaction();
                     session.save(nuevoPerfil);
                     tx.commit();
                     LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoPerfil.getNombre()));
                     return true;
-                }
-                catch(HibernateException he) {
+                } catch (HibernateException he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoPerfil.getNombre()));
                     System.out.print(he);
                     return false;
@@ -278,7 +276,7 @@ public class CargaMasivaHelper {
                 String perfilNombre = dataFormatter.formatCellValue(cell);
                 // Buscando el perfil elegido
                 String hqlQuery = String.format("from Perfil where nombre = '%s'", perfilNombre);
-                List<Perfil> busquedaPerfil= session.createQuery(hqlQuery).list();
+                List<Perfil> busquedaPerfil = session.createQuery(hqlQuery).list();
                 nuevoUsuario.setPerfil(busquedaPerfil.get(0));
                 cell = cellIterator.next();
                 nuevoUsuario.setTelefono(dataFormatter.formatCellValue(cell));
@@ -290,15 +288,14 @@ public class CargaMasivaHelper {
                 nuevoUsuario.setCorreo(dataFormatter.formatCellValue(cell));
                 cell = cellIterator.next();
                 nuevoUsuario.setIntereses(dataFormatter.formatCellValue(cell));
-                try{
+                try {
                     Transaction tx = null;
                     tx = session.beginTransaction();
                     session.save(nuevoUsuario);
                     tx.commit();
                     LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoUsuario.getNombres()));
                     return true;
-                }
-                catch(HibernateException he) {
+                } catch (HibernateException he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoUsuario.getNombres()));
                     System.out.print(he);
                     return false;
@@ -311,15 +308,14 @@ public class CargaMasivaHelper {
                 nuevoProv.setRuc(Integer.valueOf(dataFormatter.formatCellValue(cell)));
                 cell = cellIterator.next();
                 nuevoProv.setDescripcion(dataFormatter.formatCellValue(cell));
-                try{
+                try {
                     Transaction tx = null;
                     tx = session.beginTransaction();
                     session.save(nuevoProv);
                     tx.commit();
                     LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoProv.getNombre()));
                     return true;
-                }
-                catch(HibernateException he) {
+                } catch (HibernateException he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoProv.getNombre()));
                     System.out.print(he);
                     return false;
@@ -327,7 +323,8 @@ public class CargaMasivaHelper {
             case CargaMasivaConstantes.TABLA_INSUMOS:
                 Insumo nuevoInsumo = new Insumo();
                 nuevoInsumo.setActivo(true);    // logica de negocio
-                nuevoInsumo.setStock(0);        // logica de negocio
+                nuevoInsumo.setStockTotalFisico(0);
+                nuevoInsumo.setStockTotalLogico(0);// logica de negocio
                 nuevoInsumo.setVolumen(0.00);   // no estoy seguro para q sirve esta webada
                 cell = cellIterator.next();
                 nuevoInsumo.setNombre(dataFormatter.formatCellValue(cell));
@@ -335,15 +332,14 @@ public class CargaMasivaHelper {
                 nuevoInsumo.setDescripcion(dataFormatter.formatCellValue(cell));
                 cell = cellIterator.next();
                 nuevoInsumo.setTiempoVida(Integer.valueOf(dataFormatter.formatCellValue(cell)));
-                try{
+                try {
                     Transaction tx = null;
                     tx = session.beginTransaction();
                     session.save(nuevoInsumo);
                     tx.commit();
                     LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoInsumo.getNombre()));
                     return true;
-                }
-                catch(HibernateException he) {
+                } catch (HibernateException he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoInsumo.getNombre()));
                     System.out.print(he);
                     return false;
@@ -360,15 +356,14 @@ public class CargaMasivaHelper {
                 nuevaTienda.setDescripcion(dataFormatter.formatCellValue(cell));
                 cell = cellIterator.next();
                 nuevaTienda.setCapacidad(Float.valueOf(dataFormatter.formatCellValue(cell)));
-                try{
+                try {
                     Transaction tx = null;
                     tx = session.beginTransaction();
                     session.save(nuevaTienda);
                     tx.commit();
                     LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevaTienda.getDireccion()));
                     return true;
-                }
-                catch(HibernateException he) {
+                } catch (HibernateException he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevaTienda.getDireccion()));
                     System.out.print(he);
                     return false;
@@ -379,15 +374,14 @@ public class CargaMasivaHelper {
                 nuevoTipoMov.setNombre(dataFormatter.formatCellValue(cell));
                 cell = cellIterator.next();
                 nuevoTipoMov.setDescripcion(dataFormatter.formatCellValue(cell));
-                try{
+                try {
                     Transaction tx = null;
                     tx = session.beginTransaction();
                     session.save(nuevoTipoMov);
                     tx.commit();
                     LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoTipoMov.getNombre()));
                     return true;
-                }
-                catch(HibernateException he) {
+                } catch (HibernateException he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoTipoMov.getNombre()));
                     System.out.print(he);
                     return false;
@@ -398,15 +392,14 @@ public class CargaMasivaHelper {
                 nuevoPermiso.setOpcion(dataFormatter.formatCellValue(cell));
                 cell = cellIterator.next();
                 nuevoPermiso.setDescripcion(dataFormatter.formatCellValue(cell));
-                try{
+                try {
                     Transaction tx = null;
                     tx = session.beginTransaction();
                     session.save(nuevoPermiso);
                     tx.commit();
                     LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoPermiso.getOpcion()));
                     return true;
-                }
-                catch(HibernateException he) {
+                } catch (HibernateException he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoPermiso.getOpcion()));
                     System.out.print(he);
                     return false;
@@ -415,36 +408,34 @@ public class CargaMasivaHelper {
                 cell = cellIterator.next();
                 String perfilNombreAux = dataFormatter.formatCellValue(cell);
                 String permisoOpcionAux = null;
-                Perfil perfilAsociado = (Perfil) CargaMasivaHelper.busquedaGeneral(session, "Perfil", new String [] {"nombre"}, new String [] {perfilNombreAux});
-                if (perfilAsociado!=null) { // si el perfil mencionado fue encontrado entonces se continua con el proceso
+                Perfil perfilAsociado = (Perfil) CargaMasivaHelper.busquedaGeneral(session, "Perfil", new String[]{"nombre"}, new String[]{perfilNombreAux});
+                if (perfilAsociado != null) { // si el perfil mencionado fue encontrado entonces se continua con el proceso
                     LOGGER.log(Level.INFO, String.format("Perfil %s encontrado con exito", perfilNombreAux));
                     //Set<Permiso> permisosAsociados = new HashSet<>();
                     while (cellIterator.hasNext()) {
                         cell = cellIterator.next();
                         permisoOpcionAux = dataFormatter.formatCellValue(cell);
-                        Permiso permisoAux = (Permiso) CargaMasivaHelper.busquedaGeneral(session, "Permiso", new String [] {"opcion"}, new String [] {permisoOpcionAux});
-                        if (permisoAux!=null) {
+                        Permiso permisoAux = (Permiso) CargaMasivaHelper.busquedaGeneral(session, "Permiso", new String[]{"opcion"}, new String[]{permisoOpcionAux});
+                        if (permisoAux != null) {
                             LOGGER.log(Level.INFO, String.format("Permiso %s encontrado con exito", permisoOpcionAux));
                             //permisosAsociados.add(permisoAux);
                             perfilAsociado.getPermisos().add(permisoAux);
-                        }
-                        else
+                        } else {
                             LOGGER.log(Level.WARNING, String.format("Permiso %s no encontrado, este permiso no sera considerado", permisoOpcionAux));
+                        }
                     }
                     //perfilAsociado.setPermisos(permisosAsociados);
-                }
-                else {
+                } else {
                     LOGGER.log(Level.SEVERE, String.format("Perfil %s no encontrado, cancelando operacion", perfilNombreAux));
                     return false;
                 }
-                try{
+                try {
                     Transaction tx = session.beginTransaction();
                     session.update(perfilAsociado);
                     tx.commit();
                     LOGGER.log(Level.INFO, String.format("Carga relacion perfil x permisos %s, exitosa", perfilAsociado.getNombre()));
                     return true;
-                }
-                catch(HibernateException he) {
+                } catch (HibernateException he) {
                     LOGGER.log(Level.SEVERE, String.format("Error en carga de relaciones perfil x persmisos de %s", perfilAsociado.getNombre()));
                     System.out.print(he);
                     return false;
@@ -454,6 +445,5 @@ public class CargaMasivaHelper {
                 return false;
         }
     }
-    
-    
+
 }
