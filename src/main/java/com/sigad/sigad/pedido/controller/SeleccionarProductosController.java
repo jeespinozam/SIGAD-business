@@ -142,7 +142,7 @@ public class SeleccionarProductosController implements Initializable {
             productosDB.forEach((p) -> {
                 Producto t = p;
                 System.out.println(t.getPrecio());
-                prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), Integer.toString(t.getStock()), /*t.getCategoria().getNombre()*/ "Hola", "", t.getImagen(), t.getId().intValue()));
+                prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), Integer.toString(t.getStockLogico()), /*t.getCategoria().getNombre()*/ "Hola", "", t.getImagen(), t.getId().intValue()));
             });
         }
         gest.close();
@@ -314,8 +314,8 @@ public class SeleccionarProductosController implements Initializable {
                 TreeTableRow<ProductoLista> row = new TreeTableRow<>();
                 row.setOnMouseClicked((event) -> {
                     if (event.getClickCount() == 2 && (!row.isEmpty())) {
-
-                        mostrarInfoProducto();
+                        ProductoLista rowData = row.getItem();
+                        mostrarInfoProducto(rowData.codigo);
 
 //                            ProductoLista rowData = row.getItem();
 //                            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(DescripcionProductosController.viewPath));
@@ -354,18 +354,24 @@ public class SeleccionarProductosController implements Initializable {
         });
     }
 
-    public void mostrarInfoProducto() {
+    public void mostrarInfoProducto(Integer codigo) {
         try {
             popup = new JFXPopup();
             JFXDialogLayout content = new JFXDialogLayout();
             content.setHeading(new Text("Crear Usuario"));
             Node node;
-            node = (Node) FXMLLoader.load(SeleccionarProductosController.this.getClass().getResource(DescripcionProductosController.viewPath));
+ //           node = (Node) FXMLLoader.load(SeleccionarProductosController.this.getClass().getResource(DescripcionProductosController.viewPath));
+            
+            FXMLLoader loader = new FXMLLoader(SeleccionarProductosController.this.getClass().getResource(DescripcionProductosController.viewPath));
+            node = (Node) loader.load();
+            DescripcionProductosController desc = loader.getController();
+            desc.initModel(codigo);
+            
             content.setBody(node);
             userDialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
             userDialog.show();
         } catch (IOException ex) {
-            Logger.getLogger(SeleccionarProductosController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DescripcionProductosController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

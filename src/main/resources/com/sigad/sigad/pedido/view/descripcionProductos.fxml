@@ -16,42 +16,42 @@
         <URL value="@/styles/descripcionproductos.css" />
     </stylesheets>
    <children>
-      <ImageView id="imageProducto" fx:id="imageProducto" fitHeight="130.0" fitWidth="170.0" layoutX="59.0" layoutY="67.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView id="imageProducto" fx:id="imageProducto" fitHeight="130.0" fitWidth="170.0" layoutX="40.0" layoutY="56.0" pickOnBounds="true" preserveRatio="true">
          <effect>
             <DropShadow color="#000000bc" />
          </effect>
       </ImageView>
-      <Label layoutX="248.0" layoutY="23.0" text="Nombre">
+      <Label layoutX="211.0" layoutY="28.0" text="Nombre">
          <font>
             <Font size="10.0" />
          </font></Label>
-      <JFXTextField id="txtNombre" fx:id="txtNombre" disable="true" layoutX="250.0" layoutY="33.0" />
-      <JFXTextField id="txtPrecioBase" fx:id="txtPrecioBase" disable="true" layoutX="252.0" layoutY="89.0" />
-      <Label layoutX="247.0" layoutY="73.0" text="Precio base">
+      <JFXTextField id="txtNombre" fx:id="txtNombre" disable="true" layoutX="213.0" layoutY="38.0" />
+      <JFXTextField id="txtPrecioBase" fx:id="txtPrecioBase" disable="true" layoutX="215.0" layoutY="94.0" />
+      <Label layoutX="210.0" layoutY="78.0" text="Precio base">
          <font>
             <Font size="10.0" />
          </font></Label>
-      <Label layoutX="247.0" layoutY="121.0" prefHeight="17.0" prefWidth="61.0" text="Categoria">
+      <Label layoutX="210.0" layoutY="126.0" prefHeight="17.0" prefWidth="61.0" text="Categoria">
          <font>
             <Font size="10.0" />
          </font></Label>
-      <JFXTextField id="txtCategoria" fx:id="txtCategoria" disable="true" layoutX="250.0" layoutY="136.0" />
-      <Label layoutX="251.0" layoutY="178.0" text="Fragilidad">
+      <JFXTextField id="txtCategoria" fx:id="txtCategoria" disable="true" layoutX="213.0" layoutY="141.0" />
+      <Label layoutX="214.0" layoutY="183.0" text="Fragilidad">
          <font>
             <Font size="10.0" />
          </font></Label>
-      <JFXTextField id="txtFragilidad" fx:id="txtFragilidad" disable="true" layoutX="250.0" layoutY="185.0" />
-      <JFXTextArea id="txtDescripcion" fx:id="txtDescripcion" disable="true" layoutX="408.0" layoutY="51.0" prefHeight="99.0" prefWidth="259.0" />
-      <Label layoutX="408.0" layoutY="25.0" text="Descripcion">
+      <JFXTextField id="txtFragilidad" fx:id="txtFragilidad" disable="true" layoutX="213.0" layoutY="190.0" />
+      <JFXTextArea id="txtDescripcion" fx:id="txtDescripcion" disable="true" layoutX="369.0" layoutY="44.0" prefHeight="99.0" prefWidth="259.0" />
+      <Label layoutX="369.0" layoutY="21.0" text="Descripcion">
          <font>
             <Font size="10.0" />
          </font></Label>
-      <JFXTreeTableView id="tablaStock" fx:id="tablaStock" layoutX="408.0" layoutY="262.0" prefHeight="130.0" prefWidth="324.0">
+      <JFXTreeTableView id="tablaStock" fx:id="tablaPromociones" layoutX="369.0" layoutY="262.0" prefHeight="130.0" prefWidth="365.0">
          <effect>
             <DropShadow color="#00000093" />
          </effect>
       </JFXTreeTableView>
-      <JFXTreeTableView id="promocionesActivas" fx:id="tablaPromociones" layoutX="31.0" layoutY="262.0" prefHeight="130.0" prefWidth="356.0">
+      <JFXTreeTableView id="promocionesActivas" fx:id="tablaStock" layoutX="47.0" layoutY="262.0" prefHeight="130.0" prefWidth="245.0">
          <effect>
             <DropShadow color="#00000093" />
          </effect>
@@ -61,7 +61,7 @@
             <Font name="System Bold" size="20.0" />
          </font>
       </Label>
-      <Label layoutX="408.0" layoutY="227.0" text="Promociones activas">
+      <Label layoutX="369.0" layoutY="227.0" text="Promociones activas">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
