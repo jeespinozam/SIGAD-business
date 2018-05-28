@@ -95,6 +95,7 @@ public class DescripcionProductosController implements Initializable {
         this.idProducto = idProducto;
         ProductoHelper helper = new ProductoHelper();
         Producto producto = helper.getProductById(idProducto);
+        helper.close();
         if (producto != null) {
             txtNombre.setText(producto.getNombre());
             txtPrecioBase.setText(producto.getPrecio().toString());
@@ -102,12 +103,12 @@ public class DescripcionProductosController implements Initializable {
             txtDescripcion.setText(producto.getDescripcion());
             Image image = new Image(producto.getImagen());
             imageProducto.setImage(image);
-
         }
 
         System.out.println(idProducto);
     }
-
+    
+    
     public void columnasStockLista() {
         local.setPrefWidth(120);
         local.setCellValueFactory((TreeTableColumn.CellDataFeatures<StockLista, String> param) -> param.getValue().getValue().local);

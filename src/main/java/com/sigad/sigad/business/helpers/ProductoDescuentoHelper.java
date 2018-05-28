@@ -9,19 +9,18 @@ import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Producto;
 import java.util.ArrayList;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
 /**
  *
  * @author Alexandra
  */
-public class ProductoHelper {
+public class ProductoDescuentoHelper {
 
     Session session = null;
     private String errorMessage = "";
 
-    public ProductoHelper() {
+    public ProductoDescuentoHelper() {
         session = LoginController.serviceInit();
         session.beginTransaction();
         // Add new Employee object
@@ -31,7 +30,7 @@ public class ProductoHelper {
 //        session.save(prod2);
     }
 
-    public ArrayList<Producto> getProducts() {
+    public ArrayList<Producto> getDescuentos() {
         ArrayList<Producto> list = null;
         try {
             Query query = session.createQuery("from Producto");
@@ -51,7 +50,7 @@ public class ProductoHelper {
 
     ;
     
-    public Producto getProductById(Integer id) {
+    public Producto getDescuentoById(Integer id) {
         Producto product = null;
         Query query = null;
         try {
@@ -61,10 +60,10 @@ public class ProductoHelper {
                 product = (Producto) query.list().get(0);
             }
         } catch (Exception e) {
-            
+
             System.out.println("Error: " + e.getMessage());
             this.errorMessage = e.getMessage();
-        } 
+        }
         return product;
     }
 
