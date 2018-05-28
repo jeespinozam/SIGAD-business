@@ -8,16 +8,16 @@ package com.sigad.sigad.app.controller;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPopup;
 import com.sigad.sigad.controller.cargaMasiva.CargaMasivaViewController;
-import com.sigad.sigad.personal.controller.PersonalController;
-import com.sigad.sigad.pedido.controller.SeleccionarProductosController;
 import com.sigad.sigad.deposito.controller.FXMLAlmacenIngresoListaOrdenCompraController;
+import com.sigad.sigad.pedido.controller.SeleccionarProductosController;
 import com.sigad.sigad.perfil.controller.PerfilController;
+import com.sigad.sigad.personal.controller.PersonalController;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,13 +45,102 @@ public class HomeController implements Initializable {
      * Initializes the controller class.
      */
     
-    public static final String viewPath = "/com/sigad/sigad/app/view/home.fxml";
+    public static enum SIGADMenuItemType {
+        PERFIL {
+            @Override
+            public String toString() {
+                return "Perfil";
+            }
+        },
+        PRODUCTOS {
+            @Override
+            public String toString() {
+                return "Productos";
+            }
+        },
+        PERSONAL {
+            @Override
+            public String toString() {
+                return "Personal";
+            }
+        },
+        REPARTOS {
+            @Override
+            public String toString() {
+                return "Repartos";
+            }
+        },
+        PEDIDOS {
+            @Override
+            public String toString() {
+                return "Pedidos";
+            }
+        },
+        ESTADISTICAS {
+            @Override
+            public String toString() {
+                return "Estadísticas";
+            }
+        },
+        CARGA_MASIVA {
+            @Override
+            public String toString() {
+                return "Carga Masiva";
+            }
+        },
+        CONFIGURACIONES {
+            @Override
+            public String toString() {
+                return "Configuraciones";
+            }
+        };
+
+        public static final MaterialDesignIcon getIcon(SIGADMenuItemType type) {
+            MaterialDesignIcon icon;
+
+            icon = MaterialDesignIcon.ALERT;
+            switch (type) {
+                case PERFIL:
+                    icon = MaterialDesignIcon.ACCOUNT_CIRCLE;
+                    break;
+                case PRODUCTOS:
+                    icon = MaterialDesignIcon.CLIPBOARD_TEXT;
+                    break;
+                case PERSONAL:
+                    icon = MaterialDesignIcon.ACCOUNT_MULTIPLE;
+                    break;
+                case REPARTOS:
+                    icon = MaterialDesignIcon.CAR;
+                    break;
+                case PEDIDOS:
+                    icon = MaterialDesignIcon.BACKUP_RESTORE;
+                    break;
+                case ESTADISTICAS:
+                    icon = MaterialDesignIcon.ELEVATION_RISE;
+                    break;
+                case CARGA_MASIVA:
+                    icon = MaterialDesignIcon.ARCHIVE;
+                    break;
+                case CONFIGURACIONES:
+                    icon = MaterialDesignIcon.SETTINGS;
+                    break;
+            }
+            return icon;
+        }
+    };
+
+    public static String viewPath = "/com/sigad/sigad/app/view/home.fxml";
     public static String windowName = "Home";
+
+    public static final int SIDEBAR_BUTTON_HEIGHT = 70;
+    public static final int SIDEBAR_BUTTON_GAP = 20;
+    public static final Pos SIDEBAR_BUTTON_ALIGNMENT = Pos.BASELINE_LEFT;
+    public static final String SIDEBAR_BUTTON_ICON_SIZE = "30";
+
+    private Map<SIGADMenuItemType, JFXButton> sidebarBtns;
+
     @FXML
     private JFXButton profileBtn, productoBtn,offertBtn;
-    @FXML
-    private List<MaterialDesignIcon> sidebarIcons = new ArrayList<MaterialDesignIcon>();
-    private List<JFXButton> sidebarBtns = new ArrayList<JFXButton>();
     @FXML
     private JFXButton workersBtn,refundBtn,statisticBtn,settingsBtn;
     @FXML
@@ -79,33 +168,21 @@ public class HomeController implements Initializable {
     }   
     
     private void initsidebar(){
-        
-        sidebarBtns.add(new JFXButton("Perfil"));
-        sidebarBtns.add(new JFXButton("Productos"));
-        sidebarBtns.add(new JFXButton("Personal"));
-        sidebarBtns.add(new JFXButton("Repartos"));
-        sidebarBtns.add(new JFXButton("Pedidos"));
-        sidebarBtns.add(new JFXButton("Estadísticas"));
-        sidebarBtns.add(new JFXButton("Carga Masiva"));
-        sidebarBtns.add(new JFXButton("Configuraciones"));
-        
-        sidebarIcons.add(MaterialDesignIcon.ACCOUNT_CIRCLE);
-        sidebarIcons.add(MaterialDesignIcon.CLIPBOARD_TEXT);
-        sidebarIcons.add(MaterialDesignIcon.ACCOUNT_MULTIPLE);
-        sidebarIcons.add(MaterialDesignIcon.CAR);
-        sidebarIcons.add(MaterialDesignIcon.BACKUP_RESTORE);
-        sidebarIcons.add(MaterialDesignIcon.ELEVATION_RISE);
-        sidebarIcons.add(MaterialDesignIcon.ARCHIVE);
-        sidebarIcons.add(MaterialDesignIcon.SETTINGS);
-        
-        
-        
-        for (int i = 0; i < sidebarBtns.size(); i++) {
-            setConfBtn(i, sidebarBtns.get(i), 70, 20, Pos.BASELINE_LEFT,
-                    sidebarIcons.get(i), "30");
+        int i;
+        sidebarBtns = new EnumMap<>(SIGADMenuItemType.class);
+
+        for (SIGADMenuItemType item : SIGADMenuItemType.values()) {
+            JFXButton button;
+            MaterialDesignIcon icon;
+
+            button = new JFXButton(item.toString());
+            icon = SIGADMenuItemType.getIcon(item);
+            sidebarBtns.put(item, button);
+
+            setConfBtn(item.ordinal(), button, icon);
         }
-        
-        sidebarBtns.get(1).setOnAction(new EventHandler<ActionEvent>() {
+
+        sidebarBtns.get(SIGADMenuItemType.PRODUCTOS).setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 try {
@@ -113,12 +190,13 @@ public class HomeController implements Initializable {
                     node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(SeleccionarProductosController.viewPath));
                     firstPanel.getChildren().setAll(node);
                 }catch (IOException ex) {
-                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "sidebarBtns.get(1).setOnAction", ex);
+                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE,
+                            SIGADMenuItemType.PRODUCTOS.toString(), ex);
                 }
             }
         });
         
-        sidebarBtns.get(5).setOnAction(new EventHandler<ActionEvent>() {
+        sidebarBtns.get(SIGADMenuItemType.ESTADISTICAS).setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 try {
@@ -126,12 +204,13 @@ public class HomeController implements Initializable {
                     node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PerfilController.viewPath));
                     firstPanel.getChildren().setAll(node);
                 }catch (IOException ex) {
-                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "sidebarBtns.get(5).setOnAction", ex);
+                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE,
+                            SIGADMenuItemType.ESTADISTICAS.toString(), ex);
                 }
             }
         });
         
-        sidebarBtns.get(2).setOnAction(new EventHandler<ActionEvent>() {
+        sidebarBtns.get(SIGADMenuItemType.PERSONAL).setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 try {
@@ -139,11 +218,12 @@ public class HomeController implements Initializable {
                     node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PersonalController.viewPath));
                     firstPanel.getChildren().setAll(node);
                 }catch (IOException ex) {
-                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "sidebarBtns.get(2).setOnAction", ex);
+                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE,
+                            SIGADMenuItemType.PERSONAL.toString(), ex);
                 }
             }
         });
-        sidebarBtns.get(4).setOnAction(new EventHandler<ActionEvent>() {
+        sidebarBtns.get(SIGADMenuItemType.PEDIDOS).setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 try {
@@ -151,35 +231,35 @@ public class HomeController implements Initializable {
                     node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(FXMLAlmacenIngresoListaOrdenCompraController.viewPath));
                     firstPanel.getChildren().setAll(node);
                 } catch (IOException ex) {
-                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "", ex);
+                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE,
+                            SIGADMenuItemType.PEDIDOS.toString(), ex);
                 }
             }
         });
-        
-        sidebarBtns.get(6).setOnAction((event) -> {
+        sidebarBtns.get(SIGADMenuItemType.CARGA_MASIVA).setOnAction((event) -> {
             try {
                 Node node;
                 node = (Node) FXMLLoader.load(getClass().getResource(CargaMasivaViewController.viewPath));
                 firstPanel.getChildren().setAll(node);
             } catch (IOException ex) {
-                Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE,
+                        SIGADMenuItemType.CARGA_MASIVA.toString(), ex);
             }
         });        
     }
     
     private void setConfBtn(
-            int count, JFXButton newButton, int height, int gap,
-            Pos pos, MaterialDesignIcon iconType, String size) {
+            int count, JFXButton newButton, MaterialDesignIcon iconType) {
         //sidebarBtns creation
-        newButton.setPrefHeight(height);
-        newButton.setGraphicTextGap(gap);
-        newButton.setAlignment(pos);
+        newButton.setPrefHeight(SIDEBAR_BUTTON_HEIGHT);
+        newButton.setGraphicTextGap(SIDEBAR_BUTTON_GAP);
+        newButton.setAlignment(SIDEBAR_BUTTON_ALIGNMENT);
         newButton.getStyleClass().add("sidebarBtn");
         
         //icon
         MaterialDesignIconView icon;
         icon = new MaterialDesignIconView(iconType);
-        icon.setSize(size);
+        icon.setSize(SIDEBAR_BUTTON_ICON_SIZE);
 	icon.setFill(mainColor);
         
         newButton.setGraphic(icon);
