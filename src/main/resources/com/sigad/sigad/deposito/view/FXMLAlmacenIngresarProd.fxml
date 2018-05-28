@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXDatePicker?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.JFXTimePicker?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="680.0" prefWidth="1010.0" style="-fx-background-color: #fff;" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.deposito.controller.FXMLAlmacenIngresarProdController">
+    <stylesheets>
+        <URL value="@/styles/fxmlalmaceningresarprod.css" />
+    </stylesheets>
+   <children>
+      <ImageView fitHeight="216.0" fitWidth="174.0" layoutX="38.0" layoutY="91.0" pickOnBounds="true" preserveRatio="true" />
+      <JFXTextField disable="true" focusColor="#455a64" layoutX="253.0" layoutY="93.0" />
+      <Label layoutX="254.0" layoutY="78.0" prefHeight="17.0" prefWidth="52.0" text="Nombre">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Label>
+      <JFXTextField disable="true" focusColor="#455a64" layoutX="255.0" layoutY="147.0" />
+      <Label layoutX="256.0" layoutY="132.0" prefHeight="17.0" prefWidth="52.0" text="Categoria">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Label>
+      <JFXTextField disable="true" focusColor="#455a64" layoutX="262.0" layoutY="215.0" />
+      <Label layoutX="259.0" layoutY="189.0" prefHeight="17.0" prefWidth="52.0" text="Fragilidad">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Label>
+      <JFXTextField disable="true" focusColor="#455a64" layoutX="466.0" layoutY="93.0" prefHeight="73.0" prefWidth="431.0" />
+      <JFXTextField disable="true" focusColor="#455a64" layoutX="471.0" layoutY="214.0" />
+      <Label layoutX="470.0" layoutY="189.0" prefHeight="17.0" prefWidth="52.0" text="Fragilidad">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Label>
+      <Label layoutX="470.0" layoutY="78.0" prefHeight="17.0" prefWidth="63.0" text="Descripcion">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Label>
+      <Label layoutX="250.0" layoutY="272.0" prefHeight="17.0" prefWidth="85.0" text="Datos de ingreso">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Label>
+      <Label layoutX="258.0" layoutY="311.0" prefHeight="17.0" prefWidth="85.0" text="Cantidad">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Label>
+      <JFXComboBox fx:id="comboCantidad" layoutX="246.0" layoutY="326.0" prefHeight="21.0" prefWidth="138.0" AnchorPane.topAnchor="325.0" />
+      <JFXDatePicker defaultColor="#455a64" layoutX="473.0" layoutY="325.0" AnchorPane.topAnchor="325.0" />
+      <Label layoutX="481.0" layoutY="311.0" prefHeight="17.0" prefWidth="85.0" text="Fecha de ingreso" AnchorPane.topAnchor="311.0">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Label>
+      <JFXTimePicker defaultColor="#455a64" layoutX="709.0" layoutY="327.0" />
+      <Label layoutX="713.0" layoutY="311.0" prefHeight="17.0" prefWidth="85.0" text="Hora de ingreso" AnchorPane.topAnchor="311.0">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Label>
+      <JFXButton layoutX="692.0" layoutY="549.0" prefHeight="27.0" prefWidth="82.0" text="Cancelar" />
+      <JFXButton layoutX="797.0" layoutY="549.0" prefHeight="27.0" prefWidth="82.0" text="Guardar" AnchorPane.topAnchor="549.0" />
+   </children>
+</AnchorPane>

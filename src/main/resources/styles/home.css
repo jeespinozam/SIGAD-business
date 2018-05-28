@@ -1,0 +1,26 @@
+/*
+ * Empty Stylesheet file.
+ */
+
+.mainFxmlClass {
+    
+    .menuBtn:hover{
+        -fx-cursor: hand;
+    }
+    
+    .sidebarBtn:hover{
+        -fx-background-color: #F3F3F3;
+        -fx-cursor: hand;
+    }
+    
+    .sidebarBtn.active .sidebarTooltip{
+        visibility: hidden;
+    }
+    
+    .sidebarTooltip{
+        
+        
+    }
+    
+    
+}
