@@ -11,6 +11,7 @@ import com.sigad.sigad.business.Permiso;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoCategoria;
 import com.sigad.sigad.business.ProductoFragilidad;
+import com.sigad.sigad.business.ProductoInsumo;
 import com.sigad.sigad.business.Proveedor;
 import com.sigad.sigad.business.Tienda;
 import com.sigad.sigad.business.TipoMovimiento;
@@ -154,6 +155,13 @@ public class CargaMasivaHelper {
                         rowhead.createCell(rowIndex).setCellValue("Nivel de Fragilidad");
                         rowIndex++;
                         rowhead.createCell(rowIndex).setCellValue("Volumen");
+                        break;
+                    case CargaMasivaConstantes.TABLA_PRODXINSUMO:
+                        rowhead.createCell(rowIndex).setCellValue("Nombre de Producto");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Nombre de Insumo");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Cantidad");
                         break;
                     // agregar aqui el resto de casos
                     default:
@@ -442,6 +450,49 @@ public class CargaMasivaHelper {
                 if (volumenValor!=null)
                     nuevoProd.setVolumen(volumenValor);
                 return CargaMasivaHelper.guardarObjeto(nuevoProd, session);
+            case CargaMasivaConstantes.TABLA_PRODXINSUMO:
+                String nombreProductoAsociado = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(nombreProductoAsociado)) {
+                    Producto prodAsociado = (Producto) CargaMasivaHelper.busquedaGeneralString(session, "Producto", new String[] {"nombre"}, new String[] {nombreProductoAsociado});
+                    if (prodAsociado!=null) {
+                        LOGGER.log(Level.INFO, String.format("Producto %s encontrado con exito", nombreProductoAsociado));
+                        index++;
+                        String nombreInsumoAsociado = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                        if (StringUtils.isNotBlank(nombreInsumoAsociado)) {
+                            Insumo insumoAsociado = (Insumo) CargaMasivaHelper.busquedaGeneralString(session, "Insumo", new String[] {"nombre"}, new String[] {nombreInsumoAsociado});
+                            if (insumoAsociado!=null) {
+                                LOGGER.log(Level.INFO, String.format("Insumo %s encontrado con exito", nombreInsumoAsociado));
+                                index++;
+                                Double cantidadAsociada = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                                if (cantidadAsociada!=null) {
+                                    ProductoInsumo nuevoProdxInsumo = new ProductoInsumo();
+                                    nuevoProdxInsumo.setProducto(prodAsociado);
+                                    nuevoProdxInsumo.setInsumo(insumoAsociado);
+                                    //nuevoProdxInsumo.setCantidad(cantidadAsociada);
+                                    return CargaMasivaHelper.guardarObjeto(nuevoProdxInsumo, session);
+                                }
+                                else 
+                                    return false;
+                            }
+                            else {
+                                LOGGER.log(Level.SEVERE, String.format("Insumo %s no encontrado, cancelando operacion", nombreInsumoAsociado));
+                                return false;
+                            }
+                        }
+                        else {
+                            LOGGER.log(Level.SEVERE, String.format("Insumo %s no detectado", nombreInsumoAsociado));
+                            return false;
+                        }
+                    }
+                    else {
+                        LOGGER.log(Level.SEVERE, String.format("Producto %s no encontrado, cancelando operacion", nombreProductoAsociado));
+                        return false;
+                    }
+                }
+                else {
+                    LOGGER.log(Level.SEVERE, String.format("Producto %s no detectado", nombreProductoAsociado));
+                    return false;
+                }
             // colocar aqui los demas casos para el resto de tablas de carga masiva
             default:
                 return false;
