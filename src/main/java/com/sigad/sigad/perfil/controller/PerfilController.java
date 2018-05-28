@@ -98,9 +98,8 @@ public class PerfilController implements Initializable {
     
     public static void updatePermissionData(Permiso p) {
         dataPermisoTbl.add(new Permission(
-                        new SimpleStringProperty(p.getOpcion()), 
-                        new SimpleStringProperty(p.getDescripcion()),
-                        new SimpleBooleanProperty(false))
+                        new SimpleStringProperty(p.getMenu()), 
+                        new SimpleStringProperty(p.getIcono()))
         );
     }
     
@@ -381,15 +380,6 @@ public class PerfilController implements Initializable {
     }
 
     private void initPermissionTable(String profileName) {
-        JFXTreeTableColumn<Permission, Boolean> select = new JFXTreeTableColumn<>("Seleccionar");
-        select.setPrefWidth(80);
-        select.setCellValueFactory((TreeTableColumn.CellDataFeatures<Permission, Boolean> param) -> param.getValue().getValue().selection);
-        //select.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(select));
-        select.setCellFactory((TreeTableColumn<Permission, Boolean> p) -> {
-            CheckBoxTreeTableCell<Permission, Boolean> cell = new CheckBoxTreeTableCell<>();
-            cell.setAlignment(Pos.CENTER);
-            return cell;
-        });
         
         JFXTreeTableColumn<Permission, String> nombre = new JFXTreeTableColumn<>("Opción");
         nombre.setPrefWidth(120);
@@ -411,10 +401,10 @@ public class PerfilController implements Initializable {
         ArrayList<Permiso> list = helper.getPermissions();
         if(list != null){
             list.forEach(p -> {
-                System.out.println(p.getOpcion());
+                System.out.println(p.getMenu());
                 
                 for(Permiso temp : perfil.getPermisos()){
-                    if(temp.getOpcion() == p.getOpcion()){
+                    if(temp.getMenu() == p.getMenu()){
                         updatePermissionData(p);
                     }
                 }
@@ -460,13 +450,12 @@ public class PerfilController implements Initializable {
         
         StringProperty option;
         StringProperty description;
-        BooleanProperty selection;
 
-        public Permission(StringProperty opcion, StringProperty descripcion, BooleanProperty seleccion) {
-            this.option = opcion;
-            this.description = descripcion;
-            this.selection = seleccion;
+        public Permission(StringProperty option, StringProperty description) {
+            this.option = option;
+            this.description = description;
         }
+        
 
         @Override
         public boolean equals(Object o) {

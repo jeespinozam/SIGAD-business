@@ -116,8 +116,8 @@ public class CrearEditarPermisoController implements Initializable {
     }
     
     public void updateFields() {
-        permiso.setOpcion(nameTxt.getText());
-        permiso.setDescripcion(iconNameTxt.getText());
+        permiso.setMenu(nameTxt.getText());
+        permiso.setIcono(iconNameTxt.getText());
         
         PerfilHelper helper = new PerfilHelper();
         Perfil p = helper.getProfile(PerfilController.selectedProfile.name.getValue());

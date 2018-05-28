@@ -395,19 +395,19 @@ public class CargaMasivaHelper {
             case CargaMasivaConstantes.TABLA_PERMISOS:
                 Permiso nuevoPermiso = new Permiso();
                 cell = cellIterator.next();
-                nuevoPermiso.setOpcion(dataFormatter.formatCellValue(cell));
+                nuevoPermiso.setMenu(dataFormatter.formatCellValue(cell));
                 cell = cellIterator.next();
-                nuevoPermiso.setDescripcion(dataFormatter.formatCellValue(cell));
+                nuevoPermiso.setIcono(dataFormatter.formatCellValue(cell));
                 try{
                     Transaction tx = null;
                     tx = session.beginTransaction();
                     session.save(nuevoPermiso);
                     tx.commit();
-                    LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoPermiso.getOpcion()));
+                    LOGGER.log(Level.INFO, String.format("Carga unitaria %s, exitosa", nuevoPermiso.getMenu()));
                     return true;
                 }
                 catch(HibernateException he) {
-                    LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoPermiso.getOpcion()));
+                    LOGGER.log(Level.SEVERE, String.format("Error en carga de %s", nuevoPermiso.getMenu()));
                     System.out.print(he);
                     return false;
                 }

@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -27,6 +28,8 @@ public class Tienda {
     private double cooYDireccion;
     private String descripcion;
     private double capacidad;
+    @NotNull
+    private boolean activo;
     @OneToMany(mappedBy="id.tienda")
     private Set<CapacidadTienda> capacidadTiendas = new HashSet<CapacidadTienda>();
 
@@ -126,5 +129,19 @@ public class Tienda {
      */
     public void addCapacidadTienda(CapacidadTienda capacidadTienda) {
         capacidadTiendas.add(capacidadTienda);
+    }
+
+    /**
+     * @return the activo
+     */
+    public boolean isActivo() {
+        return activo;
+    }
+
+    /**
+     * @param activo the activo to set
+     */
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 }
