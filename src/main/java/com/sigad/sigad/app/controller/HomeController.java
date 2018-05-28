@@ -67,7 +67,11 @@ public class HomeController implements Initializable {
     private AnchorPane menuPanel;
     @FXML
     private JFXPopup popup;
-    
+    public static final int SIDEBAR_BUTTON_HEIGHT = 70;
+    public static final int SIDEBAR_BUTTON_GAP = 20;
+    public static final Pos SIDEBAR_BUTTON_ALIGNMENT = Pos.BASELINE_LEFT;
+    public static final String SIDEBAR_BUTTON_ICON_SIZE = "30";
+ 
     private Color mainColor = new Color(0.27, 0.31, 0.42, 1);
     private double  baseTop = 80.0;
 
@@ -90,8 +94,8 @@ public class HomeController implements Initializable {
             for (int i = 0; i < list.size(); i++) {
                 sidebarBtns.add(new JFXButton(list.get(i).getMenu()));
                 sidebarIcons.add(matchIconText(list.get(i).getIcono()));
-                dinamicSideMenu(i, sidebarBtns.get(i), 70, 20, Pos.BASELINE_LEFT,
-                    sidebarIcons.get(i), "30");
+                dinamicSideMenu(i, sidebarBtns.get(i), SIDEBAR_BUTTON_HEIGHT, SIDEBAR_BUTTON_GAP, SIDEBAR_BUTTON_ALIGNMENT,
+                    sidebarIcons.get(i), SIDEBAR_BUTTON_ICON_SIZE);
             }            
         }
         
