@@ -102,7 +102,7 @@ public class CargaMasivaHelper {
                         rowIndex++;
                         rowhead.createCell(rowIndex).setCellValue("Precio");
                         rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Tiempo de Vida");
+                        rowhead.createCell(rowIndex).setCellValue("Tiempo de Vida (dias)");
                         rowIndex++;
                         rowhead.createCell(rowIndex).setCellValue("Volumen por Unidad");
                         rowIndex++;
@@ -312,7 +312,11 @@ public class CargaMasivaHelper {
                 Proveedor nuevoProv = new Proveedor();
                 nuevoProv.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 index++;
-                nuevoProv.setRuc(Integer.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)))));
+                Integer rucProved = (Integer) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), true);
+                if (rucProved!=null)
+                    nuevoProv.setRuc(rucProved);
+                else
+                    return false;
                 index++;
                 nuevoProv.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 return CargaMasivaHelper.guardarObjeto(nuevoProv, session);
@@ -325,11 +329,21 @@ public class CargaMasivaHelper {
                 index++;
                 nuevoInsumo.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 index++;
-                nuevoInsumo.setPrecio(Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)))));
+                // se trata de obtener el precio del insumo
+                Double precioInsumo = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if (precioInsumo!=null)
+                    nuevoInsumo.setPrecio(precioInsumo);
+                else
+                    return false;
                 index++;
-                nuevoInsumo.setTiempoVida(Integer.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)))));
+                Integer tiempoVidaInsumo = (Integer) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), true);
+                if (tiempoVidaInsumo!=null)
+                    nuevoInsumo.setTiempoVida(tiempoVidaInsumo);
+                else
+                    return false;
                 index++;
-                nuevoInsumo.setVolumen(Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)))));
+                Double volumenInsumo = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                nuevoInsumo.setVolumen(volumenInsumo);
                 index++;
                 nuevoInsumo.setImagen(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 return CargaMasivaHelper.guardarObjeto(nuevoInsumo, session);
@@ -337,13 +351,25 @@ public class CargaMasivaHelper {
                 Tienda nuevaTienda = new Tienda();
                 nuevaTienda.setDireccion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 index++;
-                nuevaTienda.setCooXDireccion(Float.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)))));
+                Double codX = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if (codX!=null)
+                    nuevaTienda.setCooXDireccion(codX);
+                else
+                    return false;
                 index++;
-                nuevaTienda.setCooYDireccion(Float.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)))));
+                Double codY = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if (codY!=null)
+                    nuevaTienda.setCooYDireccion(codY);
+                else
+                    return false;
                 index++;
                 nuevaTienda.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 index++;
-                nuevaTienda.setCapacidad(Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)))));
+                Double capacidadTienda = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if (capacidadTienda!=null && capacidadTienda >= 0.0)
+                    nuevaTienda.setCapacidad(capacidadTienda);
+                else
+                    return false;
                 return CargaMasivaHelper.guardarObjeto(nuevaTienda, session);
             case CargaMasivaConstantes.TABLA_TIPOMOV:
                 TipoMovimiento nuevoTipoMov = new TipoMovimiento();
@@ -410,9 +436,14 @@ public class CargaMasivaHelper {
                 nuevoProd.setStockFisico(0);  // logica de negocio
                 nuevoProd.setStockLogico(0);
                 nuevoProd.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
-                nuevoProd.setPrecio(Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)))));
                 index++;
-                nuevoProd.setPeso(Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)))));
+                nuevoProd.setPrecio((Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false));
+                index++;
+                Double pesoProd = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if (pesoProd!=null)
+                    nuevoProd.setPeso(pesoProd);
+                else
+                    return false;
                 index++;
                 nuevoProd.setImagen(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 index++;
@@ -441,7 +472,7 @@ public class CargaMasivaHelper {
                             nuevoProd.setFragilidad(fragilidadAsociada);
                         }
                         else
-                            LOGGER.log(Level.SEVERE, String.format("Fragibilidad %s no encontrada, no se tendra en consideracion", intensidadAsociada));
+                            LOGGER.log(Level.SEVERE, String.format("Fragilidad %s no encontrada, no se tendra en consideracion", intensidadAsociada));
                     }
                 }
                 else
@@ -451,6 +482,8 @@ public class CargaMasivaHelper {
                 Double volumenValor = (Double) CargaMasivaHelper.validarParsing(volumenCadena, false);
                 if (volumenValor!=null)
                     nuevoProd.setVolumen(volumenValor);
+                else
+                    return false;
                 return CargaMasivaHelper.guardarObjeto(nuevoProd, session);
             case CargaMasivaConstantes.TABLA_PRODXINSUMO:
                 String nombreProductoAsociado = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
