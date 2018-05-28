@@ -184,11 +184,11 @@ public class CargaMasivaHelper {
             DataFormatter dataFormatter = new DataFormatter();
             Workbook workbook = WorkbookFactory.create(new File(archivoRuta));
             Iterator<Sheet> sheetIterator = workbook.sheetIterator();
-            Sheet sheet = null;
-            String sheetName = null;
-            Row row = null;
-            Iterator<Row> rowIterator = null;
-            Iterator<Cell> cellIterator = null;
+            Sheet sheet;
+            String sheetName;
+            Row row;
+            Iterator<Row> rowIterator;
+            //Iterator<Cell> cellIterator;
             int casosExitosos, casosFallidos;
             int hojasReconocidas = 0;
             // Abriendo conexion a Base de Datos
@@ -215,8 +215,7 @@ public class CargaMasivaHelper {
                     // a este punto ya estamos en la fila inicial para comenzar a leer y cargar datos
                     while (rowIterator.hasNext()) {
                         row = rowIterator.next();
-                        cellIterator = row.cellIterator();
-                        if (CargaMasivaHelper.SubirRegistroBD(sheetName, cellIterator, dataFormatter, session)) casosExitosos++;
+                        if (CargaMasivaHelper.SubirRegistroBD(sheetName, row, dataFormatter, session)) casosExitosos++;
                         else casosFallidos++;
                     }
                     LOGGER.log(Level.INFO, String.format("Hoja %s finalizada, reporte :", sheetName));
@@ -260,110 +259,115 @@ public class CargaMasivaHelper {
     }
     
     // implementacion de logica para cada tipo de tabla a cargar en bd, por cada registro a escanear
-    private static boolean SubirRegistroBD(String tablaCarga, Iterator<Cell> cellIterator, DataFormatter dataFormatter, Session session) {
-        Cell cell = null;
+    private static boolean SubirRegistroBD(String tablaCarga, Row row, DataFormatter dataFormatter, Session session) {
+        int index = 0;
         switch(tablaCarga) {
             case CargaMasivaConstantes.TABLA_PRODUCTOCATEGORIA:
                 ProductoCategoria nuevoProdCat = new ProductoCategoria();
                 nuevoProdCat.setActivo(true);   // logica de negocio
-                cell = cellIterator.next();
-                nuevoProdCat.setNombre(dataFormatter.formatCellValue(cell));
-                cell = cellIterator.next();
-                nuevoProdCat.setDescripcion(dataFormatter.formatCellValue(cell));
+                nuevoProdCat.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                nuevoProdCat.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 return CargaMasivaHelper.guardarObjeto(nuevoProdCat, session);
             case CargaMasivaConstantes.TABLA_PERFILES:
                 Perfil nuevoPerfil = new Perfil();
                 nuevoPerfil.setActivo(true);    // logica de negocio
-                cell = cellIterator.next();
-                nuevoPerfil.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
-                cell = cellIterator.next(); 
-                nuevoPerfil.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
+                nuevoPerfil.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                nuevoPerfil.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 return CargaMasivaHelper.guardarObjeto(nuevoPerfil, session);
             case CargaMasivaConstantes.TABLA_USUARIOS:
                 Usuario nuevoUsuario = new Usuario();
                 nuevoUsuario.setActivo(true);   // logica de negocio
-                cell = cellIterator.next();
-                nuevoUsuario.setNombres(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
-                cell = cellIterator.next();
-                nuevoUsuario.setApellidoPaterno(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
-                cell = cellIterator.next();
-                nuevoUsuario.setApellidoMaterno(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
-                cell = cellIterator.next();
-                String perfilNombre = StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell));
+                nuevoUsuario.setNombres(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                nuevoUsuario.setApellidoPaterno(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                nuevoUsuario.setApellidoMaterno(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                String perfilNombre = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 // Buscando el perfil elegido
                 Perfil perfilBuscado = (Perfil) CargaMasivaHelper.busquedaGeneralString(session, "Perfil", new String [] {"nombre"}, new String [] {perfilNombre});
                 nuevoUsuario.setPerfil(perfilBuscado);
-                cell = cellIterator.next();
-                nuevoUsuario.setTelefono(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
-                cell = cellIterator.next();
-                nuevoUsuario.setDni(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
-                cell = cellIterator.next();
-                nuevoUsuario.setCelular(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
-                cell = cellIterator.next();
-                nuevoUsuario.setCorreo(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
-                cell = cellIterator.next();
-                nuevoUsuario.setIntereses(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
+                index++;
+                nuevoUsuario.setTelefono(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                nuevoUsuario.setDni(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                nuevoUsuario.setCelular(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                nuevoUsuario.setCorreo(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                nuevoUsuario.setIntereses(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 return CargaMasivaHelper.guardarObjeto(nuevoUsuario, session);
             case CargaMasivaConstantes.TABLA_PROVEEDORES:
                 Proveedor nuevoProv = new Proveedor();
-                cell = cellIterator.next();
-                nuevoProv.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
-                cell = cellIterator.next();
-                nuevoProv.setRuc(Integer.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell))));
-                cell = cellIterator.next();
-                nuevoProv.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
+                nuevoProv.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                nuevoProv.setRuc(Integer.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)))));
+                index++;
+                nuevoProv.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 return CargaMasivaHelper.guardarObjeto(nuevoProv, session);
             case CargaMasivaConstantes.TABLA_INSUMOS:
                 Insumo nuevoInsumo = new Insumo();
                 nuevoInsumo.setActivo(true);    // logica de negocio
                 nuevoInsumo.setStock(0);        // logica de negocio, se inicializa nuevo insumo
-                cell = cellIterator.next();
-                nuevoInsumo.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
-                cell = cellIterator.next();
-                nuevoInsumo.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
-                cell = cellIterator.next();
-                nuevoInsumo.setPrecio(Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell))));
-                cell = cellIterator.next();
-                nuevoInsumo.setTiempoVida(Integer.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell))));
-                cell = cellIterator.next();
-                nuevoInsumo.setVolumen(Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell))));
-                cell = cellIterator.next();
-                nuevoInsumo.setImagen(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
+                nuevoInsumo.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                nuevoInsumo.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                nuevoInsumo.setPrecio(Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)))));
+                index++;
+                nuevoInsumo.setTiempoVida(Integer.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)))));
+                index++;
+                nuevoInsumo.setVolumen(Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)))));
+                index++;
+                nuevoInsumo.setImagen(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 return CargaMasivaHelper.guardarObjeto(nuevoInsumo, session);
             case CargaMasivaConstantes.TABLA_TIENDAS:
                 Tienda nuevaTienda = new Tienda();
-                cell = cellIterator.next();
-                nuevaTienda.setDireccion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
-                cell = cellIterator.next();
-                nuevaTienda.setCooXDireccion(Float.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell))));
-                cell = cellIterator.next();
-                nuevaTienda.setCooYDireccion(Float.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell))));
-                cell = cellIterator.next();
-                nuevaTienda.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
-                cell = cellIterator.next();
-                nuevaTienda.setCapacidad(Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell))));
+                nuevaTienda.setDireccion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                nuevaTienda.setCooXDireccion(Float.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)))));
+                index++;
+                nuevaTienda.setCooYDireccion(Float.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)))));
+                index++;
+                nuevaTienda.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                nuevaTienda.setCapacidad(Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)))));
                 return CargaMasivaHelper.guardarObjeto(nuevaTienda, session);
             case CargaMasivaConstantes.TABLA_TIPOMOV:
                 TipoMovimiento nuevoTipoMov = new TipoMovimiento();
-                cell = cellIterator.next();
-                nuevoTipoMov.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
-                cell = cellIterator.next();
-                nuevoTipoMov.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
+                nuevoTipoMov.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                nuevoTipoMov.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 return CargaMasivaHelper.guardarObjeto(nuevoTipoMov, session);
             case CargaMasivaConstantes.TABLA_PERMISOS:
                 Permiso nuevoPermiso = new Permiso();
-                cell = cellIterator.next();
-                nuevoPermiso.setOpcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
-                cell = cellIterator.next();
-                nuevoPermiso.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
+                nuevoPermiso.setOpcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                nuevoPermiso.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 return CargaMasivaHelper.guardarObjeto(nuevoPermiso, session);
             case CargaMasivaConstantes.TABLA_PERFILXPERMISO:
-                cell = cellIterator.next();
-                String perfilNombreAux = StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell));
+                String perfilNombreAux = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 String permisoOpcionAux = null;
                 Perfil perfilAsociado = (Perfil) CargaMasivaHelper.busquedaGeneralString(session, "Perfil", new String [] {"nombre"}, new String [] {perfilNombreAux});
                 if (perfilAsociado!=null) { // si el perfil mencionado fue encontrado entonces se continua con el proceso
                     LOGGER.log(Level.INFO, String.format("Perfil %s encontrado con exito", perfilNombreAux));
+                    while (true) {
+                        index++;
+                        if (StringUtils.isBlank(dataFormatter.formatCellValue(row.getCell(index))))
+                            break;
+                        permisoOpcionAux = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                        Permiso permisoAux = (Permiso) CargaMasivaHelper.busquedaGeneralString(session, "Permiso", new String [] {"opcion"}, new String [] {permisoOpcionAux});
+                        if (permisoAux!=null) {
+                            LOGGER.log(Level.INFO, String.format("Permiso %s encontrado con exito", permisoOpcionAux));
+                            perfilAsociado.getPermisos().add(permisoAux);
+                        }
+                        else
+                            LOGGER.log(Level.WARNING, String.format("Permiso %s no encontrado, este permiso no sera considerado", permisoOpcionAux));
+                    }
+                    /*
                     while (cellIterator.hasNext()) {
                         cell = cellIterator.next();
                         permisoOpcionAux = StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell));
@@ -375,6 +379,7 @@ public class CargaMasivaHelper {
                         else
                             LOGGER.log(Level.WARNING, String.format("Permiso %s no encontrado, este permiso no sera considerado", permisoOpcionAux));
                     }
+                    */
                 }
                 else {
                     LOGGER.log(Level.SEVERE, String.format("Perfil %s no encontrado, cancelando operacion", perfilNombreAux));
@@ -383,30 +388,27 @@ public class CargaMasivaHelper {
                 return CargaMasivaHelper.actualizarObjeto(perfilAsociado, session);
             case CargaMasivaConstantes.TABLA_FRAGILIDAD:
                 ProductoFragilidad nuevaFrag = new ProductoFragilidad();
-                cell = cellIterator.next();
-                String valorCandea = StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell));
+                String valorCandea = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 Integer valorParseado = (Integer) CargaMasivaHelper.validarParsing(valorCandea, true);
                 if (valorParseado!=null)
                     nuevaFrag.setValor(valorParseado);
-                cell = cellIterator.next();
-                nuevaFrag.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
+                index++;
+                nuevaFrag.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 return CargaMasivaHelper.guardarObjeto(nuevaFrag, session);
             case CargaMasivaConstantes.TABLA_PRODUCTOS:
                 Producto nuevoProd = new Producto();
                 nuevoProd.setActivo(true);  // logica de negocio
                 nuevoProd.setStock(0);  // logica de negocio
-                cell = cellIterator.next();
-                nuevoProd.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
-                cell = cellIterator.next();
-                nuevoProd.setPrecio(Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell))));
-                cell = cellIterator.next();
-                nuevoProd.setPeso(Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell))));
-                cell = cellIterator.next();
-                nuevoProd.setImagen(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
-                cell = cellIterator.next();
-                nuevoProd.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell)));
-                cell = cellIterator.next();
-                String nombreCategoriaAsociada = StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell));
+                nuevoProd.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                nuevoProd.setPrecio(Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)))));
+                index++;
+                nuevoProd.setPeso(Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)))));
+                index++;
+                nuevoProd.setImagen(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                nuevoProd.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                String nombreCategoriaAsociada = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 if (StringUtils.isNotBlank(nombreCategoriaAsociada)) {
                     ProductoCategoria categoriaAsociada = (ProductoCategoria) CargaMasivaHelper.busquedaGeneralString(session, "ProductoCategoria", new String[] {"nombre"}, new String[] {nombreCategoriaAsociada});
                     if (categoriaAsociada!=null){
@@ -418,8 +420,8 @@ public class CargaMasivaHelper {
                 }
                 else
                     LOGGER.log(Level.WARNING, String.format("No se especifico categoria para producto %s, se continua el proceso", nuevoProd.getNombre()));
-                cell = cellIterator.next();
-                String intensidadAsociada = StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell));
+                index++;
+                String intensidadAsociada = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 if (StringUtils.isNotBlank(intensidadAsociada)) {
                     Integer valorIntensidadAsociada = (Integer) validarParsing(intensidadAsociada, true);
                     if (valorIntensidadAsociada != null) {
@@ -434,8 +436,8 @@ public class CargaMasivaHelper {
                 }
                 else
                     LOGGER.log(Level.WARNING, String.format("No se especifico fragilidad para producto %s, se continua el proceso", nuevoProd.getNombre()));
-                cell = cellIterator.next();
-                String volumenCadena = StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell));
+                index++;
+                String volumenCadena = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 Double volumenValor = (Double) CargaMasivaHelper.validarParsing(volumenCadena, false);
                 if (volumenValor!=null)
                     nuevoProd.setVolumen(volumenValor);
