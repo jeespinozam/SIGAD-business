@@ -319,7 +319,8 @@ public class CargaMasivaHelper {
             case CargaMasivaConstantes.TABLA_INSUMOS:
                 Insumo nuevoInsumo = new Insumo();
                 nuevoInsumo.setActivo(true);    // logica de negocio
-                nuevoInsumo.setStock(0);        // logica de negocio, se inicializa nuevo insumo
+                nuevoInsumo.setStockTotalFisico(0);        // logica de negocio, se inicializa nuevo insumo
+                nuevoInsumo.setStockTotalLogico(0);
                 nuevoInsumo.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 index++;
                 nuevoInsumo.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
@@ -406,7 +407,8 @@ public class CargaMasivaHelper {
             case CargaMasivaConstantes.TABLA_PRODUCTOS:
                 Producto nuevoProd = new Producto();
                 nuevoProd.setActivo(true);  // logica de negocio
-                nuevoProd.setStock(0);  // logica de negocio
+                nuevoProd.setStockFisico(0);  // logica de negocio
+                nuevoProd.setStockLogico(0);
                 nuevoProd.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 nuevoProd.setPrecio(Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)))));
                 index++;
@@ -468,7 +470,7 @@ public class CargaMasivaHelper {
                                     ProductoInsumo nuevoProdxInsumo = new ProductoInsumo();
                                     nuevoProdxInsumo.setProducto(prodAsociado);
                                     nuevoProdxInsumo.setInsumo(insumoAsociado);
-                                    //nuevoProdxInsumo.setCantidad(cantidadAsociada);
+                                    nuevoProdxInsumo.setCantidad(cantidadAsociada);
                                     return CargaMasivaHelper.guardarObjeto(nuevoProdxInsumo, session);
                                 }
                                 else 
