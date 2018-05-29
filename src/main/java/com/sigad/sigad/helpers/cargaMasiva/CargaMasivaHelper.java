@@ -15,6 +15,7 @@ import com.sigad.sigad.business.ProductoInsumo;
 import com.sigad.sigad.business.Proveedor;
 import com.sigad.sigad.business.Tienda;
 import com.sigad.sigad.business.TipoMovimiento;
+import com.sigad.sigad.business.TipoPago;
 import com.sigad.sigad.business.Usuario;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -163,6 +164,8 @@ public class CargaMasivaHelper {
                         rowIndex++;
                         rowhead.createCell(rowIndex).setCellValue("Cantidad");
                         break;
+                    case CargaMasivaConstantes.TABLA_TIPOPAGO:
+                        rowhead.createCell(rowIndex).setCellValue("Descripcion del Tipo de Pago");
                     // agregar aqui el resto de casos
                     default:
                         LOGGER.log(Level.WARNING, "Tabla no reconocida, abortando ....");
@@ -253,8 +256,17 @@ public class CargaMasivaHelper {
         String hqlQuery = String.format("from %s where %s = %d", nombreEntidad, condiciones[0], valoresCondiciones[0]);
         for (int i=1;i<condiciones.length;i++)
             hqlQuery += String.format(" and %s = %d", condiciones[i], valoresCondiciones[i]);
-        List<Object> resultadoBusqueda = session.createQuery(hqlQuery).list();
-        return resultadoBusqueda.get(0);
+        try{
+            List<Object> resultadoBusqueda = session.createQuery(hqlQuery).list();
+            return resultadoBusqueda.get(0);
+        }
+        catch(Exception e) {
+            LOGGER.log(Level.WARNING, String.format("La busqueda de la entidad %s fallo", nombreEntidad));
+            System.out.println("====================================================================");
+            System.out.println(e);
+            System.out.println("====================================================================");
+            return null;
+        }
     }
     
     // solo retornara el primero que encuentre
@@ -262,8 +274,17 @@ public class CargaMasivaHelper {
         String hqlQuery = String.format("from %s where %s='%s'", nombreEntidad, condiciones[0], valoresCondiciones[0]);
         for (int i=1;i<condiciones.length;i++)
             hqlQuery += String.format(" and %s='%s'", condiciones[i], valoresCondiciones[i]);
-        List<Object> resultadoBusqueda = session.createQuery(hqlQuery).list();
-        return resultadoBusqueda.get(0);
+        try{
+            List<Object> resultadoBusqueda = session.createQuery(hqlQuery).list();
+            return resultadoBusqueda.get(0);
+        }
+        catch(Exception e) {
+            LOGGER.log(Level.WARNING, String.format("La busqueda de la entidad %s fallo", nombreEntidad));
+            System.out.println("====================================================================");
+            System.out.println(e);
+            System.out.println("====================================================================");
+            return null;
+        }
     }
     
     // implementacion de logica para cada tipo de tabla a cargar en bd, por cada registro a escanear
@@ -296,6 +317,12 @@ public class CargaMasivaHelper {
                 String perfilNombre = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 // Buscando el perfil elegido
                 Perfil perfilBuscado = (Perfil) CargaMasivaHelper.busquedaGeneralString(session, "Perfil", new String [] {"nombre"}, new String [] {perfilNombre});
+                if (perfilBuscado!=null)
+                    LOGGER.log(Level.INFO, String.format("Perfil %s encontrado con exito", perfilNombre));
+                else {
+                    LOGGER.log(Level.SEVERE, String.format("Perfil %s no encontrado, cancelando operacion", perfilNombre));
+                    return false;
+                }
                 nuevoUsuario.setPerfil(perfilBuscado);
                 index++;
                 nuevoUsuario.setTelefono(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
@@ -526,6 +553,17 @@ public class CargaMasivaHelper {
                 }
                 else {
                     LOGGER.log(Level.SEVERE, String.format("Producto %s no detectado", nombreProductoAsociado));
+                    return false;
+                }
+            case CargaMasivaConstantes.TABLA_TIPOPAGO:
+                String descripTipoPago = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(descripTipoPago)) {
+                    TipoPago nuevoTipoPago = new TipoPago();
+                    nuevoTipoPago.setDescripcion(descripTipoPago);
+                    return CargaMasivaHelper.guardarObjeto(nuevoTipoPago, session);
+                }
+                else {
+                    LOGGER.log(Level.SEVERE, "No se identifica una descripcion valida de tipo de pago");
                     return false;
                 }
             // colocar aqui los demas casos para el resto de tablas de carga masiva
