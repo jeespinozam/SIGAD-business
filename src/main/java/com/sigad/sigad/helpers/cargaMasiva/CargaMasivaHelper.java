@@ -298,14 +298,26 @@ public class CargaMasivaHelper {
             case CargaMasivaConstantes.TABLA_PRODUCTOCATEGORIA:
                 ProductoCategoria nuevoProdCat = new ProductoCategoria();
                 nuevoProdCat.setActivo(true);   // logica de negocio
-                nuevoProdCat.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                String nombreProdCat = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(nombreProdCat))
+                    nuevoProdCat.setNombre(nombreProdCat);
+                else {
+                    LOGGER.log(Level.SEVERE, "El nombre de una categoria de producto es un campo obligatorio");
+                    return false;
+                }
                 index++;
                 nuevoProdCat.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 return CargaMasivaHelper.guardarObjeto(nuevoProdCat, session);
             case CargaMasivaConstantes.TABLA_PERFILES:
                 Perfil nuevoPerfil = new Perfil();
                 nuevoPerfil.setActivo(true);    // logica de negocio
-                nuevoPerfil.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                String nombrePerfil = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(nombrePerfil))
+                    nuevoPerfil.setNombre(nombrePerfil);
+                else {
+                    LOGGER.log(Level.SEVERE, "El nombre de un perfil es un campo obligatorio");
+                    return false;
+                }
                 index++;
                 nuevoPerfil.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 return CargaMasivaHelper.guardarObjeto(nuevoPerfil, session);
@@ -396,7 +408,13 @@ public class CargaMasivaHelper {
                 nuevoInsumo.setActivo(true);    // logica de negocio
                 nuevoInsumo.setStockTotalFisico(0);        // logica de negocio, se inicializa nuevo insumo
                 nuevoInsumo.setStockTotalLogico(0);
-                nuevoInsumo.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                String nombreInsumo = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(nombreInsumo))
+                    nuevoInsumo.setNombre(nombreInsumo);
+                else {
+                    LOGGER.log(Level.SEVERE, "El nombre de insumo es un campo obligatorio");
+                    return false;
+                }
                 index++;
                 nuevoInsumo.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 index++;
@@ -444,15 +462,33 @@ public class CargaMasivaHelper {
                 return CargaMasivaHelper.guardarObjeto(nuevaTienda, session);
             case CargaMasivaConstantes.TABLA_TIPOMOV:
                 TipoMovimiento nuevoTipoMov = new TipoMovimiento();
-                nuevoTipoMov.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                String nombreTipoMov = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(nombreTipoMov))
+                    nuevoTipoMov.setNombre(nombreTipoMov);
+                else {
+                    LOGGER.log(Level.SEVERE, "El nombre del tipo de movimiento es un campo obligatorio");
+                    return false;
+                }
                 index++;
                 nuevoTipoMov.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 return CargaMasivaHelper.guardarObjeto(nuevoTipoMov, session);
             case CargaMasivaConstantes.TABLA_PERMISOS:
                 Permiso nuevoPermiso = new Permiso();
-                nuevoPermiso.setMenu(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                String menuPermiso = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(menuPermiso))
+                    nuevoPermiso.setMenu(menuPermiso);
+                else {
+                    LOGGER.log(Level.SEVERE, "El menu de un permiso es un campo obligatorio");
+                    return false;
+                }
                 index++;
-                nuevoPermiso.setIcono(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                String iconoPermiso = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(iconoPermiso))
+                    nuevoPermiso.setIcono(iconoPermiso);
+                else {
+                    LOGGER.log(Level.SEVERE, "El icono de un permiso es un campo obligatorio");
+                    return false;
+                }
                 return CargaMasivaHelper.guardarObjeto(nuevoPermiso, session);
             case CargaMasivaConstantes.TABLA_PERFILXPERMISO:
                 String perfilNombreAux = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
@@ -496,8 +532,12 @@ public class CargaMasivaHelper {
                 ProductoFragilidad nuevaFrag = new ProductoFragilidad();
                 String valorCandea = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 Integer valorParseado = (Integer) CargaMasivaHelper.validarParsing(valorCandea, true);
-                if (valorParseado!=null)
+                if (valorParseado!=null && valorParseado>0)
                     nuevaFrag.setValor(valorParseado);
+                else {
+                    LOGGER.log(Level.SEVERE, "El valor de fragilidad no es valido");
+                    return false;
+                }
                 index++;
                 nuevaFrag.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 return CargaMasivaHelper.guardarObjeto(nuevaFrag, session);
