@@ -61,11 +61,11 @@ public class TiendaController implements Initializable {
     @FXML
     private StackPane hiddenSp;
     @FXML
-    private JFXButton moreBtn, addBtn;
+    private JFXButton moreBtn;
+    @FXML
+    private JFXButton addBtn;
     /*Extras*/
-    @FXML
     public static JFXDialog storeDialog;
-    @FXML
     private JFXPopup popup;
     
     public static boolean isStoreCreate;
@@ -102,7 +102,7 @@ public class TiendaController implements Initializable {
     }
     
     @FXML
-    private void handleAction(ActionEvent event) {
+    void handleAction(ActionEvent event) {
         if(event.getSource() == addBtn){
             try {
                 CreateEdditStoreDialog(true);
@@ -131,24 +131,18 @@ public class TiendaController implements Initializable {
         JFXButton edit = new JFXButton("Editar");
         JFXButton delete = new JFXButton("Eliminar");
         
-        edit.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                popup.hide();
-                try {
-                    CreateEdditStoreDialog(false);
-                } catch (IOException ex) {
-                    Logger.getLogger(PersonalController.class.getName()).log(Level.SEVERE, "initPopup(): CreateEdditStoreDialog()", ex);
-                }
+        edit.setOnAction((ActionEvent event) -> {
+            popup.hide();
+            try {
+                CreateEdditStoreDialog(false);
+            } catch (IOException ex) {
+                Logger.getLogger(PersonalController.class.getName()).log(Level.SEVERE, "initPopup(): CreateEdditStoreDialog()", ex);
             }
         });
         
-        delete.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                popup.hide();
-                deleteUserDialog();
-            }
+        delete.setOnAction((ActionEvent event) -> {
+            popup.hide();
+            deleteUserDialog();
         });
         
         edit.setPadding(new Insets(20));
@@ -253,7 +247,7 @@ public class TiendaController implements Initializable {
                     System.out.println(clickedRow.dirección);
                     
                     selectedStore = clickedRow;
-                    //data.remove(selectedStore);
+                    //data.remove(selectedUser);
                     try {
                         CreateEdditStoreDialog(false);
                     } catch (IOException ex) {
@@ -273,7 +267,7 @@ public class TiendaController implements Initializable {
         storeTbl.setShowRoot(false);
     }
     
-    private static class Store  extends RecursiveTreeObject<Store> {
+    public static class Store  extends RecursiveTreeObject<Store> {
         
         StringProperty capacidad;
         StringProperty cooxdireccion;
@@ -300,6 +294,8 @@ public class TiendaController implements Initializable {
             return super.equals(o); //To change body of generated methods, choose Tools | Templates.
         }
     }
+    
+    
     
     
 }
