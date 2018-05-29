@@ -114,6 +114,7 @@ public class ListaOrdenesCompraController implements Initializable {
 //                        Logger.getLogger(ListaOrdenesCompraController.class.getName()).log(Level.SEVERE, null, ex);
 //                    }
                 }
+                
             });
             return row;
         });
