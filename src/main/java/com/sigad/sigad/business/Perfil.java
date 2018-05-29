@@ -39,10 +39,18 @@ public class Perfil {
      */
     public Perfil() {
     }
+    
     public Perfil(String nombre, String descripcion, boolean activo) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.activo = activo;
+    }
+    
+    public Perfil(String nombre, String descripcion, boolean activo, Set<Permiso> permisos) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.activo = activo;
+        this.permisos = permisos;
     }
     
     /**

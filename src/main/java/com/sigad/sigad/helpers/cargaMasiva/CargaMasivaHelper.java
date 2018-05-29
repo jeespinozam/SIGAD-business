@@ -125,9 +125,9 @@ public class CargaMasivaHelper {
                         rowhead.createCell(rowIndex).setCellValue("Descripcion");
                         break;
                     case CargaMasivaConstantes.TABLA_PERMISOS:
-                        rowhead.createCell(rowIndex).setCellValue("Opcion");
+                        rowhead.createCell(rowIndex).setCellValue("Menu");
                         rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                        rowhead.createCell(rowIndex).setCellValue("Icono");
                         break;
                     case CargaMasivaConstantes.TABLA_PERFILXPERMISO:
                         rowhead.createCell(rowIndex).setCellValue("Nombre de Perfil");
@@ -379,9 +379,9 @@ public class CargaMasivaHelper {
                 return CargaMasivaHelper.guardarObjeto(nuevoTipoMov, session);
             case CargaMasivaConstantes.TABLA_PERMISOS:
                 Permiso nuevoPermiso = new Permiso();
-                nuevoPermiso.setOpcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                nuevoPermiso.setMenu(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 index++;
-                nuevoPermiso.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                nuevoPermiso.setIcono(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 return CargaMasivaHelper.guardarObjeto(nuevoPermiso, session);
             case CargaMasivaConstantes.TABLA_PERFILXPERMISO:
                 String perfilNombreAux = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));

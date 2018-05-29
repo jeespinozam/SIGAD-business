@@ -100,9 +100,18 @@ public class UsuarioHelper {
             PerfilHelper helper = new PerfilHelper();
             Perfil perfil = helper.getProfile(newUser.getPerfil().getNombre());
 
-            Transaction tx = session.beginTransaction();
+            Transaction tx;
+            if(session.getTransaction().isActive()){
+                tx = session.getTransaction();
+            }else{
+                tx = session.beginTransaction();
+            }
+            
             if(perfil != null){
-                //newUser.setPerfil(perfil);    
+                newUser.setPerfil(perfil);    
+            }
+            if(newUser.getPassword()!=null){
+                newUser.setPassword(LoginController.encrypt(newUser.getPassword()));
             }
             
             session.save(newUser);
@@ -110,7 +119,7 @@ public class UsuarioHelper {
                 id = newUser.getId();
             }
             tx.commit();
-
+            session.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
             this.errorMessage = e.getMessage();
@@ -122,11 +131,17 @@ public class UsuarioHelper {
     public boolean updateUser(Usuario uOld){
         boolean ok = false;
         try {
-            Transaction tx = session.beginTransaction();
-            Usuario uNew = session.get(Usuario.class, uOld.getId());
+            Transaction tx;
+            if(session.getTransaction().isActive()){
+                tx = session.getTransaction();
+            }else{
+                tx = session.beginTransaction();
+            }
+             
+            Usuario uNew = session.load(Usuario.class, uOld.getId());
             
             uNew.setNombres(uOld.getNombres());
-            uNew.setApellidoPaterno(errorMessage);
+            uNew.setApellidoPaterno(uOld.getApellidoPaterno());
             uNew.setApellidoMaterno(uOld.getApellidoMaterno());
             uNew.setCelular(uOld.getCelular());
             uNew.setCorreo(uOld.getCorreo());
@@ -135,9 +150,11 @@ public class UsuarioHelper {
             uNew.setPassword(uOld.getPassword());
             //uNew.setPerfil(uOld.getPerfil());
             uNew.setTelefono(uOld.getTelefono());
+            uNew.setActivo(uOld.isActivo());
             
-            session.update(uNew);
+            session.merge(uNew);
             tx.commit();
+            session.close();
             ok = true;
         } catch (Exception e) {
             System.out.println(e.getMessage());
