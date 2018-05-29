@@ -128,9 +128,6 @@ public class LoginController implements Initializable {
         
         if(validate()){
             this.loadWindow(HomeController.viewPath, HomeController.windowName);
-        }else{
-            ErrorController error = new ErrorController();
-            error.loadDialog("Error", "Cuenta o contrase incorrectas","Ok", hiddenSp);
         }
     }
     
@@ -173,8 +170,15 @@ public class LoginController implements Initializable {
         if(user==null){
             return false;
         }else{
+            if(!user.isActivo()){
+                ErrorController error = new ErrorController();
+                error.loadDialog("Error", "Cuenta no activa, por favor contacte con un administrador para activar su cuenta","Ok", hiddenSp);
+                return false;
+            }
             String text = decrypt(user.getPassword());
             if(!passwordTxt.getText().equals(text)){
+                ErrorController error = new ErrorController();
+                error.loadDialog("Error", "Cuenta o contrase incorrectas","Ok", hiddenSp);
                 return false;
             }
         }
