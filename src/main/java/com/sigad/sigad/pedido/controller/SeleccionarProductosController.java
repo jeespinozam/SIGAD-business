@@ -267,18 +267,19 @@ public class SeleccionarProductosController implements Initializable {
         cantidadPedido.setOnEditCommit(new EventHandler<TreeTableColumn.CellEditEvent<PedidoLista, Integer>>() {
             @Override
             public void handle(TreeTableColumn.CellEditEvent<PedidoLista, Integer> event) {
-                
+
                 Integer stock = event.getRowValue().getValue().stock.getValue();
                 PedidoLista nuevo = new PedidoLista(event.getRowValue().getValue().nombre.getValue(), event.getRowValue().getValue().precio.getValue(),
                         (event.getNewValue() <= stock) ? event.getNewValue() : event.getOldValue(),
                         String.valueOf(Float.valueOf(event.getRowValue().getValue().precio.get()) * Float.valueOf(event.getNewValue()) - Float.valueOf(event.getRowValue().getValue().precio.get()) * (1.0 - Float.valueOf(event.getRowValue().getValue().descuento.get())) / 100.0),
-                        event.getRowValue().getValue().codigo, event.getRowValue().getValue().descuento.get(),event.getRowValue().getValue().stock.getValue());
+                        event.getRowValue().getValue().codigo, event.getRowValue().getValue().descuento.get(), event.getRowValue().getValue().stock.getValue());
                 if (event.getNewValue() <= stock) {
+                    
+                    Integer i = pedidos.indexOf(nuevo);
+                    pedidos.remove(nuevo);
+                    pedidos.add(i, nuevo);
                     calcularTotal();
                 }
-                Integer i = pedidos.indexOf(nuevo);
-                pedidos.remove(nuevo);
-                pedidos.add(i, nuevo);
 
             }
         });
