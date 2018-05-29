@@ -7,7 +7,9 @@ package com.sigad.sigad.business.helpers;
 
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Producto;
+import com.sigad.sigad.business.ProductoDescuento;
 import java.util.ArrayList;
+import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
@@ -23,20 +25,15 @@ public class ProductoDescuentoHelper {
     public ProductoDescuentoHelper() {
         session = LoginController.serviceInit();
         session.beginTransaction();
-        // Add new Employee object
-//        Producto prod = new Producto("Rosas", "/images/rosa.jpg", 15, 12.0,Boolean.TRUE);
-//        Producto prod2 = new Producto("Chocolates", "/images/chocolate.jpg", 15,12.0, Boolean.TRUE);
-//        session.save(prod);
-//        session.save(prod2);
     }
 
-    public ArrayList<Producto> getDescuentos() {
-        ArrayList<Producto> list = null;
+    public ArrayList<ProductoDescuento> getDescuentos() {
+        ArrayList<ProductoDescuento> list = null;
         try {
-            Query query = session.createQuery("from Producto");
+            Query query = session.createQuery("from ProductoDescuento");
 
             if (!query.list().isEmpty()) {
-                list = (ArrayList<Producto>) query.list();
+                list = (ArrayList<ProductoDescuento>) query.list();
             }
         } catch (Exception e) {
             session.getTransaction().rollback();
@@ -50,25 +47,68 @@ public class ProductoDescuentoHelper {
 
     ;
     
-    public Producto getDescuentoById(Integer id) {
-        Producto product = null;
+    public ProductoDescuento getDescuentoById(Integer id) {
+        ProductoDescuento descuento = null;
         Query query = null;
         try {
-            query = session.createQuery("from Producto where id='" + id + "'");
+            query = session.createQuery("from ProductoDescuento where id='" + id + "'");
 
             if (!query.list().isEmpty()) {
-                product = (Producto) query.list().get(0);
+                descuento = (ProductoDescuento) query.list().get(0);
             }
         } catch (Exception e) {
 
             System.out.println("Error: " + e.getMessage());
             this.errorMessage = e.getMessage();
         }
-        return product;
+        return descuento;
     }
 
     ;
 
+    public ProductoDescuento getDescuentoByProducto(Integer producto_id) {
+       ProductoDescuento descuento = null;
+        Query query = null;
+        try {
+            query = session.createQuery("from ProductoDescuento where producto_id='" + producto_id + "' and activo=true ");
+
+            if (!query.list().isEmpty()) {
+                descuento = (ProductoDescuento) query.list().get(0);
+            }
+        } catch (Exception e) {
+
+            System.out.println("Error: " + e.getMessage());
+            session.getTransaction().rollback();
+            this.errorMessage = e.getMessage();
+        }finally{
+            return descuento;
+        }
+        
+        
+    }
+
+    ;
+    
+    public List<ProductoDescuento> getDescuentosByProducto(Integer producto_id) {
+       List<ProductoDescuento> descuentos = null;
+        Query query = null;
+        try {
+            query = session.createQuery("from ProductoDescuento where producto_id='" + producto_id + "' and activo=true ");
+
+            if (!query.list().isEmpty()) {
+                descuentos = (List<ProductoDescuento>) query.list();
+            }
+        } catch (Exception e) {
+
+            System.out.println("Error: " + e.getMessage());
+            session.getTransaction().rollback();
+            this.errorMessage = e.getMessage();
+        }finally{
+            return descuentos;
+        }
+        
+        
+    };
     public void close() {
         session.getTransaction().commit();
     }

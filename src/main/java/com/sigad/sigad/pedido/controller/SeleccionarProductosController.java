@@ -9,6 +9,8 @@ import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sigad.sigad.app.controller.HomeController;
 import com.sigad.sigad.business.Producto;
+import com.sigad.sigad.business.ProductoDescuento;
+import com.sigad.sigad.business.helpers.ProductoDescuentoHelper;
 import com.sigad.sigad.business.helpers.ProductoHelper;
 import com.sigad.sigad.personal.controller.CrearEditarUsuarioController;
 import com.sigad.sigad.personal.controller.PersonalController;
@@ -113,7 +115,7 @@ public class SeleccionarProductosController implements Initializable {
     @FXML
     JFXTreeTableColumn<PedidoLista, Integer> cantidadPedido = new JFXTreeTableColumn<>("Cantidad");
     @FXML
-    JFXTreeTableColumn<PedidoLista, String> descuentoPedido = new JFXTreeTableColumn<>("Descuentos");
+    JFXTreeTableColumn<PedidoLista, String> descuentoPedido = new JFXTreeTableColumn<>("Descuento(%)");
 
     @FXML
     private JFXTextField filtro;
@@ -265,13 +267,18 @@ public class SeleccionarProductosController implements Initializable {
         cantidadPedido.setOnEditCommit(new EventHandler<TreeTableColumn.CellEditEvent<PedidoLista, Integer>>() {
             @Override
             public void handle(TreeTableColumn.CellEditEvent<PedidoLista, Integer> event) {
+                
+                Integer stock = event.getRowValue().getValue().stock.getValue();
                 PedidoLista nuevo = new PedidoLista(event.getRowValue().getValue().nombre.getValue(), event.getRowValue().getValue().precio.getValue(),
-                        event.getNewValue(), String.valueOf(Float.valueOf(event.getRowValue().getValue().precio.get()) * Float.valueOf(event.getNewValue())),
-                        event.getRowValue().getValue().codigo, "");
+                        (event.getNewValue() <= stock) ? event.getNewValue() : event.getOldValue(),
+                        String.valueOf(Float.valueOf(event.getRowValue().getValue().precio.get()) * Float.valueOf(event.getNewValue()) - Float.valueOf(event.getRowValue().getValue().precio.get()) * (1.0 - Float.valueOf(event.getRowValue().getValue().descuento.get())) / 100.0),
+                        event.getRowValue().getValue().codigo, event.getRowValue().getValue().descuento.get(),event.getRowValue().getValue().stock.getValue());
+                if (event.getNewValue() <= stock) {
+                    calcularTotal();
+                }
                 Integer i = pedidos.indexOf(nuevo);
                 pedidos.remove(nuevo);
                 pedidos.add(i, nuevo);
-                calcularTotal();
 
             }
         });
@@ -360,13 +367,13 @@ public class SeleccionarProductosController implements Initializable {
             JFXDialogLayout content = new JFXDialogLayout();
             content.setHeading(new Text("Crear Usuario"));
             Node node;
- //           node = (Node) FXMLLoader.load(SeleccionarProductosController.this.getClass().getResource(DescripcionProductosController.viewPath));
-            
+            //           node = (Node) FXMLLoader.load(SeleccionarProductosController.this.getClass().getResource(DescripcionProductosController.viewPath));
+
             FXMLLoader loader = new FXMLLoader(SeleccionarProductosController.this.getClass().getResource(DescripcionProductosController.viewPath));
             node = (Node) loader.load();
             DescripcionProductosController desc = loader.getController();
             desc.initModel(codigo);
-            
+
             content.setBody(node);
             userDialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
             userDialog.show();
@@ -415,10 +422,18 @@ public class SeleccionarProductosController implements Initializable {
             seleccion.addListener((observable, oldValue, newValue) -> {
                 calcularTotal();
                 if (newValue) {
-                    pedidos.add(new PedidoLista(nombre, precio, 0, "0", codigo, "0"));
+                    ProductoDescuentoHelper helper = new ProductoDescuentoHelper();
+                    ProductoDescuento descuento = helper.getDescuentoByProducto(codigo);
+                    if (descuento != null) {
+                        pedidos.add(new PedidoLista(nombre, precio, 0, "0", codigo, String.valueOf(descuento.getValorPct() * 100.0), Integer.valueOf(stock)));
+                    } else {
+                        pedidos.add(new PedidoLista(nombre, precio, 0, "0", codigo, "0", Integer.valueOf(stock)));
+                    }
+                    helper.close();
+
                     //prod.remove(this);
                 } else {
-                    pedidos.remove(new PedidoLista(nombre, precio, 0, "0", codigo, "0"));
+                    pedidos.remove(new PedidoLista(nombre, precio, 0, "0", codigo, "0", 0));
                 }
                 calcularTotal();
             });
@@ -428,6 +443,9 @@ public class SeleccionarProductosController implements Initializable {
         public boolean equals(Object o) {
             if (o instanceof ProductoLista) {
                 ProductoLista pl = (ProductoLista) o;
+                return pl.codigo.equals(codigo);
+            } else if (o instanceof PedidoLista) {
+                PedidoLista pl = (PedidoLista) o;
                 return pl.codigo.equals(codigo);
             }
             return super.equals(o); //To change body of generated methods, choose Tools | Templates.
@@ -446,15 +464,17 @@ public class SeleccionarProductosController implements Initializable {
         IntegerProperty cantidad;
         StringProperty subtotal;
         StringProperty descuento;
+        IntegerProperty stock;
         Integer codigo;
 
-        public PedidoLista(String nombre, String precio, Integer cantidad, String subtotal, Integer codigo, String descuento) {
+        public PedidoLista(String nombre, String precio, Integer cantidad, String subtotal, Integer codigo, String descuento, Integer stock) {
             this.nombre = new SimpleStringProperty(nombre);
             this.precio = new SimpleStringProperty(precio);
             this.cantidad = new SimpleIntegerProperty(cantidad);
             this.subtotal = new SimpleStringProperty(subtotal);
             this.codigo = codigo;
             this.descuento = new SimpleStringProperty(descuento);
+            this.stock = new SimpleIntegerProperty(stock);
         }
 
         @Override

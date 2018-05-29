@@ -8,9 +8,12 @@ package com.sigad.sigad.pedido.controller;
 import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sigad.sigad.business.Producto;
+import com.sigad.sigad.business.ProductoDescuento;
+import com.sigad.sigad.business.helpers.ProductoDescuentoHelper;
 import com.sigad.sigad.business.helpers.ProductoHelper;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import javafx.beans.property.IntegerProperty;
@@ -59,20 +62,20 @@ public class DescripcionProductosController implements Initializable {
     @FXML
     private JFXTextArea txtDescripcion;
 
-    
-
     @FXML
     private JFXButton btnBack;
-    
+
     @FXML
     private JFXTreeTableView<StockLista> tablaStock;
-    private ObservableList<StockLista> stocks  = FXCollections.observableArrayList(); ;
+    private ObservableList<StockLista> stocks = FXCollections.observableArrayList();
+    ;
     JFXTreeTableColumn<StockLista, String> local = new JFXTreeTableColumn<>("Local");
     JFXTreeTableColumn<StockLista, String> stock = new JFXTreeTableColumn<>("Stock");
-    
+
     @FXML
     private JFXTreeTableView<PromocionesLista> tablaPromociones;
-    private ObservableList<PromocionesLista> promociones  = FXCollections.observableArrayList();;
+    private ObservableList<PromocionesLista> promociones = FXCollections.observableArrayList();
+    ;
     JFXTreeTableColumn<PromocionesLista, String> promocion = new JFXTreeTableColumn<>("Promocion");
     JFXTreeTableColumn<PromocionesLista, String> tipo = new JFXTreeTableColumn<>("Tipo");
     JFXTreeTableColumn<PromocionesLista, String> descuento = new JFXTreeTableColumn<>("Descuento");
@@ -104,11 +107,24 @@ public class DescripcionProductosController implements Initializable {
             Image image = new Image(producto.getImagen());
             imageProducto.setImage(image);
         }
-
+        llenarTablaDescuento();
         System.out.println(idProducto);
     }
-    
-    
+
+    public void llenarTablaDescuento() {
+        ProductoDescuentoHelper helper = new ProductoDescuentoHelper();
+
+        List<ProductoDescuento> descuentos = helper.getDescuentosByProducto(idProducto);
+        if (descuentos != null) {
+            descuentos.forEach((t) -> {
+                promociones.add(new PromocionesLista(t.getCodCupon(), "Descuento",
+                        String.valueOf(t.getValorPct()* 100), "D", idProducto));
+            });
+        }
+        helper.close();
+
+    }
+
     public void columnasStockLista() {
         local.setPrefWidth(120);
         local.setCellValueFactory((TreeTableColumn.CellDataFeatures<StockLista, String> param) -> param.getValue().getValue().local);
@@ -126,6 +142,7 @@ public class DescripcionProductosController implements Initializable {
         descuento.setCellValueFactory((TreeTableColumn.CellDataFeatures<PromocionesLista, String> param) -> param.getValue().getValue().descuento);
 
     }
+
     public void agregarColumnasTablaStock() {
         final TreeItem<StockLista> rootPedido = new RecursiveTreeItem<>(stocks, RecursiveTreeObject::getChildren);
         tablaStock.setEditable(true);
@@ -133,6 +150,7 @@ public class DescripcionProductosController implements Initializable {
         tablaStock.setRoot(rootPedido);
         tablaStock.setShowRoot(false);
     }
+
     public void agregarColumnasTablasPromociones() {
         final TreeItem<PromocionesLista> rootPedido = new RecursiveTreeItem<>(promociones, RecursiveTreeObject::getChildren);
         tablaPromociones.setEditable(true);

@@ -73,4 +73,5 @@ public class ProductoHelper {
     public void close() {
         session.getTransaction().commit();
     }
+    
 }

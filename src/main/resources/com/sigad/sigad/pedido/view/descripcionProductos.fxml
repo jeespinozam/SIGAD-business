@@ -66,9 +66,9 @@
             <Font name="System Bold" size="20.0" />
          </font>
       </Label>
-      <JFXButton id="btnBack" buttonType="RAISED" layoutX="24.0" layoutY="18.0" prefHeight="30.0" prefWidth="71.0" text="&lt;-">
+      <JFXButton id="btnBack" buttonType="RAISED" layoutX="613.0" layoutY="407.0" prefHeight="30.0" prefWidth="97.0" style="-fx-background-color: #FFFFFF;" text="Cerrar">
          <font>
-            <Font name="System Bold" size="18.0" />
+            <Font name="System Bold" size="14.0" />
          </font>
       </JFXButton>
    </children>

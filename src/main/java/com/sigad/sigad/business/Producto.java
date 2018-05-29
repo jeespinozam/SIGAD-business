@@ -58,6 +58,13 @@ public class Producto {
         this.precio = precio;
     }
     
+    public boolean equals(Object o) {
+            if (o instanceof Producto) {
+                Producto pl = (Producto) o;
+                return pl.id.equals(this.id);
+            }
+            return super.equals(o); //To change body of generated methods, choose Tools | Templates.
+        }
     /**
      * @return the id
      */
