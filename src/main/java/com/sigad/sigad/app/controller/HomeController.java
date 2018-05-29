@@ -19,6 +19,7 @@ import com.sigad.sigad.perfil.controller.PerfilController;
 import com.sigad.sigad.tienda.controller.TiendaController;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -253,23 +255,27 @@ public class HomeController implements Initializable {
     }
     
     private void initPopup(){
-        JFXButton bl = new JFXButton("Mi perfil");
-        JFXButton bl1 = new JFXButton("Configuraciones");
-        JFXButton bl2 = new JFXButton("Logout");
+        JFXButton perfil = new JFXButton("Mi perfil");
+        JFXButton configurations = new JFXButton("Configuraciones");
+        JFXButton logout = new JFXButton("Logout");
         
-        bl.setPadding(new Insets(20));
-        bl1.setPadding(new Insets(20));
-        bl2.setPadding(new Insets(20));
+        perfil.setPadding(new Insets(20));
+        configurations.setPadding(new Insets(20));
+        logout.setPadding(new Insets(20));
         
-        bl.setPrefHeight(40);
-        bl1.setPrefHeight(40);
-        bl2.setPrefHeight(40);
+        perfil.setPrefSize(150.0,40.0);
+        configurations.setPrefSize(150.0,40.0);
+        logout.setPrefSize(150.0,40.0);
         
-        bl.setPrefWidth(145);
-        bl1.setPrefWidth(145);
-        bl2.setPrefWidth(145);
+        logout.setOnAction((ActionEvent event) -> {
+            
+            if(LoginController.serviceEnd()){
+                LoginController.stage.close();
+                Platform.setImplicitExit(true);
+            }
+        });
         
-        VBox vBox = new VBox(bl, bl1, bl2);
+        VBox vBox = new VBox(perfil, configurations, logout);
         
         
         popup = new JFXPopup();
