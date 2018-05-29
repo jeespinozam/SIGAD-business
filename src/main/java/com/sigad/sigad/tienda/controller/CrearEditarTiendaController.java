@@ -5,9 +5,15 @@
  */
 package com.sigad.sigad.tienda.controller;
 
+import com.jfoenix.controls.JFXScrollPane;
+import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXToggleButton;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 
 /**
  * FXML Controller class

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
@@ -60,8 +61,8 @@ public class PerfilController implements Initializable {
      */
     public static final String viewPath = "/com/sigad/sigad/perfil/view/perfil.fxml";
     
-    static ObservableList<PerfilController.Profile> dataPerfilTbl;
-    static ObservableList<PerfilController.Permission> dataPermisoTbl;
+    static ObservableList<Profile> dataPerfilTbl;
+    static ObservableList<Permission> dataPermisoTbl;
     @FXML
     private JFXTreeTableView profilesTbl, permissionTbl;
     @FXML
@@ -69,7 +70,9 @@ public class PerfilController implements Initializable {
     @FXML
     private JFXButton perfilMoreBtn, permisoMoreBtn;
     @FXML
-    private JFXPopup popup;
+    private JFXPopup popupProfile;
+    @FXML
+    private JFXPopup popupPermission;
     @FXML
     private StackPane hiddenSp;
     @FXML
@@ -123,7 +126,7 @@ public class PerfilController implements Initializable {
                 int selected  = profilesTbl.getSelectionModel().getSelectedIndex();
                 selectedProfile = (Profile) profilesTbl.getSelectionModel().getModelItem(selected).getValue();
                 profileInitPopup();
-                popup.show(perfilMoreBtn, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.RIGHT);
+                popupProfile.show(perfilMoreBtn, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.RIGHT);
             }
         }else if(event.getSource() == permisoAddBtn){
             int count = profilesTbl.getSelectionModel().getSelectedCells().size();
@@ -136,14 +139,14 @@ public class PerfilController implements Initializable {
             }else{
                 int selected  = profilesTbl.getSelectionModel().getSelectedIndex();
                 selectedProfile = (Profile) profilesTbl.getSelectionModel().getModelItem(selected).getValue();
-                profileInitPopup();
-                popup.show(perfilMoreBtn, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.RIGHT);
+                
+                try {
+                    CreateEdditPermissionDialog(true);
+                } catch (IOException ex) {
+                    Logger.getLogger(PerfilController.class.getName()).log(Level.SEVERE, "handleAction()", ex);
+                }
             }
-            try {
-                CreateEdditPermissionDialog(true);
-            } catch (IOException ex) {
-                Logger.getLogger(PerfilController.class.getName()).log(Level.SEVERE, "handleAction()", ex);
-            }
+            
         }else if(event.getSource() == permisoMoreBtn){
             int count = permissionTbl.getSelectionModel().getSelectedCells().size();
             if( count > 1){
@@ -155,8 +158,8 @@ public class PerfilController implements Initializable {
             }else{
                 int selected  = permissionTbl.getSelectionModel().getSelectedIndex();
                 selectedPermission = (Permission) permissionTbl.getSelectionModel().getModelItem(selected).getValue();
-                profileInitPopup();
-                popup.show(permisoMoreBtn, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.RIGHT);
+                permissionInitPopup();
+                popupPermission.show(permisoMoreBtn, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.RIGHT);
             }
         }
         
@@ -192,10 +195,21 @@ public class PerfilController implements Initializable {
                 if (! row.isEmpty() && event.getButton()==MouseButton.PRIMARY 
                      && event.getClickCount() == 1) {
                     Profile clickedRow = row.getItem();
-                    System.out.println(clickedRow.name);
+                    System.out.println(clickedRow.name.getValue());
                     
                     initPermissionTable(clickedRow.name.getValue());
                 }
+//                else if(! row.isEmpty() && event.getButton()==MouseButton.PRIMARY 
+//                     && event.getClickCount() == 2){
+//                    Profile clickedRow = row.getItem();
+//                    System.out.println(clickedRow.name);
+//                    
+//                    try {
+//                        CreateEdditProfileDialog(false);
+//                    } catch (IOException ex) {
+//                        Logger.getLogger(PerfilController.class.getName()).log(Level.SEVERE, "initProfileTable(): Double click" , ex);
+//                    }
+//                }
             });
             return row;
         });
@@ -216,7 +230,7 @@ public class PerfilController implements Initializable {
         edit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                popup.hide();
+                popupProfile.hide();
                 try {
                     CreateEdditProfileDialog(false);
                 } catch (IOException ex) {
@@ -228,7 +242,7 @@ public class PerfilController implements Initializable {
         delete.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                popup.hide();
+                popupProfile.hide();
                 deleteProfileDialog();
             }
         });
@@ -236,17 +250,14 @@ public class PerfilController implements Initializable {
         edit.setPadding(new Insets(20));
         delete.setPadding(new Insets(20));
         
-        edit.setPrefHeight(40);
-        delete.setPrefHeight(40);
-        
-        edit.setPrefWidth(145);
-        delete.setPrefWidth(145);
+        edit.setPrefSize(145,40);
+        delete.setPrefSize(145,40);
         
         VBox vBox = new VBox(edit, delete);
         
         
-        popup = new JFXPopup();
-        popup.setPopupContent(vBox);
+        popupProfile = new JFXPopup();
+        popupProfile.setPopupContent(vBox);
     }
     
     public void CreateEdditProfileDialog(boolean iscreate) throws IOException {
@@ -295,43 +306,24 @@ public class PerfilController implements Initializable {
     }
     
     private void permissionInitPopup(){
-        JFXButton edit = new JFXButton("Editar");
         JFXButton delete = new JFXButton("Eliminar");
-        
-        edit.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                popup.hide();
-                try {
-                    CreateEdditPermissionDialog(false);
-                } catch (IOException ex) {
-                    Logger.getLogger(PerfilController.class.getName()).log(Level.SEVERE, "initPopup(): CreateEdditPermissionDialog()", ex);
-                }
-            }
-        });
         
         delete.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                popup.hide();
+                popupProfile.hide();
                 deletePermissionDialog();
             }
         });
         
-        edit.setPadding(new Insets(20));
         delete.setPadding(new Insets(20));
+        delete.setPrefSize(145,40);
         
-        edit.setPrefHeight(40);
-        delete.setPrefHeight(40);
-        
-        edit.setPrefWidth(145);
-        delete.setPrefWidth(145);
-        
-        VBox vBox = new VBox(edit, delete);
+        VBox vBox = new VBox(delete);
         
         
-        popup = new JFXPopup();
-        popup.setPopupContent(vBox);
+        popupPermission = new JFXPopup();
+        popupPermission.setPopupContent(vBox);
     }
     
     public void CreateEdditPermissionDialog(boolean iscreate) throws IOException {
@@ -345,7 +337,7 @@ public class PerfilController implements Initializable {
             content.setHeading(new Text("Editar Permiso"));
             
             PermisoHelper helper = new PermisoHelper();
-            Permiso p = helper.getPermission(selectedPermission.option.getValue());
+            Permiso p = helper.getPermission(selectedPermission.menu.getValue());
             if(p == null){
                 ErrorController error = new ErrorController();
                 error.loadDialog("Error", "No se pudo obtener el permiso", "Ok", hiddenSp);
@@ -358,8 +350,8 @@ public class PerfilController implements Initializable {
         content.setBody(node);
         content.setPrefSize(400,160);
                 
-        profileDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
-        profileDialog.show();
+        permissionDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
+        permissionDialog.show();
     }  
     
     private void deletePermissionDialog() {
@@ -380,38 +372,36 @@ public class PerfilController implements Initializable {
     }
 
     private void initPermissionTable(String profileName) {
+        dataPermisoTbl.clear();
         
-        JFXTreeTableColumn<Permission, String> nombre = new JFXTreeTableColumn<>("Opción");
+        JFXTreeTableColumn<Permission, String> nombre = new JFXTreeTableColumn<>("Menú");
         nombre.setPrefWidth(120);
-        nombre.setCellValueFactory((TreeTableColumn.CellDataFeatures<Permission, String> param) -> param.getValue().getValue().option);
+        nombre.setCellValueFactory((TreeTableColumn.CellDataFeatures<Permission, String> param) -> param.getValue().getValue().menu);
         
-        JFXTreeTableColumn<Permission, String> description = new JFXTreeTableColumn<>("Descripción");
+        JFXTreeTableColumn<Permission, String> description = new JFXTreeTableColumn<>("Ícono");
         description.setPrefWidth(120);
-        description.setCellValueFactory((TreeTableColumn.CellDataFeatures<Permission, String> param) -> param.getValue().getValue().description);
+        description.setCellValueFactory((TreeTableColumn.CellDataFeatures<Permission, String> param) -> param.getValue().getValue().icono);
         
         PerfilHelper ph = new PerfilHelper();
-        Perfil perfil = ph.getProfile(profileName);
-        if(perfil == null){
+        Perfil ptemp = ph.getProfile(profileName);
+        if(ptemp == null){
             ErrorController error = new ErrorController();
             error.loadDialog("Error", "No se pudo obtener el perfil seleccionado", "Ok", hiddenSp);
             return;
         }
+        Set<Permiso> currPermissions= ptemp.getPermisos();
         
         PermisoHelper helper = new PermisoHelper();
         ArrayList<Permiso> list = helper.getPermissions();
         if(list != null){
             list.forEach(p -> {
-                System.out.println(p.getMenu());
-                
-                for(Permiso temp : perfil.getPermisos()){
-                    if(temp.getMenu() == p.getMenu()){
-                        updatePermissionData(p);
-                    }
-                }
-                
+                currPermissions.forEach((curr)->{
+                   if(p.getMenu().equals(curr.getMenu())){
+                       updatePermissionData(p);
+                   } 
+                });
             });
         }
-        
         
         final TreeItem<Permission> root = new RecursiveTreeItem<>(dataPermisoTbl, RecursiveTreeObject::getChildren);
         
@@ -448,12 +438,12 @@ public class PerfilController implements Initializable {
     
     public static class Permission extends RecursiveTreeObject<Permission> {        
         
-        StringProperty option;
-        StringProperty description;
+        StringProperty menu;
+        StringProperty icono;
 
-        public Permission(StringProperty option, StringProperty description) {
-            this.option = option;
-            this.description = description;
+        public Permission(StringProperty option, StringProperty icono) {
+            this.menu = option;
+            this.icono = icono;
         }
         
 
@@ -461,7 +451,7 @@ public class PerfilController implements Initializable {
         public boolean equals(Object o) {
             if (o instanceof Profile) {
                 Permission u = (Permission) o;
-                return u.option.equals(option);
+                return u.menu.equals(menu);
             }
             return super.equals(o); //To change body of generated methods, choose Tools | Templates.
         }

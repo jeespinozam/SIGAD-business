@@ -72,11 +72,11 @@ public class PermisoHelper {
     }
     
     /*Get permission by name, if nothin then null*/
-    public Permiso getPermission(String nombre){
+    public Permiso getPermission(String menu){
         Permiso p = null;
         Query query = null;
         try {
-            query = session.createQuery("from Permiso where opcion='" + nombre + "'");
+            query = session.createQuery("from Permiso where menu='" + menu + "'");
             
             if(!query.list().isEmpty()){
                 p = (Permiso) query.list().get(0);

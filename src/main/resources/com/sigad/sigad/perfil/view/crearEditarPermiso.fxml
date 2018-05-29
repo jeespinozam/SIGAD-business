@@ -1,22 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.JFXScrollPane?>
 <?import java.net.URL?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane fx:id="hiddenSp" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.perfil.controller.CrearEditarPermisoController">
+<StackPane fx:id="hiddenSp" prefHeight="458.0" prefWidth="615.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.perfil.controller.CrearEditarPermisoController">
    <children>
-      <AnchorPane id="AnchorPane" fx:id="containerPane" prefHeight="190.0" prefWidth="400.0" styleClass="mainFxmlClass">
+      <AnchorPane id="AnchorPane" fx:id="containerPane" prefHeight="190.0" prefWidth="370.0" styleClass="mainFxmlClass">
           <stylesheets>
               <URL value="@/styles/perfil.css" />
           </stylesheets>
          <children>
-            <JFXTextField fx:id="nameTxt" layoutX="150.0" layoutY="16.0" AnchorPane.leftAnchor="150.0" />
-            <Label layoutX="23.0" layoutY="25.0" prefHeight="27.0" prefWidth="119.0" text="Opción (Menú)" AnchorPane.leftAnchor="23.0" />
-            <Label layoutX="23.0" layoutY="85.0" prefHeight="27.0" prefWidth="119.0" text="Nombre del Icono" AnchorPane.leftAnchor="23.0" />
-            <JFXTextField fx:id="iconNameTxt" layoutX="160.0" layoutY="85.0" AnchorPane.leftAnchor="150.0" />
+            <GridPane prefHeight="458.0" prefWidth="615.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="154.0" minWidth="0.0" prefWidth="10.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="568.0" minWidth="10.0" prefWidth="564.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="122.0" minWidth="0.0" prefWidth="10.0" />
+              </columnConstraints>
+              <rowConstraints>
+                  <RowConstraints maxHeight="319.0" minHeight="10.0" prefHeight="31.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="319.0" minHeight="10.0" prefHeight="33.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="319.0" minHeight="10.0" prefHeight="32.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="337.0" minHeight="10.0" prefHeight="322.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="168.0" minHeight="10.0" prefHeight="45.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <AnchorPane prefHeight="64.0" prefWidth="433.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ECEFF1; -fx-border-color: #C8C8C8;" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <children>
+                        <Label layoutX="14.0" layoutY="6.0" text="Selecciona un permiso para" AnchorPane.bottomAnchor="8.0" />
+                        <Label fx:id="profileName" layoutX="201.0" layoutY="6.0" prefHeight="17.0" prefWidth="274.0" AnchorPane.bottomAnchor="8.0" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <children>
+                        <Label layoutX="14.0" layoutY="7.0" text="Permisos" />
+                     </children>
+                  </AnchorPane>
+                  <JFXScrollPane fx:id="permissionPane" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+               </children>
+            </GridPane>
          </children>
       </AnchorPane>
    </children>

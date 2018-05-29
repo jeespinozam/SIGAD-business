@@ -72,6 +72,23 @@ public class TiendaHelper {
         }
     }
     
+    /*Get store by id, if nothin then null*/
+    public Tienda getStore(String direction){
+        Tienda t = null;
+        Query query = null;
+        try {
+            query = session.createQuery("from Tienda where direccion=" + direction);
+            
+            if(!query.list().isEmpty()){
+                t = (Tienda) query.list().get(0);
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        } finally{
+            return t;
+        }
+    }
+    
     /*Get store by coordinate x and y, if nothin then null*/
     public Tienda getStore(double cooxdireccion, double cooydireccion){
         Tienda t = null;

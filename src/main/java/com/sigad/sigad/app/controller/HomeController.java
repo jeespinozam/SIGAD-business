@@ -7,8 +7,10 @@ package com.sigad.sigad.app.controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPopup;
+import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Permiso;
 import com.sigad.sigad.business.helpers.PermisoHelper;
+import com.sigad.sigad.business.helpers.UsuarioHelper;
 import com.sigad.sigad.controller.cargaMasiva.CargaMasivaViewController;
 import com.sigad.sigad.personal.controller.PersonalController;
 import com.sigad.sigad.pedido.controller.SeleccionarProductosController;
@@ -20,8 +22,10 @@ import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
@@ -87,55 +91,62 @@ public class HomeController implements Initializable {
     
     private void initsidebar(){
         
-        PermisoHelper helper = new PermisoHelper();
-        ArrayList<Permiso> list = helper.getPermissions();
-        
-        if(list != null){
-            for (int i = 0; i < list.size(); i++) {
-                sidebarBtns.add(new JFXButton(list.get(i).getMenu()));
-                sidebarIcons.add(matchIconText(list.get(i).getIcono()));
+        Perfil perfil = LoginController.user.getPerfil();
+        Set<Permiso> permisos = perfil.getPermisos();
+        if(permisos != null){
+            Iterator<Permiso> itr = permisos.iterator();
+            int i = 0;
+            while(itr.hasNext()){
+                Permiso p = itr.next();
+                sidebarBtns.add(new JFXButton(p.getMenu()));
+                sidebarIcons.add(matchIconText(p.getIcono()));
                 dinamicSideMenu(i, sidebarBtns.get(i), SIDEBAR_BUTTON_HEIGHT, SIDEBAR_BUTTON_GAP, SIDEBAR_BUTTON_ALIGNMENT,
                     sidebarIcons.get(i), SIDEBAR_BUTTON_ICON_SIZE);
-            }            
+                i++;
+            }
+            
+            Iterator<Permiso> itr1 = permisos.iterator();
+            int j = 0;
+            while(itr1.hasNext()){
+                String name = itr1.next().getMenu();
+
+                sidebarBtns.get(j).setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent event) {
+                            try {
+                                Node node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PersonalController.viewPath));;
+                                if(name.equals("Productos")){
+                                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(SeleccionarProductosController.viewPath));
+                                }else if(name.equals("Insumos")){
+
+                                }else if(name.equals("Personal")){
+                                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PersonalController.viewPath));
+                                }else if(name.equals("Repartos")){
+
+                                }else if(name.equals("Pedidos")){
+                                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(FXMLAlmacenIngresoListaOrdenCompraController.viewPath));
+                                }else if(name.equals("Tiendas")){
+                                    node = (Node) FXMLLoader.load(getClass().getResource(TiendaController.viewPath));
+                                }else if(name.equals("Perfiles")){
+                                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PerfilController.viewPath));
+                                }else if(name.equals("Estadísticas")){
+                                }else if(name.equals("Carga Masiva")){
+                                    node = (Node) FXMLLoader.load(getClass().getResource(CargaMasivaViewController.viewPath));
+                                }else if(name.equals("Configuraciones")){
+
+                                }
+
+                                firstPanel.getChildren().setAll(node);
+                            }catch (IOException ex) {
+                                Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "sidebarBtns.get().setOnAction", ex);
+                            }
+                        }
+                    });
+                j++;
+            }
         }
         
-        for (int i = 0; i < list.size(); i++) {
-            String name = list.get(i).getMenu();
-            
-            sidebarBtns.get(i).setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        try {
-                            Node node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PersonalController.viewPath));;
-                            if(name.equals("Productos")){
-                                node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(SeleccionarProductosController.viewPath));
-                            }else if(name.equals("Insumos")){
-                                
-                            }else if(name.equals("Personal")){
-                                node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PersonalController.viewPath));
-                            }else if(name.equals("Repartos")){
-                
-                            }else if(name.equals("Pedidos")){
-                                node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(FXMLAlmacenIngresoListaOrdenCompraController.viewPath));
-                            }else if(name.equals("Tiendas")){
-                                node = (Node) FXMLLoader.load(getClass().getResource(TiendaController.viewPath));
-                            }else if(name.equals("Perfiles")){
-                                node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PerfilController.viewPath));
-                            }else if(name.equals("Estadísticas")){
-                            }else if(name.equals("Carga Masiva")){
-                                node = (Node) FXMLLoader.load(getClass().getResource(CargaMasivaViewController.viewPath));
-                            }else if(name.equals("Configuraciones")){
-                                
-                            }
-                            
-                            firstPanel.getChildren().setAll(node);
-                        }catch (IOException ex) {
-                            Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "sidebarBtns.get().setOnAction", ex);
-                        }
-                    }
-                });
-            
-        }
+        
                 
     }
     
