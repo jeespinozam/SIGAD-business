@@ -71,8 +71,8 @@ public class HomeController implements Initializable {
     private AnchorPane menuPanel;
     @FXML
     private JFXPopup popup;
-    public static final int SIDEBAR_BUTTON_HEIGHT = 70;
-    public static final int SIDEBAR_BUTTON_GAP = 20;
+    public static final int SIDEBAR_BUTTON_HEIGHT = 50;
+    public static final int SIDEBAR_BUTTON_GAP = 4;
     public static final Pos SIDEBAR_BUTTON_ALIGNMENT = Pos.BASELINE_LEFT;
     public static final String SIDEBAR_BUTTON_ICON_SIZE = "30";
  
@@ -104,7 +104,7 @@ public class HomeController implements Initializable {
                     sidebarIcons.get(i), SIDEBAR_BUTTON_ICON_SIZE);
                 i++;
             }
-            
+
             Iterator<Permiso> itr1 = permisos.iterator();
             int j = 0;
             while(itr1.hasNext()){
@@ -145,9 +145,6 @@ public class HomeController implements Initializable {
                 j++;
             }
         }
-        
-        
-                
     }
     
     private MaterialDesignIcon matchIconText(String search) {
@@ -178,7 +175,8 @@ public class HomeController implements Initializable {
         
         sidebarPane.getChildren().add(newButton);   
         
-        AnchorPane.setTopAnchor(newButton, baseTop + 70*(count));
+        AnchorPane.setTopAnchor(
+                newButton, baseTop + SIDEBAR_BUTTON_HEIGHT * (count));
         AnchorPane.setLeftAnchor(newButton, 0.0);
         AnchorPane.setRightAnchor(newButton, 0.0);
     }
