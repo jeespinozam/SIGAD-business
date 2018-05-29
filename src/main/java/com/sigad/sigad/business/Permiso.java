@@ -5,10 +5,14 @@
  */
 package com.sigad.sigad.business;
 
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 /**
@@ -18,17 +22,25 @@ import javax.persistence.ManyToOne;
 @Entity
 public class Permiso {
 
+    
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-    private String opcion;
-    private String descripcion;
-    @ManyToOne
-    private Perfil perfil;
+    private String menu;
+    private String icono;
+    @ManyToMany(mappedBy = "permisos", cascade = { CascadeType.ALL })
+    private Set<Perfil> perfiles = new HashSet<>();
 
     public Permiso() {
     }
 
+    public Permiso(String opcion, String descripcion) {
+        this.menu = opcion;
+        this.icono = descripcion;
+    }
+    
+    
     /**
      * @return the id
      */
@@ -44,45 +56,52 @@ public class Permiso {
     }
 
     /**
-     * @return the opcion
+     * @return the opcionmany
      */
-    public String getOpcion() {
-        return opcion;
+    public String getMenu() {
+        return menu;
     }
 
     /**
-     * @param opcion the opcion to set
+     * @param menu the menu to set
      */
-    public void setOpcion(String opcion) {
-        this.opcion = opcion;
+    public void setMenu(String menu) {
+        this.menu = menu;
     }
 
     /**
-     * @return the descripcion
+     * @return the icono
      */
-    public String getDescripcion() {
-        return descripcion;
+    public String getIcono() {
+        return icono;
     }
 
     /**
-     * @param descripcion the descripcion to set
+     * @param icono the icono to set
      */
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setIcono(String icono) {
+        this.icono = icono;
     }
-
+    
     /**
      * @return the perfil
      */
-    public Perfil getPerfil() {
-        return perfil;
+    public Set<Perfil> getPerfil() {
+        return perfiles;
     }
 
     /**
      * @param perfil the perfil to set
      */
-    public void setPerfil(Perfil perfil) {
-        this.perfil = perfil;
+    public void setPerfil(Set<Perfil> perfil) {
+        this.perfiles = perfil;
     }
-    
+
+    /**
+     * @param perfil the perfil to set
+     */
+    public void addPerfil(Perfil perfil) {
+        this.perfiles.add(perfil);
+    }
+   
 }

@@ -72,12 +72,12 @@ public class TiendaHelper {
         }
     }
     
-    /*Get store by name, if nothin then null*/
-    public Tienda getStore(String nombre){
+    /*Get store by coordinate x and y, if nothin then null*/
+    public Tienda getStore(double cooxdireccion, double cooydireccion){
         Tienda t = null;
         Query query = null;
         try {
-            query = session.createQuery("from Tienda where nombre='" + nombre + "'");
+            query = session.createQuery("from Tienda where cooxdireccion='" + Double.toString(cooxdireccion) + "' and cooydireccion='" + Double.toString(cooydireccion) + "'");
             
             if(!query.list().isEmpty()){
                 t = (Tienda) query.list().get(0);
@@ -92,13 +92,19 @@ public class TiendaHelper {
     public Long saveStore(Tienda t){
         Long id = null;
         try {
-            Transaction tx = session.beginTransaction();
+            Transaction tx;
+            if(session.getTransaction().isActive()){
+                tx = session.getTransaction();
+            }else{
+                tx = session.beginTransaction();
+            }
             session.save(t);
             
             if(t.getId() != null){
                 id = t.getId();
             }
             tx.commit();
+            session.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -108,7 +114,13 @@ public class TiendaHelper {
     public boolean updateStore(Tienda tOld){
         boolean ok = false;
         try {
-            Transaction tx = session.beginTransaction();
+            Transaction tx;
+            if(session.getTransaction().isActive()){
+                tx = session.getTransaction();
+            }else{
+                tx = session.beginTransaction();
+            }
+            
             Tienda tNew = session.load(Tienda.class, tOld.getId());
             
             tNew.setCapacidad(tOld.getCapacidad());
@@ -117,8 +129,9 @@ public class TiendaHelper {
             tNew.setDescripcion(tOld.getDescripcion());
             tNew.setDireccion(tOld.getDireccion());
             
-            session.save(tNew);
+            session.merge(tNew);
             tx.commit();
+            session.close();
             ok = true;
         } catch (Exception e) {
             System.out.println(e.getMessage());

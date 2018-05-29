@@ -2,7 +2,6 @@ package com.sigad.sigad.business.helpers;
 
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Perfil;
-import com.sigad.sigad.business.Usuario;
 import java.util.ArrayList;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -94,14 +93,22 @@ public class PerfilHelper {
     public Long saveProfile(Perfil p){
         Long id = null;
         try {
-            Transaction tx = session.beginTransaction();
+            Transaction tx;
+            if(session.getTransaction().isActive()){
+                tx = session.getTransaction();
+            }else{
+                tx = session.beginTransaction();
+            }
+            
             session.save(p);
             if(p.getId() != null){
                 id = p.getId();
             }
             tx.commit();
+            session.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            this.errorMessage = e.getMessage();
         }
         return id;
     }
@@ -109,7 +116,13 @@ public class PerfilHelper {
     public boolean updateProfile(Perfil pOld){
         boolean ok = false;
         try {
-            Transaction tx = session.beginTransaction();
+            Transaction tx;
+            if(session.getTransaction().isActive()){
+                tx = session.getTransaction();
+            }else{
+                tx = session.beginTransaction();
+            }
+            
             Perfil pNew = session.load(Perfil.class, pOld.getId());
             
             pNew.setNombre(pOld.getNombre());
@@ -117,8 +130,9 @@ public class PerfilHelper {
             pNew.setPermisos(pOld.getPermisos());
             pNew.setActivo(pOld.isActivo());
             
-            session.save(pNew);
+            session.merge(pNew);
             tx.commit();
+            session.close();
             ok = true;
         } catch (Exception e) {
             System.out.println(e.getMessage());

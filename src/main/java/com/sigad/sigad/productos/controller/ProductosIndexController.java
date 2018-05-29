@@ -9,6 +9,7 @@ import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import com.sigad.sigad.business.Producto;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.Initializable;
@@ -32,36 +33,36 @@ import javafx.scene.control.TreeItem;
  */
 public class ProductosIndexController implements Initializable {
     @FXML
-    private JFXTreeTableView<Producto> productosTabla;
+    private JFXTreeTableView<ProductoLista> productosTabla;
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         
-        JFXTreeTableColumn<Producto,String> productoNombre = new JFXTreeTableColumn<>("Nombre");
+        JFXTreeTableColumn<ProductoLista,String> productoNombre = new JFXTreeTableColumn<>("Nombre");
         productoNombre.setPrefWidth(200);
-        productoNombre.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Producto, String>, ObservableValue<String>>(){
+        productoNombre.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<ProductoLista, String>, ObservableValue<String>>(){
             @Override
-            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Producto,String> param){
+            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<ProductoLista,String> param){
                 return param.getValue().getValue().nombre;
             }
         });
         
-        JFXTreeTableColumn<Producto,String> productoPrecio = new JFXTreeTableColumn<>("Precio");
+        JFXTreeTableColumn<ProductoLista,String> productoPrecio = new JFXTreeTableColumn<>("Precio");
         productoPrecio.setPrefWidth(100);
-        productoPrecio.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Producto, String>, ObservableValue<String>>(){
+        productoPrecio.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<ProductoLista, String>, ObservableValue<String>>(){
             @Override
-            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Producto,String> param){
+            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<ProductoLista,String> param){
                 return param.getValue().getValue().precio;
             }
         });
 
-        JFXTreeTableColumn<Producto,String> productoStock = new JFXTreeTableColumn<>("Stock");
+        JFXTreeTableColumn<ProductoLista,String> productoStock = new JFXTreeTableColumn<>("Stock");
         productoStock.setPrefWidth(100);
-        productoStock.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Producto, String>, ObservableValue<String>>(){
+        productoStock.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<ProductoLista, String>, ObservableValue<String>>(){
             @Override
-            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Producto,String> param){
+            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<ProductoLista,String> param){
                 return param.getValue().getValue().stock;
             }
         });
@@ -77,32 +78,37 @@ public class ProductosIndexController implements Initializable {
         });
         */
         
-        ObservableList<Producto> productosList = FXCollections.observableArrayList();
+        ObservableList<ProductoLista> productosList = FXCollections.observableArrayList();
         ProductoHelper productoHelper = new ProductoHelper();
         
-        ArrayList<com.sigad.sigad.business.Producto> productos = productoHelper.getProducts();
-        for (Iterator<com.sigad.sigad.business.Producto> iterator = productos.iterator(); iterator.hasNext();) {
-            com.sigad.sigad.business.Producto next = iterator.next();
-            productosList.add(new Producto(
-                                        next.getNombre(),
-                                        String.valueOf(next.getPrecio()),
-                                        String.valueOf(next.getStock()))
-            );
+        ArrayList<Producto> productos = productoHelper.getProducts();
+        
+        if(productos != null){
+            productos.forEach((p) ->{
+                Producto t = p;
+                productosList.add(new ProductoLista(
+                    t.getNombre(),
+                    String.valueOf(t.getPrecio()),
+                    String.valueOf(t.getStock()))
+                );
+            });
         }
         
-        final TreeItem<Producto> root = new RecursiveTreeItem<Producto>(productosList, RecursiveTreeObject::getChildren);
+        productoHelper.close();
+        
+        final TreeItem<ProductoLista> root = new RecursiveTreeItem<ProductoLista>(productosList, RecursiveTreeObject::getChildren);
         productosTabla.getColumns().setAll(productoNombre,productoPrecio,productoStock);
         productosTabla.setRoot(root);
         productosTabla.setShowRoot(false);
     }    
     
-    class Producto extends RecursiveTreeObject<Producto>{
+    class ProductoLista extends RecursiveTreeObject<ProductoLista>{
         StringProperty nombre;
         StringProperty precio;
         StringProperty stock;
         StringProperty categoria;
         
-        public Producto(String nombre, String precio, String stock){
+        public ProductoLista(String nombre, String precio, String stock){
             this.nombre = new SimpleStringProperty(nombre);
             this.precio = new SimpleStringProperty(precio);
             this.stock = new SimpleStringProperty(stock);

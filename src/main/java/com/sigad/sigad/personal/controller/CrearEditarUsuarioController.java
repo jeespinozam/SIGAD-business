@@ -8,9 +8,12 @@ package com.sigad.sigad.personal.controller;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXListView;
+import com.jfoenix.controls.JFXScrollPane;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.validation.RequiredFieldValidator;
 import com.sigad.sigad.app.controller.ErrorController;
+import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Tienda;
 import com.sigad.sigad.business.Usuario;
@@ -51,15 +54,18 @@ public class CrearEditarUsuarioController implements Initializable {
     private JFXTextField emailTxt;
     @FXML
     private JFXTextField passwordTxt;
-    
+    @FXML
+    private JFXToggleButton isActiveBtn;
+    @FXML
+    private JFXScrollPane profilePane, storePane;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         //Add the buttons of the static dialog
         addDialogBtns();
         
         //validate edit or create option in order to set user
-        if(!PersonalController.isUserCreate){
-            System.out.println(PersonalController.selectedUser.nombres);
+        if(!PersonalController.isStoreCreate){
+            System.out.println(PersonalController.selectedStore.nombres);
             loadFields();
         }else{
             user = new Usuario();
@@ -89,9 +95,10 @@ public class CrearEditarUsuarioController implements Initializable {
                     updateFields();
                     
                     UsuarioHelper helper = new UsuarioHelper();
-                    if(!PersonalController.isUserCreate){
+                    if(!PersonalController.isStoreCreate){
                         boolean ok = helper.updateUser(CrearEditarUsuarioController.user);
                         if(ok){
+                            PersonalController.data.remove(PersonalController.selectedStore);
                             PersonalController.updateTable(CrearEditarUsuarioController.user);
                             PersonalController.userDialog.close();
                         }else{
@@ -122,6 +129,7 @@ public class CrearEditarUsuarioController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 PersonalController.userDialog.close();
+                //PersonalController.getDataFromDB();
             }
         });
         
@@ -132,7 +140,7 @@ public class CrearEditarUsuarioController implements Initializable {
     private void loadFields() {
         
         UsuarioHelper usuarioHelper = new UsuarioHelper();
-        user = usuarioHelper.getUser(PersonalController.selectedUser.correo.getValue());
+        user = usuarioHelper.getUser(PersonalController.selectedStore.correo.getValue());
         
         if(user != null){
             nameTxt.setText(user.getNombres());
@@ -143,7 +151,9 @@ public class CrearEditarUsuarioController implements Initializable {
             cellphoneTxt.setText(user.getCelular());
             emailTxt.setText(user.getCorreo());
             passwordTxt.setText(user.getPassword());
+            isActiveBtn.setSelected(user.isActivo());
             
+            //styles
             passwordTxt.setEditable(false);
             passwordTxt.setOpacity(0.5);
         }
@@ -190,12 +200,14 @@ public class CrearEditarUsuarioController implements Initializable {
         user.setCelular(cellphoneTxt.getText());
         user.setCorreo(emailTxt.getText());
         user.setPassword(passwordTxt.getText());
+        user.setActivo(isActiveBtn.isSelected());
         
         PerfilHelper helper = new PerfilHelper();
         Perfil p = helper.getProfile("Usuario");
         if(p!= null){
             user.setPerfil(p);
         }
+
     }
 
     private void initValidator() {
@@ -302,13 +314,15 @@ public class CrearEditarUsuarioController implements Initializable {
         if(perfilList != null){
             for (int i = 0; i < perfilList.size(); i++) {
                 Label lbl = new Label(perfilList.get(i).getNombre());
+                lbl.setPrefSize(200, 30);
                 profilesListView.getItems().add(lbl);
             }
         }
         
         profilesListView.getStyleClass().add("mylistview");
         profilesListView.setStyle("-fx-background-color:WHITE");
-        GridPane.setConstraints(profilesListView, 1, 3);
+        
+        profilePane.getChildren().add(profilesListView);
     }
 
     private void initStorePicker() {
@@ -321,13 +335,15 @@ public class CrearEditarUsuarioController implements Initializable {
         if(tiendaList != null){
             for (int i = 0; i < tiendaList.size(); i++) {
                 Label lbl = new Label(tiendaList.get(i).getDireccion());
+                lbl.setPrefSize(200, 30);
                 storesListView.getItems().add(lbl);
             }
         }
         
         storesListView.getStyleClass().add("mylistview");
         storesListView.setStyle("-fx-background-color:WHITE");
-        GridPane.setConstraints(storesListView, 3, 3);
+        
+        storePane.getChildren().add(storesListView);
     }
 
 }
