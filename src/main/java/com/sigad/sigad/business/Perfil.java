@@ -27,6 +27,7 @@ public class Perfil {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @NotNull
+    @Column(unique = true)
     private String nombre;
     private String descripcion;
     @NotNull
@@ -43,6 +44,13 @@ public class Perfil {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.activo = activo;
+    }
+    
+    public Perfil(String nombre, String descripcion, boolean activo, Set<Permiso> permisos) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.activo = activo;
+        this.permisos = permisos;
     }
     
     /**

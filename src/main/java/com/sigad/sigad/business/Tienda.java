@@ -7,11 +7,13 @@ package com.sigad.sigad.business;
 
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -22,14 +24,18 @@ public class Tienda {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+    @Column(unique = true)
     private String direccion;
     private double cooXDireccion;
     private double cooYDireccion;
     private String descripcion;
     private double capacidad;
+    @NotNull
+    private boolean activo;
     @OneToMany(mappedBy="id.tienda")
     private Set<CapacidadTienda> capacidadTiendas = new HashSet<CapacidadTienda>();
-
+    @OneToMany(mappedBy = "tienda")
+    private Set<Usuario> empleadosTienda = new HashSet<Usuario>();
     /**
      * Constructor.
      */
@@ -126,5 +132,33 @@ public class Tienda {
      */
     public void addCapacidadTienda(CapacidadTienda capacidadTienda) {
         capacidadTiendas.add(capacidadTienda);
+    }
+
+    /**
+     * @return the activo
+     */
+    public boolean isActivo() {
+        return activo;
+    }
+
+    /**
+     * @param activo the activo to set
+     */
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
+
+    /**
+     * @return the empleadosTienda
+     */
+    public Set<Usuario> getEmpleadosTienda() {
+        return empleadosTienda;
+    }
+
+    /**
+     * @param empleadosTienda the empleadosTienda to set
+     */
+    public void setEmpleadosTienda(Set<Usuario> empleadosTienda) {
+        this.empleadosTienda = empleadosTienda;
     }
 }

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXScrollPane?>
 <?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.JFXToggleButton?>
 <?import java.net.URL?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
@@ -15,13 +17,10 @@
    <children>
       <AnchorPane id="AnchorPane" fx:id="containerPane" styleClass="mainFxmlClass">
           <stylesheets>
-              <URL value="@/styles/editarform.css" />
+              <URL value="@/styles/crearEditarUsuario.css" />
           </stylesheets>
          <children>
             <AnchorPane id="AnchorPane" prefHeight="451.0" prefWidth="760.0" styleClass="mainFxmlClass">
-               <stylesheets>
-                  <URL value="@/styles/cuentas.css" />
-               </stylesheets>
                <children>
                   <GridPane layoutX="27.0" prefHeight="400.0" prefWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <columnConstraints>
@@ -34,14 +33,14 @@
                      <rowConstraints>
                         <RowConstraints maxHeight="245.4412841796875" minHeight="10.0" prefHeight="226.1823272705078" vgrow="SOMETIMES" />
                         <RowConstraints maxHeight="220.8389434814453" minHeight="0.0" prefHeight="27.0" vgrow="SOMETIMES" />
-                        <RowConstraints maxHeight="220.8389434814453" minHeight="0.0" prefHeight="26.0" vgrow="SOMETIMES" />
-                        <RowConstraints maxHeight="328.0" minHeight="10.0" prefHeight="152.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="220.8389434814453" minHeight="0.0" prefHeight="34.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="328.0" minHeight="10.0" prefHeight="140.0" vgrow="SOMETIMES" />
                         <RowConstraints maxHeight="111.83892822265625" minHeight="0.0" prefHeight="28.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
                         <AnchorPane prefHeight="50.0" prefWidth="603.0" style="-fx-background-color: #ECEFF1; -fx-border-color: #C8C8C8;" GridPane.columnIndex="1" GridPane.rowIndex="2">
                            <children>
-                              <Label layoutX="29.0" layoutY="7.0" text="Selecciona un perfil" />
+                              <Label layoutX="29.0" layoutY="7.0" opacity="0.8" text="Selecciona un perfil" />
                            </children>
                         </AnchorPane>
                         <AnchorPane prefHeight="33.0" prefWidth="927.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;" GridPane.columnIndex="1" GridPane.rowIndex="1">
@@ -51,7 +50,7 @@
                         </AnchorPane>
                         <AnchorPane prefHeight="226.0" prefWidth="651.0" GridPane.columnIndex="1">
                            <children>
-                              <ImageView fitHeight="150.0" fitWidth="200.0" layoutY="50.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="26.0" AnchorPane.topAnchor="50.0">
+                              <ImageView fitHeight="150.0" fitWidth="200.0" layoutY="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="46.0" AnchorPane.topAnchor="30.0">
                                  <image>
                                     <Image url="@../../../../../images/freelancer-H.png" />
                                  </image>
@@ -64,6 +63,7 @@
                               <JFXTextField fx:id="cellphoneTxt" layoutX="329.0" layoutY="163.0" minWidth="-Infinity" prefWidth="150.0" promptText="Celular" />
                               <JFXTextField fx:id="emailTxt" layoutX="491.0" layoutY="50.0" minWidth="-Infinity" prefWidth="150.0" promptText="Correo" />
                               <JFXTextField fx:id="passwordTxt" layoutX="491.0" layoutY="105.0" minWidth="-Infinity" prefWidth="150.0" promptText="Contraseña" />
+                              <JFXToggleButton fx:id="isActiveBtn" layoutX="488.0" layoutY="140.0" text="Activo" />
                            </children>
                         </AnchorPane>
                         <AnchorPane prefHeight="33.0" prefWidth="927.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;" GridPane.columnIndex="3" GridPane.rowIndex="1">
@@ -73,9 +73,11 @@
                         </AnchorPane>
                         <AnchorPane prefHeight="50.0" prefWidth="603.0" style="-fx-background-color: #ECEFF1; -fx-border-color: #C8C8C8;" GridPane.columnIndex="3" GridPane.rowIndex="2">
                            <children>
-                              <Label layoutX="29.0" layoutY="7.0" text="Selecciona una tienda" />
+                              <Label layoutX="29.0" layoutY="7.0" opacity="0.8" text="Selecciona una tienda" />
                            </children>
                         </AnchorPane>
+                        <JFXScrollPane fx:id="profilePane" style="-fx-background-color: white;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <JFXScrollPane fx:id="storePane" style="-fx-background-color: white;" GridPane.columnIndex="3" GridPane.rowIndex="3" />
                      </children>
                   </GridPane>
                </children>

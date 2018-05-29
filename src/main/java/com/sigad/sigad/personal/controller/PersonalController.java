@@ -15,16 +15,8 @@ import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sigad.sigad.app.controller.ErrorController;
-import com.sigad.sigad.app.controller.HomeController;
 import com.sigad.sigad.business.Usuario;
-import com.sigad.sigad.pedido.controller.SeleccionarProductosController;
 import com.sigad.sigad.business.helpers.UsuarioHelper;
-import com.sigad.sigad.perfil.controller.PerfilController;
-import com.sun.javafx.geom.BaseBounds;
-import com.sun.javafx.geom.transform.BaseTransform;
-import com.sun.javafx.jmx.MXNodeAlgorithm;
-import com.sun.javafx.jmx.MXNodeAlgorithmContext;
-import com.sun.javafx.sg.prism.NGNode;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -32,26 +24,23 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventDispatcher;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -77,11 +66,12 @@ public class PersonalController implements Initializable {
     @FXML
     private JFXButton moreBtn;
     @FXML
-    private JFXPopup popup;
-    @FXML
     private StackPane hiddenSp;
+    /*Extras*/
     @FXML
     public static JFXDialog userDialog;
+    @FXML
+    private JFXPopup popup;
     
     public static boolean isUserCreate;
     public static User selectedUser = null;
@@ -105,7 +95,8 @@ public class PersonalController implements Initializable {
                         new SimpleStringProperty(u.getCelular()),
                         new SimpleStringProperty(u.getPerfil().getNombre()),
                         new SimpleStringProperty(u.getPerfil().getDescripcion()),
-                        true
+                        new SimpleStringProperty(u.getTienda()!=null ? u.getTienda().getDireccion(): ""),
+                        new SimpleStringProperty(u.isActivo()? "Activo": "Inactivo")
                 ));
     }
 
@@ -231,91 +222,56 @@ public class PersonalController implements Initializable {
     }
 
     private void initUserTbl() {
-        JFXTreeTableColumn name = new JFXTreeTableColumn("Nombre");
-        name.setPrefWidth(50);
-        name.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<User, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<PersonalController.User, String> p) {
-                return p.getValue().getValue().nombres;
-            }
-        });
+        JFXTreeTableColumn<PersonalController.User, String> name = new JFXTreeTableColumn<>("Nombre");
+        name.setPrefWidth(120);
+        name.setCellValueFactory((TreeTableColumn.CellDataFeatures<PersonalController.User, String> param) -> param.getValue().getValue().nombres);
         
-        JFXTreeTableColumn apellidoMaterno = new JFXTreeTableColumn("Appelido Materno");
+        JFXTreeTableColumn<PersonalController.User, String> apellidoPaterno = new JFXTreeTableColumn<>("Appelido Paterno");
+        apellidoPaterno.setPrefWidth(120);
+        apellidoPaterno.setCellValueFactory((TreeTableColumn.CellDataFeatures<PersonalController.User, String> param) -> param.getValue().getValue().apellidoPaterno);
+        
+        JFXTreeTableColumn<PersonalController.User, String> apellidoMaterno = new JFXTreeTableColumn<>("Appelido Materno");
         apellidoMaterno.setPrefWidth(50);
-        apellidoMaterno.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<PersonalController.User, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<PersonalController.User, String> p) {
-                return p.getValue().getValue().apellidoMaterno;
-            }
-        });
+        apellidoMaterno.setCellValueFactory((TreeTableColumn.CellDataFeatures<PersonalController.User, String> param) -> param.getValue().getValue().apellidoMaterno);
         
-        JFXTreeTableColumn apellidoPaterno = new JFXTreeTableColumn("Appelido Paterno");
-        apellidoPaterno.setPrefWidth(50);
-        apellidoPaterno.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<PersonalController.User, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<PersonalController.User, String> p) {
-                return p.getValue().getValue().apellidoPaterno;
-            }
-        });
-        
-        JFXTreeTableColumn dni = new JFXTreeTableColumn("DNI");
+        JFXTreeTableColumn<PersonalController.User, String> dni = new JFXTreeTableColumn<>("DNI");
         dni.setPrefWidth(50);
-        dni.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<PersonalController.User, String>, ObservableValue<String>>() {
-
-            @Override
-            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<PersonalController.User, String> p) {
-                return p.getValue().getValue().dni;
-            }
-        });
+        dni.setCellValueFactory((TreeTableColumn.CellDataFeatures<PersonalController.User, String> param) -> param.getValue().getValue().dni);
         
-        JFXTreeTableColumn telephone = new JFXTreeTableColumn("Teléfono");
+        JFXTreeTableColumn<PersonalController.User, String> telephone = new JFXTreeTableColumn<>("Teléfono");
         telephone.setPrefWidth(50);
-        telephone.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<PersonalController.User, String>, ObservableValue<String>>() {
-
-            @Override
-            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<PersonalController.User, String> p) {
-                return p.getValue().getValue().telefono;
-            }
-        });
+        telephone.setCellValueFactory((TreeTableColumn.CellDataFeatures<PersonalController.User, String> param) -> param.getValue().getValue().telefono);
         
-        JFXTreeTableColumn cellphone = new JFXTreeTableColumn("Celular");
+        JFXTreeTableColumn<PersonalController.User, String> cellphone = new JFXTreeTableColumn<>("Celular");
         cellphone.setPrefWidth(50);
-        cellphone.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<PersonalController.User, String>, ObservableValue<String>>() {
-
-            @Override
-            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<PersonalController.User, String> p) {
-                return p.getValue().getValue().celular;
-            }
-        });
+        cellphone.setCellValueFactory((TreeTableColumn.CellDataFeatures<PersonalController.User, String> param) -> param.getValue().getValue().celular);
         
-        JFXTreeTableColumn profile = new JFXTreeTableColumn("Perfil");
+        JFXTreeTableColumn<PersonalController.User, String> profile = new JFXTreeTableColumn<>("Perfil");
         profile.setPrefWidth(50);
-        profile.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<PersonalController.User, String>, ObservableValue<String>>() {
-
-            @Override
-            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<PersonalController.User, String> p) {
-                return p.getValue().getValue().profileName;
-            }
-        });
+        profile.setCellValueFactory((TreeTableColumn.CellDataFeatures<PersonalController.User, String> param) -> param.getValue().getValue().profileName);
         
-        JFXTreeTableColumn profileDesc = new JFXTreeTableColumn("Descripción");
+        JFXTreeTableColumn<PersonalController.User, String> profileDesc = new JFXTreeTableColumn<>("Descripción");
         profileDesc.setPrefWidth(50);
-        profileDesc.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<PersonalController.User, String>, ObservableValue<String>>() {
-
-            @Override
-            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<PersonalController.User, String> p) {
-                return p.getValue().getValue().profileDesc;
-            }
-        });
+        profileDesc.setCellValueFactory((TreeTableColumn.CellDataFeatures<PersonalController.User, String> param) -> param.getValue().getValue().profileDesc);
+        
+        JFXTreeTableColumn<PersonalController.User, String> tienda = new JFXTreeTableColumn<>("Tienda");
+        tienda.setPrefWidth(50);
+        tienda.setCellValueFactory((TreeTableColumn.CellDataFeatures<PersonalController.User, String> param) -> param.getValue().getValue().tienda);
+        
+        JFXTreeTableColumn<PersonalController.User, String> active = new JFXTreeTableColumn<>("Activo");
+        active.setPrefWidth(50);
+        active.setCellValueFactory((TreeTableColumn.CellDataFeatures<PersonalController.User, String> param) -> param.getValue().getValue().activo);
         
         userTbl.getColumns().add(name);
-        userTbl.getColumns().add(apellidoMaterno);
         userTbl.getColumns().add(apellidoPaterno);
+        userTbl.getColumns().add(apellidoMaterno);
         userTbl.getColumns().add(dni);
         userTbl.getColumns().add(telephone);
         userTbl.getColumns().add(cellphone);
         userTbl.getColumns().add(profile);
         userTbl.getColumns().add(profileDesc);
+        userTbl.getColumns().add(tienda);
+        userTbl.getColumns().add(active);
         
         //DB
         getDataFromDB();
@@ -330,7 +286,7 @@ public class PersonalController implements Initializable {
                     System.out.println(clickedRow.nombres);
                     
                     selectedUser = clickedRow;
-                    
+                    //data.remove(selectedUser);
                     try {
                         CreateEdditUserDialog(false);
                     } catch (IOException ex) {
@@ -345,7 +301,7 @@ public class PersonalController implements Initializable {
         
         userTbl.setEditable(true);
         userTbl.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);        
-        userTbl.getColumns().setAll(name,apellidoMaterno,apellidoPaterno, dni, telephone, cellphone, profile, profileDesc);
+        userTbl.getColumns().setAll(name,apellidoPaterno,apellidoMaterno, dni, telephone, cellphone, profile, profileDesc, tienda, active);
         userTbl.setRoot(root);
         userTbl.setShowRoot(false);
     }
@@ -362,9 +318,10 @@ public class PersonalController implements Initializable {
         StringProperty celular;
         StringProperty profileName;
         StringProperty profileDesc;
-        boolean activo;
+        StringProperty tienda;
+        StringProperty activo;
 
-        public User(StringProperty nombres, StringProperty apellidoMaterno, StringProperty apellidoPaterno, StringProperty correo, StringProperty dni, StringProperty telefono, StringProperty celular, StringProperty profileName, StringProperty profileDesc, boolean activo) {
+        public User(StringProperty nombres, StringProperty apellidoMaterno, StringProperty apellidoPaterno, StringProperty correo, StringProperty dni, StringProperty telefono, StringProperty celular, StringProperty profileName, StringProperty profileDesc, StringProperty tienda, StringProperty activo) {
             this.nombres = nombres;
             this.apellidoMaterno = apellidoMaterno;
             this.apellidoPaterno = apellidoPaterno;
@@ -374,6 +331,7 @@ public class PersonalController implements Initializable {
             this.celular = celular;
             this.profileName = profileName;
             this.profileDesc = profileDesc;
+            this.tienda = tienda;
             this.activo = activo;
         }
 

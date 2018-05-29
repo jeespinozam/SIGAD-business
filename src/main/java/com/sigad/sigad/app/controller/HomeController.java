@@ -7,18 +7,27 @@ package com.sigad.sigad.app.controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPopup;
+import com.sigad.sigad.business.Perfil;
+import com.sigad.sigad.business.Permiso;
+import com.sigad.sigad.business.helpers.PermisoHelper;
+import com.sigad.sigad.business.helpers.UsuarioHelper;
 import com.sigad.sigad.controller.cargaMasiva.CargaMasivaViewController;
 import com.sigad.sigad.personal.controller.PersonalController;
 import com.sigad.sigad.pedido.controller.SeleccionarProductosController;
 import com.sigad.sigad.deposito.controller.FXMLAlmacenIngresoListaOrdenCompraController;
+import com.sigad.sigad.insumos.controller.ListaInsumoController;
+import com.sigad.sigad.ordenescompra.controller.ListaOrdenesCompraController;
 import com.sigad.sigad.perfil.controller.PerfilController;
+import com.sigad.sigad.tienda.controller.TiendaController;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
@@ -50,8 +59,8 @@ public class HomeController implements Initializable {
     @FXML
     private JFXButton profileBtn, productoBtn,offertBtn;
     @FXML
-    private List<MaterialDesignIcon> sidebarIcons = new ArrayList<MaterialDesignIcon>();
-    private List<JFXButton> sidebarBtns = new ArrayList<JFXButton>();
+    private ArrayList<MaterialDesignIcon> sidebarIcons = new ArrayList<MaterialDesignIcon>();
+    private ArrayList<JFXButton> sidebarBtns = new ArrayList<JFXButton>();
     @FXML
     private JFXButton workersBtn,refundBtn,statisticBtn,settingsBtn;
     @FXML
@@ -64,10 +73,14 @@ public class HomeController implements Initializable {
     private AnchorPane menuPanel;
     @FXML
     private JFXPopup popup;
-    
+    public static final int SIDEBAR_BUTTON_HEIGHT = 50;
+    public static final int SIDEBAR_BUTTON_GAP = 4;
+    public static final Pos SIDEBAR_BUTTON_ALIGNMENT = Pos.BASELINE_LEFT;
+    public static final String SIDEBAR_BUTTON_ICON_SIZE = "30";
+ 
     private Color mainColor = new Color(0.27, 0.31, 0.42, 1);
     private double  baseTop = 80.0;
-    
+
     private enum Container{
         SIDEBAR, MENU, PANEL
     }
@@ -80,94 +93,72 @@ public class HomeController implements Initializable {
     
     private void initsidebar(){
         
-        sidebarBtns.add(new JFXButton("Perfil"));
-        sidebarBtns.add(new JFXButton("Productos"));
-        sidebarBtns.add(new JFXButton("Personal"));
-        sidebarBtns.add(new JFXButton("Repartos"));
-        sidebarBtns.add(new JFXButton("Pedidos"));
-        sidebarBtns.add(new JFXButton("Estadísticas"));
-        sidebarBtns.add(new JFXButton("Carga Masiva"));
-        sidebarBtns.add(new JFXButton("Configuraciones"));
-        
-        sidebarIcons.add(MaterialDesignIcon.ACCOUNT_CIRCLE);
-        sidebarIcons.add(MaterialDesignIcon.CLIPBOARD_TEXT);
-        sidebarIcons.add(MaterialDesignIcon.ACCOUNT_MULTIPLE);
-        sidebarIcons.add(MaterialDesignIcon.CAR);
-        sidebarIcons.add(MaterialDesignIcon.BACKUP_RESTORE);
-        sidebarIcons.add(MaterialDesignIcon.ELEVATION_RISE);
-        sidebarIcons.add(MaterialDesignIcon.ARCHIVE);
-        sidebarIcons.add(MaterialDesignIcon.SETTINGS);
-        
-        
-        
-        for (int i = 0; i < sidebarBtns.size(); i++) {
-            setConfBtn(i, sidebarBtns.get(i), 70, 20, Pos.BASELINE_LEFT,
-                    sidebarIcons.get(i), "30");
+        Perfil perfil = LoginController.user.getPerfil();
+        Set<Permiso> permisos = perfil.getPermisos();
+        if(permisos != null){
+            Iterator<Permiso> itr = permisos.iterator();
+            int i = 0;
+            while(itr.hasNext()){
+                Permiso p = itr.next();
+                sidebarBtns.add(new JFXButton(p.getMenu()));
+                sidebarIcons.add(matchIconText(p.getIcono()));
+                dinamicSideMenu(i, sidebarBtns.get(i), SIDEBAR_BUTTON_HEIGHT, SIDEBAR_BUTTON_GAP, SIDEBAR_BUTTON_ALIGNMENT,
+                    sidebarIcons.get(i), SIDEBAR_BUTTON_ICON_SIZE);
+                i++;
+            }
+
+            Iterator<Permiso> itr1 = permisos.iterator();
+            int j = 0;
+            while(itr1.hasNext()){
+                String name = itr1.next().getMenu();
+
+                sidebarBtns.get(j).setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent event) {
+                            try {
+                                Node node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PersonalController.viewPath));;
+                                if(name.equals("Productos")){
+                                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(SeleccionarProductosController.viewPath));
+                                }else if(name.equals("Insumos")){
+                                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(ListaInsumoController.viewPath));
+                                }else if(name.equals("Personal")){
+                                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PersonalController.viewPath));
+                                }else if(name.equals("Repartos")){
+
+                                }else if(name.equals("Pedidos")){
+                                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(ListaOrdenesCompraController.viewPath));
+                                }else if(name.equals("Tiendas")){
+                                    node = (Node) FXMLLoader.load(getClass().getResource(TiendaController.viewPath));
+                                }else if(name.equals("Perfiles")){
+                                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PerfilController.viewPath));
+                                }else if(name.equals("Estadísticas")){
+                                }else if(name.equals("Carga Masiva")){
+                                    node = (Node) FXMLLoader.load(getClass().getResource(CargaMasivaViewController.viewPath));
+                                }else if(name.equals("Configuraciones")){
+
+                                }
+
+                                firstPanel.getChildren().setAll(node);
+                            }catch (IOException ex) {
+                                Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "sidebarBtns.get().setOnAction", ex);
+                            }
+                        }
+                    });
+                j++;
+            }
         }
-        
-        sidebarBtns.get(1).setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try {
-                    Node node;
-                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(SeleccionarProductosController.viewPath));
-                    firstPanel.getChildren().setAll(node);
-                }catch (IOException ex) {
-                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "sidebarBtns.get(1).setOnAction", ex);
-                }
-            }
-        });
-        
-        sidebarBtns.get(5).setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try {
-                    Node node;
-                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PerfilController.viewPath));
-                    firstPanel.getChildren().setAll(node);
-                }catch (IOException ex) {
-                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "sidebarBtns.get(5).setOnAction", ex);
-                }
-            }
-        });
-        
-        sidebarBtns.get(2).setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try {
-                    Node node;
-                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PersonalController.viewPath));
-                    firstPanel.getChildren().setAll(node);
-                }catch (IOException ex) {
-                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "sidebarBtns.get(2).setOnAction", ex);
-                }
-            }
-        });
-        sidebarBtns.get(4).setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try {
-                    Node node;
-                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(FXMLAlmacenIngresoListaOrdenCompraController.viewPath));
-                    firstPanel.getChildren().setAll(node);
-                } catch (IOException ex) {
-                    Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "", ex);
-                }
-            }
-        });
-        
-        sidebarBtns.get(6).setOnAction((event) -> {
-            try {
-                Node node;
-                node = (Node) FXMLLoader.load(getClass().getResource(CargaMasivaViewController.viewPath));
-                firstPanel.getChildren().setAll(node);
-            } catch (IOException ex) {
-                Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });        
     }
     
-    private void setConfBtn(
+    private MaterialDesignIcon matchIconText(String search) {
+        for (MaterialDesignIcon test : MaterialDesignIcon.values()){
+            if(test.name() == null ? search == null : test.name().equals(search)){
+                return test;
+            }
+        }
+        return MaterialDesignIcon.BRIEFCASE_CHECK;
+    }
+    
+    private void dinamicSideMenu(
             int count, JFXButton newButton, int height, int gap,
             Pos pos, MaterialDesignIcon iconType, String size) {
         //sidebarBtns creation
@@ -186,7 +177,8 @@ public class HomeController implements Initializable {
         
         sidebarPane.getChildren().add(newButton);   
         
-        AnchorPane.setTopAnchor(newButton, baseTop + 70*(count));
+        AnchorPane.setTopAnchor(
+                newButton, baseTop + SIDEBAR_BUTTON_HEIGHT * (count));
         AnchorPane.setLeftAnchor(newButton, 0.0);
         AnchorPane.setRightAnchor(newButton, 0.0);
     }

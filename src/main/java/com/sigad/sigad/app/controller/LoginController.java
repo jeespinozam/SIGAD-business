@@ -5,20 +5,15 @@
  */
 package com.sigad.sigad.app.controller;
 
-import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
 import com.sigad.sigad.business.Perfil;
+import com.sigad.sigad.business.Permiso;
 import com.sigad.sigad.business.Usuario;
+import com.sigad.sigad.business.helpers.PermisoHelper;
 import com.sigad.sigad.business.helpers.UsuarioHelper;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.security.InvalidKeyException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,7 +27,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -43,6 +37,8 @@ import org.hibernate.query.Query;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashSet;
+import java.util.Set;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -72,25 +68,57 @@ public class LoginController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Create admin if not exist
-        serviceInit();
-        Session session;
-        session = sessionFactory.openSession();
+        Session session = serviceInit();
         
         Query query  = session.createQuery("from Perfil p where p.nombre='SuperAdmin'");
         int count = query.list().size();
         if(count == 0){
             System.out.println("Primer inicio de sesión");
-            Transaction tx = session.beginTransaction();
-            Perfil adminProfile = new Perfil("SuperAdmin", "Super admini can create stores", true);
             
-            String hash = encrypt("admin");
+            Transaction tx = null;
             
-            Usuario user = new Usuario("Juan", "Tonos", "Tonos", adminProfile,
-                    "123456789", "71067346", "943821232", true,
-                    "admin@sigad.net", hash , "");
-            session.save(adminProfile);
-            session.save(user);
-            tx.commit();
+            try {
+                if(session.getTransaction().isActive()){
+                    tx = session.getTransaction();
+                }else{
+                    tx = session.beginTransaction();
+                }
+                
+                Set<Permiso> list = new HashSet<>();
+                list.add(new Permiso("Productos", "SALE"));
+                list.add(new Permiso("Insumos", "ARRANGE_SEND_BACKWARD"));
+                list.add(new Permiso("Personal", "ACCOUNT_MULTIPLE"));
+                list.add(new Permiso("Repartos", "CAR"));
+                list.add(new Permiso("Pedidos", "CART"));
+                list.add(new Permiso("Tiendas", "STORE"));
+                list.add(new Permiso("Perfiles", "FINGERPRINT"));
+                list.add(new Permiso("Estadísticas", "ELEVATION_RISE"));
+                list.add(new Permiso("Carga Masiva", "ARROW_UP_BOLD_CIRCLE"));
+                list.add(new Permiso("Configuraciones", "SETTINGS"));
+                list.add(new Permiso("Configuraciones", "SETTINGS"));
+                
+                for (Permiso p : list) {
+                    PermisoHelper helper = new PermisoHelper();
+                    helper.savePermission(p);
+                }
+                
+                Perfil adminProfile = new Perfil("SuperAdmin", "Super admini can create stores", true, list);
+            
+                String hash = encrypt("admin");
+
+                Usuario user = new Usuario("Juan", "Tonos", "Tonos", adminProfile,
+                        "123456789", "71067346", "943821232", true,
+                        "admin@sigad.net", hash , "");
+                session.save(adminProfile);
+                session.save(user);
+
+                tx.commit();
+                session.close();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                tx.rollback();
+            }
+            
         }
         
         session.close();
@@ -101,9 +129,6 @@ public class LoginController implements Initializable {
         
         if(validate()){
             this.loadWindow(HomeController.viewPath, HomeController.windowName);
-        }else{
-            ErrorController error = new ErrorController();
-            error.loadDialog("Error", "Cuenta o contrase incorrectas","Ok", hiddenSp);
         }
     }
     
@@ -144,10 +169,19 @@ public class LoginController implements Initializable {
         user = helper.getUser(userTxt.getText());
         
         if(user==null){
+            ErrorController error = new ErrorController();
+            error.loadDialog("Error", "El correo indicado no existe","Ok", hiddenSp);
             return false;
         }else{
+            if(!user.isActivo()){
+                ErrorController error = new ErrorController();
+                error.loadDialog("Error", "Cuenta no activa, por favor contacte con un administrador para activar su cuenta","Ok", hiddenSp);
+                return false;
+            }
             String text = decrypt(user.getPassword());
             if(!passwordTxt.getText().equals(text)){
+                ErrorController error = new ErrorController();
+                error.loadDialog("Error", "Contrase incorrecta","Ok", hiddenSp);
                 return false;
             }
         }
@@ -179,7 +213,7 @@ public class LoginController implements Initializable {
         }
     }
 
-    private String encrypt(String texto) {
+    public static String encrypt(String texto) {
         String hash = "";
         String secretKey = "sigadTestKey"; //llave para encriptar datos
         String base64EncryptedString = "";

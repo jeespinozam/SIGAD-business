@@ -6,9 +6,11 @@
 package com.sigad.sigad.personal.controller;
 
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXListView;
+import com.jfoenix.controls.JFXScrollPane;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXToggleButton;
+import com.jfoenix.validation.NumberValidator;
 import com.jfoenix.validation.RequiredFieldValidator;
 import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.business.Perfil;
@@ -24,14 +26,12 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
 
 /**
  *
@@ -40,18 +40,19 @@ import javafx.scene.layout.GridPane;
 public class CrearEditarUsuarioController implements Initializable {
 
     public static final String viewPath = "/com/sigad/sigad/personal/view/crearEditarUsuario.fxml";
-    @FXML
-    private JFXTextField nameTxt,appTxt,apmTxt,dniTxt,telephoneTxt,cellphoneTxt;
     public static Usuario user = null;
+    @FXML
+    private JFXTextField nameTxt,appTxt,apmTxt,dniTxt,telephoneTxt,cellphoneTxt,emailTxt,passwordTxt;
     @FXML
     private StackPane hiddenSp;
     @FXML
     private AnchorPane containerPane;
     @FXML
-    private JFXTextField emailTxt;
+    private JFXToggleButton isActiveBtn;
     @FXML
-    private JFXTextField passwordTxt;
-    
+    private JFXScrollPane profilePane, storePane;
+    @FXML
+    private JFXListView<Label> storesListView,profilesListView;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         //Add the buttons of the static dialog
@@ -81,35 +82,38 @@ public class CrearEditarUsuarioController implements Initializable {
         save.setPrefSize(80, 25);
         AnchorPane.setBottomAnchor(save, -20.0);
         AnchorPane.setRightAnchor(save, 0.0);
-        save.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if(validateFields()){
-                    System.out.println("VALIDADO ALL FIELDS");
-                    updateFields();
-                    
-                    UsuarioHelper helper = new UsuarioHelper();
-                    if(!PersonalController.isUserCreate){
-                        boolean ok = helper.updateUser(CrearEditarUsuarioController.user);
-                        if(ok){
-                            PersonalController.updateTable(CrearEditarUsuarioController.user);
-                            PersonalController.userDialog.close();
-                        }else{
-                            ErrorController error = new ErrorController();
-                            error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
-                        }
+        save.setOnAction((ActionEvent event) -> {
+            if(validateFields()){
+                System.out.println("VALIDADO ALL FIELDS");
+                int indexProfile = getSelectedIndex(profilesListView, "Perfiles");
+                if(indexProfile<0)return;
+                
+                int indexStore = getSelectedIndex(storesListView, "Tiendas");
+                if(indexStore<0) return;
+                updateFields();
+                
+                UsuarioHelper helper = new UsuarioHelper();
+                if(!PersonalController.isUserCreate){
+                    boolean ok = helper.updateUser(user);
+                    if(ok){
+                        PersonalController.data.remove(PersonalController.selectedUser);
+                        PersonalController.updateTable(user);
+                        PersonalController.userDialog.close();
                     }else{
-                        
-                        Long id = helper.saveUser(CrearEditarUsuarioController.user);
-                        if(id != null){
-                            PersonalController.updateTable(CrearEditarUsuarioController.user);
-                            PersonalController.userDialog.close();
-                        }else{
-                            ErrorController error = new ErrorController();
-                            error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
-                        }
-
+                        ErrorController error = new ErrorController();
+                        error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
                     }
+                }else{
+                    
+                    Long id = helper.saveUser(user);
+                    if(id != null){
+                        PersonalController.updateTable(user);
+                        PersonalController.userDialog.close();
+                    }else{
+                        ErrorController error = new ErrorController();
+                        error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
+                    }
+                    
                 }
             }
         });
@@ -118,15 +122,28 @@ public class CrearEditarUsuarioController implements Initializable {
         cancel.setPrefSize(80, 25);
         AnchorPane.setBottomAnchor(cancel, -20.0);
         AnchorPane.setRightAnchor(cancel, 85.0);
-        cancel.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                PersonalController.userDialog.close();
-            }
+        cancel.setOnAction((ActionEvent event) -> {
+            PersonalController.userDialog.close();
+            //PersonalController.getDataFromDB();
         });
         
         containerPane.getChildren().add(save);
         containerPane.getChildren().add(cancel);
+    }
+    
+    private int getSelectedIndex(JFXListView<Label> listView, String tableName) {
+        int selected = -1;
+        int count = listView.getSelectionModel().getSelectedItems().size();
+        if( count > 1){
+            ErrorController error = new ErrorController();
+            error.loadDialog("Atención", "Debe seleccionar solo un registro de la tabla" + tableName, "Ok", hiddenSp);
+        }else if(count<=0){
+            ErrorController error = new ErrorController();
+            error.loadDialog("Atención", "Debe seleccionar al menos un registro de la tabla" + tableName, "Ok", hiddenSp);
+        }else{
+            selected  = listView.getSelectionModel().getSelectedIndex();
+        }
+        return selected;
     }
     
     private void loadFields() {
@@ -143,7 +160,8 @@ public class CrearEditarUsuarioController implements Initializable {
             cellphoneTxt.setText(user.getCelular());
             emailTxt.setText(user.getCorreo());
             passwordTxt.setText(user.getPassword());
-            
+            isActiveBtn.setSelected(user.isActivo());
+            //styles
             passwordTxt.setEditable(false);
             passwordTxt.setOpacity(0.5);
         }
@@ -166,11 +184,33 @@ public class CrearEditarUsuarioController implements Initializable {
             dniTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             dniTxt.requestFocus();
             return false;
+        }else if(dniTxt.getText().length()<8){
+            ErrorController r= new ErrorController();
+            r.loadDialog("Error", "Debe el dni debe tener 8 dígitos", "Ok", hiddenSp);
+            dniTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+            dniTxt.requestFocus();
+            return false;
+        }else if(!telephoneTxt.validate()){
+            cellphoneTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+            cellphoneTxt.requestFocus();
+            return false;
         }else if(!cellphoneTxt.validate()){
             cellphoneTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             cellphoneTxt.requestFocus();
             return false;
+        }else if(cellphoneTxt.getText().length()<9){
+            ErrorController r= new ErrorController();
+            r.loadDialog("Error", "El celular debe tener 9 dígitos", "Ok", hiddenSp);
+            cellphoneTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+            cellphoneTxt.requestFocus();
+            return false;
         }else if(!emailTxt.validate()){
+            emailTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+            emailTxt.requestFocus();
+            return false;
+        }else if(!emailTxt.getText().endsWith("sigad.net")){
+            ErrorController r= new ErrorController();
+            r.loadDialog("Error", "El correo debe terminar con @sigad.net", "Ok", hiddenSp);
             emailTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             emailTxt.requestFocus();
             return false;
@@ -190,16 +230,35 @@ public class CrearEditarUsuarioController implements Initializable {
         user.setCelular(cellphoneTxt.getText());
         user.setCorreo(emailTxt.getText());
         user.setPassword(passwordTxt.getText());
+        user.setActivo(isActiveBtn.isSelected());
         
-        PerfilHelper helper = new PerfilHelper();
-        Perfil p = helper.getProfile("Usuario");
-        if(p!= null){
-            user.setPerfil(p);
+        int indexProfile = profilesListView.getSelectionModel().getSelectedIndex();
+        int indexStore = storesListView.getSelectionModel().getSelectedIndex();
+        
+        if(indexProfile>=0){
+            String profileName = profilesListView.getItems().get(indexProfile).getText();
+            PerfilHelper helper = new PerfilHelper();
+            Perfil p = helper.getProfile(profileName);
+            if(p!= null){
+                user.setPerfil(p);
+            }
+        }
+        
+        if(indexStore>=0){
+            String storeDirection = storesListView.getItems().get(indexStore).getText();
+            TiendaHelper helper1 = new TiendaHelper();
+            Tienda t = helper1.getStore(storeDirection);
+            if(t!= null){
+                user.setTienda(t);
+            }
         }
     }
 
     private void initValidator() {
-        RequiredFieldValidator r = new RequiredFieldValidator();
+        RequiredFieldValidator r;
+        NumberValidator n;
+                
+        r = new RequiredFieldValidator();
         r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
         r.setMessage("Campo obligatorio");  
         nameTxt.getValidators().add(r);
@@ -238,10 +297,17 @@ public class CrearEditarUsuarioController implements Initializable {
             }
         });
         
+        /*DNI*/
         r = new RequiredFieldValidator();
         r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
         r.setMessage("Campo obligatorio");
         dniTxt.getValidators().add(r);
+        
+        n = new NumberValidator();
+        n.setMessage("Campo numérico");
+        n.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
+        dniTxt.getValidators().add(n);
+        
         dniTxt.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (!newValue) {
                 if(!dniTxt.validate()){
@@ -251,10 +317,37 @@ public class CrearEditarUsuarioController implements Initializable {
             }
         });
         
+        /**/
+        
+        /*TELEPHONE*/
+        n = new NumberValidator();
+        n.setMessage("Campo numérico");
+        n.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
+        telephoneTxt.getValidators().add(n);
+        
+        telephoneTxt.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (!newValue) {
+                if(!telephoneTxt.validate()){
+                    telephoneTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+                }
+                else telephoneTxt.setFocusColor(new Color(0.30,0.47,0.23, 1));
+            }
+        });
+        
+        /**/
+        
+        /*CELLPHONE*/
         r = new RequiredFieldValidator();
         r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
         r.setMessage("Campo obligatorio");
         cellphoneTxt.getValidators().add(r);
+        
+        
+        n = new NumberValidator();
+        n.setMessage("Campo numérico");
+        n.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
+        cellphoneTxt.getValidators().add(n);
+        
         cellphoneTxt.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (!newValue) {
                 if(!cellphoneTxt.validate()){
@@ -264,6 +357,9 @@ public class CrearEditarUsuarioController implements Initializable {
             }
         });
         
+        /**/
+        
+        /*EMAIL*/
         r = new RequiredFieldValidator();
         r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
         r.setMessage("Campo obligatorio");
@@ -276,6 +372,7 @@ public class CrearEditarUsuarioController implements Initializable {
                 else emailTxt.setFocusColor(new Color(0.30,0.47,0.23, 1));
             }
         });
+        /**/
         
         r = new RequiredFieldValidator();
         r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
@@ -293,7 +390,7 @@ public class CrearEditarUsuarioController implements Initializable {
     }
 
     private void initProfilePicker() {
-        JFXListView<Label> profilesListView = new JFXListView<>();
+        profilesListView = new JFXListView<>();
         
         //load profiles
         PerfilHelper helper = new PerfilHelper();
@@ -301,18 +398,25 @@ public class CrearEditarUsuarioController implements Initializable {
         
         if(perfilList != null){
             for (int i = 0; i < perfilList.size(); i++) {
-                Label lbl = new Label(perfilList.get(i).getNombre());
+                String profile = perfilList.get(i).getNombre();
+                Label lbl = new Label(profile);
+                lbl.setPrefSize(200, 30);
                 profilesListView.getItems().add(lbl);
+                
+                if(user!= null && user.getPerfil() != null && user.getPerfil().getNombre().equals(profile)){
+                    profilesListView.getSelectionModel().select(i);
+                }
             }
         }
         
         profilesListView.getStyleClass().add("mylistview");
         profilesListView.setStyle("-fx-background-color:WHITE");
-        GridPane.setConstraints(profilesListView, 1, 3);
+        
+        profilePane.getChildren().add(profilesListView);
     }
 
     private void initStorePicker() {
-        JFXListView<Label> storesListView = new JFXListView<>();
+        storesListView = new JFXListView<>();
         
         //load stores
         TiendaHelper helper = new TiendaHelper();
@@ -320,14 +424,24 @@ public class CrearEditarUsuarioController implements Initializable {
         
         if(tiendaList != null){
             for (int i = 0; i < tiendaList.size(); i++) {
-                Label lbl = new Label(tiendaList.get(i).getDireccion());
+                String direction = tiendaList.get(i).getDireccion();
+                Label lbl = new Label(direction);
+                lbl.setPrefSize(200, 30);
                 storesListView.getItems().add(lbl);
+                
+                if(user.getTienda()!=null){
+                    if(user.getTienda().getDireccion().equals(direction)){
+                        storesListView.getSelectionModel().select(i);
+                    }
+                }
+                
             }
         }
         
         storesListView.getStyleClass().add("mylistview");
         storesListView.setStyle("-fx-background-color:WHITE");
-        GridPane.setConstraints(storesListView, 3, 3);
+        
+        storePane.getChildren().add(storesListView);
     }
 
 }

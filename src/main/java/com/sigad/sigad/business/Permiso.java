@@ -27,14 +27,20 @@ public class Permiso {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-    private String opcion;
-    private String descripcion;
+    private String menu;
+    private String icono;
     @ManyToMany(mappedBy = "permisos", cascade = { CascadeType.ALL })
     private Set<Perfil> perfiles = new HashSet<>();
 
     public Permiso() {
     }
 
+    public Permiso(String opcion, String descripcion) {
+        this.menu = opcion;
+        this.icono = descripcion;
+    }
+    
+    
     /**
      * @return the id
      */
@@ -52,29 +58,29 @@ public class Permiso {
     /**
      * @return the opcionmany
      */
-    public String getOpcion() {
-        return opcion;
+    public String getMenu() {
+        return menu;
     }
 
     /**
-     * @param opcion the opcion to set
+     * @param menu the menu to set
      */
-    public void setOpcion(String opcion) {
-        this.opcion = opcion;
+    public void setMenu(String menu) {
+        this.menu = menu;
     }
 
     /**
-     * @return the descripcion
+     * @return the icono
      */
-    public String getDescripcion() {
-        return descripcion;
+    public String getIcono() {
+        return icono;
     }
 
     /**
-     * @param descripcion the descripcion to set
+     * @param icono the icono to set
      */
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setIcono(String icono) {
+        this.icono = icono;
     }
     
     /**

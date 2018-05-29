@@ -72,11 +72,11 @@ public class PermisoHelper {
     }
     
     /*Get permission by name, if nothin then null*/
-    public Permiso getPermission(String nombre){
+    public Permiso getPermission(String menu){
         Permiso p = null;
         Query query = null;
         try {
-            query = session.createQuery("from Permiso where opcion='" + nombre + "'");
+            query = session.createQuery("from Permiso where menu='" + menu + "'");
             
             if(!query.list().isEmpty()){
                 p = (Permiso) query.list().get(0);
@@ -91,12 +91,19 @@ public class PermisoHelper {
     public Long savePermission(Permiso p){
         Long id = null;
         try {
-            Transaction tx = session.beginTransaction();
+            Transaction tx;
+            if(session.getTransaction().isActive()){
+                tx = session.getTransaction();
+            }else{
+                tx = session.beginTransaction();
+            }
+            
             session.save(p);
             if(p.getId() != null){
                 id = p.getId();
             }
             tx.commit();
+            session.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -106,14 +113,21 @@ public class PermisoHelper {
     public boolean updatePermission(Permiso pOld){
         boolean ok = false;
         try {
-            Transaction tx = session.beginTransaction();
+            Transaction tx;
+            if(session.getTransaction().isActive()){
+                tx = session.getTransaction();
+            }else{
+                tx = session.beginTransaction();
+            }
+            
             Permiso pNew = session.load(Permiso.class, pOld.getId());
             
-            pNew.setOpcion(pOld.getOpcion());
-            pNew.setDescripcion(pOld.getDescripcion());
+            pNew.setMenu(pOld.getMenu());
+            pNew.setIcono(pOld.getIcono());
             
-            session.save(pNew);
+            session.merge(pNew);
             tx.commit();
+            session.close();
             ok = true;
         } catch (Exception e) {
             System.out.println(e.getMessage());
