@@ -92,7 +92,8 @@ public class CrearEditarInsumoController implements Initializable {
         insumo.setTiempoVida(Integer.parseInt(tiempoTxt.getText()));
         insumo.setPrecio(Double.parseDouble(precioTxt.getText()));
         insumo.setActivo(true);
-        insumo.setStock(0);
+        insumo.setStockTotalFisico(0);
+        insumo.setStockTotalLogico(0);
         insumo.setVolumen(Double.parseDouble(volumenTxt.getText()));
         insumo.setDescripcion(descripcionTxt.getText());
     }

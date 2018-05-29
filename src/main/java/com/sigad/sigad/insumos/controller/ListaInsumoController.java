@@ -236,7 +236,7 @@ public class ListaInsumoController implements Initializable {
         insumosList.add(new InsumoViewer(insumo.getNombre(),
                                          insumo.getDescripcion(),
                                          Integer.toString(insumo.getTiempoVida()),
-                                         Integer.toString(insumo.getStock()),
+                                         Integer.toString(insumo.getStockTotalFisico()),
                                          insumo.isActivo(),
                                          "0",
                                          insumo.getImagen()));
