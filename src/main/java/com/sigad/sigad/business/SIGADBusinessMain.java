@@ -29,7 +29,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import com.sigad.sigad.app.controller.HomeController;
 import com.sigad.sigad.app.controller.LoginController;
-import com.sigad.sigad.insumos.controller.InsumoController;
+import com.sigad.sigad.insumos.controller.ListaInsumoController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +72,7 @@ public class SIGADBusinessMain extends Application{
      @Override
 	public void start(Stage stage) {
             try {
-                    Parent root = FXMLLoader.load(getClass().getResource(LoginController.viewPath));
+                    Parent root = FXMLLoader.load(getClass().getResource(ListaInsumoController.viewPath));
                     Scene scene = new Scene(root);
                     //scene.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
                     stage.setScene(scene);
