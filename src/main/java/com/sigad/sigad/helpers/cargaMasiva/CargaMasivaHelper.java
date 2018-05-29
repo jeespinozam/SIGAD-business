@@ -166,6 +166,7 @@ public class CargaMasivaHelper {
                         break;
                     case CargaMasivaConstantes.TABLA_TIPOPAGO:
                         rowhead.createCell(rowIndex).setCellValue("Descripcion del Tipo de Pago");
+                        break;
                     // agregar aqui el resto de casos
                     default:
                         LOGGER.log(Level.WARNING, "Tabla no reconocida, abortando ....");
