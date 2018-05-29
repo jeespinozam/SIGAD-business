@@ -5,6 +5,7 @@
  */
 package com.sigad.sigad.helpers.cargaMasiva;
 
+import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Permiso;
@@ -86,6 +87,8 @@ public class CargaMasivaHelper {
                         rowhead.createCell(rowIndex).setCellValue("Celular");
                         rowIndex++;
                         rowhead.createCell(rowIndex).setCellValue("Correo Electronico");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Contraseña");
                         rowIndex++;
                         rowhead.createCell(rowIndex).setCellValue("Intereses");
                         break;
@@ -309,11 +312,29 @@ public class CargaMasivaHelper {
             case CargaMasivaConstantes.TABLA_USUARIOS:
                 Usuario nuevoUsuario = new Usuario();
                 nuevoUsuario.setActivo(true);   // logica de negocio
-                nuevoUsuario.setNombres(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                String nombreUsuario = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(nombreUsuario))
+                    nuevoUsuario.setNombres(nombreUsuario);
+                else {
+                    LOGGER.log(Level.SEVERE, "El nombre de usuario es un campo obligatorio");
+                    return false;
+                }
                 index++;
-                nuevoUsuario.setApellidoPaterno(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                String apPaternoUsuario = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(apPaternoUsuario))
+                    nuevoUsuario.setApellidoPaterno(apPaternoUsuario);
+                else {
+                    LOGGER.log(Level.SEVERE, "El apellido paterno es un campo obligatorio");
+                    return false;
+                }
                 index++;
-                nuevoUsuario.setApellidoMaterno(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                String apMaternoUsuario = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(apMaternoUsuario))
+                    nuevoUsuario.setApellidoMaterno(apMaternoUsuario);
+                else {
+                    LOGGER.log(Level.SEVERE, "El apellido materno es un campo obligatorio");
+                    return false;
+                }
                 index++;
                 String perfilNombre = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 // Buscando el perfil elegido
@@ -328,11 +349,33 @@ public class CargaMasivaHelper {
                 index++;
                 nuevoUsuario.setTelefono(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 index++;
-                nuevoUsuario.setDni(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                String dniUsuario = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(dniUsuario))
+                    nuevoUsuario.setDni(dniUsuario);
+                else {
+                    LOGGER.log(Level.SEVERE, "El DNI es un campo obligatorio");
+                    return false;
+                }
                 index++;
                 nuevoUsuario.setCelular(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 index++;
-                nuevoUsuario.setCorreo(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                // otener correo
+                String correoUsuario = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(correoUsuario))
+                    nuevoUsuario.setCorreo(correoUsuario);
+                else {
+                    LOGGER.log(Level.SEVERE, String.format("No se introdujo un correo valido para el usuario %s", nuevoUsuario.getNombres()));
+                    return false;
+                }
+                index++;
+                // obtener contrasenia
+                String constraseniaUsuario = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(constraseniaUsuario))
+                    nuevoUsuario.setPassword(LoginController.encrypt(constraseniaUsuario));
+                else {
+                    LOGGER.log(Level.SEVERE, String.format("No se introdujo una contraseña valida para el correo %s", correoUsuario));
+                    return false;
+                }
                 index++;
                 nuevoUsuario.setIntereses(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 return CargaMasivaHelper.guardarObjeto(nuevoUsuario, session);
