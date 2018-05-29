@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -150,17 +151,27 @@ public class ListaInsumoController implements Initializable {
         private SimpleBooleanProperty activo;
         private SimpleStringProperty volumen;
         private BooleanProperty seleccion;
+        private SimpleIntegerProperty cantidad;
         //private SimpleStringProperty id;
         ImageView imagen;
         
-        public InsumoViewer(String nombre,String descripcion, String tiempoVida,String stockTotal, Boolean activo, String volumen ,String imagePath) {
+        public InsumoViewer(String nombre,String descripcion, String tiempoVida,String stockTotal, Boolean activo, String volumen ,String imagePath, Integer cantidad) {
             this.nombre = new SimpleStringProperty(nombre);
             this.descripcion = new SimpleStringProperty(descripcion);
             this.tiempoVida = new SimpleStringProperty(tiempoVida);
             this.stockTotal = new SimpleStringProperty(stockTotal);
             this.activo = new SimpleBooleanProperty(activo);
             this.volumen = new SimpleStringProperty(volumen);
+            this.cantidad = new SimpleIntegerProperty(cantidad);
             //this.id = new SimpleStringProperty(id);
+        }
+
+        public SimpleIntegerProperty getCantidad() {
+            return cantidad;
+        }
+
+        public void setCantidad(Integer cantidad) {
+            this.cantidad = new SimpleIntegerProperty(cantidad);
         }
     }
     @Override
@@ -168,11 +179,36 @@ public class ListaInsumoController implements Initializable {
         insumosList = FXCollections.observableArrayList();
         setColumns();
         addColumns();
-        
-        
-        
-        //fillData
-        
+        fillData();
+    }    
+    
+    private void setColumns(){
+        selectCol.setPrefWidth(80);
+        selectCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<InsumoViewer, Boolean> param) -> param.getValue().getValue().getSeleccion() //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        );
+        selectCol.setCellFactory((TreeTableColumn<InsumoViewer,Boolean>param) -> {
+            CheckBoxTreeTableCell<InsumoViewer,Boolean> cell = new CheckBoxTreeTableCell<>();
+            cell.setAlignment(Pos.CENTER);
+            return cell; //To change body of generated lambdas, choose Tools | Templates.
+        });
+        nombreCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<InsumoViewer, String> param) -> param.getValue().getValue().getNombre() //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        );
+        stockCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<InsumoViewer, String> param) -> param.getValue().getValue().getStockTotal() //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        );
+        volumenCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<InsumoViewer, String> param) -> param.getValue().getValue().getVolumen() //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        );
+       
+    }
+    
+    private void addColumns(){
+        final TreeItem<InsumoViewer> rootInsumo = new RecursiveTreeItem<>(insumosList,RecursiveTreeObject::getChildren);
+        tblInsumos.setEditable(true);
+        tblInsumos.getColumns().setAll(selectCol,nombreCol,stockCol,volumenCol);
+        tblInsumos.setRoot(rootInsumo);
+        tblInsumos.setShowRoot(false);
+    }
+    
+    private void fillData(){
         InsumosHelper helper = new InsumosHelper();
         ArrayList<Insumo> listaInsumos = helper.getInsumos();
         if(listaInsumos != null){
@@ -180,56 +216,6 @@ public class ListaInsumoController implements Initializable {
                 updateTable(i);
             });
         }
-        
-//        insumosList.add(new InsumoViewer("Claveles", "Rosas caras", "10dias", "30", true, "10m3", "url"));
-//        insumosList.add(new InsumoViewer("Claveles", "Rosas caras", "10dias", "30", true, "10m3", "url"));
-//        insumosList.add(new InsumoViewer("Claveles", "Rosas caras", "10dias", "30", true, "10m3", "url"));
-    }    
-    
-    private void setColumns(){
-        selectCol.setPrefWidth(80);
-        selectCol.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<InsumoViewer, Boolean>, javafx.beans.value.ObservableValue<java.lang.Boolean>>() {
-            @Override
-            public ObservableValue<Boolean> call(TreeTableColumn.CellDataFeatures<InsumoViewer, Boolean> param) {
-                return param.getValue().getValue().getSeleccion();
-                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-        });
-        selectCol.setCellFactory((TreeTableColumn<InsumoViewer,Boolean>param) -> {
-            CheckBoxTreeTableCell<InsumoViewer,Boolean> cell = new CheckBoxTreeTableCell<>();
-            cell.setAlignment(Pos.CENTER);
-            return cell; //To change body of generated lambdas, choose Tools | Templates.
-        });
-        nombreCol.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<InsumoViewer, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<InsumoViewer, String> param) {
-                return param.getValue().getValue().getNombre();
-                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-        });
-        stockCol.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<InsumoViewer, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<InsumoViewer, String> param) {
-                return param.getValue().getValue().getStockTotal();
-                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-        });
-        volumenCol.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<InsumoViewer, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<InsumoViewer, String> param) {
-                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                return param.getValue().getValue().getVolumen();
-            }
-        });
-       
-    }
-   
-    private void addColumns(){
-        final TreeItem<InsumoViewer> rootInsumo = new RecursiveTreeItem<>(insumosList,RecursiveTreeObject::getChildren);
-        tblInsumos.setEditable(true);
-        tblInsumos.getColumns().setAll(selectCol,nombreCol,stockCol,volumenCol);
-        tblInsumos.setRoot(rootInsumo);
-        tblInsumos.setShowRoot(false);
     }
     
     public static void updateTable(Insumo insumo){
@@ -239,7 +225,7 @@ public class ListaInsumoController implements Initializable {
                                          Integer.toString(insumo.getStockTotalFisico()),
                                          insumo.isActivo(),
                                          "0",
-                                         insumo.getImagen()));
+                                         insumo.getImagen(),0));
     }
     
     @FXML

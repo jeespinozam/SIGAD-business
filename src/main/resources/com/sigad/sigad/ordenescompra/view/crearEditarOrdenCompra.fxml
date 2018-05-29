@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXTextArea?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXDatePicker?>
 <?import com.jfoenix.controls.JFXTextField?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.image.ImageView?>
+<?import com.jfoenix.controls.JFXTreeTableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -25,31 +25,29 @@
                   <RowConstraints maxHeight="109.0" minHeight="10.0" prefHeight="33.0" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="343.0" minHeight="10.0" prefHeight="37.0" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="499.0" minHeight="10.0" prefHeight="36.0" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="526.0" minHeight="10.0" prefHeight="512.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="526.0" minHeight="10.0" prefHeight="144.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="375.0" minHeight="10.0" prefHeight="372.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="61.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <AnchorPane prefHeight="33.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                  <AnchorPane prefHeight="33.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <AnchorPane prefHeight="184.0" prefWidth="919.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                      <children>
-                        <Label layoutX="20.0" layoutY="11.0" text="Nuevo Insumo" />
-                     </children>
-                  </AnchorPane>
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                     <children>
-                        <ImageView fitHeight="138.0" fitWidth="125.0" layoutX="94.0" layoutY="72.0" pickOnBounds="true" preserveRatio="true" />
-                        <JFXTextField fx:id="nombreTxt" focusColor="#455a64" layoutX="282.0" layoutY="90.0" promptText="Nombre" AnchorPane.leftAnchor="286.0" />
-                        <JFXTextField fx:id="tiempoTxt" focusColor="#455a64" layoutX="282.0" layoutY="163.0" promptText="Tiempo de vida(Dias)" AnchorPane.leftAnchor="286.0" />
-                        <JFXTextField fx:id="volumenTxt" focusColor="#455a64" layoutX="285.0" layoutY="242.0" promptText="Volumen(Metro cubico)" AnchorPane.bottomAnchor="243.0" AnchorPane.leftAnchor="285.0" />
-                        <JFXTextArea fx:id="descripcionTxt" layoutX="520.0" layoutY="111.0" prefHeight="172.0" prefWidth="257.0" promptText="Descripción" AnchorPane.bottomAnchor="248.0" AnchorPane.leftAnchor="520.0" />
-                        <JFXButton layoutX="194.0" layoutY="216.0" text="+" />
-                        <JFXTextField fx:id="precioTxt" focusColor="#455a64" layoutX="284.0" layoutY="307.0" promptText="Precio" />
+                        <JFXComboBox fx:id="provCbx" focusColor="#455a64" layoutX="242.0" layoutY="38.0" prefHeight="27.0" prefWidth="147.0" promptText="Proveedores" />
+                        <JFXDatePicker fx:id="datePick" defaultColor="#455a64" disable="true" editable="false" layoutX="501.0" layoutY="38.0" prefHeight="27.0" prefWidth="163.0" />
                      </children>
                   </AnchorPane>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                      <children>
-                        <JFXButton fx:id="btnGuardar" layoutX="846.0" layoutY="2.0" onAction="#handleAction" text="Guardar" />
-                        <JFXButton fx:id="btnCancelar" layoutX="763.0" layoutY="2.0" onAction="#handleAction" text="Cancelar" />
+                        <JFXTreeTableView fx:id="tblInsumos" prefHeight="371.0" prefWidth="920.0" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                     <children>
+                        <JFXButton fx:id="btnCancelar" layoutX="770.0" layoutY="5.0" onAction="#handleAction" text="Cancelar" />
+                        <JFXButton fx:id="btnGuardar" layoutX="843.0" layoutY="5.0" onAction="#handleAction" text="Guardar" />
+                        <JFXTextField fx:id="totalTxt" disable="true" focusColor="#455a64" layoutX="597.0" layoutY="5.0" promptText="Total" />
                      </children>
                   </AnchorPane>
                </children>

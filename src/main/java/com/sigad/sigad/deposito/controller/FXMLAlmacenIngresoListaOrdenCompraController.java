@@ -73,7 +73,7 @@ public class FXMLAlmacenIngresoListaOrdenCompraController implements Initializab
     
     public static OrdenCompraViewer selectedOrder = null;
     
-    class OrdenCompraViewer extends RecursiveTreeObject<OrdenCompraViewer>{
+    public static class OrdenCompraViewer extends RecursiveTreeObject<OrdenCompraViewer>{
 
         /**
          * @return the codigo
