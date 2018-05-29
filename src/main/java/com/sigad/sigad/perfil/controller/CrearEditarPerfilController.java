@@ -8,20 +8,16 @@ package com.sigad.sigad.perfil.controller;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
-import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import com.jfoenix.controls.JFXToggleButton;
+import com.jfoenix.validation.RequiredFieldValidator;
 import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.helpers.PerfilHelper;
-import com.sigad.sigad.business.helpers.UsuarioHelper;
-import com.sigad.sigad.personal.controller.CrearEditarUsuarioController;
-import static com.sigad.sigad.personal.controller.CrearEditarUsuarioController.user;
-import com.sigad.sigad.personal.controller.PersonalController;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -50,6 +46,8 @@ public class CrearEditarPerfilController implements Initializable {
     private AnchorPane containerPane;
     @FXML
     private StackPane hiddenSp;
+    @FXML
+    private JFXToggleButton activeBtn;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -59,38 +57,47 @@ public class CrearEditarPerfilController implements Initializable {
         //validate edit or create option in order to set user
         if(!PerfilController.isProfileCreate){
             System.out.println(PerfilController.selectedProfile.name);
-            //loadFields();
+            loadFields();
         }else{
             perfil = new Perfil();
         }
         
         //Inmediate validations
-        //initValidator();
+        initValidator();
         
-        //initProfileTable();
-        //initProfilePicker();
     }
 
     private void addDialogBtns() {
         JFXButton save = new JFXButton("Guardar");
         save.setPrefSize(80, 25);
-        AnchorPane.setBottomAnchor(save, -30.0);
+        AnchorPane.setBottomAnchor(save, 0.0);
         AnchorPane.setRightAnchor(save, 0.0);
         save.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 if(validateFields()){
-                    System.out.println("VALIDADO ALL FIELDS");
                     updateFields();
                     
                     PerfilHelper helper = new PerfilHelper();
-                    Long id = helper.saveProfile(CrearEditarPerfilController.perfil);
-                    if(id != null){
-                        PerfilController.updateProfileData(CrearEditarPerfilController.perfil);
-                        PerfilController.profileDialog.close();
+                    if(!PerfilController.isProfileCreate){
+                        boolean ok = helper.updateProfile(perfil);
+                        if(ok){
+                            PerfilController.dataPerfilTbl.remove(PerfilController.selectedProfile);
+                            PerfilController.updateProfileData(perfil);
+                            PerfilController.profileDialog.close();
+                        }else{
+                            ErrorController error = new ErrorController();
+                            error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
+                        }
                     }else{
-                        ErrorController error = new ErrorController();
-                        error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
+                        Long id = helper.saveProfile(CrearEditarPerfilController.perfil);
+                        if(id != null){
+                            PerfilController.updateProfileData(CrearEditarPerfilController.perfil);
+                            PerfilController.profileDialog.close();
+                        }else{
+                            ErrorController error = new ErrorController();
+                            error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
+                        }
                     }
                     
                 }
@@ -99,7 +106,7 @@ public class CrearEditarPerfilController implements Initializable {
         
         JFXButton cancel = new JFXButton("Cancelar");
         cancel.setPrefSize(80, 25);
-        AnchorPane.setBottomAnchor(cancel, -30.0);
+        AnchorPane.setBottomAnchor(cancel, 0.0);
         AnchorPane.setRightAnchor(cancel, 85.0);
         cancel.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -123,6 +130,45 @@ public class CrearEditarPerfilController implements Initializable {
     public void updateFields() {
         perfil.setNombre(nameTxt.getText());
         perfil.setDescripcion(descriptionTXt.getText());
-        perfil.setActivo(true);
+        perfil.setActivo(activeBtn.isSelected());
     }
+
+    private void loadFields() {
+        PerfilHelper helper = new PerfilHelper();
+        Perfil temp = helper.getProfile(PerfilController.selectedProfile.name.getValue());
+        
+        if(temp != null){
+            perfil = new Perfil();
+            perfil.setId(temp.getId());
+            perfil.setNombre(temp.getNombre());
+            perfil.setDescripcion(temp.getDescripcion());
+            perfil.setPermisos(temp.getPermisos());
+            perfil.setActivo(temp.isActivo());
+            
+            nameTxt.setText(perfil.getNombre());
+            descriptionTXt.setText(perfil.getDescripcion());
+            activeBtn.setSelected(perfil.isActivo());
+        }
+        
+        helper.close();
+    }
+
+    private void initValidator() {
+        RequiredFieldValidator r;
+        
+        r = new RequiredFieldValidator();
+        r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
+        r.setMessage("Campo obligatorio");  
+        nameTxt.getValidators().add(r);
+        nameTxt.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (!newValue) {
+                if(!nameTxt.validate()){
+                    nameTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+                }
+                else nameTxt.setFocusColor(new Color(0.30,0.47,0.23, 1));
+            }
+        });
+    }
+    
+    
 }

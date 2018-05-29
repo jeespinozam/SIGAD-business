@@ -67,6 +67,25 @@ public class TiendaHelper {
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
+            this.errorMessage = e.getMessage();
+        } finally{
+            return t;
+        }
+    }
+    
+    /*Get store by id, if nothin then null*/
+    public Tienda getStore(String direction){
+        Tienda t = null;
+        Query query = null;
+        try {
+            query = session.createQuery("from Tienda where direccion='" + direction +"'");
+            
+            if(!query.list().isEmpty()){
+                t = (Tienda) query.list().get(0);
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            this.errorMessage = e.getMessage();
         } finally{
             return t;
         }
@@ -84,6 +103,7 @@ public class TiendaHelper {
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
+            this.errorMessage = e.getMessage();
         } finally{
             return t;
         }
@@ -107,6 +127,7 @@ public class TiendaHelper {
             session.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            this.errorMessage = e.getMessage();
         }
         return id;
     }
@@ -128,6 +149,7 @@ public class TiendaHelper {
             tNew.setCooYDireccion(tOld.getCooYDireccion());
             tNew.setDescripcion(tOld.getDescripcion());
             tNew.setDireccion(tOld.getDireccion());
+            tNew.setActivo(tOld.isActivo());
             
             session.merge(tNew);
             tx.commit();

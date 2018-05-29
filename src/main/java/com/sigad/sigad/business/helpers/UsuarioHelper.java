@@ -148,7 +148,8 @@ public class UsuarioHelper {
             uNew.setDni(uOld.getDni());
             uNew.setIntereses(uOld.getIntereses());
             uNew.setPassword(uOld.getPassword());
-            //uNew.setPerfil(uOld.getPerfil());
+            uNew.setPerfil(uOld.getPerfil());
+            uNew.setTienda(uOld.getTienda());
             uNew.setTelefono(uOld.getTelefono());
             uNew.setActivo(uOld.isActivo());
             
