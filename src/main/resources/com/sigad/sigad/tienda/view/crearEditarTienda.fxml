@@ -18,7 +18,7 @@
    <children>
       <AnchorPane id="AnchorPane" fx:id="containerPane" prefHeight="356.0" prefWidth="569.0" styleClass="mainFxmlClass">
           <stylesheets>
-              <URL value="@/styles/creareditartienda.css" />
+              <URL value="@/styles/crearEditartienda.css" />
           </stylesheets>
          <children>
             <AnchorPane id="AnchorPane" prefHeight="356.0" prefWidth="569.0" styleClass="mainFxmlClass">
@@ -38,7 +38,7 @@
                         <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <AnchorPane GridPane.columnIndex="2" GridPane.rowIndex="1">
                            <children>
-                              <JFXTextArea layoutX="-163.0" layoutY="-48.0" prefHeight="74.0" prefWidth="520.0" promptText="Descripción" />
+                              <JFXTextArea fx:id="descripcionTxt" layoutX="-163.0" layoutY="-48.0" prefHeight="74.0" prefWidth="520.0" promptText="Descripción" />
                            </children></AnchorPane>
                         <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
                            <children>
@@ -51,15 +51,15 @@
                         </AnchorPane>
                         <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2">
                            <children>
-                              <JFXTextField fx:id="nameTxt" layoutX="19.0" layoutY="43.0" minWidth="-Infinity" prefHeight="27.0" prefWidth="327.0" promptText="Dirección" />
-                              <JFXButton layoutX="195.0" layoutY="78.0" text="Generar Coordenadas">
+                              <JFXTextField fx:id="direccionTxt" layoutX="19.0" layoutY="43.0" minWidth="-Infinity" prefHeight="27.0" prefWidth="327.0" promptText="Dirección" />
+                              <JFXButton fx:id="generateBtn" layoutX="195.0" layoutY="78.0" text="Generar Coordenadas">
                                  <effect>
                                     <DropShadow />
                                  </effect>
                               </JFXButton>
-                              <JFXTextField fx:id="telephoneTxt" editable="false" layoutX="19.0" layoutY="111.0" minWidth="-Infinity" opacity="0.5" prefHeight="27.0" prefWidth="150.0" promptText="Corrdenada X" />
-                              <JFXTextField fx:id="cellphoneTxt" editable="false" layoutX="196.0" layoutY="111.0" minWidth="-Infinity" opacity="0.5" prefWidth="150.0" promptText="Corrdenada Y" />
-                              <JFXTextField layoutX="19.0" layoutY="154.0" promptText="Capacidad" />
+                              <JFXTextField fx:id="coordXText" editable="false" layoutX="19.0" layoutY="111.0" minWidth="-Infinity" opacity="0.5" prefHeight="27.0" prefWidth="150.0" promptText="Corrdenada X" />
+                              <JFXTextField fx:id="coordYText" editable="false" layoutX="196.0" layoutY="111.0" minWidth="-Infinity" opacity="0.5" prefWidth="150.0" promptText="Corrdenada Y" />
+                              <JFXTextField fx:id="capacidadTxt" layoutX="19.0" layoutY="154.0" promptText="Capacidad" />
                               <JFXToggleButton fx:id="isActiveBtn" layoutX="196.0" layoutY="138.0" text="Activo" />
                            </children>
                         </AnchorPane>

@@ -65,9 +65,7 @@ public class TiendaController implements Initializable {
     @FXML
     private JFXButton addBtn;
     /*Extras*/
-    @FXML
     public static JFXDialog storeDialog;
-    @FXML
     private JFXPopup popup;
     
     public static boolean isStoreCreate;
@@ -249,7 +247,7 @@ public class TiendaController implements Initializable {
                     System.out.println(clickedRow.dirección);
                     
                     selectedStore = clickedRow;
-                    //data.remove(selectedStore);
+                    //data.remove(selectedUser);
                     try {
                         CreateEdditStoreDialog(false);
                     } catch (IOException ex) {
@@ -269,7 +267,7 @@ public class TiendaController implements Initializable {
         storeTbl.setShowRoot(false);
     }
     
-    private static class Store  extends RecursiveTreeObject<Store> {
+    public static class Store  extends RecursiveTreeObject<Store> {
         
         StringProperty capacidad;
         StringProperty cooxdireccion;

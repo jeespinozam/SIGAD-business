@@ -40,33 +40,27 @@ import javafx.scene.control.Label;
 public class CrearEditarUsuarioController implements Initializable {
 
     public static final String viewPath = "/com/sigad/sigad/personal/view/crearEditarUsuario.fxml";
-    @FXML
-    private JFXTextField nameTxt,appTxt,apmTxt,dniTxt,telephoneTxt,cellphoneTxt;
     public static Usuario user = null;
+    @FXML
+    private JFXTextField nameTxt,appTxt,apmTxt,dniTxt,telephoneTxt,cellphoneTxt,emailTxt,passwordTxt;
     @FXML
     private StackPane hiddenSp;
     @FXML
     private AnchorPane containerPane;
     @FXML
-    private JFXTextField emailTxt;
-    @FXML
-    private JFXTextField passwordTxt;
-    @FXML
     private JFXToggleButton isActiveBtn;
     @FXML
     private JFXScrollPane profilePane, storePane;
     @FXML
-    private JFXListView<Label> storesListView;
-    @FXML
-    private JFXListView<Label> profilesListView;
+    private JFXListView<Label> storesListView,profilesListView;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         //Add the buttons of the static dialog
         addDialogBtns();
         
         //validate edit or create option in order to set user
-        if(!PersonalController.isStoreCreate){
-            System.out.println(PersonalController.selectedStore.nombres);
+        if(!PersonalController.isUserCreate){
+            System.out.println(PersonalController.selectedUser.nombres);
             loadFields();
         }else{
             user = new Usuario();
@@ -94,15 +88,15 @@ public class CrearEditarUsuarioController implements Initializable {
                 int indexProfile = getSelectedIndex(profilesListView, "Perfiles");
                 if(indexProfile<0)return;
                 
-                //int indexStore = getSelectedIndex(storesListView, "Tiendas");
-                //if(indexStore<0) return;
+                int indexStore = getSelectedIndex(storesListView, "Tiendas");
+                if(indexStore<0) return;
                 updateFields();
                 
                 UsuarioHelper helper = new UsuarioHelper();
-                if(!PersonalController.isStoreCreate){
+                if(!PersonalController.isUserCreate){
                     boolean ok = helper.updateUser(user);
                     if(ok){
-                        PersonalController.data.remove(PersonalController.selectedStore);
+                        PersonalController.data.remove(PersonalController.selectedUser);
                         PersonalController.updateTable(user);
                         PersonalController.userDialog.close();
                     }else{
@@ -155,7 +149,7 @@ public class CrearEditarUsuarioController implements Initializable {
     private void loadFields() {
         
         UsuarioHelper usuarioHelper = new UsuarioHelper();
-        user = usuarioHelper.getUser(PersonalController.selectedStore.correo.getValue());
+        user = usuarioHelper.getUser(PersonalController.selectedUser.correo.getValue());
         
         if(user != null){
             nameTxt.setText(user.getNombres());
@@ -435,9 +429,12 @@ public class CrearEditarUsuarioController implements Initializable {
                 lbl.setPrefSize(200, 30);
                 storesListView.getItems().add(lbl);
                 
-                if(user.getTienda().getDireccion().equals(direction)){
-                    storesListView.getSelectionModel().select(i);
+                if(user.getTienda()!=null){
+                    if(user.getTienda().getDireccion().equals(direction)){
+                        storesListView.getSelectionModel().select(i);
+                    }
                 }
+                
             }
         }
         
