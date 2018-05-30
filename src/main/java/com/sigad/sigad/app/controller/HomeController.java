@@ -203,13 +203,13 @@ public class HomeController implements Initializable {
             AnchorPane.setLeftAnchor(menuPanel, 200.00);
             AnchorPane.setLeftAnchor(firstPanel, 200.00);
             
-            addClassToContainer(Container.SIDEBAR,"active");
+//            addClassToContainer(Container.SIDEBAR,"active");
         }else{
             sidebarPane.setPrefWidth(50);
             AnchorPane.setLeftAnchor(menuPanel, 50.00);
             AnchorPane.setLeftAnchor(firstPanel, 50.00);
             
-            removeClassFromContainer(Container.SIDEBAR,"active");
+//            removeClassFromContainer(Container.SIDEBAR,"active");
         }
     }
     @FXML
