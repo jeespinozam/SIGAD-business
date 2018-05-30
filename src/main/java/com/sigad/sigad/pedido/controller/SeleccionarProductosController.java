@@ -164,7 +164,10 @@ public class SeleccionarProductosController implements Initializable {
         btnContinuar.addEventHandler(EventType.ROOT, (event) -> {
 
             pedidos.forEach((next) -> {
-                System.out.println(next.nombre + next.cantidad.toString() + next.subtotal.toString());
+                System.out.println(next.nombre + next.cantidad.toString() + next.subtotal.toString() );
+            });
+            prod.forEach((next)-> {
+                System.out.println(next.seleccion.toString());
             });
         });
     }

@@ -96,6 +96,7 @@ public class LoginController implements Initializable {
                 list.add(new Permiso("Estadísticas", "ELEVATION_RISE"));
                 list.add(new Permiso("Carga Masiva", "ARROW_UP_BOLD_CIRCLE"));
                 list.add(new Permiso("Configuraciones", "SETTINGS"));
+                list.add(new Permiso("Configuraciones", "SETTINGS"));
                 
                 for (Permiso p : list) {
                     PermisoHelper helper = new PermisoHelper();

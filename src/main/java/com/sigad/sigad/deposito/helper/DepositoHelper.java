@@ -26,12 +26,12 @@ public class DepositoHelper {
     public DepositoHelper() {
         
         session = LoginController.serviceInit();
-        session.beginTransaction();
-        Proveedor prov = new Proveedor();
-        prov.setDescripcion("Distribuidor de rosas");
-        prov.setNombre("Rosas SA");
-        prov.setRuc("665656");
-        session.save(prov);
+//        session.beginTransaction();
+//        Proveedor prov = new Proveedor();
+//        prov.setDescripcion("Distribuidor de rosas");
+//        prov.setNombre("Rosas SA");
+//        prov.setRuc(123489021);
+//        session.save(prov);
 
 ////
 //        Perfil perf = new Perfil();
@@ -115,18 +115,18 @@ public class DepositoHelper {
         
 //
 
-        OrdenCompra ord = new OrdenCompra();
-        //ord.setDetalleOrdenCompra(detallesOrden);
-        ord.setFecha(new Date());
-        ord.setPrecioTotal(30.5);
-        ord.setProveedor(pr);
-        ord.setUsuario(us);
-        session.save(ord);
-        
+//        OrdenCompra ord = new OrdenCompra();
+//        //ord.setDetalleOrdenCompra(detallesOrden);
+//        ord.setFecha(new Date());
+//        ord.setPrecioTotal(30.5);
+//        ord.setProveedor(pr);
+//        ord.setUsuario(us);
+//        session.save(ord);
+//        
 //
         
         //getOrdenes(u.getId());
-        session.getTransaction().commit();
+//        session.getTransaction().commit();
 //        close();
     }
 
@@ -142,26 +142,17 @@ public class DepositoHelper {
         return orden;
     }
     public List<OrdenCompra> getOrdenes(){
-        String hql = String.format("from OrdenCompra OC");
-        Query queryHql = this.session.createQuery(hql);
-        List<OrdenCompra> ordenesResultado = queryHql.list();
-        for (OrdenCompra entidad : ordenesResultado) {
-            OrdenCompra oc = entidad;
-            //System.out.println("Orden de compra " + oc.getFecha() + " " + oc.getPrecioTotal());
-//            System.out.print("Proveedor " + prov.getNombre());
+        ArrayList<OrdenCompra> ordenes = null;
+        Query query = null;
+        try {
+            query = session.createQuery("from OrdenCompra");
+            if(!query.list().isEmpty()){
+                ordenes = (ArrayList<OrdenCompra>)query.list();
+            }
+        } catch (Exception e) {
+            
         }
-
-        return ordenesResultado;
-        //        String hql = String.format("from Perfil");
-//        Query queryHql = this.session.createQuery(hql);
-//        List<Object []> perfiles = queryHql.list();
-//        for (Object entidad : perfiles) {
-//            Perfil po = (Perfil)entidad;
-////            OrdenCompra oc = (OrdenCompra) entidad[0];
-////            Proveedor prov = (Proveedor) entidad[1];
-//            System.out.println("id " + po.getId());
-//            System.out.println("nombre " + po.getNombre());
-//        }
+        return ordenes;
     }
     public void close() {
         session.getTransaction().commit();
