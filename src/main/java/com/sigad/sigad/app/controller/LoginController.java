@@ -106,11 +106,12 @@ public class LoginController implements Initializable {
                 for (Permiso p : list) {
                     PermisoHelper helper1 = new PermisoHelper();
                     helper1.savePermission(p);
+                    helper1.close();
                 }
                 
                 //Crear un perfil de superadmin
                 Perfil adminProfile = new Perfil("SuperAdmin", "Super admini can create stores", true, list);
-                
+
                 String hash = encrypt("admin");
 
                 Usuario user = new Usuario("Juan", "Tonos", "Tonos", adminProfile,
