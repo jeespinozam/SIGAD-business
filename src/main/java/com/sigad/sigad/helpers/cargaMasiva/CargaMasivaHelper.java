@@ -136,7 +136,7 @@ public class CargaMasivaHelper {
                     case CargaMasivaConstantes.TABLA_PERFILXPERMISO:
                         rowhead.createCell(rowIndex).setCellValue("Nombre de Perfil");
                         rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Opcion de Permiso");
+                        rowhead.createCell(rowIndex).setCellValue("Menu e Icono (separados por coma, agregar mas horizontalmente)");
                         break;
                     case CargaMasivaConstantes.TABLA_FRAGILIDAD:
                         rowhead.createCell(rowIndex).setCellValue("Valor de Fragilidad");
@@ -492,36 +492,36 @@ public class CargaMasivaHelper {
                 return CargaMasivaHelper.guardarObjeto(nuevoPermiso, session);
             case CargaMasivaConstantes.TABLA_PERFILXPERMISO:
                 String perfilNombreAux = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
-                String permisoOpcionAux = null;
-                Perfil perfilAsociado = (Perfil) CargaMasivaHelper.busquedaGeneralString(session, "Perfil", new String [] {"nombre"}, new String [] {perfilNombreAux});
+                Perfil perfilAsociado = null;
+                if (StringUtils.isNotBlank(perfilNombreAux))
+                    perfilAsociado = (Perfil) CargaMasivaHelper.busquedaGeneralString(session, "Perfil", new String [] {"nombre"}, new String [] {perfilNombreAux});
+                else {
+                    LOGGER.log(Level.WARNING, "No se identifico algun nombre de perfil valido");
+                    return false;
+                }
+                String permisoMenuxIcono = null;
                 if (perfilAsociado!=null) { // si el perfil mencionado fue encontrado entonces se continua con el proceso
                     LOGGER.log(Level.INFO, String.format("Perfil %s encontrado con exito", perfilNombreAux));
                     while (true) {
                         index++;
                         if (StringUtils.isBlank(dataFormatter.formatCellValue(row.getCell(index))))
                             break;
-                        permisoOpcionAux = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
-                        Permiso permisoAux = (Permiso) CargaMasivaHelper.busquedaGeneralString(session, "Permiso", new String [] {"opcion"}, new String [] {permisoOpcionAux});
-                        if (permisoAux!=null) {
-                            LOGGER.log(Level.INFO, String.format("Permiso %s encontrado con exito", permisoOpcionAux));
-                            perfilAsociado.getPermisos().add(permisoAux);
+                        permisoMenuxIcono = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                        // identificamos la opcion y el icono en la variable permisoOpcionxIcono
+                        String [] permisoAux = permisoMenuxIcono.split(",");
+                        if (StringUtils.isNotBlank(permisoAux[0]) && StringUtils.isNotBlank(permisoAux[1])){
+                            Permiso permisoAsociado = (Permiso) CargaMasivaHelper.busquedaGeneralString(session, "Permiso", new String [] {"menu","icono"}, new String [] {StringUtils.trimToEmpty(permisoAux[0]), StringUtils.trimToEmpty(permisoAux[1])});
+                            if (permisoAsociado!=null) {
+                                LOGGER.log(Level.INFO, String.format("Permiso %s encontrado con exito", permisoMenuxIcono));
+                                perfilAsociado.getPermisos().add(permisoAsociado);
+                            }
+                            else
+                                LOGGER.log(Level.WARNING, String.format("Permiso %s no encontrado, este permiso no sera considerado", permisoMenuxIcono));
                         }
-                        else
-                            LOGGER.log(Level.WARNING, String.format("Permiso %s no encontrado, este permiso no sera considerado", permisoOpcionAux));
-                    }
-                    /*
-                    while (cellIterator.hasNext()) {
-                        cell = cellIterator.next();
-                        permisoOpcionAux = StringUtils.trimToEmpty(dataFormatter.formatCellValue(cell));
-                        Permiso permisoAux = (Permiso) CargaMasivaHelper.busquedaGeneralString(session, "Permiso", new String [] {"opcion"}, new String [] {permisoOpcionAux});
-                        if (permisoAux!=null) {
-                            LOGGER.log(Level.INFO, String.format("Permiso %s encontrado con exito", permisoOpcionAux));
-                            perfilAsociado.getPermisos().add(permisoAux);
+                        else {
+                            LOGGER.log(Level.WARNING, String.format("Permiso no valido encontrado para %s, se continua proceso", perfilNombreAux));
                         }
-                        else
-                            LOGGER.log(Level.WARNING, String.format("Permiso %s no encontrado, este permiso no sera considerado", permisoOpcionAux));
                     }
-                    */
                 }
                 else {
                     LOGGER.log(Level.SEVERE, String.format("Perfil %s no encontrado, cancelando operacion", perfilNombreAux));
