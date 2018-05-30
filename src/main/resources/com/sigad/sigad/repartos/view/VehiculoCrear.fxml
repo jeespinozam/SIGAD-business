@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.geometry.*?>
+<?import com.jfoenix.controls.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+
+
+<StackPane fx:id="stackPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.app.repartos.controller.VehiculoCrearController">
+    <children>
+      <HBox prefHeight="375.0" prefWidth="545.0" spacing="20.0">
+         <children>
+            <VBox prefHeight="14.0" prefWidth="261.0" spacing="25.0">
+               <children>
+                  <JFXTextField fx:id="nombreTxt" prefHeight="50.0" prefWidth="230.0" promptText="Nombre" />
+                  <JFXTextField fx:id="placaTxt" prefHeight="25.0" prefWidth="287.0" promptText="Placa" />
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <Label prefHeight="0.0" prefWidth="144.0" text="TIpo de Vehiculo" />
+                        <JFXButton prefHeight="41.0" prefWidth="213.0" />
+                        <JFXListView fx:id="tipoListView" prefHeight="333.0" prefWidth="224.0" style="-: ;" />
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+            <VBox prefHeight="214.0" prefWidth="226.0">
+               <children>
+                  <JFXTextArea fx:id="descripcionTxtArea" prefHeight="302.0" prefWidth="225.0" promptText="Descripción">
+                     <VBox.margin>
+                        <Insets top="15.0" />
+                     </VBox.margin>
+                  </JFXTextArea>
+               </children>
+            </VBox>
+         </children>
+         <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </padding>
+      </HBox>
+   </children>
+</StackPane>
