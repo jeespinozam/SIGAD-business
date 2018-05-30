@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -234,7 +236,7 @@ public class ListaInsumoController implements Initializable {
             try {
                 CreateEditUserDialog(true);
             } catch (IOException ex) {
-                
+                Logger.getLogger(ListaInsumoController.class.getName()).log(Level.SEVERE, "handleAction()", ex);
             }
         }
     }
@@ -244,27 +246,16 @@ public class ListaInsumoController implements Initializable {
         
         JFXDialogLayout content =  new JFXDialogLayout();
         
-        
         if(isInsumoCreate){
-            content.setHeading(new Text("Crear Usuario"));
+            content.setHeading(new Text("Crear Insumo"));
         }else{
             content.setHeading(new Text("Editar Usuario"));
-            
-//            UsuarioHelper helper = new UsuarioHelper();
-//            Usuario u = helper.getUser(PersonalController.selectedUser.correo.getValue());
-//            if(u == null){
-//                ErrorController error = new ErrorController();
-//                error.loadDialog("Error", "No se pudo obtener el usuario", "Ok", hiddenSp);
-//                System.out.println("Error al obtener el usuario");
-//                return;
-//            }
         }
         
         Node node;
         node = (Node) FXMLLoader.load(ListaInsumoController.this.getClass().getResource(CrearEditarInsumoController.viewPath));
         content.setBody(node);
-        //content.setPrefSize(400,400);
-                
+        
         insumoDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
         insumoDialog.show();
     }  

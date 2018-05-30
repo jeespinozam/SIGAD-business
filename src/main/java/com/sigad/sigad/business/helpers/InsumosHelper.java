@@ -40,8 +40,7 @@ public class InsumosHelper {
             if(newInsumo.getId() != null) {
                 id = newInsumo.getId();
             }
-            tx.commit();            
-            
+            session.getTransaction().commit();                        
         } catch (Exception e) {
             session.getTransaction().rollback();
             this.errorMessage = e.getMessage();
