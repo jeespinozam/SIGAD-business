@@ -8,6 +8,8 @@ package com.sigad.sigad.business.helpers;
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Insumo;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -20,6 +22,10 @@ public class InsumosHelper {
     
     Session session = null;
     private String errorMessage = "";
+    private final static Logger LOGGER = Logger.getLogger(InsumosHelper.class.getName());
+    
+    /////////////////////////
+    
     public InsumosHelper() {
         session = LoginController.serviceInit();
     }
@@ -41,12 +47,61 @@ public class InsumosHelper {
                 id = newInsumo.getId();
             }
             session.getTransaction().commit();                        
+            LOGGER.log(Level.FINE, "Insumo guardado con exito");
+            this.errorMessage = "";
         } catch (Exception e) {
             session.getTransaction().rollback();
+            this.errorMessage = e.getMessage();
+            System.out.println("====================================================================");
+            System.out.println(e);
+            System.out.println("====================================================================");
+        }
+        return id;
+    }
+    
+    public Long updateInsumo(Insumo modifiedInsumo) {
+        Long id = null;
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            session.update(modifiedInsumo);
+            tx.commit();
+            LOGGER.log(Level.FINE, "Insumo actualizado con exito");
+            this.errorMessage = "";
+            id = modifiedInsumo.getId();
+        }
+        catch(Exception e) {
+            if (tx!=null)   tx.rollback();
+            System.out.println("====================================================================");
+            System.out.println(e);
+            System.out.println("====================================================================");
             this.errorMessage = e.getMessage();
         }
         return id;
     }
+    
+    public Long disableInsumo(Insumo disabledInsumo) {
+        Long id = null;
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            disabledInsumo.setActivo(false);    // se deshabilita insumo, eliminacion logica
+            session.update(disabledInsumo);
+            tx.commit();
+            LOGGER.log(Level.FINE, "Insumo deshabilitado con exito");
+            this.errorMessage = "";
+            id = disabledInsumo.getId();
+        }
+        catch(Exception e) {
+            if (tx!=null)   tx.rollback();
+            System.out.println("====================================================================");
+            System.out.println(e);
+            System.out.println("====================================================================");
+            this.errorMessage = e.getMessage();
+        }
+        return id;
+    }
+    
     public ArrayList<Insumo> getInsumos() {
         ArrayList<Insumo> insumos = null;
         Query query = null;
