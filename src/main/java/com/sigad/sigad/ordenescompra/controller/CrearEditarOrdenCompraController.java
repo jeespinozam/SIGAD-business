@@ -203,10 +203,10 @@ public class CrearEditarOrdenCompraController implements Initializable {
             newOrd.setFecha(inputDate);
             newOrd.setProveedor(provCbx.getSelectionModel().getSelectedItem());
             newOrd.setUsuario(LoginController.user);
-            Integer id  = helpero.saveOrden(newOrd);
+            /*Integer id  = helpero.saveOrden(newOrd);
             if( id!=null){
                 ListaOrdenesCompraController.updateTable(newOrd);
-            }
+            }*/
             helpero.close();
             ListaOrdenesCompraController.ordenDialog.close();
         }
