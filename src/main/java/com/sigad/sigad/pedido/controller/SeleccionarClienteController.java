@@ -44,9 +44,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableRow;
+import javafx.scene.control.TreeTableView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
+import javafx.util.Callback;
 
 /**
  * FXML Controller class
@@ -64,7 +67,7 @@ public class SeleccionarClienteController implements Initializable {
 
     @FXML
     public static JFXDialog userDialog;
-    private final ObservableList<ClientesLista> clientes = FXCollections.observableArrayList();
+    public static final ObservableList<ClientesLista> clientes = FXCollections.observableArrayList();
     @FXML
     JFXTreeTableColumn<ClientesLista, String> nombre = new JFXTreeTableColumn<>("Nombre");
     @FXML
@@ -105,6 +108,7 @@ public class SeleccionarClienteController implements Initializable {
     }
 
     public void llenarTabla() {
+        clientes.clear();
         PerfilHelper perfilHelper = new PerfilHelper();
         Perfil perfil = perfilHelper.getProfile("Cliente");
         perfilHelper.close();
@@ -113,14 +117,14 @@ public class SeleccionarClienteController implements Initializable {
         usuarioHelper.close();
         if (usuarios != null) {
             usuarios.forEach((t) -> {
-                clientes.add(new ClientesLista(t.getNombres() + " " + t.getApellidoPaterno() + " " + t.getApellidoPaterno(), t.getDni(), t.getTelefono(), t.getCelular(), t.getId().intValue()));
+                clientes.add(new ClientesLista(t.getNombres() + " " + t.getApellidoPaterno() + " " + t.getApellidoMaterno(), t.getDni(), t.getTelefono(), t.getCelular(), t.getId().intValue()));
             });
         }
 
     }
 
     public void agregarColumnasClientes() {
-        nombre.setPrefWidth(120);
+        nombre.setPrefWidth(200);
         nombre.setCellValueFactory((TreeTableColumn.CellDataFeatures<ClientesLista, String> param) -> param.getValue().getValue().nombre);
         dni.setPrefWidth(120);
         dni.setCellValueFactory((TreeTableColumn.CellDataFeatures<ClientesLista, String> param) -> param.getValue().getValue().dni);
@@ -136,6 +140,38 @@ public class SeleccionarClienteController implements Initializable {
         tablaClientes.getColumns().setAll(nombre, dni, telefono, celular);
         tablaClientes.setRoot(rootPedido);
         tablaClientes.setShowRoot(false);
+        tablaClientes.setRowFactory(new Callback<TreeTableView<ClientesLista>, TreeTableRow<ClientesLista>>() {
+            @Override
+            public TreeTableRow<ClientesLista> call(TreeTableView<ClientesLista> param) {
+                TreeTableRow<ClientesLista> row = new TreeTableRow<>();
+                row.setOnMouseClicked((event) -> {
+                    if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                        ClientesLista rowData = row.getItem();
+                        editarInfoCliente(rowData.codigo);
+
+                    }
+                });
+                return row; //To change body of generated lambdas, choose Tools | Templates.
+            }
+        });
+    }
+
+    public void editarInfoCliente(Integer codigo) {
+        try {
+            isClientCreate = Boolean.FALSE;
+            JFXDialogLayout content = new JFXDialogLayout();
+            content.setHeading(new Text("Editar cliente"));
+            Node node;
+            FXMLLoader loader = new FXMLLoader(SeleccionarClienteController.this.getClass().getResource(RegistrarClienteController.viewPath));
+            node = (Node) loader.load();
+            RegistrarClienteController ctrl = loader.getController();
+            ctrl.cargarCliente(codigo);
+            content.setBody(node);
+            userDialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
+            userDialog.show();
+        } catch (IOException ex) {
+            Logger.getLogger(DescripcionProductosController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void agregarFiltro() {
@@ -168,7 +204,7 @@ public class SeleccionarClienteController implements Initializable {
     void goDatosPedido(MouseEvent event) {
         try {
             int count = tablaClientes.getSelectionModel().getSelectedCells().size();
-            
+
             if (count == 1) {
                 Integer idCliente = tablaClientes.getSelectionModel().getSelectedCells().get(0).getTreeItem().getValue().codigo;
                 UsuarioHelper helper = new UsuarioHelper();
@@ -192,7 +228,7 @@ public class SeleccionarClienteController implements Initializable {
         }
     }
 
-    class ClientesLista extends RecursiveTreeObject<ClientesLista> {
+    public static class ClientesLista extends RecursiveTreeObject<ClientesLista> {
 
         StringProperty nombre;
         StringProperty dni;

@@ -57,7 +57,8 @@
          </toggleGroup></JFXRadioButton>
       <JFXTextField id="txtMonto" fx:id="txtMonto" layoutX="331.0" layoutY="284.0" text="Monto" />
       <JFXRadioButton id="btnPOS" fx:id="btnPOS" layoutX="224.0" layoutY="327.0" text="POS: Tarjeta" toggleGroup="$pago" />
-      <JFXComboBox id="cmbTarjeta" fx:id="cmbTarjeta" layoutX="334.0" layoutY="323.0" promptText="Visa" />
+      <JFXComboBox id="cmbTarjeta" fx:id="cmbTarjeta" layoutX="334.0" layoutY="323.0" promptText="-" />
+      
       <Label layoutX="101.0" layoutY="107.0" text="Direccion">
          <font>
             <Font size="14.0" />
@@ -82,7 +83,7 @@
             <DropShadow />
          </effect>
       </JFXButton>
-      <JFXButton id="btnRegistrar" fx:id="btnRegistrar" buttonType="RAISED" layoutX="814.0" layoutY="606.0" style="-fx-background-color: #FFFFFF;" text="Registrar cliente">
+      <JFXButton id="btnRegistrar" fx:id="btnRegistrar" buttonType="RAISED" layoutX="814.0" layoutY="606.0" onMouseClicked="#registrarPedido" style="-fx-background-color: #FFFFFF;" text="Guardar Pedido">
          <font>
             <Font size="14.0" />
          </font>

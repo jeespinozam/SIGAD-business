@@ -5,6 +5,7 @@
  */
 package com.sigad.sigad.business;
 
+import com.sigad.sigad.pedido.controller.RegistrarClienteController;
 import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -60,6 +61,8 @@ public class ClienteDireccion {
         this.principal = principal;
         this.activo = Boolean.TRUE;
         this.usuario = usuario;
+        this.cooXDireccion = 0.0;
+        this.cooYDireccion = 0.0;
     }
 
     /**
@@ -72,7 +75,11 @@ public class ClienteDireccion {
         
         if (o instanceof ClienteDireccion){
             ClienteDireccion  c = (ClienteDireccion) o;
-            return c.getId().equals(this.getId());
+            return c.getDireccionCliente().trim().equals(this.getDireccionCliente().trim());
+        }else if (o instanceof RegistrarClienteController.DireccionesLista){
+            RegistrarClienteController.DireccionesLista d = (RegistrarClienteController.DireccionesLista) o;
+            return getNombreDireccion().trim().equals(d.getDireccion().getValue().trim());
+        
         }
         return super.equals(o); //To change body of generated methods, choose Tools | Templates.
     }

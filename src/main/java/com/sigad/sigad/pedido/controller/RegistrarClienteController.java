@@ -16,9 +16,11 @@ import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Usuario;
 import com.sigad.sigad.business.helpers.PerfilHelper;
 import com.sigad.sigad.business.helpers.UsuarioHelper;
+import static com.sigad.sigad.pedido.controller.SeleccionarClienteController.clientes;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import javafx.beans.property.SimpleStringProperty;
@@ -48,7 +50,7 @@ public class RegistrarClienteController implements Initializable {
     @FXML
     JFXTreeTableColumn<DireccionesLista, String> direccion = new JFXTreeTableColumn<>("Direccion");
     @FXML
-    JFXTreeTableColumn<DireccionesLista, String> nombre = new JFXTreeTableColumn<>("aNombre");
+    JFXTreeTableColumn<DireccionesLista, String> nombre = new JFXTreeTableColumn<>("Nombre");
 
     @FXML
     private JFXTextField txtNombre;
@@ -93,6 +95,23 @@ public class RegistrarClienteController implements Initializable {
         agregarColumnasDireccion();
         agregarColumnasTablasClientes();
         initValidator();
+    }
+
+    public void cargarCliente(Integer codigo) {
+        UsuarioHelper cli = new UsuarioHelper();
+        cliente = cli.getUser(codigo);
+        cli.close();
+        txtNombre.setText(cliente.getNombres());
+        txtApp.setText(cliente.getApellidoPaterno());
+        txtApm.setText(cliente.getApellidoMaterno());
+        txttel.setText(cliente.getTelefono());
+        txtdni.setText(cliente.getDni());
+        txtcel.setText(cliente.getCelular());
+        txtcorreo.setText(cliente.getCorreo());
+        cliente.getClienteDirecciones().forEach((t) -> {
+            direcciones.add(new DireccionesLista(t.getDireccionCliente(), t.getNombreDireccion(), t.getId().intValue()));
+        });
+
     }
 
     private void initValidator() {
@@ -222,9 +241,9 @@ public class RegistrarClienteController implements Initializable {
 
     public void agregarColumnasDireccion() {
         nombre.setPrefWidth(90);
-        nombre.setCellValueFactory((TreeTableColumn.CellDataFeatures<DireccionesLista, String> param) -> param.getValue().getValue().direccion);
-        direccion.setPrefWidth(150);
-        direccion.setCellValueFactory((TreeTableColumn.CellDataFeatures<DireccionesLista, String> param) -> param.getValue().getValue().nombre);
+        nombre.setCellValueFactory((TreeTableColumn.CellDataFeatures<DireccionesLista, String> param) -> param.getValue().getValue().getNombre());
+        direccion.setPrefWidth(180);
+        direccion.setCellValueFactory((TreeTableColumn.CellDataFeatures<DireccionesLista, String> param) -> param.getValue().getValue().getDireccion());
     }
 
     public void crearUsuario() {
@@ -235,17 +254,33 @@ public class RegistrarClienteController implements Initializable {
             cliente = new Usuario(txtNombre.getText(), txtApp.getText(), txtApm.getText(),
                     perfil, txttel.getText(), txtdni.getText(), txtcel.getText(), true, txtcorreo.getText(), txtdni.getText(), "");
             direcciones.forEach((t) -> {
-                cliente.getClienteDirecciones().add(new ClienteDireccion(t.direccion.getValue(), t.nombre.getValue(), Boolean.FALSE, cliente));
+                System.out.println(t.getDireccion().getValue());
+                cliente.addClienteDirecciones(new ClienteDireccion(t.getDireccion().getValue(), t.getNombre().getValue(), Boolean.FALSE, cliente));
 
             });
         }
 
     }
 
+    public void actualizarUsuario() {
+        cliente.setNombres(txtNombre.getText());
+        cliente.setApellidoPaterno(txtApp.getText());
+        cliente.setApellidoMaterno(txtApm.getText());
+        cliente.setTelefono(txttel.getText());
+        cliente.setDni(txtdni.getText());
+        cliente.setCelular(txtcel.getText());
+        cliente.setCorreo(txtcorreo.getText());
+        cliente.getClienteDireccionesSet().clear();
+        direcciones.forEach((t) -> {
+                cliente.addClienteDirecciones(new ClienteDireccion(t.direccion.getValue(), t.nombre.getValue(), Boolean.FALSE, cliente));
+        });
+
+    }
+
     public void agregarColumnasTablasClientes() {
         final TreeItem<DireccionesLista> rootPedido = new RecursiveTreeItem<>(direcciones, RecursiveTreeObject::getChildren);
         tablaDirecciones.setEditable(true);
-        tablaDirecciones.getColumns().setAll(direccion);
+        tablaDirecciones.getColumns().setAll(direccion, nombre);
         tablaDirecciones.setRoot(rootPedido);
         tablaDirecciones.setShowRoot(false);
     }
@@ -258,8 +293,30 @@ public class RegistrarClienteController implements Initializable {
             UsuarioHelper usuariohelper = new UsuarioHelper();
             usuariohelper.saveUser(cliente);
             usuariohelper.close();
+            SeleccionarClienteController.userDialog.close();
+        } else {
+            actualizarUsuario();
+            UsuarioHelper usuariohelper = new UsuarioHelper();
+            usuariohelper.updateUser(cliente);
+            usuariohelper.close();
+            SeleccionarClienteController.userDialog.close();
         }
 
+    }
+
+    void actualizarTabla() {
+        clientes.clear();
+        PerfilHelper perfilHelper = new PerfilHelper();
+        Perfil perfil = perfilHelper.getProfile("Cliente");
+        perfilHelper.close();
+        UsuarioHelper usuarioHelper = new UsuarioHelper();
+        ArrayList<Usuario> usuarios = usuarioHelper.getUsers(perfil);
+        usuarioHelper.close();
+        if (usuarios != null) {
+            usuarios.forEach((t) -> {
+                clientes.add(new SeleccionarClienteController.ClientesLista(t.getNombres() + " " + t.getApellidoPaterno() + " " + t.getApellidoMaterno(), t.getDni(), t.getTelefono(), t.getCelular(), t.getId().intValue()));
+            });
+        }
     }
 
     @FXML
@@ -274,16 +331,15 @@ public class RegistrarClienteController implements Initializable {
         SeleccionarClienteController.userDialog.close();
     }
 
-    class DireccionesLista extends RecursiveTreeObject<DireccionesLista> {
+    public class DireccionesLista extends RecursiveTreeObject<DireccionesLista> {
 
-        StringProperty direccion;
-        StringProperty nombre;
-        Integer codigo;
+        private StringProperty direccion;
+        private StringProperty nombre;
+        private Integer codigo;
 
         public DireccionesLista(String direccion, String nombre, Integer codigo) {
             this.nombre = new SimpleStringProperty(nombre);
             this.direccion = new SimpleStringProperty(direccion);
-
             this.codigo = codigo;
         }
 
@@ -291,7 +347,7 @@ public class RegistrarClienteController implements Initializable {
         public boolean equals(Object o) {
             if (o instanceof DireccionesLista) {
                 DireccionesLista cl = (DireccionesLista) o;
-                return cl.codigo.equals(this.codigo);
+                return cl.getDireccion().getValue().trim().equals(this.getDireccion().getValue().trim());
             }
             return super.equals(o); //To change body of generated methods, choose Tools | Templates.
         }
@@ -299,8 +355,50 @@ public class RegistrarClienteController implements Initializable {
         @Override
         public int hashCode() {
             int hash = 3;
-            hash = 71 * hash + Objects.hashCode(this.codigo);
+            hash = 71 * hash + Objects.hashCode(this.getCodigo());
             return hash;
+        }
+
+        /**
+         * @return the direccion
+         */
+        public StringProperty getDireccion() {
+            return direccion;
+        }
+
+        /**
+         * @param direccion the direccion to set
+         */
+        public void setDireccion(StringProperty direccion) {
+            this.direccion = direccion;
+        }
+
+        /**
+         * @return the nombre
+         */
+        public StringProperty getNombre() {
+            return nombre;
+        }
+
+        /**
+         * @param nombre the nombre to set
+         */
+        public void setNombre(StringProperty nombre) {
+            this.nombre = nombre;
+        }
+
+        /**
+         * @return the codigo
+         */
+        public Integer getCodigo() {
+            return codigo;
+        }
+
+        /**
+         * @param codigo the codigo to set
+         */
+        public void setCodigo(Integer codigo) {
+            this.codigo = codigo;
         }
 
     }

@@ -12,13 +12,12 @@ import com.sigad.sigad.business.DetallePedido;
 import com.sigad.sigad.business.Pedido;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoDescuento;
+import com.sigad.sigad.business.helpers.GeneralHelper;
 import com.sigad.sigad.business.helpers.ProductoDescuentoHelper;
 import com.sigad.sigad.business.helpers.ProductoHelper;
-import com.sigad.sigad.personal.controller.CrearEditarUsuarioController;
-import com.sigad.sigad.personal.controller.PersonalController;
-import static com.sigad.sigad.personal.controller.PersonalController.userDialog;
 import java.io.IOException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,25 +37,20 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableRow;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.CheckBoxTreeTableCell;
-import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -66,7 +60,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 
 /**
@@ -129,6 +122,8 @@ public class SeleccionarProductosController implements Initializable {
     private JFXButton btnContinuar;
     @FXML
     private Label lblTotal;
+    @FXML
+    private Label lbligv;
 
     private Pedido pedido = new Pedido();
     private final ObservableList<PedidoLista> pedidos = FXCollections.observableArrayList();
@@ -145,13 +140,18 @@ public class SeleccionarProductosController implements Initializable {
 
         //Basede datos
         ProductoHelper gest = new ProductoHelper();
-        ArrayList<Producto> productosDB = gest.getProducts();
+        HashMap<Producto, Integer> productosDB = gest.getProductsByTend();
+        gest.close();
         if (productosDB != null) {
-            productosDB.forEach((p) -> {
+            productosDB.forEach((p, u) -> {
                 Producto t = p;
-                System.out.println(t.getPrecio());
-                prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), Integer.toString(t.getStockLogico()), /*t.getCategoria().getNombre()*/ "Hola", "", t.getImagen(), t.getId().intValue()));
+                prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), u.toString(), t.getCategoria().getNombre(), "", t.getImagen(), t.getId().intValue()));
             });
+//            productosDB.forEach((p) -> {
+//                Producto t = p;
+//                System.out.println(t.getPrecio());
+//                prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), Integer.toString(t.getStockLogico()), t.getCategoria().getNombre(), "", t.getImagen(), t.getId().intValue()));
+//            });
         }
 
     }
@@ -270,9 +270,11 @@ public class SeleccionarProductosController implements Initializable {
             public void handle(TreeTableColumn.CellEditEvent<PedidoLista, Integer> event) {
 
                 Integer stock = event.getRowValue().getValue().stock.getValue();
+                Double subNew = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getNewValue()) * Float.valueOf(event.getRowValue().getValue().precio.get()) * (1-Float.valueOf(event.getRowValue().getValue().descuento.get())/ 100.0) );
+                Double subOld = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getOldValue()) * Float.valueOf(event.getRowValue().getValue().precio.get()) * (1-Float.valueOf(event.getRowValue().getValue().descuento.get())/ 100.0) );
                 PedidoLista nuevo = new PedidoLista(event.getRowValue().getValue().nombre.getValue(), event.getRowValue().getValue().precio.getValue(),
                         (event.getNewValue() <= stock) ? event.getNewValue() : event.getOldValue(),
-                        String.valueOf(Float.valueOf(event.getRowValue().getValue().precio.get()) * Float.valueOf(event.getNewValue()) + Float.valueOf(event.getRowValue().getValue().precio.get()) * (-Float.valueOf(event.getRowValue().getValue().descuento.get())) / 100.0),
+                        (event.getNewValue() <= stock) ? subNew.toString() : subOld.toString(),
                         event.getRowValue().getValue().codigo, event.getRowValue().getValue().descuento.get(),
                         event.getRowValue().getValue().stock.getValue(), event.getRowValue().getValue().codigoDescuento);
                 Integer i = pedidos.indexOf(nuevo);
@@ -371,6 +373,9 @@ public class SeleccionarProductosController implements Initializable {
         for (PedidoLista pedido : pedidos) {
             total = Double.valueOf(pedido.subtotal.getValue()) + total;
         }
+        Double igv = GeneralHelper.roundTwoDecimals(total * HomeController.IGV);
+        total = GeneralHelper.roundTwoDecimals(total + igv);
+        lbligv.setText(igv.toString());
         lblTotal.setText(total.toString());
     }
 

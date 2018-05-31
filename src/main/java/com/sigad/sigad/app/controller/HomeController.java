@@ -53,6 +53,7 @@ public class HomeController implements Initializable {
      */
     
     public static final String viewPath = "/com/sigad/sigad/app/view/home.fxml";
+    public static final Double IGV = 0.18;
     public static String windowName = "Home";
     @FXML
     private JFXButton profileBtn, productoBtn,offertBtn;

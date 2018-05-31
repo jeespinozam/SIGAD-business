@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -53,13 +54,12 @@ public class Usuario {
     private String intereses;
     @OneToMany(mappedBy = "usuario")
     private Set<ClienteFecha> clienteFechas = new HashSet<ClienteFecha>();
-    @OneToMany(mappedBy = "usuario")
-    private Set<ClienteDireccion> clienteDirecciones = new HashSet<ClienteDireccion>();
+    @OneToMany(fetch = FetchType.EAGER ,mappedBy = "usuario", cascade = CascadeType.ALL)
+    private Set<ClienteDireccion> clienteDirecciones = new HashSet<ClienteDireccion>(); 
     @OneToMany(mappedBy = "insumo")
     private Set<CapacidadTienda> capacidadTiendas = new HashSet<CapacidadTienda>();
     @OneToMany(mappedBy = "cliente")
     private Set<Pedido> pedidoCliente = new HashSet<Pedido>();
-
     @ManyToMany(mappedBy = "usuarios", cascade = {CascadeType.ALL})
     private Set<ProductoDescuento> descuentos = new HashSet<ProductoDescuento>();
 
@@ -87,14 +87,15 @@ public class Usuario {
         this.correo = correo;
         this.password = password;
         this.intereses = intereses;
+
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof Usuario){
-            Usuario u = (Usuario ) o ;
+        if (o instanceof Usuario) {
+            Usuario u = (Usuario) o;
             return u.getDni().trim().equals(this.getDni().trim());
-        
+
         }
         return super.equals(o); //To change body of generated methods, choose Tools | Templates.
     }
@@ -106,8 +107,6 @@ public class Usuario {
         return hash;
     }
 
-    
-    
     /**
      * @return the id
      */
@@ -278,10 +277,13 @@ public class Usuario {
         }
     }
 
-    
     public ArrayList<ClienteDireccion> getClienteDirecciones() {
         ArrayList<ClienteDireccion> direcciones = new ArrayList(clienteDirecciones);
         return direcciones;
+    }
+    
+    public Set<ClienteDireccion> getClienteDireccionesSet() {
+        return clienteDirecciones;
     }
 
     /**
@@ -295,9 +297,10 @@ public class Usuario {
      * @return the clienteDirecciones
      */
     public void addClienteDirecciones(ClienteDireccion clienteDireccion) {
-        if (clienteDireccion.getUsuario() == this) {
-            getClienteDirecciones().add(clienteDireccion);
+        if (clienteDirecciones == null) {
+            clienteDirecciones = new HashSet<>();
         }
+        clienteDirecciones.add(clienteDireccion);
     }
 
     /**
@@ -345,25 +348,28 @@ public class Usuario {
     /**
      * @return the pedidoCliente
      */
-//    public Set<Pedido> getPedidoCliente() {
-//        return pedidoCliente;
-//    }
+    public Set<Pedido> getPedidoCliente() {
+        return pedidoCliente;
+    }
+
     /**
      * @param pedidoCliente the pedidoCliente to set
      */
-//    public void setPedidoCliente(Set<Pedido> pedidoCliente) {
-//        this.pedidoCliente = pedidoCliente;
-//    }
+    public void setPedidoCliente(Set<Pedido> pedidoCliente) {
+        this.pedidoCliente = pedidoCliente;
+    }
+
     /**
      * @return the descuentos
      */
-//    public Set<ProductoDescuento> getDescuentos() {
-//        return descuentos;
-//    }
+    public Set<ProductoDescuento> getDescuentos() {
+        return descuentos;
+    }
+
     /**
      * @param descuentos the descuentos to set
      */
-//    public void setDescuentos(Set<ProductoDescuento> descuentos) {
-//        this.descuentos = descuentos;
-//    }
+    public void setDescuentos(Set<ProductoDescuento> descuentos) {
+        this.descuentos = descuentos;
+    }
 }

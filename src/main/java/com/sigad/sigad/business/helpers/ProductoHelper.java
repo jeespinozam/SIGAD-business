@@ -11,8 +11,10 @@ import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoInsumo;
 import com.sigad.sigad.business.Tienda;
+import com.sigad.sigad.business.Usuario;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Set;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -45,7 +47,7 @@ public class ProductoHelper {
             if (!query.list().isEmpty()) {
                 list = (ArrayList<Producto>) query.list();
             };
-            close();
+            
         } catch (Exception e) {
             session.getTransaction().rollback();
             System.out.println("Error: " + e.getMessage());
@@ -57,28 +59,29 @@ public class ProductoHelper {
     }
 
     ;
+//    public HashMap<Producto, Integer> recalculateStocks(HashMap<Integer, Integer> pedido){
+//    
+//    
+//    }
 
 
     public HashMap<Producto, Integer> getProductsByTend() {
         try {
-            Query query = session.createQuery("from Tienda where id='" + LoginController.user.getTienda().getId() + "'");
-            close();
-            
-            Tienda tienda = (Tienda) query;
+            Tienda tienda = LoginController.user.getTienda();
             Set<CapacidadTienda> capacidades = tienda.getCapacidadTiendas();
             HashMap<Producto,Integer> hm=new HashMap<>();  
             ArrayList<Producto> productos = getProducts();
             for (int i = 0; i < productos.size(); i++) {
                 Producto get = productos.get(i);
                 ArrayList<ProductoInsumo> prodxinsumo = new ArrayList(get.getProductoxInsumos());
-                Integer cantidadMaxima=10000;
+                Integer cantidadMaxima=Integer.MAX_VALUE;
                 for (int k = 0; k < prodxinsumo.size(); k++) {
                     ProductoInsumo pxi = prodxinsumo.get(k);
                     ArrayList<CapacidadTienda> capTienda = new ArrayList(capacidades);
                     Boolean contiene = false;
                     for (int j = 0; j < capTienda.size(); j++) {
                         CapacidadTienda ct = capTienda.get(j);
-                        if (ct.getInsumo() == pxi.getInsumo()){
+                        if (Objects.equals(ct.getInsumo().getId(), pxi.getInsumo().getId())){
                             contiene = true;
                             Double cantPotencial = ct.getCantidad() / pxi.getCantidad();
                             cantidadMaxima = (cantidadMaxima>cantPotencial)? cantPotencial.intValue() :cantidadMaxima;
@@ -88,7 +91,8 @@ public class ProductoHelper {
                     if (!contiene)
                         break;
                 }
-               hm.put(get, cantidadMaxima);
+                
+               hm.put(get,(cantidadMaxima == Integer.MAX_VALUE)? 0 : cantidadMaxima);
 
             }
             return hm;
@@ -116,7 +120,6 @@ public class ProductoHelper {
             if (!query.list().isEmpty()) {
                 product = (Producto) query.list().get(0);
             }
-            close();
         } catch (Exception e) {
 
             System.out.println("Error: " + e.getMessage());

@@ -5,7 +5,8 @@
  */
 package com.sigad.sigad.business;
 
-import java.security.Timestamp;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -26,7 +27,7 @@ import javax.persistence.OneToMany;
 public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long id;
+    private Long id;
     @NotNull
     private Timestamp fechaVenta;
     @NotNull
@@ -61,8 +62,8 @@ public class Pedido {
     private Set<DetallePedido> detallePedido = new HashSet<>();
 
     private Timestamp horaEntrega;
-    private Timestamp horaIniEntrega;
-    private Timestamp horaFinEntrega;
+    private Time horaIniEntrega;
+    private Time horaFinEntrega;
     
     public Pedido() {
     }
@@ -70,7 +71,7 @@ public class Pedido {
     /**
      * @return the id
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -133,28 +134,28 @@ public class Pedido {
     /**
      * @return the horaIniEntrega
      */
-    public Timestamp getHoraIniEntrega() {
+    public Time getHoraIniEntrega() {
         return horaIniEntrega;
     }
 
     /**
      * @param horaIniEntrega the horaIniEntrega to set
      */
-    public void setHoraIniEntrega(Timestamp horaIniEntrega) {
+    public void setHoraIniEntrega(Time horaIniEntrega) {
         this.horaIniEntrega = horaIniEntrega;
     }
 
     /**
      * @return the horaFinEntrega
      */
-    public Timestamp getHoraFinEntrega() {
+    public Time getHoraFinEntrega() {
         return horaFinEntrega;
     }
 
     /**
      * @param horaFinEntrega the horaFinEntrega to set
      */
-    public void setHoraFinEntrega(Timestamp horaFinEntrega) {
+    public void setHoraFinEntrega(Time horaFinEntrega) {
         this.horaFinEntrega = horaFinEntrega;
     }
 

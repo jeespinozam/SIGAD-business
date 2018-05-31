@@ -28,6 +28,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 /**
@@ -102,13 +103,18 @@ public class DescripcionProductosController implements Initializable {
         if (producto != null) {
             txtNombre.setText(producto.getNombre());
             txtPrecioBase.setText(producto.getPrecio().toString());
-            //txtCategoria.setText(producto.getCategoria().getNombre());
+            txtCategoria.setText(producto.getCategoria().getNombre());
             txtDescripcion.setText(producto.getDescripcion());
             Image image = new Image(producto.getImagen());
             imageProducto.setImage(image);
         }
         llenarTablaDescuento();
         System.out.println(idProducto);
+    }
+
+    @FXML
+    void clickCerrar(MouseEvent event) {
+        SeleccionarProductosController.userDialog.close();
     }
 
     public void llenarTablaDescuento() {
@@ -118,7 +124,7 @@ public class DescripcionProductosController implements Initializable {
         if (descuentos != null) {
             descuentos.forEach((t) -> {
                 promociones.add(new PromocionesLista(t.getCodCupon(), "Descuento",
-                        String.valueOf(t.getValorPct()* 100), "D", idProducto));
+                        String.valueOf(t.getValorPct() * 100), "D", idProducto));
             });
         }
         helper.close();

@@ -48,6 +48,14 @@ public class ProductoDescuento {
     public ProductoDescuento() {
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof ProductoDescuento){
+        
+        }
+        return super.equals(o); //To change body of generated methods, choose Tools | Templates.
+    }
+    
     
     /**
      * @return the id
