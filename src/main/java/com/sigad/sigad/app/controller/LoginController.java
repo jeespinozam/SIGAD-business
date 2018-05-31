@@ -10,6 +10,7 @@ import com.jfoenix.controls.JFXTextField;
 import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Permiso;
 import com.sigad.sigad.business.Usuario;
+import com.sigad.sigad.business.helpers.PerfilHelper;
 import com.sigad.sigad.business.helpers.PermisoHelper;
 import com.sigad.sigad.business.helpers.UsuarioHelper;
 import java.io.IOException;
@@ -63,6 +64,7 @@ public class LoginController implements Initializable {
     @FXML
     private StackPane hiddenSp;
     
+    public static Stage stage;
     public static Usuario user = null;
     
     @Override
@@ -83,6 +85,11 @@ public class LoginController implements Initializable {
                 }else{
                     tx = session.beginTransaction();
                 }
+                //Crear un perfil de cliente
+                PerfilHelper helper = new PerfilHelper();
+                Perfil cliente = new Perfil("Cliente", "Cliente de aplicación móvil", true, null);
+                helper.saveProfile(cliente);
+                helper.close();
                 
                 Set<Permiso> list = new HashSet<>();
                 list.add(new Permiso("Productos", "SALE"));
@@ -97,12 +104,14 @@ public class LoginController implements Initializable {
                 list.add(new Permiso("Configuraciones", "SETTINGS"));
                 
                 for (Permiso p : list) {
-                    PermisoHelper helper = new PermisoHelper();
-                    helper.savePermission(p);
+                    PermisoHelper helper1 = new PermisoHelper();
+                    helper1.savePermission(p);
+                    helper1.close();
                 }
                 
+                //Crear un perfil de superadmin
                 Perfil adminProfile = new Perfil("SuperAdmin", "Super admini can create stores", true, list);
-            
+
                 String hash = encrypt("admin");
 
                 Usuario user = new Usuario("Juan", "Tonos", "Tonos", adminProfile,
@@ -191,7 +200,7 @@ public class LoginController implements Initializable {
     private void loadWindow(String viewPath, String windowTitle) throws IOException {
        userTxt.getScene().getWindow().hide();
        Parent newRoot = FXMLLoader.load(getClass().getResource(viewPath));
-       Stage stage = new Stage();
+       stage = new Stage();
        stage.setTitle(windowTitle);
        stage.setScene(new Scene(newRoot));
        stage.show();
