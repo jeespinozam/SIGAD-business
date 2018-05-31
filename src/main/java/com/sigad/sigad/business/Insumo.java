@@ -6,9 +6,11 @@
 package com.sigad.sigad.business;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import javax.validation.constraints.NotNull;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,11 +23,13 @@ import javax.persistence.OneToMany;
  */
 @Entity
 public class Insumo {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @NotNull
+    @Column(unique = true)
     private String nombre;
     private String imagen;
     private String descripcion;
@@ -38,19 +42,32 @@ public class Insumo {
     @NotNull
     private boolean activo;
     private Double volumen;
-    
+
     @OneToMany(mappedBy = "insumo")
     private Set<LoteInsumo> lotesInsumo = new HashSet<LoteInsumo>();
+    
 
     /**
      * Constructor.
      */
     public Insumo() {
     }
-    
-    /**
-     * @return the id
-     */
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Insumo){
+            Insumo ins = (Insumo) obj;
+            return ins.getId().equals(getId());
+        }
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 79 * hash + Objects.hashCode(this.id);
+        return hash;
+    }
     public Long getId() {
         return id;
     }

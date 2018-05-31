@@ -27,7 +27,7 @@ import javax.validation.constraints.NotNull;
 public class ProductoDescuento {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long id;
+    private Long id;
     
     @NotNull
     private Date fechaInicio ;
@@ -52,7 +52,7 @@ public class ProductoDescuento {
     /**
      * @return the id
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

@@ -5,7 +5,9 @@
  */
 package com.sigad.sigad.business;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -25,6 +27,7 @@ import javax.validation.constraints.Email;
  */
 @Entity
 public class Usuario {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
@@ -48,20 +51,21 @@ public class Usuario {
     @Column(nullable = false)
     private String password;
     private String intereses;
-    @OneToMany(mappedBy="usuario")
+    @OneToMany(mappedBy = "usuario")
     private Set<ClienteFecha> clienteFechas = new HashSet<ClienteFecha>();
-    @OneToMany(mappedBy="usuario")
+    @OneToMany(mappedBy = "usuario")
     private Set<ClienteDireccion> clienteDirecciones = new HashSet<ClienteDireccion>();
-    @OneToMany(mappedBy="id.insumo")
+    @OneToMany(mappedBy = "insumo")
     private Set<CapacidadTienda> capacidadTiendas = new HashSet<CapacidadTienda>();
     @OneToMany(mappedBy = "cliente")
     private Set<Pedido> pedidoCliente = new HashSet<Pedido>();
-    
-    @ManyToMany(mappedBy = "usuarios", cascade = { CascadeType.ALL })
+
+    @ManyToMany(mappedBy = "usuarios", cascade = {CascadeType.ALL})
     private Set<ProductoDescuento> descuentos = new HashSet<ProductoDescuento>();
-    
+
     @ManyToOne
     private Tienda tienda;
+
     /**
      * Constructor.
      */
@@ -84,6 +88,25 @@ public class Usuario {
         this.password = password;
         this.intereses = intereses;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Usuario){
+            Usuario u = (Usuario ) o ;
+            return u.getDni().trim().equals(this.getDni().trim());
+        
+        }
+        return super.equals(o); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 19 * hash + Objects.hashCode(this.dni);
+        return hash;
+    }
+
+    
     
     /**
      * @return the id
@@ -255,12 +278,25 @@ public class Usuario {
         }
     }
 
+    
+    public ArrayList<ClienteDireccion> getClienteDirecciones() {
+        ArrayList<ClienteDireccion> direcciones = new ArrayList(clienteDirecciones);
+        return direcciones;
+    }
+
+    /**
+     * @param clienteDirecciones the clienteDirecciones to set
+     */
+    public void setClienteDirecciones(Set<ClienteDireccion> clienteDirecciones) {
+        this.clienteDirecciones = clienteDirecciones;
+    }
+
     /**
      * @return the clienteDirecciones
      */
     public void addClienteDirecciones(ClienteDireccion clienteDireccion) {
         if (clienteDireccion.getUsuario() == this) {
-            clienteDirecciones.add(clienteDireccion);
+            getClienteDirecciones().add(clienteDireccion);
         }
     }
 
@@ -305,28 +341,25 @@ public class Usuario {
     public void setTienda(Tienda tienda) {
         this.tienda = tienda;
     }
-    
+
     /**
      * @return the pedidoCliente
      */
 //    public Set<Pedido> getPedidoCliente() {
 //        return pedidoCliente;
 //    }
-
     /**
      * @param pedidoCliente the pedidoCliente to set
      */
 //    public void setPedidoCliente(Set<Pedido> pedidoCliente) {
 //        this.pedidoCliente = pedidoCliente;
 //    }
-
     /**
      * @return the descuentos
      */
 //    public Set<ProductoDescuento> getDescuentos() {
 //        return descuentos;
 //    }
-
     /**
      * @param descuentos the descuentos to set
      */

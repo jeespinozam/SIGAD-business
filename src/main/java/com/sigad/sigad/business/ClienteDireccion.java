@@ -5,6 +5,7 @@
  */
 package com.sigad.sigad.business;
 
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -25,13 +26,13 @@ public class ClienteDireccion {
     private String direccionCliente;
     private String nombreDireccion;
     @NotNull
-    private boolean principal;
+    private Boolean principal;
     @NotNull
-    private boolean activo;
+    private Boolean activo;
     @NotNull
-    private double cooXDireccion;
+    private Double cooXDireccion;
     @NotNull
-    private double cooYDireccion;
+    private Double cooYDireccion;
     @ManyToOne(optional=false)
     private Usuario usuario;
 
@@ -40,6 +41,50 @@ public class ClienteDireccion {
      */
     public ClienteDireccion() {
     }
+
+    public ClienteDireccion(Long id, String direccionCliente, String nombreDireccion, Boolean principal, Boolean activo, Double cooXDireccion, Double cooYDireccion, Usuario usuario) {
+        this.id = id;
+        this.direccionCliente = direccionCliente;
+        this.nombreDireccion = nombreDireccion;
+        this.principal = principal;
+        this.activo = activo;
+        this.cooXDireccion = cooXDireccion;
+        this.cooYDireccion = cooYDireccion;
+        this.usuario = usuario;
+    }
+
+   
+    public ClienteDireccion(String direccionCliente, String nombreDireccion, Boolean principal,  Usuario usuario) {
+        this.direccionCliente = direccionCliente;
+        this.nombreDireccion = nombreDireccion;
+        this.principal = principal;
+        this.activo = Boolean.TRUE;
+        this.usuario = usuario;
+    }
+
+    /**
+     *
+     * @param o
+     * @return
+     */
+    @Override
+    public boolean equals(Object o) {
+        
+        if (o instanceof ClienteDireccion){
+            ClienteDireccion  c = (ClienteDireccion) o;
+            return c.getId().equals(this.getId());
+        }
+        return super.equals(o); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 59 * hash + Objects.hashCode(this.id);
+        return hash;
+    }
+    
+    
     
     /**
      * @return the id

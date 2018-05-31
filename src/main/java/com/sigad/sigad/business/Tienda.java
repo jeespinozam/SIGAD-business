@@ -7,6 +7,7 @@ package com.sigad.sigad.business;
 
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -32,9 +33,9 @@ public class Tienda {
     private double capacidad;
     @NotNull
     private boolean activo;
-    @OneToMany(mappedBy="id.tienda")
+    @OneToMany(mappedBy="tienda", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CapacidadTienda> capacidadTiendas = new HashSet<CapacidadTienda>();
-    @OneToMany(mappedBy = "tienda")
+    @OneToMany(mappedBy = "tienda", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Usuario> empleadosTienda = new HashSet<Usuario>();
     /**
      * Constructor.

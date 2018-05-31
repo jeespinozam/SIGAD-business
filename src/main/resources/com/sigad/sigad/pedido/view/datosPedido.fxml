@@ -8,6 +8,7 @@
 <?import com.jfoenix.controls.JFXTextField?>
 <?import java.net.URL?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Rectangle?>
@@ -43,15 +44,20 @@
             <Font size="14.0" />
          </font>
       </Label>
-      <Label layoutX="105.0" layoutY="259.0" text="Moldalidad :" />
+      <Label id="modalidad" layoutX="105.0" layoutY="259.0" text="Moldalidad" />
       <Label layoutX="105.0" layoutY="288.0" text="Tipo de pago :" />
-      <JFXRadioButton layoutX="224.0" layoutY="259.0" text="Boleta" />
-      <JFXRadioButton layoutX="331.0" layoutY="259.0" text="Factura" />
-      <JFXRadioButton layoutX="224.0" layoutY="288.0" text="Efectivo" />
-      <JFXTextField layoutX="331.0" layoutY="284.0" text="Monto" />
-      <JFXRadioButton layoutX="224.0" layoutY="327.0" text="POS: Tarjeta" />
-      <JFXComboBox layoutX="334.0" layoutY="323.0" promptText="Visa" />
-      <JFXTextField layoutX="97.0" layoutY="125.0" prefHeight="25.0" prefWidth="815.0" />
+      <JFXRadioButton id="btnBoleta" fx:id="btnBoleta" layoutX="224.0" layoutY="259.0" text="Boleta">
+         <toggleGroup>
+            <ToggleGroup fx:id="genero" />
+         </toggleGroup></JFXRadioButton>
+      <JFXRadioButton id="btnFactura" fx:id="btnFactura" layoutX="331.0" layoutY="259.0" text="Factura" toggleGroup="$genero" />
+      <JFXRadioButton id="btnEfectivo" fx:id="btnEfectivo" layoutX="224.0" layoutY="288.0" text="Efectivo">
+         <toggleGroup>
+            <ToggleGroup fx:id="pago" />
+         </toggleGroup></JFXRadioButton>
+      <JFXTextField id="txtMonto" fx:id="txtMonto" layoutX="331.0" layoutY="284.0" text="Monto" />
+      <JFXRadioButton id="btnPOS" fx:id="btnPOS" layoutX="224.0" layoutY="327.0" text="POS: Tarjeta" toggleGroup="$pago" />
+      <JFXComboBox id="cmbTarjeta" fx:id="cmbTarjeta" layoutX="334.0" layoutY="323.0" promptText="Visa" />
       <Label layoutX="101.0" layoutY="107.0" text="Direccion">
          <font>
             <Font size="14.0" />
@@ -67,7 +73,7 @@
             <Font size="14.0" />
          </font>
       </Label>
-      <JFXTextArea layoutX="105.0" layoutY="502.0" prefHeight="52.0" prefWidth="806.0" />
+      <JFXTextArea fx:id="cmbDedicatoria" layoutX="105.0" layoutY="502.0" prefHeight="52.0" prefWidth="806.0" />
       <JFXButton id="btnCancelar" fx:id="btnCancelar" buttonType="RAISED" layoutX="684.0" layoutY="606.0" style="-fx-background-color: #FFFFFF;" text="Cancelar">
          <font>
             <Font size="14.0" />
@@ -91,8 +97,9 @@
       </Label>
       <Label layoutX="571.0" layoutY="258.0" text="Fecha de entrega" />
       <Label layoutX="757.0" layoutY="258.0" text="Rango de horas de entrega" />
-      <JFXDatePicker layoutX="571.0" layoutY="284.0" prefHeight="25.0" prefWidth="157.0" />
-      <JFXComboBox layoutX="757.0" layoutY="284.0" prefHeight="25.0" prefWidth="144.0" />
-      <JFXComboBox layoutX="757.0" layoutY="323.0" prefHeight="25.0" prefWidth="144.0" />
+      <JFXDatePicker id="dpFechaEntrega" fx:id="dpFechaEntrega" layoutX="571.0" layoutY="284.0" prefHeight="25.0" prefWidth="157.0" />
+      <JFXComboBox fx:id="cmbInicio" layoutX="757.0" layoutY="284.0" prefHeight="25.0" prefWidth="144.0" />
+      <JFXComboBox fx:id="cmbFin" layoutX="757.0" layoutY="323.0" prefHeight="25.0" prefWidth="144.0" />
+      <JFXComboBox fx:id="cmbDireccion" layoutX="116.0" layoutY="127.0" prefHeight="30.0" prefWidth="795.0" />
    </children>
 </AnchorPane>
