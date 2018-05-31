@@ -7,7 +7,10 @@ package com.sigad.sigad.business.helpers;
 
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Insumo;
+import com.sigad.sigad.business.Proveedor;
+import com.sigad.sigad.business.ProveedorInsumo;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.hibernate.Session;
@@ -57,6 +60,22 @@ public class InsumosHelper {
             System.out.println("====================================================================");
         }
         return id;
+    }
+    
+    public List<ProveedorInsumo> getInsumoFromProveedor(Proveedor proveedor) {
+        String hqlQuery = "from ProveedorInsumo PI where PI.proveedor_id = :prov_id";
+        try{
+            List<ProveedorInsumo> busquedaResultado = session.createQuery(hqlQuery).setParameter("prov_id", proveedor.getId()).list();
+            LOGGER.log(Level.INFO, String.format("Insumos asociados al proveedor %s encontrados, total %d", proveedor.getNombre(), busquedaResultado.size()));
+            return busquedaResultado;
+        }
+        catch(Exception e) {
+            LOGGER.log(Level.WARNING, String.format("Error en la busqueda de los Insumos del proveedor %s", proveedor.getNombre()));
+            System.out.println("====================================================================");
+            System.out.println(e);
+            System.out.println("====================================================================");
+            return null;
+        }
     }
     
     public Long updateInsumo(Insumo modifiedInsumo) {
