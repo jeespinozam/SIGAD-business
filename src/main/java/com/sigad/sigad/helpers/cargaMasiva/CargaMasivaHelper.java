@@ -395,7 +395,7 @@ public class CargaMasivaHelper {
                 Proveedor nuevoProv = new Proveedor();
                 nuevoProv.setNombre(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 index++;
-                Integer rucProved = (Integer) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), true);
+                String rucProved = (String) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), true);
                 if (rucProved!=null)
                     nuevoProv.setRuc(rucProved);
                 else
