@@ -26,7 +26,7 @@ public class Proveedor {
     private Long id;
     private String nombre;
     @NotNull
-    private int ruc;
+    private String ruc;
     private String descripcion;
     @OneToMany(mappedBy = "proveedor")
     private Set<OrdenCompra> ordenesCompra = new HashSet<OrdenCompra>();
@@ -70,14 +70,14 @@ public class Proveedor {
     /**
      * @return the ruc
      */
-    public Integer getRuc() {
+    public String getRuc() {
         return ruc;
     }
 
     /**
      * @param ruc the ruc to set
      */
-    public void setRuc(Integer ruc) {
+    public void setRuc(String ruc) {
         this.ruc = ruc;
     }
 
