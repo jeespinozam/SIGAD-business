@@ -24,10 +24,8 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -44,7 +42,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.util.Callback;
 
 /**
  * FXML Controller class
@@ -142,7 +139,7 @@ public class PersonalController implements Initializable {
     
     private void initPopup(){
         JFXButton edit = new JFXButton("Editar");
-        JFXButton delete = new JFXButton("Eliminar");
+        JFXButton delete = new JFXButton("Activar/Desactivar");
         
         edit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -159,8 +156,25 @@ public class PersonalController implements Initializable {
         delete.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                data.remove(PersonalController.selectedUser);
+                
+                UsuarioHelper helper = new UsuarioHelper();
+                Usuario temp = helper.getUser(selectedUser.correo.getValue());
+                temp.setActivo(!temp.isActivo());
+                helper.close();
+                
+                UsuarioHelper helper1 = new UsuarioHelper();
+                boolean ok = helper1.updateUser(temp);
+                if(!ok){
+                    ErrorController error = new ErrorController();
+                    error.loadDialog("Eror", "No se pudo actualizar el estado", "Ok", hiddenSp);
+                    return;
+                }
+                updateTable(temp);
+                
+                helper1.close();
                 popup.hide();
-                deleteUserDialog();
+                
             }
         });
         
@@ -202,23 +216,6 @@ public class PersonalController implements Initializable {
                 
         userDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
         userDialog.show();
-    }  
-    
-    private void deleteUserDialog() {
-        JFXDialogLayout content =  new JFXDialogLayout();
-        content.setHeading(new Text("Error"));
-        content.setBody(new Text("Cuenta o contraseña incorrectas"));
-                
-        JFXDialog dialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
-        JFXButton button = new JFXButton("Okay");
-        button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                dialog.close();
-            }
-        });
-        content.setActions(button);
-        dialog.show();
     }
 
     private void initUserTbl() {

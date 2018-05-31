@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXDatePicker?>
+<?import com.jfoenix.controls.JFXRadioButton?>
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="680.0" prefWidth="1010.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.pedido.controller.DatosPedidoController">
+    <stylesheets>
+        <URL value="@/styles/datospedido.css" />
+    </stylesheets>
+   <children>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="69.0" layoutX="84.0" layoutY="100.0" smooth="false" stroke="TRANSPARENT" strokeLineCap="ROUND" strokeType="INSIDE" width="851.0">
+         <effect>
+            <DropShadow color="#00000082" />
+         </effect>
+      </Rectangle>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="227.0" layoutX="84.0" layoutY="189.0" smooth="false" stroke="TRANSPARENT" strokeLineCap="ROUND" strokeType="INSIDE" width="435.0">
+         <effect>
+            <DropShadow color="#00000082" />
+         </effect>
+      </Rectangle>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="227.0" layoutX="540.0" layoutY="189.0" smooth="false" stroke="TRANSPARENT" strokeLineCap="ROUND" strokeType="INSIDE" width="395.0">
+         <effect>
+            <DropShadow color="#00000082" />
+         </effect>
+      </Rectangle>
+      <Label layoutX="101.0" layoutY="200.0" text="Pago">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label layoutX="554.0" layoutY="192.0" text="Fecha entrega">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label layoutX="105.0" layoutY="259.0" text="Moldalidad :" />
+      <Label layoutX="105.0" layoutY="288.0" text="Tipo de pago :" />
+      <JFXRadioButton layoutX="224.0" layoutY="259.0" text="Boleta" />
+      <JFXRadioButton layoutX="331.0" layoutY="259.0" text="Factura" />
+      <JFXRadioButton layoutX="224.0" layoutY="288.0" text="Efectivo" />
+      <JFXTextField layoutX="331.0" layoutY="284.0" text="Monto" />
+      <JFXRadioButton layoutX="224.0" layoutY="327.0" text="POS: Tarjeta" />
+      <JFXComboBox layoutX="334.0" layoutY="323.0" promptText="Visa" />
+      <JFXTextField layoutX="97.0" layoutY="125.0" prefHeight="25.0" prefWidth="815.0" />
+      <Label layoutX="101.0" layoutY="107.0" text="Direccion">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="127.0" layoutX="84.0" layoutY="454.0" smooth="false" stroke="TRANSPARENT" strokeLineCap="ROUND" strokeType="INSIDE" width="858.0">
+         <effect>
+            <DropShadow color="#00000082" />
+         </effect>
+      </Rectangle>
+      <Label layoutX="101.0" layoutY="466.0" text="Dedicatoria">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <JFXTextArea layoutX="105.0" layoutY="502.0" prefHeight="52.0" prefWidth="806.0" />
+      <JFXButton id="btnCancelar" fx:id="btnCancelar" buttonType="RAISED" layoutX="684.0" layoutY="606.0" style="-fx-background-color: #FFFFFF;" text="Cancelar">
+         <font>
+            <Font size="14.0" />
+         </font>
+         <effect>
+            <DropShadow />
+         </effect>
+      </JFXButton>
+      <JFXButton id="btnRegistrar" fx:id="btnRegistrar" buttonType="RAISED" layoutX="814.0" layoutY="606.0" style="-fx-background-color: #FFFFFF;" text="Registrar cliente">
+         <font>
+            <Font size="14.0" />
+         </font>
+         <effect>
+            <DropShadow />
+         </effect>
+      </JFXButton>
+      <Label layoutX="84.0" layoutY="41.0" prefHeight="36.0" prefWidth="172.0" text="Datos del pedido">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="571.0" layoutY="258.0" text="Fecha de entrega" />
+      <Label layoutX="757.0" layoutY="258.0" text="Rango de horas de entrega" />
+      <JFXDatePicker layoutX="571.0" layoutY="284.0" prefHeight="25.0" prefWidth="157.0" />
+      <JFXComboBox layoutX="757.0" layoutY="284.0" prefHeight="25.0" prefWidth="144.0" />
+      <JFXComboBox layoutX="757.0" layoutY="323.0" prefHeight="25.0" prefWidth="144.0" />
+   </children>
+</AnchorPane>

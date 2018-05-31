@@ -157,7 +157,7 @@ public class CrearEditarOrdenCompraController implements Initializable {
             provCbx.setConverter(new StringConverter<Proveedor>() {
                 Long id = null;
                 String des = null;
-                Integer ruc = null;
+                String ruc = null;
             @Override
             public String toString(Proveedor object) {
                 id = object.getId();
@@ -203,10 +203,10 @@ public class CrearEditarOrdenCompraController implements Initializable {
             newOrd.setFecha(inputDate);
             newOrd.setProveedor(provCbx.getSelectionModel().getSelectedItem());
             newOrd.setUsuario(LoginController.user);
-            Integer id  = helpero.saveOrden(newOrd);
+            /*Integer id  = helpero.saveOrden(newOrd);
             if( id!=null){
                 ListaOrdenesCompraController.updateTable(newOrd);
-            }
+            }*/
             helpero.close();
             ListaOrdenesCompraController.ordenDialog.close();
         }

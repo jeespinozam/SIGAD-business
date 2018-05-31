@@ -9,7 +9,12 @@ import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sigad.sigad.app.controller.HomeController;
 import com.sigad.sigad.business.Producto;
-import com.sigad.sigad.pedido.helper.ProductoHelper;
+import com.sigad.sigad.business.ProductoDescuento;
+import com.sigad.sigad.business.helpers.ProductoDescuentoHelper;
+import com.sigad.sigad.business.helpers.ProductoHelper;
+import com.sigad.sigad.personal.controller.CrearEditarUsuarioController;
+import com.sigad.sigad.personal.controller.PersonalController;
+import static com.sigad.sigad.personal.controller.PersonalController.userDialog;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -53,6 +58,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Border;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -75,6 +82,14 @@ public class SeleccionarProductosController implements Initializable {
 
     @FXML
     private AnchorPane anchorPane;
+    @FXML
+    private StackPane stackPane;
+
+    @FXML
+    private JFXPopup popup;
+    @FXML
+    public static JFXDialog userDialog;
+
     @FXML
     JFXTreeTableColumn<ProductoLista, Boolean> select = new JFXTreeTableColumn<>("Seleccionar");
     @FXML
@@ -100,7 +115,7 @@ public class SeleccionarProductosController implements Initializable {
     @FXML
     JFXTreeTableColumn<PedidoLista, Integer> cantidadPedido = new JFXTreeTableColumn<>("Cantidad");
     @FXML
-    JFXTreeTableColumn<PedidoLista, String> descuentoPedido = new JFXTreeTableColumn<>("Descuentos");
+    JFXTreeTableColumn<PedidoLista, String> descuentoPedido = new JFXTreeTableColumn<>("Descuento(%)");
 
     @FXML
     private JFXTextField filtro;
@@ -108,7 +123,7 @@ public class SeleccionarProductosController implements Initializable {
     private JFXButton btnContinuar;
     @FXML
     private Label lblTotal;
-    
+
     private final ObservableList<PedidoLista> pedidos = FXCollections.observableArrayList();
     private final ObservableList<ProductoLista> prod = FXCollections.observableArrayList();
 
@@ -125,7 +140,7 @@ public class SeleccionarProductosController implements Initializable {
         //Basede datos
         ProductoHelper gest = new ProductoHelper();
         ArrayList<Producto> productosDB = gest.getProducts();
-        if(productosDB != null){
+        if (productosDB != null) {
             productosDB.forEach((p) -> {
                 Producto t = p;
                 System.out.println(t.getPrecio());
@@ -255,13 +270,20 @@ public class SeleccionarProductosController implements Initializable {
         cantidadPedido.setOnEditCommit(new EventHandler<TreeTableColumn.CellEditEvent<PedidoLista, Integer>>() {
             @Override
             public void handle(TreeTableColumn.CellEditEvent<PedidoLista, Integer> event) {
+
+                Integer stock = event.getRowValue().getValue().stock.getValue();
                 PedidoLista nuevo = new PedidoLista(event.getRowValue().getValue().nombre.getValue(), event.getRowValue().getValue().precio.getValue(),
-                        event.getNewValue(), String.valueOf(Float.valueOf(event.getRowValue().getValue().precio.get()) * Float.valueOf(event.getNewValue())),
-                        event.getRowValue().getValue().codigo, "");
+                        (event.getNewValue() <= stock) ? event.getNewValue() : event.getOldValue(),
+                        String.valueOf(Float.valueOf(event.getRowValue().getValue().precio.get()) * Float.valueOf(event.getNewValue()) + Float.valueOf(event.getRowValue().getValue().precio.get()) * ( - Float.valueOf(event.getRowValue().getValue().descuento.get())) / 100.0),
+                        event.getRowValue().getValue().codigo, event.getRowValue().getValue().descuento.get(), event.getRowValue().getValue().stock.getValue());
                 Integer i = pedidos.indexOf(nuevo);
                 pedidos.remove(nuevo);
                 pedidos.add(i, nuevo);
-                calcularTotal();
+                
+                if (event.getNewValue() <= stock) {
+                    calcularTotal();
+                    
+                }
 
             }
         });
@@ -304,17 +326,19 @@ public class SeleccionarProductosController implements Initializable {
                 TreeTableRow<ProductoLista> row = new TreeTableRow<>();
                 row.setOnMouseClicked((event) -> {
                     if (event.getClickCount() == 2 && (!row.isEmpty())) {
-                        try {
-                            ProductoLista rowData = row.getItem();
-                            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(DescripcionProductosController.viewPath));
-                            Parent root1 = fxmlLoader.load();
-                            fxmlLoader.<DescripcionProductosController>getController().setIdProducto(rowData.codigo);
-                            Stage stage = new Stage();
-                            stage.setTitle("Seleccionar producto");
-                            stage.setScene(new Scene(root1));
-                            stage.show();
-                            //FXMLLoader loader = new FXMLLoader(SeleccionarProductosController.this.getClass().getResource(DescripcionProductosController.viewPath));
-                            //DescripcionProductosController desc = loader.getController();
+                        ProductoLista rowData = row.getItem();
+                        mostrarInfoProducto(rowData.codigo);
+
+//                            ProductoLista rowData = row.getItem();
+//                            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(DescripcionProductosController.viewPath));
+//                            Parent root1 = fxmlLoader.load();
+//                            fxmlLoader.<DescripcionProductosController>getController().setIdProducto(rowData.codigo);
+//                            Stage stage = new Stage();
+//                            stage.setTitle("Seleccionar producto");
+//                            stage.setScene(new Scene(root1));
+//                            stage.show();
+                        //FXMLLoader loader = new FXMLLoader(SeleccionarProductosController.this.getClass().getResource(DescripcionProductosController.viewPath));
+                        //DescripcionProductosController desc = loader.getController();
 //                        desc.setIdProducto(rowData.codigo);
 //                        System.out.println(rowData.codigo);
 //                        Stage stage = new Stage();
@@ -324,13 +348,10 @@ public class SeleccionarProductosController implements Initializable {
 //                        } catch (IOException ex) {
 //                            Logger.getLogger(SeleccionarProductosController.class.getName()).log(Level.SEVERE, null, ex);
 //                        }
-
 // showAndWait will block execution until the window closes...
 //stage.showAndWait();
-
 //                        DescripcionProductosController controller = loader.getController();
 //                        text1.setText(controller.getText());
-
 //                        try {
 //                            Node node;
 //                            node = (Node) FXMLLoader.load(SeleccionarProductosController.this.getClass().getResource(DescripcionProductosController.viewPath));
@@ -338,14 +359,32 @@ public class SeleccionarProductosController implements Initializable {
 //                        } catch (IOException ex) {
 //                            Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, "", ex);
 //                        }
-                        } catch (IOException ex) {
-                            Logger.getLogger(SeleccionarProductosController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
                     }
                 });
                 return row; //To change body of generated lambdas, choose Tools | Templates.
             }
         });
+    }
+
+    public void mostrarInfoProducto(Integer codigo) {
+        try {
+            popup = new JFXPopup();
+            JFXDialogLayout content = new JFXDialogLayout();
+            content.setHeading(new Text("Crear Usuario"));
+            Node node;
+            //           node = (Node) FXMLLoader.load(SeleccionarProductosController.this.getClass().getResource(DescripcionProductosController.viewPath));
+
+            FXMLLoader loader = new FXMLLoader(SeleccionarProductosController.this.getClass().getResource(DescripcionProductosController.viewPath));
+            node = (Node) loader.load();
+            DescripcionProductosController desc = loader.getController();
+            desc.initModel(codigo);
+
+            content.setBody(node);
+            userDialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
+            userDialog.show();
+        } catch (IOException ex) {
+            Logger.getLogger(DescripcionProductosController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void calcularTotal() {
@@ -388,10 +427,18 @@ public class SeleccionarProductosController implements Initializable {
             seleccion.addListener((observable, oldValue, newValue) -> {
                 calcularTotal();
                 if (newValue) {
-                    pedidos.add(new PedidoLista(nombre, precio, 0, "0", codigo, "0"));
+                    ProductoDescuentoHelper helper = new ProductoDescuentoHelper();
+                    ProductoDescuento descuento = helper.getDescuentoByProducto(codigo);
+                    if (descuento != null) {
+                        pedidos.add(new PedidoLista(nombre, precio, 0, "0", codigo, String.valueOf(descuento.getValorPct() * 100.0), Integer.valueOf(stock)));
+                    } else {
+                        pedidos.add(new PedidoLista(nombre, precio, 0, "0", codigo, "0", Integer.valueOf(stock)));
+                    }
+                    helper.close();
+
                     //prod.remove(this);
                 } else {
-                    pedidos.remove(new PedidoLista(nombre, precio, 0, "0", codigo, "0"));
+                    pedidos.remove(new PedidoLista(nombre, precio, 0, "0", codigo, "0", 0));
                 }
                 calcularTotal();
             });
@@ -401,6 +448,9 @@ public class SeleccionarProductosController implements Initializable {
         public boolean equals(Object o) {
             if (o instanceof ProductoLista) {
                 ProductoLista pl = (ProductoLista) o;
+                return pl.codigo.equals(codigo);
+            } else if (o instanceof PedidoLista) {
+                PedidoLista pl = (PedidoLista) o;
                 return pl.codigo.equals(codigo);
             }
             return super.equals(o); //To change body of generated methods, choose Tools | Templates.
@@ -419,15 +469,17 @@ public class SeleccionarProductosController implements Initializable {
         IntegerProperty cantidad;
         StringProperty subtotal;
         StringProperty descuento;
+        IntegerProperty stock;
         Integer codigo;
 
-        public PedidoLista(String nombre, String precio, Integer cantidad, String subtotal, Integer codigo, String descuento) {
+        public PedidoLista(String nombre, String precio, Integer cantidad, String subtotal, Integer codigo, String descuento, Integer stock) {
             this.nombre = new SimpleStringProperty(nombre);
             this.precio = new SimpleStringProperty(precio);
             this.cantidad = new SimpleIntegerProperty(cantidad);
             this.subtotal = new SimpleStringProperty(subtotal);
             this.codigo = codigo;
             this.descuento = new SimpleStringProperty(descuento);
+            this.stock = new SimpleIntegerProperty(stock);
         }
 
         @Override
