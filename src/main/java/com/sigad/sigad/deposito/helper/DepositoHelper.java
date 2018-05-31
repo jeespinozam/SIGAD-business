@@ -26,12 +26,12 @@ public class DepositoHelper {
     public DepositoHelper() {
         
         session = LoginController.serviceInit();
-//        session.beginTransaction();
-//        Proveedor prov = new Proveedor();
-//        prov.setDescripcion("Distribuidor de rosas");
-//        prov.setNombre("Rosas SA");
-//        prov.setRuc(123489021);
-//        session.save(prov);
+        session.beginTransaction();
+        Proveedor prov = new Proveedor();
+        prov.setDescripcion("Distribuidor de rosas");
+        prov.setNombre("Rosas SA");
+        prov.setRuc("123489021");
+        session.save(prov);
 
 ////
 //        Perfil perf = new Perfil();
