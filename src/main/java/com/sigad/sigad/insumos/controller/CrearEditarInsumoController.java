@@ -8,6 +8,7 @@ package com.sigad.sigad.insumos.controller;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
+import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.helpers.InsumosHelper;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 
 /**
@@ -61,11 +63,69 @@ public class CrearEditarInsumoController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-        
+        if(!ListaInsumoController.isInsumoCreate) {
+            System.out.println(ListaInsumoController.selectedInsumo);
+            loadFields();
+        }
         insumo = new Insumo();
+        
+        
     }
     
-    
+//    private void addDialogBtns() {
+//        JFXButton save = new JFXButton("Guardar");
+//        save.setPrefSize(80, 25);
+//        AnchorPane.setBottomAnchor(save, -20.0);
+//        AnchorPane.setRightAnchor(save, 0.0);
+//        save.setOnAction((ActionEvent event) -> {
+//            if(validateFields()){
+//                System.out.println("VALIDADO ALL FIELDS");
+////                int indexProfile = getSelectedIndex(profilesListView, "Perfiles");
+////                if(indexProfile<0)return;
+////                
+////                int indexStore = getSelectedIndex(storesListView, "Tiendas");
+////                if(indexStore<0) return;
+////                updateFields();
+//                
+//                Insumo helper = new Insumo();
+//                //edicion
+//                if(!ListaInsumoController.isInsumoCreate){
+//                    //boolean ok = helper.updateUser(user);
+////                    if(ok){
+////                        PersonalController.data.remove(PersonalController.selectedUser);
+////                        PersonalController.updateTable(user);
+////                        PersonalController.userDialog.close();
+////                    }else{
+////                        ErrorController error = new ErrorController();
+////                        error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
+////                    }
+//                }
+//                //creacion
+//                else{
+////                    Long id = helper.saveUser(user);
+////                    if(id != null){
+////                        PersonalController.updateTable(user);
+////                        PersonalController.userDialog.close();
+////                    }else{
+////                        ErrorController error = new ErrorController();
+////                        error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
+////                    }
+//                }
+//            }
+//        });
+//        
+//        JFXButton cancel = new JFXButton("Cancelar");
+//        cancel.setPrefSize(80, 25);
+//        AnchorPane.setBottomAnchor(cancel, -20.0);
+//        AnchorPane.setRightAnchor(cancel, 85.0);
+//        cancel.setOnAction((ActionEvent event) -> {
+//            PersonalController.userDialog.close();
+//            //PersonalController.getDataFromDB();
+//        });
+//        
+//        containerPane.getChildren().add(save);
+//        containerPane.getChildren().add(cancel);
+    //}
     @FXML
     private void handleAction(ActionEvent event) {
         if(event.getSource() == btnCancelar ) {
@@ -87,6 +147,11 @@ public class CrearEditarInsumoController implements Initializable {
         }
     }
     
+    private void loadFields(){
+        InsumosHelper helper = new InsumosHelper();
+        
+        
+    }
     private void fillFields(){
         insumo.setNombre(nombreTxt.getText());
         insumo.setTiempoVida(Integer.parseInt(tiempoTxt.getText()));

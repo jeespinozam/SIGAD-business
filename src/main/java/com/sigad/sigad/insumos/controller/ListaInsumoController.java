@@ -8,10 +8,12 @@ package com.sigad.sigad.insumos.controller;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
+import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.helpers.InsumosHelper;
 import java.io.IOException;
@@ -28,9 +30,11 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
@@ -38,6 +42,7 @@ import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.cell.CheckBoxTreeTableCell;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
@@ -64,13 +69,18 @@ public class ListaInsumoController implements Initializable {
     private JFXButton moreBtn;
 
     @FXML
-    private JFXButton btnAdd;
+    private JFXButton addBtn;
 
     @FXML
     public static JFXDialog insumoDialog;
     
+    @FXML
+    private JFXPopup popup;
+    
     public static boolean isInsumoCreate;
     
+    
+    public static InsumoViewer selectedInsumo = null;
     // table elements;
     
     private ArrayList<String> selectedId;
@@ -111,10 +121,6 @@ public class ListaInsumoController implements Initializable {
             return seleccion;
         }
 
-//        public SimpleStringProperty getId() {
-//            return id;
-//        }
-
         public void setNombre(String nombre) {
             this.nombre = new SimpleStringProperty(nombre);
         }
@@ -143,9 +149,6 @@ public class ListaInsumoController implements Initializable {
             this.seleccion = seleccion;
         }
 
-//        public void setId(SimpleStringProperty id) {
-//            this.id = id;
-//        }
         private SimpleStringProperty nombre;
         private SimpleStringProperty descripcion;
         private SimpleStringProperty tiempoVida;
@@ -154,7 +157,6 @@ public class ListaInsumoController implements Initializable {
         private SimpleStringProperty volumen;
         private BooleanProperty seleccion;
         private SimpleIntegerProperty cantidad;
-        //private SimpleStringProperty id;
         ImageView imagen;
         
         public InsumoViewer(String nombre,String descripcion, String tiempoVida,String stockTotal, Boolean activo, String volumen ,String imagePath, Integer cantidad) {
@@ -165,7 +167,6 @@ public class ListaInsumoController implements Initializable {
             this.activo = new SimpleBooleanProperty(activo);
             this.volumen = new SimpleStringProperty(volumen);
             this.cantidad = new SimpleIntegerProperty(cantidad);
-            //this.id = new SimpleStringProperty(id);
         }
 
         public SimpleIntegerProperty getCantidad() {
@@ -185,14 +186,6 @@ public class ListaInsumoController implements Initializable {
     }    
     
     private void setColumns(){
-        selectCol.setPrefWidth(80);
-        selectCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<InsumoViewer, Boolean> param) -> param.getValue().getValue().getSeleccion() //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        );
-        selectCol.setCellFactory((TreeTableColumn<InsumoViewer,Boolean>param) -> {
-            CheckBoxTreeTableCell<InsumoViewer,Boolean> cell = new CheckBoxTreeTableCell<>();
-            cell.setAlignment(Pos.CENTER);
-            return cell; //To change body of generated lambdas, choose Tools | Templates.
-        });
         nombreCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<InsumoViewer, String> param) -> param.getValue().getValue().getNombre() //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         );
         stockCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<InsumoViewer, String> param) -> param.getValue().getValue().getStockTotal() //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -205,7 +198,7 @@ public class ListaInsumoController implements Initializable {
     private void addColumns(){
         final TreeItem<InsumoViewer> rootInsumo = new RecursiveTreeItem<>(insumosList,RecursiveTreeObject::getChildren);
         tblInsumos.setEditable(true);
-        tblInsumos.getColumns().setAll(selectCol,nombreCol,stockCol,volumenCol);
+        tblInsumos.getColumns().setAll(nombreCol,stockCol,volumenCol);
         tblInsumos.setRoot(rootInsumo);
         tblInsumos.setShowRoot(false);
     }
@@ -230,18 +223,82 @@ public class ListaInsumoController implements Initializable {
                                          insumo.getImagen(),0));
     }
     
+    
+    //botones
     @FXML
     private void handleAction(ActionEvent event) {
-        if(event.getSource() == btnAdd ) {
+        if(event.getSource() == addBtn ) {
             try {
-                CreateEditUserDialog(true);
+                createEditInsumoDialog(true);
             } catch (IOException ex) {
                 Logger.getLogger(ListaInsumoController.class.getName()).log(Level.SEVERE, "handleAction()", ex);
             }
         }
+        else if (event.getSource() == moreBtn){
+            int count = tblInsumos.getSelectionModel().getSelectedCells().size();
+            if( count > 1) {
+                System.out.println("waaa1");
+                ErrorController error = new ErrorController();
+                error.loadDialog("Atención", "Debe seleccionar solo un registro de la tabla", "OK", hiddenSp);
+            }else if(count <=0){
+                System.out.println("waaa2");
+                ErrorController error = new ErrorController();
+                error.loadDialog("Atención", "Debe seleccionar al menos un registro de la tabla", "OK", hiddenSp);
+            }else{
+                System.out.println("waaa3");
+                int selected =tblInsumos.getSelectionModel().getSelectedIndex();
+                selectedInsumo = (InsumoViewer)  tblInsumos.getSelectionModel().getModelItem(selected).getValue();
+                showOptions();
+                popup.show(moreBtn,JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.RIGHT);
+            }
+        }
     }
     
-    public void CreateEditUserDialog(boolean iscreate) throws IOException {
+    
+    //dialogos
+    private void showOptions(){
+        JFXButton edit = new JFXButton("Editar");
+        JFXButton delete = new JFXButton("Eliminar");
+        
+        edit.setOnAction((ActionEvent event) -> {
+            popup.hide();
+            try {
+                createEditInsumoDialog(false);
+            } catch (IOException ex) {
+                Logger.getLogger(ListaInsumoController.class.getName()).log(Level.SEVERE, "initPopup(): CreateEdditUserDialog()", ex);
+            }
+        });
+        
+        delete.setOnAction((ActionEvent event) -> {
+            popup.hide();
+            deleteInsumosDialog();
+        });
+        
+        edit.setPadding(new Insets(20));
+        edit.setPrefSize(145, 40);
+        delete.setPadding(new Insets(20));
+        delete.setPrefSize(145, 40);
+        
+        VBox vBox = new VBox(edit, delete);
+        
+        popup = new JFXPopup();
+        popup.setPopupContent(vBox);
+    }
+    
+    private void deleteInsumosDialog() {
+        JFXDialogLayout content =  new JFXDialogLayout();
+        content.setHeading(new Text("Eliminar Insumo"));
+        content.setBody(new Text("¿Seguro que desea eliminar el insumo seleccionado?"));
+                
+        JFXDialog dialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
+        JFXButton button = new JFXButton("Okay");
+        button.setOnAction((ActionEvent event) -> {
+            dialog.close();
+        });
+        content.setActions(button);
+        dialog.show();
+    }
+    public void createEditInsumoDialog(boolean iscreate) throws IOException {
         isInsumoCreate = iscreate;
         
         JFXDialogLayout content =  new JFXDialogLayout();
@@ -249,7 +306,7 @@ public class ListaInsumoController implements Initializable {
         if(isInsumoCreate){
             content.setHeading(new Text("Crear Insumo"));
         }else{
-            content.setHeading(new Text("Editar Usuario"));
+            content.setHeading(new Text("Editar Insumo"));
         }
         
         Node node;
