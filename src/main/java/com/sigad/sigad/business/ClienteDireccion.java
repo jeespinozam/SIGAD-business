@@ -90,6 +90,11 @@ public class ClienteDireccion {
         hash = 59 * hash + Objects.hashCode(this.id);
         return hash;
     }
+
+    @Override
+    public String toString() {
+        return direccionCliente;
+    }
     
     
     

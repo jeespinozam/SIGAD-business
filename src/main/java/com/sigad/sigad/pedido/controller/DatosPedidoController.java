@@ -6,6 +6,8 @@
 package com.sigad.sigad.pedido.controller;
 
 import com.jfoenix.controls.*;
+import com.sigad.sigad.app.controller.LoginController;
+import com.sigad.sigad.business.ClienteDireccion;
 import com.sigad.sigad.business.Pedido;
 import com.sigad.sigad.business.helpers.PedidoHelper;
 import java.net.URL;
@@ -76,8 +78,8 @@ public class DatosPedidoController implements Initializable {
     private JFXComboBox<String> cmbFin;
     private final ObservableList<String> horaFin = FXCollections.observableArrayList();
     @FXML
-    private JFXComboBox<String> cmbDireccion;
-    private final ObservableList<String> direcciones = FXCollections.observableArrayList();
+    private JFXComboBox<ClienteDireccion> cmbDireccion;
+    private final ObservableList<ClienteDireccion> direcciones = FXCollections.observableArrayList();
 
     @FXML
     private JFXComboBox<String> cmbTarjeta;
@@ -96,7 +98,7 @@ public class DatosPedidoController implements Initializable {
     public void llenarComboBox() {
         cmbDireccion.setItems(direcciones);
         pedido.getCliente().getClienteDirecciones().forEach((t) -> {
-            direcciones.add(t.getDireccionCliente());
+            direcciones.add(t);
         });
         cmbTarjeta.getItems().addAll("Visa", "Mastercard");
         cmbInicio.getItems().addAll("06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00");
@@ -107,6 +109,8 @@ public class DatosPedidoController implements Initializable {
     public void initModel(Pedido pedido, StackPane stackPane) {
         this.pedido = pedido;
         this.stackPane = stackPane;
+        txtMonto.setText(pedido.getTotal().toString());
+        txtMonto.setDisable(true);
         llenarComboBox();
 
     }
@@ -114,9 +118,9 @@ public class DatosPedidoController implements Initializable {
     @FXML
     void registrarPedido(MouseEvent event) {
         try {
-            pedido.setDireccionDeEnvio(cmbDireccion.getValue());
-            pedido.setCooXDireccion(0);
-            pedido.setCooYDireccion(0);
+            pedido.setDireccionDeEnvio(cmbDireccion.getValue().getDireccionCliente());
+            pedido.setCooXDireccion(cmbDireccion.getValue().getCooXDireccion());
+            pedido.setCooYDireccion(cmbDireccion.getValue().getCooXDireccion());
             pedido.setMensajeDescripicion(cmbDedicatoria.getText());
             Date date = Date.from(dpFechaEntrega.getValue().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
             Timestamp timeStamp = new Timestamp(date.getTime());
@@ -129,7 +133,8 @@ public class DatosPedidoController implements Initializable {
             
             long ms2 = sdf.parse(cmbFin.getValue()).getTime();
             Time tf = new Time(ms2);
-            pedido.setHoraIniEntrega(tf);
+            pedido.setHoraFinEntrega(tf);
+            pedido.setVendedor(LoginController.user);
             
             PedidoHelper helper = new PedidoHelper();
             helper.savePedido(pedido);

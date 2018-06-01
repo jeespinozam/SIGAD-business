@@ -8,13 +8,18 @@ package com.sigad.sigad.pedido.controller;
 import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sigad.sigad.app.controller.HomeController;
+import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.DetallePedido;
+import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.Pedido;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoDescuento;
+import com.sigad.sigad.business.ProductoInsumo;
+import com.sigad.sigad.business.helpers.CapacidadTiendaHelper;
 import com.sigad.sigad.business.helpers.GeneralHelper;
 import com.sigad.sigad.business.helpers.ProductoDescuentoHelper;
 import com.sigad.sigad.business.helpers.ProductoHelper;
+import com.sigad.sigad.business.helpers.TiendaHelper;
 import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -126,6 +131,8 @@ public class SeleccionarProductosController implements Initializable {
     private Label lbligv;
 
     private Pedido pedido = new Pedido();
+    private HashMap<Insumo, Integer> insumos = new HashMap<>();
+    private HashMap<Insumo, Integer> insumosCambiantes;
     private final ObservableList<PedidoLista> pedidos = FXCollections.observableArrayList();
     private final ObservableList<ProductoLista> prod = FXCollections.observableArrayList();
 
@@ -145,21 +152,21 @@ public class SeleccionarProductosController implements Initializable {
         if (productosDB != null) {
             productosDB.forEach((p, u) -> {
                 Producto t = p;
-                prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), u.toString(), t.getCategoria().getNombre(), "", t.getImagen(), t.getId().intValue()));
+                prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), u.toString(), t.getCategoria().getNombre(), "", t.getImagen(), t.getId().intValue(), t));
             });
-//            productosDB.forEach((p) -> {
-//                Producto t = p;
-//                System.out.println(t.getPrecio());
-//                prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), Integer.toString(t.getStockLogico()), t.getCategoria().getNombre(), "", t.getImagen(), t.getId().intValue()));
-//            });
+
         }
+        CapacidadTiendaHelper thelper = new CapacidadTiendaHelper();
+        insumos = thelper.getCapacidadbyTend(LoginController.user.getTienda());
+        insumosCambiantes = new HashMap(insumos);
+        thelper.close();
 
     }
 
     public void agregarFiltro() {
         filtro.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
             treeView.setPredicate((TreeItem<ProductoLista> t) -> {
-                Boolean flag = t.getValue().nombre.getValue().contains(newValue) || t.getValue().categoria.getValue().contains(newValue);
+                Boolean flag = t.getValue().getNombre().getValue().contains(newValue) || t.getValue().getCategoria().getValue().contains(newValue);
                 return flag;
             });
         });
@@ -182,7 +189,7 @@ public class SeleccionarProductosController implements Initializable {
 
     public void columnasProductos() {
         select.setPrefWidth(80);
-        select.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, Boolean> param) -> param.getValue().getValue().seleccion);
+        select.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, Boolean> param) -> param.getValue().getValue().getSeleccion());
         //select.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(select));
         select.setCellFactory((TreeTableColumn<ProductoLista, Boolean> p) -> {
             CheckBoxTreeTableCell<ProductoLista, Boolean> cell = new CheckBoxTreeTableCell<>();
@@ -212,19 +219,19 @@ public class SeleccionarProductosController implements Initializable {
         });
 
         nombre.setPrefWidth(120);
-        nombre.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, String> param) -> param.getValue().getValue().nombre);
+        nombre.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, String> param) -> param.getValue().getValue().getNombre());
 
         precio.setPrefWidth(120);
-        precio.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, String> param) -> param.getValue().getValue().precio);
+        precio.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, String> param) -> param.getValue().getValue().getPrecio());
 
         stock.setPrefWidth(120);
-        stock.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, String> param) -> param.getValue().getValue().stock);
+        stock.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, String> param) -> param.getValue().getValue().getStock());
 
         categoria.setPrefWidth(120);
-        categoria.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, String> param) -> param.getValue().getValue().categoria);
+        categoria.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, String> param) -> param.getValue().getValue().getCategoria());
 
         almacen.setPrefWidth(120);
-        almacen.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, String> param) -> param.getValue().getValue().almacen);
+        almacen.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, String> param) -> param.getValue().getValue().getAlmacen());
     }
 
     public void columnasPedidos() {
@@ -269,21 +276,30 @@ public class SeleccionarProductosController implements Initializable {
             @Override
             public void handle(TreeTableColumn.CellEditEvent<PedidoLista, Integer> event) {
 
-                Integer stock = event.getRowValue().getValue().stock.getValue();
-                Double subNew = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getNewValue()) * Float.valueOf(event.getRowValue().getValue().precio.get()) * (1-Float.valueOf(event.getRowValue().getValue().descuento.get())/ 100.0) );
-                Double subOld = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getOldValue()) * Float.valueOf(event.getRowValue().getValue().precio.get()) * (1-Float.valueOf(event.getRowValue().getValue().descuento.get())/ 100.0) );
+                PedidoLista ped = event.getRowValue().getValue();
+                Integer index = prod.indexOf(new ProductoLista("", "", "0", "", "", viewPath, ped.codigo, ped.producto));
+                ProductoLista p = prod.get(index);
+                System.out.println(p.nombre.getValue() + p.stock.getValue());
+                Integer stock = Integer.valueOf(p.stock.getValue());
+                Double subNew = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getNewValue()) * Float.valueOf(event.getRowValue().getValue().precio.get()) * (1 - Float.valueOf(event.getRowValue().getValue().descuento.get()) / 100.0));
+                Double subOld = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getOldValue()) * Float.valueOf(event.getRowValue().getValue().precio.get()) * (1 - Float.valueOf(event.getRowValue().getValue().descuento.get()) / 100.0));
                 PedidoLista nuevo = new PedidoLista(event.getRowValue().getValue().nombre.getValue(), event.getRowValue().getValue().precio.getValue(),
-                        (event.getNewValue() <= stock) ? event.getNewValue() : event.getOldValue(),
-                        (event.getNewValue() <= stock) ? subNew.toString() : subOld.toString(),
+                        (event.getNewValue() <= stock + event.getOldValue()) ? event.getNewValue() : event.getOldValue(),
+                        (event.getNewValue() <= stock + event.getOldValue()) ? subNew.toString() : subOld.toString(),
                         event.getRowValue().getValue().codigo, event.getRowValue().getValue().descuento.get(),
-                        event.getRowValue().getValue().stock.getValue(), event.getRowValue().getValue().codigoDescuento);
+                        event.getRowValue().getValue().codigoDescuento, event.getRowValue().getValue().producto, event.getRowValue().getValue().descuentoProducto);
                 Integer i = pedidos.indexOf(nuevo);
+                Integer oldValue = event.getOldValue();
+                if (event.getNewValue() <= stock + event.getOldValue()) {
+                    System.out.println("rec->" + event.getNewValue().toString());
+                    recalcularStock(p, event.getNewValue(), event.getOldValue());
+                    mostrarMaximoStock();
+
+                }
                 pedidos.remove(nuevo);
                 pedidos.add(i, nuevo);
-
-                if (event.getNewValue() <= stock) {
+                if (event.getNewValue() <= stock+ oldValue) {
                     calcularTotal();
-
                 }
 
             }
@@ -299,6 +315,43 @@ public class SeleccionarProductosController implements Initializable {
         descuentoPedido.setPrefWidth(80);
         descuentoPedido.setCellValueFactory((TreeTableColumn.CellDataFeatures<PedidoLista, String> param) -> param.getValue().getValue().descuento);
 
+    }
+
+    public void retornarInsumos(ProductoLista producto, Integer cant) {
+
+    }
+
+    public void recalcularStock(ProductoLista producto, Integer nuevoValor, Integer viejoValor) {
+
+        ArrayList<ProductoInsumo> productoxinsumos = new ArrayList(producto.getProducto().getProductoxInsumos());
+        for (int i = 0; i < productoxinsumos.size(); i++) {
+            ProductoInsumo get = productoxinsumos.get(i);
+            System.out.println(nuevoValor + " + " + viejoValor);
+            Double nuevoStockInsumo = insumosCambiantes.get(get.getInsumo()) - nuevoValor * get.getCantidad() + (viejoValor) * get.getCantidad();
+            insumosCambiantes.put(get.getInsumo(), nuevoStockInsumo.intValue());
+//            ArrayList<Producto> productosAfectados = new ArrayList(get.getInsumo().getProductos());
+//            productosAfectados.forEach((t) -> {
+//                t.getProductoxInsumos();
+//                prod.get(prod.indexOf(t));
+//            });
+        }
+        insumosCambiantes.forEach((t, u) -> {
+            System.out.println(t.getNombre() + "->" + u.toString());
+        });
+
+    }
+
+    public void mostrarMaximoStock() {
+        prod.forEach((t) -> {
+            Integer st = Integer.MAX_VALUE;
+            for (ProductoInsumo p : t.getProducto().getProductoxInsumos()) {
+                Double posStock = insumosCambiantes.get(p.getInsumo()) / p.getCantidad();
+                st = (posStock.intValue() < st) ? posStock.intValue() : st;
+
+            }
+            prod.get(prod.indexOf(t)).stock.setValue(st.toString());
+
+        });
     }
 
     public void agregarColumnasTablasProductos() {
@@ -317,7 +370,7 @@ public class SeleccionarProductosController implements Initializable {
                 row.setOnMouseClicked((event) -> {
                     if (event.getClickCount() == 2 && (!row.isEmpty())) {
                         ProductoLista rowData = row.getItem();
-                        mostrarInfoProducto(rowData.codigo);
+                        mostrarInfoProducto(rowData.getCodigo());
 
                     }
                 });
@@ -352,10 +405,13 @@ public class SeleccionarProductosController implements Initializable {
             Node node;
             Set<DetallePedido> detalles = new HashSet<>();
             pedidos.forEach((t) -> {
-                DetallePedido detalle = new DetallePedido(true, t.cantidad.getValue(), Double.valueOf(t.precio.getValue()), t.codigo, null, pedido);
+                DetallePedido detalle = new DetallePedido(true, t.cantidad.getValue(), Double.valueOf(t.precio.getValue()), t.codigo, t.producto, pedido, t.descuentoProducto);
                 detalles.add(detalle);
             });
+            pedido.setTotal(Double.valueOf(lblTotal.getText()));
             pedido.setDetallePedido(detalles);
+            pedido.setActivo(true);
+            pedido.setModificable(true);
             //           node = (Node) FXMLLoader.load(SeleccionarProductosController.this.getClass().getResource(DescripcionProductosController.viewPath));
 
             FXMLLoader loader = new FXMLLoader(SeleccionarProductosController.this.getClass().getResource(SeleccionarClienteController.viewPath));
@@ -390,39 +446,42 @@ public class SeleccionarProductosController implements Initializable {
     class ProductoLista extends RecursiveTreeObject<ProductoLista> {
 
         ImageView imagen;
-        Integer codigo;
-        BooleanProperty seleccion;
-        StringProperty nombre;
-        StringProperty precio;
-        StringProperty stock;
-        StringProperty categoria;
-        StringProperty almacen;
-        StringProperty cantidad;
+        private Integer codigo;
+        private BooleanProperty seleccion;
+        private StringProperty nombre;
+        private StringProperty precio;
+        private StringProperty stock;
+        private Integer stockFijo;
+        private StringProperty categoria;
+        private StringProperty almacen;
+        private Producto producto;
 
-        public ProductoLista(String nombre, String precio, String stock, String categoria, String almacen, String pathImagen, Integer codigo) {
+        public ProductoLista(String nombre, String precio, String stock, String categoria, String almacen, String pathImagen, Integer codigo, Producto producto) {
             this.nombre = new SimpleStringProperty(nombre);
             this.precio = new SimpleStringProperty(precio);
             this.stock = new SimpleStringProperty(stock);
+            this.stockFijo = Integer.valueOf(stock);
             this.categoria = new SimpleStringProperty(categoria);
             this.almacen = new SimpleStringProperty(almacen);
             this.imagen = new ImageView(new Image(pathImagen));
             this.seleccion = new SimpleBooleanProperty(false);
             this.codigo = codigo;
+            this.producto = producto;
             seleccion.addListener((observable, oldValue, newValue) -> {
                 calcularTotal();
                 if (newValue) {
                     ProductoDescuentoHelper helper = new ProductoDescuentoHelper();
                     ProductoDescuento descuento = helper.getDescuentoByProducto(codigo);
                     if (descuento != null) {
-                        pedidos.add(new PedidoLista(nombre, precio, 0, "0", codigo, String.valueOf(descuento.getValorPct() * 100.0), Integer.valueOf(stock), descuento.getId().intValue()));
+                        pedidos.add(new PedidoLista(nombre, precio, 0, "0", codigo, String.valueOf(descuento.getValorPct() * 100.0), descuento.getId().intValue(), producto, descuento));
                     } else {
-                        pedidos.add(new PedidoLista(nombre, precio, 0, "0", codigo, "0", Integer.valueOf(stock), null));
+                        pedidos.add(new PedidoLista(nombre, precio, 0, "0", codigo, "0", null, producto, null));
                     }
                     helper.close();
 
                     //prod.remove(this);
                 } else {
-                    pedidos.remove(new PedidoLista(nombre, precio, 0, "0", codigo, "0", 0, null));
+                    pedidos.remove(new PedidoLista(nombre, precio, 0, "0", codigo, "0", null, producto, null));
                 }
                 calcularTotal();
             });
@@ -432,17 +491,144 @@ public class SeleccionarProductosController implements Initializable {
         public boolean equals(Object o) {
             if (o instanceof ProductoLista) {
                 ProductoLista pl = (ProductoLista) o;
-                return pl.codigo.equals(codigo);
+                return pl.getCodigo().equals(getCodigo());
             } else if (o instanceof PedidoLista) {
                 PedidoLista pl = (PedidoLista) o;
-                return pl.codigo.equals(codigo);
+                return pl.codigo.equals(getCodigo());
+            } else if (o instanceof Producto) {
+                Producto pl = (Producto) o;
+                return pl.equals(producto);
             }
             return super.equals(o); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(codigo, codigo.toString());
+            return Objects.hash(getCodigo(), getCodigo().toString());
+        }
+
+        public Boolean hasInsumo(Insumo insumo) {
+            return getProducto().hasInsumo(insumo);
+        }
+
+        /**
+         * @return the codigo
+         */
+        public Integer getCodigo() {
+            return codigo;
+        }
+
+        /**
+         * @param codigo the codigo to set
+         */
+        public void setCodigo(Integer codigo) {
+            this.codigo = codigo;
+        }
+
+        /**
+         * @return the seleccion
+         */
+        public BooleanProperty getSeleccion() {
+            return seleccion;
+        }
+
+        /**
+         * @param seleccion the seleccion to set
+         */
+        public void setSeleccion(BooleanProperty seleccion) {
+            this.seleccion = seleccion;
+        }
+
+        /**
+         * @return the nombre
+         */
+        public StringProperty getNombre() {
+            return nombre;
+        }
+
+        /**
+         * @param nombre the nombre to set
+         */
+        public void setNombre(StringProperty nombre) {
+            this.nombre = nombre;
+        }
+
+        /**
+         * @return the precio
+         */
+        public StringProperty getPrecio() {
+            return precio;
+        }
+
+        /**
+         * @param precio the precio to set
+         */
+        public void setPrecio(StringProperty precio) {
+            this.precio = precio;
+        }
+
+        /**
+         * @return the stock
+         */
+        public StringProperty getStock() {
+            return stock;
+        }
+
+        public Integer getStockInt() {
+            return Integer.valueOf(stock.getValue());
+        }
+
+        /**
+         * @param stock the stock to set
+         */
+        public void setStock(StringProperty stock) {
+            this.stock = stock;
+        }
+
+        public void setStock(String stock) {
+            this.stock = new SimpleStringProperty(stock);
+        }
+
+        /**
+         * @return the categoria
+         */
+        public StringProperty getCategoria() {
+            return categoria;
+        }
+
+        /**
+         * @param categoria the categoria to set
+         */
+        public void setCategoria(StringProperty categoria) {
+            this.categoria = categoria;
+        }
+
+        /**
+         * @return the almacen
+         */
+        public StringProperty getAlmacen() {
+            return almacen;
+        }
+
+        /**
+         * @param almacen the almacen to set
+         */
+        public void setAlmacen(StringProperty almacen) {
+            this.almacen = almacen;
+        }
+
+        /**
+         * @return the producto
+         */
+        public Producto getProducto() {
+            return producto;
+        }
+
+        /**
+         * @param producto the producto to set
+         */
+        public void setProducto(Producto producto) {
+            this.producto = producto;
         }
     }
 
@@ -453,11 +639,12 @@ public class SeleccionarProductosController implements Initializable {
         IntegerProperty cantidad;
         StringProperty subtotal;
         StringProperty descuento;
-        IntegerProperty stock;
         Integer codigoDescuento;
         Integer codigo;
+        Producto producto;
+        ProductoDescuento descuentoProducto;
 
-        public PedidoLista(String nombre, String precio, Integer cantidad, String subtotal, Integer codigo, String descuento, Integer stock, Integer codigoDesc) {
+        public PedidoLista(String nombre, String precio, Integer cantidad, String subtotal, Integer codigo, String descuento, Integer codigoDesc, Producto producto, ProductoDescuento descuentoProducto) {
             this.nombre = new SimpleStringProperty(nombre);
             this.precio = new SimpleStringProperty(precio);
             this.cantidad = new SimpleIntegerProperty(cantidad);
@@ -465,7 +652,8 @@ public class SeleccionarProductosController implements Initializable {
             this.codigo = codigo;
             this.codigoDescuento = codigoDesc;
             this.descuento = new SimpleStringProperty(descuento);
-            this.stock = new SimpleIntegerProperty(stock);
+            this.producto = producto;
+            this.descuentoProducto = descuentoProducto;
         }
 
         @Override
@@ -557,6 +745,7 @@ public class SeleccionarProductosController implements Initializable {
         private String getString() {
             return getItem() == null ? "" : getItem().toString();
         }
+
     }
 
     private class ButtonCell extends TreeTableCell<PedidoLista, Boolean> {
@@ -575,7 +764,8 @@ public class SeleccionarProductosController implements Initializable {
                     // get Selected Item
                     PedidoLista current = (PedidoLista) ButtonCell.this.getTreeTableRow().getItem();
                     //remove selected item from the table list
-                    prod.get(prod.indexOf(new ProductoLista("", "", viewPath, viewPath, viewPath, viewPath, current.codigo))).seleccion.setValue(Boolean.FALSE);
+                    prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, current.codigo, null))).getSeleccion().setValue(Boolean.FALSE);
+                    recalcularStock(prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, current.codigo, null))), 0, Integer.valueOf(current.cantidad.getValue()));
                     pedidos.remove(current);
                 }
             });

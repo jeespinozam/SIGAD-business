@@ -44,6 +44,8 @@ public class Pedido {
     private double cooXDireccion;
     @NotNull
     private double cooYDireccion;
+    
+    //private Double volumen;
 
     //fk
     @ManyToOne(optional = false)

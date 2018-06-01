@@ -266,10 +266,16 @@ public class Producto {
     public Set<ProductoInsumo> getProductoxInsumos() {
         return insumos;
     }
+    
+    
+    public Boolean hasInsumo(Insumo insumo) {
+        return getInsumos().contains(insumo);
+    }
     /**
      * @param insumos the insumos to set
      */
     public void setInsumos(Set<ProductoInsumo> insumos) {
         this.insumos = insumos;
     }
+    
 }

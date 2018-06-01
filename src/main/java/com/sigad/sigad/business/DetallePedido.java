@@ -41,6 +41,9 @@ public class DetallePedido {
     //Fk
     @ManyToOne
     private Producto producto;
+    
+    
+    
     @ManyToOne
     private ProductoDescuento descuento;
     
@@ -65,6 +68,16 @@ public class DetallePedido {
         this.numEntregados = numEntregados;
         this.producto = producto;
         this.pedido = pedido;
+    }
+    
+    public DetallePedido( boolean activo, Integer cantidad, Double precioUnitario, Integer numEntregados, Producto producto, Pedido pedido, ProductoDescuento descuento) {
+        this.activo = activo;
+        this.cantidad = cantidad;
+        this.precioUnitario = precioUnitario;
+        this.numEntregados = numEntregados;
+        this.producto = producto;
+        this.pedido = pedido;
+        this.descuento = descuento;
     }
     
     

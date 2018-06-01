@@ -45,7 +45,9 @@ public class Insumo {
 
     @OneToMany(mappedBy = "insumo")
     private Set<LoteInsumo> lotesInsumo = new HashSet<LoteInsumo>();
-    
+
+    @OneToMany(mappedBy = "insumo")
+    private Set<ProductoInsumo> productos = new HashSet<ProductoInsumo>();
 
     /**
      * Constructor.
@@ -55,7 +57,7 @@ public class Insumo {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Insumo){
+        if (obj instanceof Insumo) {
             Insumo ins = (Insumo) obj;
             return ins.getId().equals(getId());
         }
@@ -68,6 +70,7 @@ public class Insumo {
         hash = 79 * hash + Objects.hashCode(this.id);
         return hash;
     }
+
     public Long getId() {
         return id;
     }
@@ -203,6 +206,20 @@ public class Insumo {
      */
     public void setStockTotalFisico(int stockTotalFisico) {
         this.stockTotalFisico = stockTotalFisico;
+    }
+
+    /**
+     * @return the productos
+     */
+    public Set<ProductoInsumo> getProductos() {
+        return productos;
+    }
+
+    /**
+     * @param productos the productos to set
+     */
+    public void setProductos(Set<ProductoInsumo> productos) {
+        this.productos = productos;
     }
 
 }

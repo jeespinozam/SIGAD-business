@@ -294,12 +294,14 @@ public class RegistrarClienteController implements Initializable {
             usuariohelper.saveUser(cliente);
             usuariohelper.close();
             SeleccionarClienteController.userDialog.close();
+            actualizarTabla();
         } else {
             actualizarUsuario();
             UsuarioHelper usuariohelper = new UsuarioHelper();
             usuariohelper.updateUser(cliente);
             usuariohelper.close();
             SeleccionarClienteController.userDialog.close();
+            actualizarTabla();
         }
 
     }
