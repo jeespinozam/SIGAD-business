@@ -10,12 +10,14 @@ import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXTreeTableColumn;
+import com.jfoenix.controls.JFXTreeTableRow;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.helpers.InsumosHelper;
+import com.sigad.sigad.personal.controller.PersonalController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -41,6 +43,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.cell.CheckBoxTreeTableCell;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -82,8 +85,6 @@ public class ListaInsumoController implements Initializable {
     
     public static InsumoViewer selectedInsumo = null;
     // table elements;
-    
-    private ArrayList<String> selectedId;
     
     JFXTreeTableColumn<InsumoViewer,Boolean> selectCol = new JFXTreeTableColumn<>("Seleccionar");
     JFXTreeTableColumn<InsumoViewer,String> nombreCol = new JFXTreeTableColumn<>("Nombre");
@@ -158,8 +159,10 @@ public class ListaInsumoController implements Initializable {
         private BooleanProperty seleccion;
         private SimpleIntegerProperty cantidad;
         ImageView imagen;
+        private Long id;
+        private Double precio;
         
-        public InsumoViewer(String nombre,String descripcion, String tiempoVida,String stockTotal, Boolean activo, String volumen ,String imagePath, Integer cantidad) {
+        public InsumoViewer(String nombre,String descripcion, String tiempoVida,String stockTotal, Boolean activo, String volumen ,String imagePath, Integer cantidad,Long id,Double precio) {
             this.nombre = new SimpleStringProperty(nombre);
             this.descripcion = new SimpleStringProperty(descripcion);
             this.tiempoVida = new SimpleStringProperty(tiempoVida);
@@ -167,6 +170,8 @@ public class ListaInsumoController implements Initializable {
             this.activo = new SimpleBooleanProperty(activo);
             this.volumen = new SimpleStringProperty(volumen);
             this.cantidad = new SimpleIntegerProperty(cantidad);
+            this.id = id;
+            this.precio = precio;
         }
 
         public SimpleIntegerProperty getCantidad() {
@@ -175,6 +180,22 @@ public class ListaInsumoController implements Initializable {
 
         public void setCantidad(Integer cantidad) {
             this.cantidad = new SimpleIntegerProperty(cantidad);
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public Double getPrecio() {
+            return precio;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public void setPrecio(Double precio) {
+            this.precio = precio;
         }
     }
     @Override
@@ -192,6 +213,24 @@ public class ListaInsumoController implements Initializable {
         );
         volumenCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<InsumoViewer, String> param) -> param.getValue().getValue().getVolumen() //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         );
+                //Double click on row
+        tblInsumos.setRowFactory(ord -> {
+            JFXTreeTableRow<InsumoViewer> row = new JFXTreeTableRow<>();
+            row.setOnMouseClicked((event) -> {
+                if (! row.isEmpty() && event.getButton()==MouseButton.PRIMARY 
+                     && event.getClickCount() == 2) {
+                    InsumoViewer clickedRow = row.getItem();
+                    System.out.println("Selected nombre" + clickedRow.nombre);           
+                    selectedInsumo = clickedRow;
+                    try {
+                        createEditInsumoDialog(false);
+                    } catch (IOException e) {
+                        Logger.getLogger(ListaInsumoController.class.getName()).log(Level.SEVERE,"createEditInsumoDialog()",e);
+                    }
+                }
+            });
+            return row;
+        });
        
     }
     
@@ -211,6 +250,7 @@ public class ListaInsumoController implements Initializable {
                 updateTable(i);
             });
         }
+        helper.close();
     }
     
     public static void updateTable(Insumo insumo){
@@ -220,7 +260,7 @@ public class ListaInsumoController implements Initializable {
                                          Integer.toString(insumo.getStockTotalFisico()),
                                          insumo.isActivo(),
                                          "0",
-                                         insumo.getImagen(),0));
+                                         insumo.getImagen(),0,insumo.getId(),insumo.getPrecio()));
     }
     
     

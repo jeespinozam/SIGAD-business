@@ -134,4 +134,19 @@ public class InsumosHelper {
         }
         return insumos;
     }
+    
+    public Insumo getInsumo(Long id){
+        Insumo insumo = null;
+        Query query = null;
+        try {
+            query = session.createQuery("from Insumo where id=" + id);
+            if(!query.list().isEmpty()){
+                insumo = (Insumo) query.list().get(0);
+            }
+        } catch (Exception e) {
+            this.errorMessage = e.getMessage();
+        }
+        return insumo;
+        
+    }
 }

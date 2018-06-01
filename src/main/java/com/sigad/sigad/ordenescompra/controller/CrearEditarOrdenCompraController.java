@@ -189,7 +189,7 @@ public class CrearEditarOrdenCompraController implements Initializable {
                                          Integer.toString(insumo.getStockTotalFisico()),
                                          insumo.isActivo(),
                                          Double.toString(insumo.isVolumen()),
-                                         insumo.getImagen(),0));
+                                         insumo.getImagen(),0,insumo.getId(),insumo.getPrecio()));
     }
     
     @FXML
