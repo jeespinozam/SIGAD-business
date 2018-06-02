@@ -333,4 +333,18 @@ public class Pedido {
         this.volumenTotal = volumen;
     }
 
+    /**
+     * @return the reparto
+     */
+    public Reparto getReparto() {
+        return reparto;
+    }
+
+    /**
+     * @param reparto the reparto to set
+     */
+    public void setReparto(Reparto reparto) {
+        this.reparto = reparto;
+    }
+
 }
