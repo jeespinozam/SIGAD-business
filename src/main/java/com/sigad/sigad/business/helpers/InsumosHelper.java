@@ -46,6 +46,7 @@ public class InsumosHelper {
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
+            newInsumo.setActivo(true);
             session.save(newInsumo);
             if(newInsumo.getId() != null) {
                 id = newInsumo.getId();
@@ -68,8 +69,27 @@ public class InsumosHelper {
         return id;
     }
     
+    public ProveedorInsumo getInsumoProveedorUnit(Insumo insumo, Proveedor proveedor) {
+        String hqlQuery = "from ProveedorInsumo PI where PI.proveedor_id = :prov_id and PI.insumo_id = :in_id and activo=true";
+        try{
+            List<ProveedorInsumo> busquedaResultado = session.createQuery(hqlQuery).setParameter("prov_id", proveedor.getId()).setParameter("in_id", insumo.getId()).list();
+            if (!busquedaResultado.isEmpty())
+                LOGGER.log(Level.INFO, String.format("Insumo %s asociado al proveedor %s encontrado ", insumo.getNombre(), proveedor.getNombre()));
+            else
+                LOGGER.log(Level.INFO, String.format("Insumo %s asociado al proveedor %s no encontrado ", insumo.getNombre(), proveedor.getNombre()));
+            return busquedaResultado.get(0);
+        }
+        catch(Exception e) {
+            LOGGER.log(Level.WARNING, String.format("Error en la busqueda de los Insumos del proveedor %s", proveedor.getNombre()));
+            System.out.println("====================================================================");
+            System.out.println(e);
+            System.out.println("====================================================================");
+            return null;
+        }
+    }
+    
     public List<ProveedorInsumo> getInsumoFromProveedor(Proveedor proveedor) {
-        String hqlQuery = "from ProveedorInsumo PI where PI.proveedor_id = :prov_id";
+        String hqlQuery = "from ProveedorInsumo PI where PI.proveedor_id = :prov_id and activo=true";
         try{
             List<ProveedorInsumo> busquedaResultado = session.createQuery(hqlQuery).setParameter("prov_id", proveedor.getId()).list();
             LOGGER.log(Level.INFO, String.format("Insumos asociados al proveedor %s encontrados, total %d", proveedor.getNombre(), busquedaResultado.size()));
@@ -84,12 +104,16 @@ public class InsumosHelper {
         }
     }
     
-    public Long updateInsumo(Insumo modifiedInsumo) {
+    public Long updateInsumo(Insumo modifiedInsumo, List<ProveedorInsumo>  lista_proveedoresxInsumo) {
         Long id = null;
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
             session.update(modifiedInsumo);
+            for (ProveedorInsumo proveedorInsumo : lista_proveedoresxInsumo) {
+                LOGGER.log(Level.INFO, String.format("Actualizando relacion entre %s y %s", proveedorInsumo.getProveedor().getNombre(), proveedorInsumo.getInsumo().getNombre()));
+                session.saveOrUpdate(proveedorInsumo);
+            }
             tx.commit();
             LOGGER.log(Level.FINE, "Insumo actualizado con exito");
             this.errorMessage = "";
@@ -97,6 +121,7 @@ public class InsumosHelper {
         }
         catch(Exception e) {
             if (tx!=null)   tx.rollback();
+            LOGGER.log(Level.SEVERE, String.format("Ocurrio un error al tratar de actualizar el insumo %s", modifiedInsumo.getNombre()));
             System.out.println("====================================================================");
             System.out.println(e);
             System.out.println("====================================================================");
