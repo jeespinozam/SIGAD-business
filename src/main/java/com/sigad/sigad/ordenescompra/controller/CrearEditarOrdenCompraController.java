@@ -177,7 +177,7 @@ public class CrearEditarOrdenCompraController implements Initializable {
             }
             });
         }
-        helper.close();
+        helperp.close();
         
         datePick.setValue(date);
     }

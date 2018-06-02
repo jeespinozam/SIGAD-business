@@ -213,7 +213,7 @@ public class ListaInsumoController implements Initializable {
         );
         volumenCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<InsumoViewer, String> param) -> param.getValue().getValue().getVolumen() //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         );
-                //Double click on row
+        //Double click on row
         tblInsumos.setRowFactory(ord -> {
             JFXTreeTableRow<InsumoViewer> row = new JFXTreeTableRow<>();
             row.setOnMouseClicked((event) -> {
