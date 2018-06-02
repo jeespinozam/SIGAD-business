@@ -41,20 +41,26 @@ public class InsumosHelper {
         return errorMessage;
     }
     
-    public Long saveInsumo(Insumo newInsumo) {
+    public Long saveInsumo(Insumo newInsumo, List<ProveedorInsumo>  lista_proveedoresxInsumo) {
         Long id = null;
+        Transaction tx = null;
         try {
-            Transaction tx = session.beginTransaction();
+            tx = session.beginTransaction();
             session.save(newInsumo);
             if(newInsumo.getId() != null) {
                 id = newInsumo.getId();
             }
-            session.getTransaction().commit();                        
+            for (ProveedorInsumo proveedorxInsumo : lista_proveedoresxInsumo) {
+                LOGGER.log(Level.INFO, String.format("Procesando relacion entre %s y %s", proveedorxInsumo.getProveedor().getNombre(), proveedorxInsumo.getInsumo().getNombre()));
+                session.save(proveedorxInsumo);
+            }
+            tx.commit();
             LOGGER.log(Level.FINE, "Insumo guardado con exito");
             this.errorMessage = "";
         } catch (Exception e) {
-            session.getTransaction().rollback();
+            if (tx!=null)   tx.rollback();
             this.errorMessage = e.getMessage();
+            LOGGER.log(Level.SEVERE, String.format("Ocurrio un error al tratar de crear el insumo %s", newInsumo.getNombre()));
             System.out.println("====================================================================");
             System.out.println(e);
             System.out.println("====================================================================");

@@ -78,7 +78,7 @@ public class CrearEditarInsumoController implements Initializable {
             fillFields();
             
             InsumosHelper helper = new InsumosHelper();
-            Long id = helper.saveInsumo(insumo);
+            Long id = helper.saveInsumo(insumo, null);
             if( id!=null){
                 ListaInsumoController.updateTable(insumo);
             }
