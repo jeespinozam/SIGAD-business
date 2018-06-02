@@ -82,7 +82,7 @@ public class CrearEditarInsumoController implements Initializable {
     public static Insumo insumo = null;
     
     JFXTreeTableColumn<ProveedorViewer,String> nombreCol = new JFXTreeTableColumn<>("Nombre");
-    JFXTreeTableColumn<ProveedorViewer,String> cantidadCol = new JFXTreeTableColumn<>("Stock Total");
+    JFXTreeTableColumn<ProveedorViewer,String> cantidadCol = new JFXTreeTableColumn<>("Precio");
     static ObservableList<ProveedorViewer> listaProv;
     
     @Override
