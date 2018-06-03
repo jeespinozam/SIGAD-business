@@ -30,7 +30,7 @@ public class DepositoHelper {
         Proveedor prov = new Proveedor();
         prov.setDescripcion("Distribuidor de rosas");
         prov.setNombre("Rosas SA");
-        prov.setRuc("665656");
+        prov.setRuc("123489021");
         session.save(prov);
 
 ////

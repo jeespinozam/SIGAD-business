@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -44,8 +45,12 @@ public class Pedido {
     private double cooXDireccion;
     @NotNull
     private double cooYDireccion;
-    
-    //private Double volumen;
+    @ManyToOne(optional = false)
+    private PedidoEstado estado;
+    @NotNull
+    private double volumenTotal;
+    @ManyToOne
+    private Reparto reparto;
 
     //fk
     @ManyToOne(optional = false)
@@ -299,6 +304,48 @@ public class Pedido {
      */
     public void setEstadosPedido(Set<EstadoPedido> estadosPedido) {
         this.estadosPedido = estadosPedido;
+    }
+
+    /**
+     * @return the estado
+     */
+    public PedidoEstado getEstado() {
+        return estado;
+    }
+
+    /**
+     * @param estado the estado to set
+     */
+    public void setEstado(PedidoEstado estado) {
+        this.estado = estado;
+    }
+
+    /**
+     * @return the volumen
+     */
+    public double getVolumenTotal() {
+        return volumenTotal;
+    }
+
+    /**
+     * @param volumen the volumen to set
+     */
+    public void setVolumenTotal(double volumen) {
+        this.volumenTotal = volumen;
+    }
+
+    /**
+     * @return the reparto
+     */
+    public Reparto getReparto() {
+        return reparto;
+    }
+
+    /**
+     * @param reparto the reparto to set
+     */
+    public void setReparto(Reparto reparto) {
+        this.reparto = reparto;
     }
 
 }

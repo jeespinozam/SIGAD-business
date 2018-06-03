@@ -26,7 +26,7 @@ public class Proveedor {
     private Long id;
     private String nombre;
     @NotNull
-    private String ruc; 
+    private String ruc;
     private String descripcion;
     @OneToMany(mappedBy = "proveedor")
     private Set<OrdenCompra> ordenesCompra = new HashSet<OrdenCompra>();
