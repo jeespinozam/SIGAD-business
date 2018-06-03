@@ -71,6 +71,7 @@ public class ProductosManagementController implements Initializable {
     @FXML
     private JFXButton saveBtn;
     private static Producto producto = null;
+    private static Boolean update = false;
     /**
      * Initializes the controller class.
      */
@@ -78,6 +79,7 @@ public class ProductosManagementController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         initializeResources();
         if(ProductosIndexController.selectedProduct != null){
+            this.update = true;
             loadProduct(ProductosIndexController.selectedProduct);
         }
         
@@ -288,13 +290,11 @@ public class ProductosManagementController implements Initializable {
     }
     
     private void saveProduct(){
-        insumosSeleccionados = getSelectedItems();
+        this.insumosSeleccionados = getSelectedItems();
         // WIP Validations
         Producto nuevoProducto = new Producto(); 
-        Boolean update = false;
         if(this.producto != null){
          nuevoProducto = this.producto;
-         update = true;
         }
         
         nuevoProducto.setNombre(txtNombre.getText());
@@ -314,26 +314,39 @@ public class ProductosManagementController implements Initializable {
         nuevoProducto.setCategoria(categoria);
         nuevoProducto.setFragilidad(fragilidad);
         
-        ProductoInsumoHelper prodcutoInsumoHelper = new ProductoInsumoHelper();
+        //ProductoInsumoHelper prodcutoInsumoHelper = new ProductoInsumoHelper();
         
-        if(update){
+        if(this.update){
             Boolean updated = productoHelper.updateProduct(nuevoProducto);
             if(updated){
+                ProductoInsumoHelper prodcutoInsumoHelper = new ProductoInsumoHelper();
                 ArrayList<ProductoInsumo> insumos = prodcutoInsumoHelper.getProductoInsumos(nuevoProducto.getId());
                 
-                for (InsumoLista insumosSeleccionado : insumosSeleccionados) {
+                for (InsumoLista insumosSeleccionado : this.insumosSeleccionados) {
+                    Boolean existing = false;
+                    ProductoInsumo prodIns = new ProductoInsumo();
+                    ProductoInsumoHelper transactionHelper = new ProductoInsumoHelper();
                     for (ProductoInsumo insumoProducto : insumos) {
-                        if(insumosSeleccionado.getId().getValue() == String.valueOf(insumoProducto.getInsumo().getId())){
-                            prodcutoInsumoHelper.updateProductoInsumo(insumoProducto);
-                        }
-                        else{
-                            ProductoInsumo newRecord = new ProductoInsumo();
-                            newRecord.setProducto(nuevoProducto);
-                            newRecord.setInsumo(insumoHelper.getInsumo(Long.parseLong(insumosSeleccionado.getId().getValue())));
-                            newRecord.setCantidad(Double.parseDouble(insumosSeleccionado.getCantidad().getValue()));                            
-                            prodcutoInsumoHelper.saveProductoInsumo(newRecord);
+                        Long selectedId = Long.valueOf(insumosSeleccionado.getId().getValue());
+                        Long itemId = insumoProducto.getInsumo().getId();
+                        if(selectedId == itemId){
+                            existing = true;
+                            prodIns = insumoProducto;
+                            prodIns.setCantidad(Double.parseDouble(insumosSeleccionado.getCantidad().getValue()));
+                            break;
                         }
                     }
+                    if(existing){
+                        transactionHelper.updateProductoInsumo(prodIns);
+                    }
+                    else{
+                        ProductoInsumo newRecord = new ProductoInsumo();
+                        newRecord.setProducto(nuevoProducto);
+                        newRecord.setInsumo(insumoHelper.getInsumo(Long.parseLong(insumosSeleccionado.getId().getValue())));
+                        newRecord.setCantidad(Double.parseDouble(insumosSeleccionado.getCantidad().getValue()));                            
+                        transactionHelper.saveProductoInsumo(newRecord);                        
+                    }
+                    //prodcutoInsumoHelper.close();
                 }
             }
         }
@@ -342,23 +355,22 @@ public class ProductosManagementController implements Initializable {
 
             if(id != null){
                 for (InsumoLista insumosSeleccionado : insumosSeleccionados) {
-
+                    ProductoInsumoHelper prodcutoInsumoHelper = new ProductoInsumoHelper();
                     ProductoInsumo newRecord = new ProductoInsumo();
                     newRecord.setProducto(nuevoProducto);
                     newRecord.setInsumo(insumoHelper.getInsumo(Long.parseLong(insumosSeleccionado.getId().getValue())));
                     newRecord.setCantidad(Double.parseDouble(insumosSeleccionado.getCantidad().getValue()));
                     prodcutoInsumoHelper.saveProductoInsumo(newRecord);
-
+//                    prodcutoInsumoHelper.close();
                 }
             }            
         }
         
-        prodcutoInsumoHelper.close();
-        productoHelper.close();
-        categoriaHelper.close();
-        fragilidadHelper.close();
-        prodcutoInsumoHelper.close();
-        insumoHelper.close();
+        //prodcutoInsumoHelper.close();
+        //productoHelper.close();
+        //categoriaHelper.close();
+        //fragilidadHelper.close();
+        //insumoHelper.close();
     }
     
     class InsumoLista extends RecursiveTreeObject<InsumoLista>{
