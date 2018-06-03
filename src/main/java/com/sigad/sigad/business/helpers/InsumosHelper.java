@@ -70,9 +70,9 @@ public class InsumosHelper {
     }
     
     public ProveedorInsumo getInsumoProveedorUnit(Insumo insumo, Proveedor proveedor) {
-        String hqlQuery = "from ProveedorInsumo PI where PI.proveedor_id = :prov_id and PI.insumo_id = :in_id and activo=true";
+        String hqlQuery = "from ProveedorInsumo PI where PI.proveedor = :prov_id and PI.insumo = :in_id and activo=true";
         try{
-            List<ProveedorInsumo> busquedaResultado = session.createQuery(hqlQuery).setParameter("prov_id", proveedor.getId()).setParameter("in_id", insumo.getId()).list();
+            List<ProveedorInsumo> busquedaResultado = session.createQuery(hqlQuery).setParameter("prov_id", proveedor).setParameter("in_id", insumo).list();
             if (!busquedaResultado.isEmpty())
                 LOGGER.log(Level.INFO, String.format("Insumo %s asociado al proveedor %s encontrado ", insumo.getNombre(), proveedor.getNombre()));
             else
@@ -89,9 +89,9 @@ public class InsumosHelper {
     }
     
     public List<ProveedorInsumo> getInsumoFromProveedor(Proveedor proveedor) {
-        String hqlQuery = "from ProveedorInsumo PI where PI.proveedor_id = :prov_id and activo=true";
+        String hqlQuery = "from ProveedorInsumo PI where PI.proveedor = :prov_id and activo=true";
         try{
-            List<ProveedorInsumo> busquedaResultado = session.createQuery(hqlQuery).setParameter("prov_id", proveedor.getId()).list();
+            List<ProveedorInsumo> busquedaResultado = session.createQuery(hqlQuery).setParameter("prov_id", proveedor).list();
             LOGGER.log(Level.INFO, String.format("Insumos asociados al proveedor %s encontrados, total %d", proveedor.getNombre(), busquedaResultado.size()));
             return busquedaResultado;
         }
