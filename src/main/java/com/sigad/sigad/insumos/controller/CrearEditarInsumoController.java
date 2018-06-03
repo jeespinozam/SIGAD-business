@@ -97,8 +97,6 @@ public class CrearEditarInsumoController implements Initializable {
         listaProv = FXCollections.observableArrayList();
         setColumns();
         addColumns();
-        fillData();
-        addDialogBtns();
         if(!ListaInsumoController.isInsumoCreate) {
             System.out.println(ListaInsumoController.selectedInsumo);
             loadFields();
@@ -106,6 +104,9 @@ public class CrearEditarInsumoController implements Initializable {
         else {
             insumo = new Insumo();
         }
+        fillData();
+        addDialogBtns();
+
         
         initValidator();
     }
@@ -126,15 +127,15 @@ public class CrearEditarInsumoController implements Initializable {
                 if(!ListaInsumoController.isInsumoCreate){
                     System.out.println("editando");
                     System.out.println("waaa"+insumo.getNombre());
-                    Long id = helper.updateInsumo(insumo);
-                    if(id != null){
-                        ListaInsumoController.insumosList.remove(ListaInsumoController.selectedInsumo);
-                        ListaInsumoController.updateTable(insumo);
-                        ListaInsumoController.insumoDialog.close();
-                    }else{
-                        ErrorController error = new ErrorController();
-                        error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
-                    }
+//                    Long id = helper.updateInsumo(insumo);
+//                    if(id != null){
+//                        ListaInsumoController.insumosList.remove(ListaInsumoController.selectedInsumo);
+//                        ListaInsumoController.updateTable(insumo);
+//                        ListaInsumoController.insumoDialog.close();
+//                    }else{
+//                        ErrorController error = new ErrorController();
+//                        error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
+//                    }
                 }
                 //creacion
                 else{
@@ -143,11 +144,13 @@ public class CrearEditarInsumoController implements Initializable {
                     listaProv.forEach((p)->{
                         System.out.println(p.nombre);
                         System.out.println(p.precio);
-                        ProveedorInsumo pr = new ProveedorInsumo();
-                        pr.setInsumo(insumo);
-                        pr.setProveedor(p.getProv());
-                        pr.setPrecio(Double.parseDouble(p.getPrecio().getValue()));
-                        listaInsumoProv.add(pr);
+                        if(!p.getPrecio().getValue().equals("")){
+                            ProveedorInsumo pr = new ProveedorInsumo();
+                            pr.setInsumo(insumo);
+                            pr.setProveedor(p.getProv());
+                            pr.setPrecio(Double.parseDouble(p.getPrecio().getValue()));
+                            listaInsumoProv.add(pr);
+                        }
                     });
                     
                     Long id = helper.saveInsumo(insumo, listaInsumoProv);
@@ -347,18 +350,42 @@ public class CrearEditarInsumoController implements Initializable {
         tblProveedor.setShowRoot(false);
     }
     private void fillData(){
-        ProveedorHelper helper = new ProveedorHelper();
-        ArrayList<Proveedor> listaProvGet = helper.getProveedores();
-        if(listaProvGet != null) {
-            listaProvGet.forEach((i)->{
-                updateTable(i);
-            });
+        ProveedorHelper helperp = new ProveedorHelper();
+        InsumosHelper helperi = new InsumosHelper();
+        
+        ArrayList<Proveedor> listaProvGet = null;
+        
+        if(!ListaInsumoController.isInsumoCreate){
+            
+            listaProvGet = helperp.getProveedores();
+            if(listaProvGet != null) {
+                listaProvGet.forEach((i)->{
+                    ArrayList<ProveedorInsumo>  lista = (ArrayList<ProveedorInsumo>) helperi. getInsumoFromProveedor(i);
+                    lista.forEach((o)->{System.out.println("id prov insumo" +  o.getId()); });
+                    //ProveedorInsumo a = helperi.getInsumoProveedorUnit(insumo, i);
+//                    System.out.println("kk"+a);
+//                    if(a != null) {
+//                       updateTable(i,a.getPrecio().toString());
+//                    }
+                    
+                });
+            }
         }
-        helper.close();
+        else {
+            listaProvGet = helperp.getProveedores();
+            if(listaProvGet != null) {
+                listaProvGet.forEach((i)->{
+                    updateTable(i,"");
+                });
+            }
+        }
+        
+        helperp.close();
+        helperi.close();
     }
     
-    public void updateTable(Proveedor p){
-        ProveedorViewer newprov = new ProveedorViewer(p.getNombre(), "");
+    public void updateTable(Proveedor p,String cant){
+        ProveedorViewer newprov = new ProveedorViewer(p.getNombre(), cant);
         newprov.setProv(p);
         listaProv.add(newprov);
     }

@@ -63,22 +63,13 @@ public class CrearEditarOrdenCompraController implements Initializable {
     private StackPane hiddenSp;
 
     @FXML
-    private JFXComboBox<Proveedor> provCbx;
+    private JFXComboBox<?> cbxProv;
 
     @FXML
-    private JFXDatePicker datePick;
+    private JFXDatePicker pckDate;
 
     @FXML
     private JFXTreeTableView<InsumoViewer> tblInsumos;
-
-    @FXML
-    private JFXButton btnCancelar;
-
-    @FXML
-    private JFXButton btnGuardar;
-
-    @FXML
-    private JFXTextField totalTxt;
     
     public static OrdenCompra orden = null;
     static ObservableList<InsumoViewer> insumosList;
@@ -149,37 +140,37 @@ public class CrearEditarOrdenCompraController implements Initializable {
         
         ProveedorHelper helperp = new ProveedorHelper();
         ArrayList<Proveedor> listaprov = helperp.getProveedores();
-        if(listaprov != null) {
-            listaprov.forEach((p)-> {
-                provCbx.getItems().add(p);
-            });
-            provCbx.setPromptText("Seleccionar proveedor");
-            provCbx.setConverter(new StringConverter<Proveedor>() {
-                Long id = null;
-                String des = null;
-                String ruc = null;
-            @Override
-            public String toString(Proveedor object) {
-                id = object.getId();
-                des = object.getDescripcion();
-                ruc = object.getRuc();
-                return object==null? "" : object.getNombre();
-            }
-
-            @Override
-            public Proveedor fromString(String string) {
-                Proveedor pr= new Proveedor();
-                pr.setNombre(string);
-                pr.setId(id);
-                pr.setDescripcion(des);
-                pr.setRuc(ruc);
-                return pr;
-            }
-            });
-        }
+//        if(listaprov != null) {
+//            listaprov.forEach((p)-> {
+//                provCbx.getItems().add(p);
+//            });
+//            provCbx.setPromptText("Seleccionar proveedor");
+//            provCbx.setConverter(new StringConverter<Proveedor>() {
+//                Long id = null;
+//                String des = null;
+//                String ruc = null;
+//            @Override
+//            public String toString(Proveedor object) {
+//                id = object.getId();
+//                des = object.getDescripcion();
+//                ruc = object.getRuc();
+//                return object==null? "" : object.getNombre();
+//            }
+//
+//            @Override
+//            public Proveedor fromString(String string) {
+//                Proveedor pr= new Proveedor();
+//                pr.setNombre(string);
+//                pr.setId(id);
+//                pr.setDescripcion(des);
+//                pr.setRuc(ruc);
+//                return pr;
+//            }
+//            });
+//        }
         helperp.close();
         
-        datePick.setValue(date);
+//        datePick.setValue(date);
     }
     
     public static void updateTable(Insumo insumo){
@@ -192,28 +183,9 @@ public class CrearEditarOrdenCompraController implements Initializable {
                                          insumo.getImagen(),0,insumo.getId(),insumo.getPrecio()));
     }
     
-    @FXML
-    void handleAction(ActionEvent event) {
-        if(event.getSource() == btnCancelar){
-            ListaOrdenesCompraController.ordenDialog.close();
-        }
-        if(event.getSource() == btnGuardar) {
-            OrdenCompraHelper helpero = new OrdenCompraHelper();
-            OrdenCompra newOrd = new OrdenCompra();
-            newOrd.setFecha(inputDate);
-            newOrd.setProveedor(provCbx.getSelectionModel().getSelectedItem());
-            newOrd.setUsuario(LoginController.user);
-            /*Integer id  = helpero.saveOrden(newOrd);
-            if( id!=null){
-                ListaOrdenesCompraController.updateTable(newOrd);
-            }*/
-            helpero.close();
-            ListaOrdenesCompraController.ordenDialog.close();
-        }
-    }
 
     private void fillFields(){
-        orden.setFecha(Date.from(datePick.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+//        orden.setFecha(Date.from(datePick.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         orden.setPrecioTotal(0);
         orden.setUsuario(LoginController.user);
         

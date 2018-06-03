@@ -8,13 +8,15 @@ package com.sigad.sigad.ordenescompra.controller;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
+import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableRow;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.business.OrdenCompra;
-import com.sigad.sigad.deposito.controller.FXMLAlmacenIngresoListaOrdenCompraController.OrdenCompraViewer;
+import com.sigad.sigad.business.helpers.OrdenCompraHelper;
 import com.sigad.sigad.deposito.helper.DepositoHelper;
 import java.io.IOException;
 import java.net.URL;
@@ -24,6 +26,8 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -31,11 +35,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
@@ -60,33 +66,92 @@ public class ListaOrdenesCompraController implements Initializable {
     private JFXButton moreBtn;
 
     @FXML
-    private JFXButton btnAdd;
+    private JFXButton addBtn;
     
+    @FXML
     public static JFXDialog ordenDialog;
     
+    @FXML
+    private JFXPopup popup;
+    
     public static boolean isOrdenCreate;
+    
+    public static OrdenCompraViewer selectedOrdenCompra = null;
     
     JFXTreeTableColumn<OrdenCompraViewer,String> codCol = new JFXTreeTableColumn<>("Codigo");
     JFXTreeTableColumn<OrdenCompraViewer,String> fechaCol = new JFXTreeTableColumn<>("Fecha Compra");
     JFXTreeTableColumn<OrdenCompraViewer,Number> precioCol = new JFXTreeTableColumn<>("Precio");
-    static ObservableList<OrdenCompraViewer> ordenes;
+    static ObservableList<OrdenCompraViewer> ordenesList;
     
+    public static class OrdenCompraViewer extends RecursiveTreeObject<OrdenCompraViewer>{
+
+        /**
+         * @return the codigo
+         */
+        public SimpleStringProperty getCodigo() {
+            return codigo;
+        }
+
+        /**
+         * @param codigo the codigo to set
+         */
+        public void setCodigo(SimpleStringProperty codigo) {
+            this.codigo = codigo;
+        }
+
+        /**
+         * @return the fecha
+         */
+        public SimpleStringProperty getFecha() {
+            return fecha;
+        }
+
+        /**
+         * @param fecha the fecha to set
+         */
+        public void setFecha(SimpleStringProperty fecha) {
+            this.fecha = fecha;
+        }
+
+        /**
+         * @return the precio
+         */
+        public SimpleDoubleProperty getPrecio() {
+            return precio;
+        }
+
+        /**
+         * @param precio the precio to set
+         */
+        public void setPrecio(Double precio) {
+            this.precio = new SimpleDoubleProperty(precio);
+        }
+        private SimpleStringProperty codigo;
+        private SimpleStringProperty fecha;
+        private SimpleDoubleProperty  precio;
+        
+        public OrdenCompraViewer(String codigo,String fecha,Double precio){
+            this.codigo = new SimpleStringProperty(codigo);
+            this.fecha = new SimpleStringProperty(fecha);
+            this.precio = new SimpleDoubleProperty(precio);
+        }
+    }
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        ordenes = FXCollections.observableArrayList();
+        ordenesList = FXCollections.observableArrayList();
         setColumns();
         addColumns();
-        //fillData();
+        fillData();
         // TODO        
-        DepositoHelper depositoHelper = new DepositoHelper();
-        ArrayList<OrdenCompra> ordenesBD= (ArrayList<OrdenCompra>)depositoHelper.getOrdenes();
+        OrdenCompraHelper helpero = new OrdenCompraHelper();
+        ArrayList<OrdenCompra> ordenesBD= (ArrayList<OrdenCompra>) helpero.getOrdenes();
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-YYYY");
-        ordenesBD.forEach((orden)->{
-            OrdenCompraViewer ordenViewer = new OrdenCompraViewer(Integer.toString(orden.getId()),sdf.format(orden.getFecha()),orden.getPrecioTotal());
-            ordenes.add(ordenViewer);
-            System.out.println(orden.getId() + " " + orden.getPrecioTotal() + " " + orden.getFecha());
-            
-        });
+//        ordenesBD.forEach((orden)->{
+//            OrdenCompraViewer ordenViewer = new OrdenCompraViewer(Integer.toString(orden.getId()),sdf.format(orden.getFecha()),orden.getPrecioTotal());
+//            ordenes.add(ordenViewer);
+//            System.out.println(orden.getId() + " " + orden.getPrecioTotal() + " " + orden.getFecha());
+//            
+//        });
     }
     private void setColumns() {
         codCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<OrdenCompraViewer, String> param) -> 
@@ -121,55 +186,116 @@ public class ListaOrdenesCompraController implements Initializable {
     }
     
     private void addColumns(){
-        final TreeItem<OrdenCompraViewer> root = new RecursiveTreeItem<>(ordenes,RecursiveTreeObject::getChildren);
+        final TreeItem<OrdenCompraViewer> root = new RecursiveTreeItem<>(ordenesList,RecursiveTreeObject::getChildren);
         tblOrdenesCompra.getColumns().setAll(codCol,fechaCol,precioCol);
         tblOrdenesCompra.setRoot(root);
         tblOrdenesCompra.setShowRoot(false);
         
     }
     
+    private void fillData() {
+        OrdenCompraHelper helpero = new OrdenCompraHelper();
+        ArrayList<OrdenCompra> listaOrdenes= helpero.getOrdenes();
+        if(listaOrdenes != null){
+            listaOrdenes.forEach((i)->{
+                updateTable(i);
+            });
+        }
+    }
     public static void updateTable(OrdenCompra orden) {
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-        ordenes.add(new OrdenCompraViewer(Long.toString(orden.getId()),df.format(orden.getFecha()),orden.getPrecioTotal()));
+        ordenesList.add(new OrdenCompraViewer(Long.toString(orden.getId()),df.format(orden.getFecha()),orden.getPrecioTotal()));
     }
     
     @FXML
     void handleAction(ActionEvent event) {
-        if(event.getSource() == btnAdd ) {
+        if(event.getSource() == addBtn ) {
             try {
-                CreateEditUserDialog(true);
+                createEditOrdenDialog(true);
             } catch (IOException ex) {
-                
+                Logger.getLogger(ListaOrdenesCompraController.class.getName()).log(Level.SEVERE,"CreateEditUserDialog()",ex);
+            }
+        }
+        else if(event.getSource() == moreBtn) {
+            int count = tblOrdenesCompra.getSelectionModel().getSelectedCells().size();
+            if( count > 1) {
+                ErrorController error = new  ErrorController();
+                error.loadDialog("Atención", "Debe seleccionar solo un registro de la tabla", "OK", hiddenSp);
+            }
+            else if( count <= 0 ) {
+                ErrorController error = new ErrorController();
+                error.loadDialog("Atención", "Debe seleccionar al menos un registro de la tabla", "OK", hiddenSp);
+            }
+            else {
+                int selected = tblOrdenesCompra.getSelectionModel().getSelectedIndex();
+                selectedOrdenCompra = (OrdenCompraViewer) tblOrdenesCompra.getSelectionModel().getModelItem(selected).getValue();
+                showOptions();
+                popup.show(moreBtn,JFXPopup.PopupVPosition.TOP,JFXPopup.PopupHPosition.RIGHT);
             }
         }
     }
     
-    public void CreateEditUserDialog(boolean iscreate) throws IOException {
+    //dialogos
+    private void showOptions(){
+        JFXButton edit = new JFXButton("Editar");
+        JFXButton delete = new JFXButton("Eliminar");
+        
+        edit.setOnAction((ActionEvent event) -> {
+            popup.hide();
+            try {
+                createEditOrdenDialog(false);
+            } catch (IOException ex) {
+                Logger.getLogger(ListaOrdenesCompraController.class.getName()).log(Level.SEVERE, "initPopup(): createEditOrdenDialog()", ex);
+            }
+        });
+        
+        delete.setOnAction((ActionEvent event) -> {
+            popup.hide();
+            ////VALIDAR QUE NO SE PUEDA ELIMINAR SI YA ESTA EN ESTADO DESPACHADA
+            deleteOrdenesDialog();
+        });
+        
+        edit.setPadding(new Insets(20));
+        edit.setPrefSize(145, 40);
+        delete.setPadding(new Insets(20));
+        delete.setPrefSize(145, 40);
+        
+        VBox vBox = new VBox(edit, delete);
+        
+        popup = new JFXPopup();
+        popup.setPopupContent(vBox);
+    }
+    
+    private void deleteOrdenesDialog() {
+        JFXDialogLayout content =  new JFXDialogLayout();
+        content.setHeading(new Text("Eliminar Orden"));
+        content.setBody(new Text("¿Seguro que desea eliminar la orden seleccionada?"));
+                
+        JFXDialog dialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
+        JFXButton button = new JFXButton("Okay");
+        button.setOnAction((ActionEvent event) -> {
+            dialog.close();
+        });
+        content.setActions(button);
+        dialog.show();
+    }
+    
+    public void createEditOrdenDialog(boolean iscreate) throws IOException {
         isOrdenCreate = iscreate;
         
         JFXDialogLayout content =  new JFXDialogLayout();
         
         
-        if(isOrdenCreate ){
-            content.setHeading(new Text("Crear Usuario"));
+        if(isOrdenCreate){
+            content.setHeading(new Text("Crear Orden"));
         }else{
-            content.setHeading(new Text("Editar Usuario"));
-            
-//            UsuarioHelper helper = new UsuarioHelper();
-//            Usuario u = helper.getUser(PersonalController.selectedUser.correo.getValue());
-//            if(u == null){
-//                ErrorController error = new ErrorController();
-//                error.loadDialog("Error", "No se pudo obtener el usuario", "Ok", hiddenSp);
-//                System.out.println("Error al obtener el usuario");
-//                return;
-//            }
+            content.setHeading(new Text("Editar Orden"));
         }
         
         Node node;
         node = (Node) FXMLLoader.load(ListaOrdenesCompraController.this.getClass().getResource(CrearEditarOrdenCompraController.viewPath));
         content.setBody(node);
-        //content.setPrefSize(400,400);
-                
+        
         ordenDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
         ordenDialog.show();
     }  
