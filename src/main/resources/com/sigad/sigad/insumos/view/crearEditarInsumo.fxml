@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXTextArea?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import com.jfoenix.controls.JFXTreeTableView?>
+<?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -31,20 +31,23 @@
                <children>
                   <AnchorPane prefHeight="413.0" prefWidth="212.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                      <children>
-                        <JFXTextField fx:id="nombreTxt" focusColor="#455a64" layoutX="33.0" layoutY="86.0" promptText="Nombre" AnchorPane.leftAnchor="33.0" />
-                        <JFXComboBox fx:id="cbxProv" layoutX="31.0" layoutY="27.0" prefHeight="27.0" prefWidth="155.0" AnchorPane.leftAnchor="31.0" />
-                        <JFXTextField fx:id="tiempoTxt" focusColor="#455a64" layoutX="33.0" layoutY="132.0" promptText="Tiempo de vida(Dias)" AnchorPane.leftAnchor="33.0" />
+                        <JFXTextField fx:id="nombreTxt" focusColor="#455a64" layoutX="33.0" layoutY="30.0" promptText="Nombre" AnchorPane.leftAnchor="33.0" />
+                        <JFXTextField fx:id="tiempoTxt" focusColor="#455a64" layoutX="33.0" layoutY="79.0" promptText="Tiempo de vida(Dias)" AnchorPane.leftAnchor="33.0" />
+                        <JFXTextField fx:id="volumenTxt" focusColor="#455a64" layoutX="33.0" layoutY="132.0" promptText="Volumen(m3)" />
                      </children>
                   </AnchorPane>
                   <AnchorPane prefHeight="380.0" prefWidth="179.0" GridPane.rowIndex="2" />
                   <AnchorPane prefHeight="383.0" prefWidth="226.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
                      <children>
-                        <JFXTextArea fx:id="descripcionTxt" layoutX="26.0" layoutY="19.0" prefHeight="132.0" prefWidth="187.0" promptText="Descripción" AnchorPane.bottomAnchor="47.0" AnchorPane.leftAnchor="26.0" />
+                        <JFXTextArea fx:id="descripcionTxt" layoutX="27.0" layoutY="33.0" prefHeight="132.0" prefWidth="187.0" promptText="Descripción" AnchorPane.bottomAnchor="33.0" AnchorPane.leftAnchor="27.0" />
                      </children>
                   </AnchorPane>
                   <AnchorPane prefHeight="196.0" prefWidth="762.0" GridPane.columnSpan="4" GridPane.rowIndex="3">
                      <children>
-                        <JFXTreeTableView fx:id="tblProveedor" layoutX="142.0" prefHeight="185.0" prefWidth="467.0" />
+                        <JFXTreeTableView fx:id="tblProveedor" layoutX="142.0" prefHeight="185.0" prefWidth="467.0">
+                           <columnResizePolicy>
+                              <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy></JFXTreeTableView>
                      </children>
                   </AnchorPane>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="4" GridPane.rowIndex="1" />

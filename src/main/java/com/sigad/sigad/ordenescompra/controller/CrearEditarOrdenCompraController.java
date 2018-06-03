@@ -295,6 +295,7 @@ public class CrearEditarOrdenCompraController implements Initializable {
             return getItem() == null ? "" : getItem().toString();
         }
     }
+    
     public boolean isNumeric(String input) {
         try {
             Integer.parseInt(input);

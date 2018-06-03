@@ -19,6 +19,7 @@ import com.jfoenix.validation.RequiredFieldValidator;
 import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.Proveedor;
+import com.sigad.sigad.business.ProveedorInsumo;
 import com.sigad.sigad.business.helpers.InsumosHelper;
 import com.sigad.sigad.business.helpers.ProveedorHelper;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
@@ -32,10 +33,15 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -67,8 +73,8 @@ public class CrearEditarInsumoController implements Initializable {
     private JFXTextField nombreTxt;
 
 
-//    @FXML
-//    private JFXComboBox<Proveedor> cbxProv;
+    @FXML
+    private JFXTextField volumenTxt;
 
     @FXML
     private JFXTextField tiempoTxt;
@@ -132,7 +138,19 @@ public class CrearEditarInsumoController implements Initializable {
                 }
                 //creacion
                 else{
-                    Long id = helper.disableInsumo(insumo);
+                    ArrayList<ProveedorInsumo> listaInsumoProv = new ArrayList<>();
+                    
+                    listaProv.forEach((p)->{
+                        System.out.println(p.nombre);
+                        System.out.println(p.precio);
+                        ProveedorInsumo pr = new ProveedorInsumo();
+                        pr.setInsumo(insumo);
+                        pr.setProveedor(p.getProv());
+                        pr.setPrecio(Double.parseDouble(p.getPrecio().getValue()));
+                        listaInsumoProv.add(pr);
+                    });
+                    
+                    Long id = helper.saveInsumo(insumo, listaInsumoProv);
                     if(id != null){
                         ListaInsumoController.updateTable(insumo);
                         ListaInsumoController.insumoDialog.close();
@@ -141,6 +159,7 @@ public class CrearEditarInsumoController implements Initializable {
                         error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
                     }
                 }
+                 helper.close();
             }
         });
         
@@ -159,38 +178,6 @@ public class CrearEditarInsumoController implements Initializable {
     
     private void loadFields(){
         
-        ProveedorHelper helperp = new ProveedorHelper();             
-        ArrayList<Proveedor> listaprov = helperp.getProveedores();
-        if(listaprov != null) {
-            listaprov.forEach((p)-> {
-//                cbxProv.getItems().add(p);
-            });
-//            cbxProv.setPromptText("Seleccionar proveedor");
-//            cbxProv.setConverter(new StringConverter<Proveedor>() {
-//                Long id = null;
-//                String des = null;
-//                String ruc = null;
-//                @Override
-//                public String toString(Proveedor object) {
-//                    id = object.getId();
-//                    des = object.getDescripcion();
-//                    ruc = object.getRuc();
-//                    return object==null? "" : object.getNombre();
-//                }
-//
-//                @Override
-//                public Proveedor fromString(String string) {
-//                    Proveedor pr= new Proveedor();
-//                    pr.setNombre(string);
-//                    pr.setId(id);
-//                    pr.setDescripcion(des);
-//                    pr.setRuc(ruc);
-//                    return pr;
-//                }
-//            });
-        }
-        helperp.close();
-        
         InsumosHelper helper = new InsumosHelper();
         insumo = helper.getInsumo(ListaInsumoController.selectedInsumo.getId());
         
@@ -199,7 +186,7 @@ public class CrearEditarInsumoController implements Initializable {
             nombreTxt.setDisable(true);
             tiempoTxt.setText(insumo.getTiempoVida() + "");
             descripcionTxt.setText(insumo.getDescripcion());
-//            precioTxt.setText(insumo.getPrecio()+ "");
+            volumenTxt.setText(insumo.isVolumen()+"");
         }
         helper.close();
         
@@ -208,7 +195,7 @@ public class CrearEditarInsumoController implements Initializable {
     private void fillFields(){
         insumo.setNombre(nombreTxt.getText());
         insumo.setTiempoVida(Integer.parseInt(tiempoTxt.getText()));
-//        insumo.setPrecio(Double.parseDouble(precioTxt.getText()));
+        insumo.setVolumen(Double.parseDouble(volumenTxt.getText()));
         insumo.setActivo(true);
         insumo.setStockTotalFisico(0);
         insumo.setStockTotalLogico(0);
@@ -229,11 +216,11 @@ public class CrearEditarInsumoController implements Initializable {
             descripcionTxt.requestFocus();
             return false;
         }
-//        else if(!precioTxt.validate()){
-//            precioTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
-//            precioTxt.requestFocus();
-//            return false;
-//        }
+        else if(!volumenTxt.validate()){
+            volumenTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+            volumenTxt.requestFocus();
+            return false;
+        }
         else return true;
     }
     
@@ -276,33 +263,41 @@ public class CrearEditarInsumoController implements Initializable {
         });
 
         
-        /*Precio proveedor*/
-//        r = new RequiredFieldValidator();
-//        r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
-//        r.setMessage("Campo obligatorio");
-////        precioTxt.getValidators().add(r);
-//        
-//        
-//        d = new DoubleValidator();
-//        d.setMessage("Campo numérico");
-//        d.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
-//        precioTxt.getValidators().add(d);
-//        
-//        precioTxt.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-//            if (!newValue) {
-//                if(!precioTxt.validate()){
-//                    precioTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
-//                }
-//                else precioTxt.setFocusColor(new Color(0.30,0.47,0.23, 1));
-//            }
-//        });
+        /*Volumen insumo*/
+        r = new RequiredFieldValidator();
+        r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
+        r.setMessage("Campo obligatorio");
+        volumenTxt.getValidators().add(r);
+        
+        
+        d = new DoubleValidator();
+        d.setMessage("Campo numérico");
+        d.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
+        volumenTxt.getValidators().add(d);
+        
+        volumenTxt.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (!newValue) {
+                if(!volumenTxt.validate()){
+                    volumenTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+                }
+                else volumenTxt.setFocusColor(new Color(0.30,0.47,0.23, 1));
+            }
+        });
         
 
     }
     
     
-    public static class ProveedorViewer extends RecursiveTreeObject<ProveedorViewer>{
+    public class ProveedorViewer extends RecursiveTreeObject<ProveedorViewer>{
 
+        public Proveedor getProv() {
+            return prov;
+        }
+
+        public void setProv(Proveedor prov) {
+            this.prov = prov;
+        }
+        
         public SimpleStringProperty getNombre() {
             return nombre;
         }
@@ -311,16 +306,19 @@ public class CrearEditarInsumoController implements Initializable {
             return precio;
         }
 
-        public void setNombre(SimpleStringProperty nombre) {
-            this.nombre = nombre;
+        public void setNombre(String nombre) {
+            this.nombre = new SimpleStringProperty(nombre);
         }
 
-        public void setPrecio(SimpleStringProperty precio) {
-            this.precio = precio;
+        public void setPrecio(String precio) {
+            this.precio = new SimpleStringProperty(precio);
         }
 
         private SimpleStringProperty nombre;
+        private SimpleStringProperty ruc;
+        private SimpleStringProperty id;
         private SimpleStringProperty precio;
+        private Proveedor prov;
 
 
         public ProveedorViewer(String nombre,String precio) {
@@ -335,6 +333,11 @@ public class CrearEditarInsumoController implements Initializable {
         );
         cantidadCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProveedorViewer, String> param) -> param.getValue().getValue().getPrecio() //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         );
+        cantidadCol.setCellFactory((TreeTableColumn<ProveedorViewer,String> param) -> new EditingCell());
+        cantidadCol.setOnEditCommit((TreeTableColumn.CellEditEvent<ProveedorViewer, String> event) -> {
+            Integer i = listaProv.indexOf(event.getRowValue().getValue());
+            listaProv.get(i).setPrecio(event.getNewValue());
+        });
     }
     private void addColumns(){
         final TreeItem<ProveedorViewer> rootProveedor = new RecursiveTreeItem<>(listaProv,RecursiveTreeObject::getChildren);
@@ -354,8 +357,80 @@ public class CrearEditarInsumoController implements Initializable {
         helper.close();
     }
     
-    public static void updateTable(Proveedor p){
-        listaProv.add(new ProveedorViewer(p.getNombre(),"0"));
+    public void updateTable(Proveedor p){
+        ProveedorViewer newprov = new ProveedorViewer(p.getNombre(), "");
+        newprov.setProv(p);
+        listaProv.add(newprov);
+    }
+    
+    class EditingCell extends TreeTableCell<ProveedorViewer, String> {
+
+        private JFXTextField textField;
+
+        public EditingCell() {
+        }
+
+        @Override
+        public void startEdit() {
+            super.startEdit();
+
+            if (textField == null) {
+                createTextField();
+            }
+
+            setGraphic(textField);
+            setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            textField.selectAll();
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+
+            setText(String.valueOf(getItem()));
+            setContentDisplay(ContentDisplay.TEXT_ONLY);
+        }
+
+        @Override
+        public void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (textField != null) {
+                        textField.setText(getString());
+                    }
+                    setGraphic(textField);
+                    setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                } else {
+                    setText(getString());
+                    setContentDisplay(ContentDisplay.TEXT_ONLY);
+                }
+            }
+        }
+
+        private void createTextField() {
+            textField = new JFXTextField(getString());
+            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+            textField.setOnKeyPressed((KeyEvent t) -> {
+                if (t.getCode() == KeyCode.ENTER) {
+                    commitEdit(textField.getText());
+                    listaProv.forEach((o) -> {
+                        System.out.println(o.getPrecio().getValue());
+                    });
+                    
+                } else if (t.getCode() == KeyCode.ESCAPE) {
+                    cancelEdit();
+                }
+            });
+        }
+
+        private String getString() {
+            return getItem() == null ? "" : getItem().toString();
+        }
     }
     
        
