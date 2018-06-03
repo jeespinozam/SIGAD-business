@@ -11,6 +11,7 @@ import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.jfoenix.validation.NumberValidator;
 import com.jfoenix.validation.RequiredFieldValidator;
+import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.business.ClienteDireccion;
 import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Usuario;
@@ -33,6 +34,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
 /**
@@ -43,7 +45,7 @@ import javafx.scene.paint.Color;
 public class RegistrarClienteController implements Initializable {
 
     public static final String viewPath = "/com/sigad/sigad/pedido/view/registrarCliente.fxml";
-
+    private StackPane stackPane;
     @FXML
     private JFXTreeTableView<DireccionesLista> tablaDirecciones;
     private final ObservableList<DireccionesLista> direcciones = FXCollections.observableArrayList();
@@ -272,7 +274,7 @@ public class RegistrarClienteController implements Initializable {
         cliente.setCorreo(txtcorreo.getText());
         cliente.getClienteDireccionesSet().clear();
         direcciones.forEach((t) -> {
-                cliente.addClienteDirecciones(new ClienteDireccion(t.direccion.getValue(), t.nombre.getValue(), Boolean.FALSE, cliente));
+            cliente.addClienteDirecciones(new ClienteDireccion(t.direccion.getValue(), t.nombre.getValue(), Boolean.FALSE, cliente));
         });
 
     }
@@ -321,11 +323,21 @@ public class RegistrarClienteController implements Initializable {
         }
     }
 
+    public void initModel(StackPane stackPane) {
+
+        this.stackPane = stackPane;
+    }
+
     @FXML
     void agregarDireccion(ActionEvent event) {
-        direcciones.add(new DireccionesLista(txtnuevaDir.getText(), txtnuevoNom.getText(), null));
-        txtnuevaDir.clear();
-        txtnuevoNom.clear();
+        if (txtnuevaDir.getText().length() > 0 && txtnuevoNom.getText().length() > 0) {
+            direcciones.add(new DireccionesLista(txtnuevaDir.getText(), txtnuevoNom.getText(), null));
+            txtnuevaDir.clear();
+            txtnuevoNom.clear();
+        } else {
+            ErrorController error = new ErrorController();
+            error.loadDialog("Atención", "Los campos se encuentran vacios", "Ok", stackPane);
+        }
     }
 
     @FXML

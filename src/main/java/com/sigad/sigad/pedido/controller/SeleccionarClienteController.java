@@ -192,6 +192,8 @@ public class SeleccionarClienteController implements Initializable {
             Node node;
             FXMLLoader loader = new FXMLLoader(SeleccionarClienteController.this.getClass().getResource(RegistrarClienteController.viewPath));
             node = (Node) loader.load();
+            RegistrarClienteController ctrl = new RegistrarClienteController();
+            ctrl.initModel(stackPane);
             content.setBody(node);
             userDialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
             userDialog.show();
@@ -219,7 +221,7 @@ public class SeleccionarClienteController implements Initializable {
                 stackPane.getChildren().setAll(node);
             } else {
                 ErrorController error = new ErrorController();
-                error.loadDialog("Atención", "Debe seleccionar solo un registro de la tabla", "Ok", stackPane);
+                error.loadDialog("Atención", "Debe seleccionar un registro de la tabla", "Ok", stackPane);
             }
 
         } catch (IOException ex) {

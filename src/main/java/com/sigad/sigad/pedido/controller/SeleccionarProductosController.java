@@ -7,6 +7,7 @@ package com.sigad.sigad.pedido.controller;
 
 import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.app.controller.HomeController;
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.DetallePedido;
@@ -174,7 +175,12 @@ public class SeleccionarProductosController implements Initializable {
 
     @FXML
     void clickBotonContinuar(MouseEvent event) {
-        goSeleccionarCliente();
+        if (validarCamposLlenos()) {
+            goSeleccionarCliente();
+        } else {
+            ErrorController error = new ErrorController();
+            error.loadDialog("Atención", "Debe agregar algún producto", "Ok", stackPane);
+        }
     }
 
     public boolean isNumeric(String input) {
@@ -298,7 +304,7 @@ public class SeleccionarProductosController implements Initializable {
                 }
                 pedidos.remove(nuevo);
                 pedidos.add(i, nuevo);
-                if (event.getNewValue() <= stock+ oldValue) {
+                if (event.getNewValue() <= stock + oldValue) {
                     calcularTotal();
                 }
 
@@ -352,6 +358,16 @@ public class SeleccionarProductosController implements Initializable {
             prod.get(prod.indexOf(t)).stock.setValue(st.toString());
 
         });
+    }
+
+    public Boolean validarCamposLlenos() {
+        try {
+            Double total = Double.valueOf(lblTotal.getText());
+            return total != 0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
     }
 
     public void agregarColumnasTablasProductos() {

@@ -98,7 +98,7 @@
       </Label>
       <Label layoutX="571.0" layoutY="258.0" text="Fecha de entrega" />
       <Label layoutX="757.0" layoutY="258.0" text="Rango de horas de entrega" />
-      <JFXDatePicker id="dpFechaEntrega" fx:id="dpFechaEntrega" layoutX="571.0" layoutY="284.0" prefHeight="25.0" prefWidth="157.0" />
+      <JFXDatePicker id="dpFechaEntrega" fx:id="dpFechaEntrega" defaultColor="#455a64" layoutX="571.0" layoutY="284.0" prefHeight="25.0" prefWidth="157.0" />
       <JFXComboBox fx:id="cmbInicio" layoutX="757.0" layoutY="284.0" prefHeight="25.0" prefWidth="144.0" />
       <JFXComboBox fx:id="cmbFin" layoutX="757.0" layoutY="323.0" prefHeight="25.0" prefWidth="144.0" />
       <JFXComboBox fx:id="cmbDireccion" layoutX="116.0" layoutY="127.0" prefHeight="30.0" prefWidth="795.0" />
