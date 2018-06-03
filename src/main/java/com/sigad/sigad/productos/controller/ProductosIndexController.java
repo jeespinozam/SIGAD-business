@@ -33,7 +33,6 @@ import com.sigad.sigad.business.helpers.ProductoHelper;
 import com.sigad.sigad.business.helpers.UsuarioHelper;
 import com.sigad.sigad.personal.controller.CrearEditarUsuarioController;
 import com.sigad.sigad.personal.controller.PersonalController;
-import static com.sigad.sigad.personal.controller.PersonalController.isStoreCreate;
 import static com.sigad.sigad.personal.controller.PersonalController.userDialog;
 import java.io.IOException;
 import java.util.ArrayList;

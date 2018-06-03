@@ -24,10 +24,8 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -44,7 +42,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.util.Callback;
 
 /**
  * FXML Controller class
@@ -73,8 +70,8 @@ public class PersonalController implements Initializable {
     @FXML
     private JFXPopup popup;
     
-    public static boolean isStoreCreate;
-    public static User selectedStore = null;
+    public static boolean isUserCreate;
+    public static User selectedUser = null;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -95,6 +92,7 @@ public class PersonalController implements Initializable {
                         new SimpleStringProperty(u.getCelular()),
                         new SimpleStringProperty(u.getPerfil().getNombre()),
                         new SimpleStringProperty(u.getPerfil().getDescripcion()),
+                        new SimpleStringProperty(u.getTienda()!=null ? u.getTienda().getDireccion(): ""),
                         new SimpleStringProperty(u.isActivo()? "Activo": "Inactivo")
                 ));
     }
@@ -129,7 +127,7 @@ public class PersonalController implements Initializable {
                 error.loadDialog("Atención", "Debe seleccionar al menos un registro de la tabla", "Ok", hiddenSp);
             }else{
                 int selected  = userTbl.getSelectionModel().getSelectedIndex();
-                selectedStore = (User) userTbl.getSelectionModel().getModelItem(selected).getValue();
+                selectedUser = (User) userTbl.getSelectionModel().getModelItem(selected).getValue();
                 initPopup();
                 popup.show(moreBtn, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.RIGHT);
             }
@@ -139,7 +137,7 @@ public class PersonalController implements Initializable {
     
     private void initPopup(){
         JFXButton edit = new JFXButton("Editar");
-        JFXButton delete = new JFXButton("Eliminar");
+        JFXButton delete = new JFXButton("Activar/Desactivar");
         
         edit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -156,8 +154,25 @@ public class PersonalController implements Initializable {
         delete.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                data.remove(PersonalController.selectedUser);
+                
+                UsuarioHelper helper = new UsuarioHelper();
+                Usuario temp = helper.getUser(selectedUser.correo.getValue());
+                temp.setActivo(!temp.isActivo());
+                helper.close();
+                
+                UsuarioHelper helper1 = new UsuarioHelper();
+                boolean ok = helper1.updateUser(temp);
+                if(!ok){
+                    ErrorController error = new ErrorController();
+                    error.loadDialog("Eror", "No se pudo actualizar el estado", "Ok", hiddenSp);
+                    return;
+                }
+                updateTable(temp);
+                
+                helper1.close();
                 popup.hide();
-                deleteUserDialog();
+                
             }
         });
         
@@ -173,17 +188,17 @@ public class PersonalController implements Initializable {
     }
     
     public void CreateEdditUserDialog(boolean iscreate) throws IOException {
-        isStoreCreate = iscreate;
+        isUserCreate = iscreate;
         
         JFXDialogLayout content =  new JFXDialogLayout();
         
-        if(isStoreCreate){
+        if(isUserCreate){
             content.setHeading(new Text("Crear Usuario"));
         }else{
             content.setHeading(new Text("Editar Usuario"));
             
             UsuarioHelper helper = new UsuarioHelper();
-            Usuario u = helper.getUser(PersonalController.selectedStore.correo.getValue());
+            Usuario u = helper.getUser(PersonalController.selectedUser.correo.getValue());
             if(u == null){
                 ErrorController error = new ErrorController();
                 error.loadDialog("Error", "No se pudo obtener el usuario", "Ok", hiddenSp);
@@ -199,23 +214,6 @@ public class PersonalController implements Initializable {
                 
         userDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
         userDialog.show();
-    }  
-    
-    private void deleteUserDialog() {
-        JFXDialogLayout content =  new JFXDialogLayout();
-        content.setHeading(new Text("Error"));
-        content.setBody(new Text("Cuenta o contraseña incorrectas"));
-                
-        JFXDialog dialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
-        JFXButton button = new JFXButton("Okay");
-        button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                dialog.close();
-            }
-        });
-        content.setActions(button);
-        dialog.show();
     }
 
     private void initUserTbl() {
@@ -251,6 +249,10 @@ public class PersonalController implements Initializable {
         profileDesc.setPrefWidth(50);
         profileDesc.setCellValueFactory((TreeTableColumn.CellDataFeatures<PersonalController.User, String> param) -> param.getValue().getValue().profileDesc);
         
+        JFXTreeTableColumn<PersonalController.User, String> tienda = new JFXTreeTableColumn<>("Tienda");
+        tienda.setPrefWidth(50);
+        tienda.setCellValueFactory((TreeTableColumn.CellDataFeatures<PersonalController.User, String> param) -> param.getValue().getValue().tienda);
+        
         JFXTreeTableColumn<PersonalController.User, String> active = new JFXTreeTableColumn<>("Activo");
         active.setPrefWidth(50);
         active.setCellValueFactory((TreeTableColumn.CellDataFeatures<PersonalController.User, String> param) -> param.getValue().getValue().activo);
@@ -263,6 +265,8 @@ public class PersonalController implements Initializable {
         userTbl.getColumns().add(cellphone);
         userTbl.getColumns().add(profile);
         userTbl.getColumns().add(profileDesc);
+        userTbl.getColumns().add(tienda);
+        userTbl.getColumns().add(active);
         
         //DB
         getDataFromDB();
@@ -276,8 +280,8 @@ public class PersonalController implements Initializable {
                     PersonalController.User clickedRow = row.getItem();
                     System.out.println(clickedRow.nombres);
                     
-                    selectedStore = clickedRow;
-                    //data.remove(selectedStore);
+                    selectedUser = clickedRow;
+                    //data.remove(selectedUser);
                     try {
                         CreateEdditUserDialog(false);
                     } catch (IOException ex) {
@@ -292,7 +296,7 @@ public class PersonalController implements Initializable {
         
         userTbl.setEditable(true);
         userTbl.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);        
-        userTbl.getColumns().setAll(name,apellidoPaterno,apellidoMaterno, dni, telephone, cellphone, profile, profileDesc, active);
+        userTbl.getColumns().setAll(name,apellidoPaterno,apellidoMaterno, dni, telephone, cellphone, profile, profileDesc, tienda, active);
         userTbl.setRoot(root);
         userTbl.setShowRoot(false);
     }
@@ -309,9 +313,10 @@ public class PersonalController implements Initializable {
         StringProperty celular;
         StringProperty profileName;
         StringProperty profileDesc;
+        StringProperty tienda;
         StringProperty activo;
 
-        public User(StringProperty nombres, StringProperty apellidoMaterno, StringProperty apellidoPaterno, StringProperty correo, StringProperty dni, StringProperty telefono, StringProperty celular, StringProperty profileName, StringProperty profileDesc, StringProperty activo) {
+        public User(StringProperty nombres, StringProperty apellidoMaterno, StringProperty apellidoPaterno, StringProperty correo, StringProperty dni, StringProperty telefono, StringProperty celular, StringProperty profileName, StringProperty profileDesc, StringProperty tienda, StringProperty activo) {
             this.nombres = nombres;
             this.apellidoMaterno = apellidoMaterno;
             this.apellidoPaterno = apellidoPaterno;
@@ -321,6 +326,7 @@ public class PersonalController implements Initializable {
             this.celular = celular;
             this.profileName = profileName;
             this.profileDesc = profileDesc;
+            this.tienda = tienda;
             this.activo = activo;
         }
 

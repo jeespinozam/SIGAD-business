@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.JFXTreeTableView?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.Blend?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="680.0" prefWidth="1010.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.pedido.controller.RegistrarClienteController">
+    <stylesheets>
+        <URL value="@/styles/registrarcliente.css" />
+    </stylesheets>
+    <children>
+        <Label layoutX="106.0" layoutY="70.0" text="Nombres" />
+        <Label layoutX="106.0" layoutY="143.0" text="Apellido Paterno" />
+        <Label layoutX="108.0" layoutY="212.0" text="Apellido Materno" />
+        <Label layoutX="106.0" layoutY="274.0" text="DNI" />
+        <Label layoutX="107.0" layoutY="332.0" text="Telefono" />
+        <Label layoutX="106.0" layoutY="384.0" text="Celular" />
+        <Label layoutX="106.0" layoutY="439.0" text="Correo" />
+        <JFXTextField layoutX="106.0" layoutY="87.0" prefColumnCount="16" />
+        <JFXTextField layoutX="106.0" layoutY="160.0" prefColumnCount="16" />
+        <JFXTextField layoutX="106.0" layoutY="229.0" prefColumnCount="16" />
+        <JFXTextField layoutX="106.0" layoutY="291.0" prefColumnCount="16" />
+        <JFXTextField layoutX="106.0" layoutY="349.0" prefColumnCount="16" />
+        <JFXTextField layoutX="106.0" layoutY="401.0" prefColumnCount="16" />
+        <JFXTextField layoutX="106.0" layoutY="456.0" prefColumnCount="16" />
+        <JFXTreeTableView id="tablaDirecciones" fx:id="tablaDirecciones" layoutX="405.0" layoutY="169.0" prefHeight="270.0" prefWidth="502.0" AnchorPane.leftAnchor="405.0" AnchorPane.rightAnchor="103.0">
+            <effect>
+                <DropShadow color="#00000093" />
+            </effect>
+        </JFXTreeTableView>
+      <Label layoutX="405.0" layoutY="460.0" text="Agregar direccion">
+         <font>
+            <Font name="System Italic" size="13.0" />
+         </font>
+      </Label>
+      <Label layoutX="405.0" layoutY="125.0" text="Direcciones registradas" textAlignment="JUSTIFY">
+         <font>
+            <Font size="18.0" />
+         </font>
+         <effect>
+            <Blend />
+         </effect>
+      </Label>
+      <JFXTextField layoutX="405.0" layoutY="481.0" prefHeight="25.0" prefWidth="314.0" />
+      <JFXTextField layoutX="743.0" layoutY="481.0" prefHeight="25.0" prefWidth="159.0" />
+      <JFXButton buttonType="RAISED" layoutX="922.0" layoutY="481.0" ripplerFill="BLACK" style="-fx-background-color: #FFFFFF;" text="Agregar" />
+      <JFXButton buttonType="RAISED" layoutX="693.0" layoutY="596.0" style="-fx-background-color: #FFFFFF;" text="Cancelar">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </JFXButton>
+      <JFXButton buttonType="RAISED" layoutX="813.0" layoutY="596.0" style="-fx-background-color: #FFFFFF;" text="Registrar">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </JFXButton>
+    </children>
+</AnchorPane>

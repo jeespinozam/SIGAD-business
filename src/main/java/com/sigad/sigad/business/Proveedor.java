@@ -20,22 +20,25 @@ import javax.persistence.OneToMany;
  */
 @Entity
 public class Proveedor {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String nombre;
     @NotNull
-    private int ruc; 
+    private String ruc;
     private String descripcion;
     @OneToMany(mappedBy = "proveedor")
     private Set<OrdenCompra> ordenesCompra = new HashSet<OrdenCompra>();
-    
+    @OneToMany(mappedBy = "proveedor")
+    private Set<ProveedorInsumo> insumos = new HashSet<ProveedorInsumo>();
+
     /**
      * Constructor.
      */
     public Proveedor() {
     }
-    
+
     /**
      * @return the id
      */
@@ -67,14 +70,14 @@ public class Proveedor {
     /**
      * @return the ruc
      */
-    public Integer getRuc() {
+    public String getRuc() {
         return ruc;
     }
 
     /**
      * @param ruc the ruc to set
      */
-    public void setRuc(Integer ruc) {
+    public void setRuc(String ruc) {
         this.ruc = ruc;
     }
 
@@ -90,5 +93,19 @@ public class Proveedor {
      */
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    /**
+     * @return the insumos
+     */
+    public Set<ProveedorInsumo> getInsumos() {
+        return insumos;
+    }
+
+    /**
+     * @param insumos the insumos to set
+     */
+    public void setInsumos(Set<ProveedorInsumo> insumos) {
+        this.insumos = insumos;
     }
 }

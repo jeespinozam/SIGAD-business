@@ -44,6 +44,7 @@ public class Usuario {
     @NotNull
     private boolean activo;
     @Email(message = "{user.email.invalid}")
+    @Column(unique = true)
     private String correo;
     @Column(nullable = false)
     private String password;
@@ -60,6 +61,8 @@ public class Usuario {
     @ManyToMany(mappedBy = "usuarios", cascade = { CascadeType.ALL })
     private Set<ProductoDescuento> descuentos = new HashSet<ProductoDescuento>();
     
+    @ManyToOne
+    private Tienda tienda;
     /**
      * Constructor.
      */
@@ -288,6 +291,20 @@ public class Usuario {
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    /**
+     * @return the tienda
+     */
+    public Tienda getTienda() {
+        return tienda;
+    }
+
+    /**
+     * @param tienda the tienda to set
+     */
+    public void setTienda(Tienda tienda) {
+        this.tienda = tienda;
     }
     
     /**
