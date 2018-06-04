@@ -16,6 +16,7 @@ import com.sigad.sigad.business.Pedido;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoDescuento;
 import com.sigad.sigad.business.ProductoInsumo;
+import com.sigad.sigad.business.Tienda;
 import com.sigad.sigad.business.helpers.CapacidadTiendaHelper;
 import com.sigad.sigad.business.helpers.GeneralHelper;
 import com.sigad.sigad.business.helpers.ProductoDescuentoHelper;
@@ -140,6 +141,12 @@ public class SeleccionarProductosController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
+        Tienda tienda = LoginController.user.getTienda();
+        if (tienda == null) {
+            ErrorController err = new ErrorController();
+            err.loadDialog("Aviso", "Su usuario no tiene una tienda asignada, contacte al administrador", "Ok", stackPane);
+            return;
+        }
         columnasPedidos();
         columnasProductos();
         agregarColumnasTablasPedidos();
@@ -148,7 +155,7 @@ public class SeleccionarProductosController implements Initializable {
 
         //Basede datos
         ProductoHelper gest = new ProductoHelper();
-        HashMap<Producto, Integer> productosDB = gest.getProductsByTend();
+        HashMap<Producto, Integer> productosDB = gest.getProductsByTend(tienda);
         gest.close();
         if (productosDB != null) {
             productosDB.forEach((p, u) -> {
@@ -161,11 +168,10 @@ public class SeleccionarProductosController implements Initializable {
         insumos = thelper.getCapacidadbyTend(LoginController.user.getTienda());
         insumosCambiantes = new HashMap(insumos);
         thelper.close();
-        
 
     }
-    
-    public void initModel(StackPane stackPane){
+
+    public void initModel(StackPane stackPane) {
     }
 
     public void agregarFiltro() {

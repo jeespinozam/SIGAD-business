@@ -66,9 +66,9 @@ public class ProductoHelper {
 //    }
 
 
-    public HashMap<Producto, Integer> getProductsByTend() {
+    public HashMap<Producto, Integer> getProductsByTend(Tienda tienda) {
         try {
-            Tienda tienda = LoginController.user.getTienda();
+            
             Set<CapacidadTienda> capacidades = tienda.getCapacidadTiendas();
             HashMap<Producto, Integer> hm = new HashMap<>();
             ArrayList<Producto> productos = getProducts();
