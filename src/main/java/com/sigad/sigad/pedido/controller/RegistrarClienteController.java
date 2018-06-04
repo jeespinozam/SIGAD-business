@@ -32,6 +32,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.layout.StackPane;
@@ -252,16 +253,25 @@ public class RegistrarClienteController implements Initializable {
         PerfilHelper perfilHeler = new PerfilHelper();
         Perfil perfil = perfilHeler.getProfile("Cliente");
         perfilHeler.close();
-        if (perfil != null) {
-            cliente = new Usuario(txtNombre.getText(), txtApp.getText(), txtApm.getText(),
-                    perfil, txttel.getText(), txtdni.getText(), txtcel.getText(), true, txtcorreo.getText(), txtdni.getText(), "");
-            direcciones.forEach((t) -> {
-                System.out.println(t.getDireccion().getValue());
-                cliente.addClienteDirecciones(new ClienteDireccion(t.getDireccion().getValue(), t.getNombre().getValue(), Boolean.FALSE, cliente));
+        if (!isValido()) {
+            ErrorController err = new ErrorController();
+            err.loadDialog("Alerta", "Complete los campos", "Ok", stackPane);
+        } else {
+            if (perfil != null) {
+                cliente = new Usuario(txtNombre.getText(), txtApp.getText(), txtApm.getText(),
+                        perfil, txttel.getText(), txtdni.getText(), txtcel.getText(), true, txtcorreo.getText(), txtdni.getText(), "");
+                direcciones.forEach((t) -> {
+                    System.out.println(t.getDireccion().getValue());
+                    cliente.addClienteDirecciones(new ClienteDireccion(t.getDireccion().getValue(), t.getNombre().getValue(), Boolean.FALSE, cliente));
 
-            });
+                });
+            }
         }
+    }
 
+    public Boolean isValido() {
+        return !txtNombre.getText().equals("") && !txtApp.getText().equals("") && !txtApm.getText().equals("") && !txttel.getText().equals("")
+                && !txtdni.getText().equals("") && !txtcel.getText().equals("") && !txtcorreo.getText().equals("") && !txtdni.getText().equals("") && direcciones.size() > 0;
     }
 
     public void actualizarUsuario() {
@@ -289,8 +299,10 @@ public class RegistrarClienteController implements Initializable {
 
     @FXML
     void guardarUsuario(ActionEvent event) {
-
-        if (SeleccionarClienteController.isClientCreate) {
+        if(!isValido()){
+            return;
+        }
+        if (SeleccionarClienteController.isClientCreate ) {
             crearUsuario();
             UsuarioHelper usuariohelper = new UsuarioHelper();
             usuariohelper.saveUser(cliente);

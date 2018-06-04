@@ -9,7 +9,9 @@ import com.jfoenix.controls.*;
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.ClienteDireccion;
 import com.sigad.sigad.business.Pedido;
+import com.sigad.sigad.business.PedidoEstado;
 import com.sigad.sigad.business.helpers.PedidoHelper;
+import com.sigad.sigad.deposito.helper.PedidoEstadoHelper;
 import java.net.URL;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -74,9 +76,7 @@ public class DatosPedidoController implements Initializable {
     @FXML
     private JFXComboBox<String> cmbInicio;
     private final ObservableList<String> horasInicio = FXCollections.observableArrayList();
-    @FXML
-    private JFXComboBox<String> cmbFin;
-    private final ObservableList<String> horaFin = FXCollections.observableArrayList();
+  
     @FXML
     private JFXComboBox<ClienteDireccion> cmbDireccion;
     private final ObservableList<ClienteDireccion> direcciones = FXCollections.observableArrayList();
@@ -101,8 +101,7 @@ public class DatosPedidoController implements Initializable {
             direcciones.add(t);
         });
         cmbTarjeta.getItems().addAll("Visa", "Mastercard");
-        cmbInicio.getItems().addAll("06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00");
-        cmbFin.getItems().addAll("06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00");
+        cmbInicio.getItems().addAll("M", "T", "N");
 
     }
 
@@ -113,6 +112,10 @@ public class DatosPedidoController implements Initializable {
         txtMonto.setDisable(true);
         llenarComboBox();
 
+    }
+    public void isValid(){
+        
+    
     }
 
     @FXML
@@ -125,23 +128,17 @@ public class DatosPedidoController implements Initializable {
             Date date = Date.from(dpFechaEntrega.getValue().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
             Timestamp timeStamp = new Timestamp(date.getTime());
             pedido.setFechaVenta(timeStamp);
-            
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-            long ms1 = sdf.parse(cmbInicio.getValue()).getTime();
-            Time ti = new Time(ms1);
-            pedido.setHoraIniEntrega(ti);
-            
-            long ms2 = sdf.parse(cmbFin.getValue()).getTime();
-            Time tf = new Time(ms2);
-            pedido.setHoraFinEntrega(tf);
             pedido.setVendedor(LoginController.user);
-            
+            PedidoEstadoHelper hp = new PedidoEstadoHelper();
+            PedidoEstado estado = hp.getEstadoByName("venta");
+            pedido.addEstado(estado);
+            pedido.setEstado(estado);
+            hp.close();
             PedidoHelper helper = new PedidoHelper();
             helper.savePedido(pedido);
             helper.close();
             
-        } catch (ParseException ex) {
-            Logger.getLogger(DatosPedidoController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
         }
     }
 

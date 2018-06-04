@@ -49,12 +49,15 @@ public class ProductoHelper {
             };
             
         } catch (Exception e) {
-            session.getTransaction().rollback();
+            
             System.out.println("Error: " + e.getMessage());
+            session.getTransaction().rollback();
             errorMessage = e.getMessage();
+        }finally{
+        return list;
         }
         
-        return list;
+        
 
     }
 

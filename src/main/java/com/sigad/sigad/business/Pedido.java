@@ -47,7 +47,6 @@ public class Pedido {
     private double cooYDireccion;
     @ManyToOne(optional = false)
     private PedidoEstado estado;
-    @NotNull
     private double volumenTotal;
     @ManyToOne
     private Reparto reparto;
@@ -347,5 +346,10 @@ public class Pedido {
     public void setReparto(Reparto reparto) {
         this.reparto = reparto;
     }
+    public void addEstado(PedidoEstado ep){
+        EstadoPedido np = new EstadoPedido(new Timestamp(System.currentTimeMillis()), this, ep);
+        this.estadosPedido.add(np);
+    }
+   
 
 }

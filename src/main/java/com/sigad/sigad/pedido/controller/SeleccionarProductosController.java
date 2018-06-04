@@ -161,6 +161,7 @@ public class SeleccionarProductosController implements Initializable {
         insumos = thelper.getCapacidadbyTend(LoginController.user.getTienda());
         insumosCambiantes = new HashMap(insumos);
         thelper.close();
+        
 
     }
 
@@ -420,9 +421,11 @@ public class SeleccionarProductosController implements Initializable {
         try {
             Node node;
             Set<DetallePedido> detalles = new HashSet<>();
+            pedido.setVolumenTotal(0.0);
             pedidos.forEach((t) -> {
                 DetallePedido detalle = new DetallePedido(true, t.cantidad.getValue(), Double.valueOf(t.precio.getValue()), t.codigo, t.producto, pedido, t.descuentoProducto);
                 detalles.add(detalle);
+                pedido.setVolumenTotal(pedido.getVolumenTotal() + t.producto.getVolumen());
             });
             pedido.setTotal(Double.valueOf(lblTotal.getText()));
             pedido.setDetallePedido(detalles);
