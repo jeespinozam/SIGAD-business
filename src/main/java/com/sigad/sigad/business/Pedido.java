@@ -26,6 +26,7 @@ import javax.persistence.OneToMany;
  */
 @Entity
 public class Pedido {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
@@ -47,6 +48,7 @@ public class Pedido {
     private double cooYDireccion;
     @ManyToOne(optional = false)
     private PedidoEstado estado;
+    private String turno;
     private double volumenTotal;
     @ManyToOne
     private Reparto reparto;
@@ -70,7 +72,7 @@ public class Pedido {
     private Timestamp horaEntrega;
     private Time horaIniEntrega;
     private Time horaFinEntrega;
-    
+
     public Pedido() {
     }
 
@@ -346,10 +348,23 @@ public class Pedido {
     public void setReparto(Reparto reparto) {
         this.reparto = reparto;
     }
-    public void addEstado(PedidoEstado ep){
+
+    public void addEstado(PedidoEstado ep) {
         EstadoPedido np = new EstadoPedido(new Timestamp(System.currentTimeMillis()), this, ep);
         this.estadosPedido.add(np);
     }
-   
 
+    /**
+     * @return the turno
+     */
+    public String getTurno() {
+        return turno;
+    }
+
+    /**
+     * @param turno the turno to set
+     */
+    public void setTurno(String turno) {
+        this.turno = turno;
+    }
 }

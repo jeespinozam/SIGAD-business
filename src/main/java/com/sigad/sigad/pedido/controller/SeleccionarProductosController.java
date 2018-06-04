@@ -164,6 +164,9 @@ public class SeleccionarProductosController implements Initializable {
         
 
     }
+    
+    public void initModel(StackPane stackPane){
+    }
 
     public void agregarFiltro() {
         filtro.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {

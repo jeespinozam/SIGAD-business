@@ -12,6 +12,7 @@ import com.sigad.sigad.business.Pedido;
 import com.sigad.sigad.business.PedidoEstado;
 import com.sigad.sigad.business.helpers.PedidoHelper;
 import com.sigad.sigad.deposito.helper.PedidoEstadoHelper;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -25,7 +26,9 @@ import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
@@ -76,7 +79,7 @@ public class DatosPedidoController implements Initializable {
     @FXML
     private JFXComboBox<String> cmbInicio;
     private final ObservableList<String> horasInicio = FXCollections.observableArrayList();
-  
+
     @FXML
     private JFXComboBox<ClienteDireccion> cmbDireccion;
     private final ObservableList<ClienteDireccion> direcciones = FXCollections.observableArrayList();
@@ -113,9 +116,9 @@ public class DatosPedidoController implements Initializable {
         llenarComboBox();
 
     }
-    public void isValid(){
-        
-    
+
+    public void isValid() {
+
     }
 
     @FXML
@@ -130,6 +133,7 @@ public class DatosPedidoController implements Initializable {
             pedido.setFechaVenta(timeStamp);
             pedido.setVendedor(LoginController.user);
             PedidoEstadoHelper hp = new PedidoEstadoHelper();
+            pedido.setTurno(cmbInicio.getValue());
             PedidoEstado estado = hp.getEstadoByName("venta");
             pedido.addEstado(estado);
             pedido.setEstado(estado);
@@ -137,9 +141,24 @@ public class DatosPedidoController implements Initializable {
             PedidoHelper helper = new PedidoHelper();
             helper.savePedido(pedido);
             helper.close();
-            
+            gotoInicio();
+
         } catch (Exception ex) {
         }
+    }
+
+    void gotoInicio() {
+        try {
+            Node node;
+            FXMLLoader loader = new FXMLLoader(DatosPedidoController.this.getClass().getResource(SeleccionarProductosController.viewPath));
+            node = (Node) loader.load();
+            SeleccionarProductosController desc = loader.getController();
+            desc.initModel( stackPane); 
+            stackPane.getChildren().setAll(node);
+        } catch (IOException ex) {
+            Logger.getLogger(DatosPedidoController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
 }
