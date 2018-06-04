@@ -297,8 +297,10 @@ public class SeleccionarProductosController implements Initializable {
                 ProductoLista p = prod.get(index);
                 System.out.println(p.nombre.getValue() + p.stock.getValue());
                 Integer stock = Integer.valueOf(p.stock.getValue());
-                Double subNew = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getNewValue()) * Float.valueOf(event.getRowValue().getValue().precio.get()) * (1 - Float.valueOf(event.getRowValue().getValue().descuento.get()) / 100.0));
-                Double subOld = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getOldValue()) * Float.valueOf(event.getRowValue().getValue().precio.get()) * (1 - Float.valueOf(event.getRowValue().getValue().descuento.get()) / 100.0));
+                Double precio = Double.valueOf(event.getRowValue().getValue().precio.get().replaceAll(",","."));
+                Double descuentos =Double.valueOf( event.getRowValue().getValue().descuento.get().replaceAll(",",".")) / 100.0;
+                Double subNew = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getNewValue()) * precio) * (1 - descuentos);
+                Double subOld = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getOldValue()) * precio) * (1 - descuentos);
                 PedidoLista nuevo = new PedidoLista(event.getRowValue().getValue().nombre.getValue(), event.getRowValue().getValue().precio.getValue(),
                         (event.getNewValue() <= stock + event.getOldValue()) ? event.getNewValue() : event.getOldValue(),
                         (event.getNewValue() <= stock + event.getOldValue()) ? subNew.toString() : subOld.toString(),
