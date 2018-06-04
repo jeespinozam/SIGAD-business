@@ -2,6 +2,7 @@
 
 <?import com.jfoenix.controls.JFXTextArea?>
 <?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.JFXToggleButton?>
 <?import com.jfoenix.controls.JFXTreeTableView?>
 <?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -31,9 +32,10 @@
                <children>
                   <AnchorPane prefHeight="413.0" prefWidth="212.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                      <children>
-                        <JFXTextField fx:id="nombreTxt" focusColor="#455a64" layoutX="33.0" layoutY="30.0" promptText="Nombre" AnchorPane.leftAnchor="33.0" />
-                        <JFXTextField fx:id="tiempoTxt" focusColor="#455a64" layoutX="33.0" layoutY="79.0" promptText="Tiempo de vida(Dias)" AnchorPane.leftAnchor="33.0" />
-                        <JFXTextField fx:id="volumenTxt" focusColor="#455a64" layoutX="33.0" layoutY="132.0" promptText="Volumen(m3)" />
+                        <JFXTextField fx:id="nombreTxt" focusColor="#455a64" layoutX="20.0" promptText="Nombre" AnchorPane.leftAnchor="20.0" />
+                        <JFXTextField fx:id="tiempoTxt" focusColor="#455a64" layoutX="20.0" layoutY="49.0" promptText="Tiempo de vida(Dias)" AnchorPane.leftAnchor="20.0" />
+                        <JFXTextField fx:id="volumenTxt" focusColor="#455a64" layoutX="20.0" layoutY="102.0" promptText="Volumen(m3)" />
+                        <JFXToggleButton fx:id="tglActive" layoutX="-22.0" layoutY="129.0" prefHeight="28.0" prefWidth="167.0" text="Activo" />
                      </children>
                   </AnchorPane>
                   <AnchorPane prefHeight="380.0" prefWidth="179.0" GridPane.rowIndex="2" />

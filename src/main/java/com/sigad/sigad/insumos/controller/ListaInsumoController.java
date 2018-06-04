@@ -259,7 +259,7 @@ public class ListaInsumoController implements Initializable {
                                          Integer.toString(insumo.getTiempoVida()),
                                          Integer.toString(insumo.getStockTotalFisico()),
                                          insumo.isActivo(),
-                                         "0",
+                                         insumo.isVolumen().toString(),
                                          insumo.getImagen(),0,insumo.getId(),insumo.getPrecio()));
     }
     
@@ -298,7 +298,7 @@ public class ListaInsumoController implements Initializable {
     //dialogos
     private void showOptions(){
         JFXButton edit = new JFXButton("Editar");
-        JFXButton delete = new JFXButton("Eliminar");
+        JFXButton delete = new JFXButton("Desactivar");
         
         edit.setOnAction((ActionEvent event) -> {
             popup.hide();
@@ -327,13 +327,18 @@ public class ListaInsumoController implements Initializable {
     
     private void deleteInsumosDialog() {
         JFXDialogLayout content =  new JFXDialogLayout();
-        content.setHeading(new Text("Eliminar Insumo"));
-        content.setBody(new Text("¿Seguro que desea eliminar el insumo seleccionado?"));
-                
+        content.setHeading(new Text("Desactivar Insumo"));
+        content.setBody(new Text("¿Seguro que desea desactivar el insumo seleccionado?"));
+        
+        InsumosHelper helperi = new InsumosHelper();
         JFXDialog dialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
         JFXButton button = new JFXButton("Okay");
+        System.out.println(helperi.getInsumo(selectedInsumo.getId()));
         button.setOnAction((ActionEvent event) -> {
+            Insumo ins= helperi.getInsumo(selectedInsumo.getId());
+            helperi.disableInsumo(ins);
             dialog.close();
+            helperi.close();
         });
         content.setActions(button);
         dialog.show();
