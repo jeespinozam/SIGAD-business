@@ -44,20 +44,18 @@ public class ProductoHelper {
         try {
             Query query = session.createQuery("from Producto");
 
-            if (!query.list().isEmpty()) {
-                list = (ArrayList<Producto>) query.list();
-            };
-            
+            //if (!query.list().isEmpty()) {
+            list = (ArrayList<Producto>) query.list();
+            //s};
+
         } catch (Exception e) {
-            
+
             System.out.println("Error: " + e.getMessage());
             session.getTransaction().rollback();
             errorMessage = e.getMessage();
-        }finally{
-        return list;
+        } finally {
+            return list;
         }
-        
-        
 
     }
 
@@ -72,35 +70,35 @@ public class ProductoHelper {
         try {
             Tienda tienda = LoginController.user.getTienda();
             Set<CapacidadTienda> capacidades = tienda.getCapacidadTiendas();
-            HashMap<Producto,Integer> hm=new HashMap<>();  
+            HashMap<Producto, Integer> hm = new HashMap<>();
             ArrayList<Producto> productos = getProducts();
             for (int i = 0; i < productos.size(); i++) {
                 Producto get = productos.get(i);
                 ArrayList<ProductoInsumo> prodxinsumo = new ArrayList(get.getProductoxInsumos());
-                Integer cantidadMaxima=Integer.MAX_VALUE;
+                Integer cantidadMaxima = Integer.MAX_VALUE;
                 for (int k = 0; k < prodxinsumo.size(); k++) {
                     ProductoInsumo pxi = prodxinsumo.get(k);
                     ArrayList<CapacidadTienda> capTienda = new ArrayList(capacidades);
                     Boolean contiene = false;
                     for (int j = 0; j < capTienda.size(); j++) {
                         CapacidadTienda ct = capTienda.get(j);
-                        if (Objects.equals(ct.getInsumo().getId(), pxi.getInsumo().getId())){
+                        if (Objects.equals(ct.getInsumo().getId(), pxi.getInsumo().getId())) {
                             contiene = true;
                             Double cantPotencial = ct.getCantidad() / pxi.getCantidad();
-                            cantidadMaxima = (cantidadMaxima>cantPotencial)? cantPotencial.intValue() :cantidadMaxima;
+                            cantidadMaxima = (cantidadMaxima > cantPotencial) ? cantPotencial.intValue() : cantidadMaxima;
                             break;
                         }
                     }
-                    if (!contiene)
+                    if (!contiene) {
                         break;
+                    }
                 }
-                
-               hm.put(get,(cantidadMaxima == Integer.MAX_VALUE)? 0 : cantidadMaxima);
+
+                hm.put(get, (cantidadMaxima == Integer.MAX_VALUE) ? 0 : cantidadMaxima);
 
             }
             return hm;
-           
-           
+
         } catch (Exception e) {
             session.getTransaction().rollback();
             System.out.println("Error: " + e.getMessage());
