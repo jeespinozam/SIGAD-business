@@ -11,6 +11,8 @@ import com.sigad.sigad.business.LoteInsumo;
 import com.sigad.sigad.business.LoteTienda;
 import com.sigad.sigad.business.Tienda;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -131,6 +133,19 @@ public class LoteInsumoHelper {
                 tx = session.beginTransaction();
             }
             ArrayList<LoteInsumo> loteinsumos = getLoteInsumos(tienda);
+            Collections.sort(loteinsumos, new Comparator<LoteInsumo>() {
+                @Override
+                public int compare(LoteInsumo s1, LoteInsumo s2) {
+                    Long i =  s1.getFechaVencimiento().getTime() - s1.getFechaVencimiento().getTime();
+                    return i.intValue();
+                }
+            });
+            loteinsumos.forEach((t) -> {
+                System.out.println(t.getFechaVencimiento().toString());
+                System.out.println(t.getInsumo().getNombre());
+                System.out.println(t.getStockLogico());
+                System.out.println("----------------------------------");
+            });
             ArrayList<LoteInsumo> seleccionados = new ArrayList<>();
             for (Map.Entry<Insumo, Integer> entry : insumosHaConsumir.entrySet()) {
                 Insumo t = entry.getKey();
@@ -152,7 +167,7 @@ public class LoteInsumoHelper {
                 loteSeleccionado.setStockLogico(loteSeleccionado.getStockLogico() - u);
                 seleccionados.add(loteSeleccionado);
             }
-            
+
             seleccionados.forEach((t) -> {
                 updateLoteInsumo(t);
             });

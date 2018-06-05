@@ -47,12 +47,6 @@
             <Font size="10.0" />
          </font></Label>
       <JFXTreeTableView id="tablaStock" fx:id="tablaPromociones" layoutX="369.0" layoutY="262.0" prefHeight="130.0" prefWidth="360.0" />
-      <JFXTreeTableView id="promocionesActivas" fx:id="tablaStock" layoutX="47.0" layoutY="262.0" prefHeight="130.0" prefWidth="245.0" />
-      <Label layoutX="47.0" layoutY="227.0" text="Stock">
-         <font>
-            <Font name="System Bold" size="20.0" />
-         </font>
-      </Label>
       <Label layoutX="369.0" layoutY="227.0" text="Promociones activas">
          <font>
             <Font name="System Bold" size="20.0" />
