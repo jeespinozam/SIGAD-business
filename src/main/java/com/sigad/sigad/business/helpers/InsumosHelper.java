@@ -9,6 +9,7 @@ import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.Proveedor;
 import com.sigad.sigad.business.ProveedorInsumo;
+import com.sigad.sigad.business.Tienda;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -40,6 +41,7 @@ public class InsumosHelper {
     public String getErrorMessage(){
         return errorMessage;
     }
+    
     
     public Long saveInsumo(Insumo newInsumo, List<ProveedorInsumo>  lista_proveedoresxInsumo) {
         Long id = null;

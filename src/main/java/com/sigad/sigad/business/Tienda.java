@@ -5,8 +5,11 @@
  */
 package com.sigad.sigad.business;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,9 +36,9 @@ public class Tienda {
     private double capacidad;
     @NotNull
     private boolean activo;
-    @OneToMany(mappedBy="id.tienda")
+    @OneToMany(mappedBy="tienda", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CapacidadTienda> capacidadTiendas = new HashSet<CapacidadTienda>();
-    @OneToMany(mappedBy = "tienda")
+    @OneToMany(mappedBy = "tienda", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Usuario> empleadosTienda = new HashSet<Usuario>();
     @OneToMany(mappedBy = "tienda")
     private Set<LoteInsumo> lotesInsumo = new HashSet<LoteInsumo>();
@@ -171,5 +174,20 @@ public class Tienda {
 
     public void setLotesInsumo(Set<LoteInsumo> lotesInsumo) {
         this.lotesInsumo = lotesInsumo;
+    }
+    
+    public HashMap<Insumo, Integer> getInsumos(){
+        ArrayList<LoteInsumo> li= new ArrayList(getLotesInsumo());
+        HashMap<Insumo, Integer> hm = new HashMap<>();
+        for (LoteInsumo loteInsumo : li) {
+            if (hm.get(loteInsumo.getInsumo()) == null){
+                hm.put(loteInsumo.getInsumo(), loteInsumo.getStockLogico());
+            }else{
+                hm.put(loteInsumo.getInsumo(),hm.get(loteInsumo.getInsumo()) + loteInsumo.getStockLogico());
+            }
+            
+        }
+        return hm;
+    
     }
 }

@@ -27,7 +27,7 @@ import javax.validation.constraints.NotNull;
 public class ProductoDescuento {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long id;
+    private Long id;
     
     @NotNull
     private Date fechaInicio ;
@@ -38,6 +38,7 @@ public class ProductoDescuento {
     private String codCupon;
     private Double valorDescuento;
     private Integer duracionDias;
+    private Integer stockMaximo;
     
     //Fk
     @ManyToOne
@@ -48,11 +49,19 @@ public class ProductoDescuento {
     public ProductoDescuento() {
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof ProductoDescuento){
+        
+        }
+        return super.equals(o); //To change body of generated methods, choose Tools | Templates.
+    }
+    
     
     /**
      * @return the id
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -166,6 +175,20 @@ public class ProductoDescuento {
      */
     public void setProducto(Producto producto) {
         this.producto = producto;
+    }
+
+    /**
+     * @return the stockMaximo
+     */
+    public Integer getStockMaximo() {
+        return stockMaximo;
+    }
+
+    /**
+     * @param stockMaximo the stockMaximo to set
+     */
+    public void setStockMaximo(Integer stockMaximo) {
+        this.stockMaximo = stockMaximo;
     }
 
 }
