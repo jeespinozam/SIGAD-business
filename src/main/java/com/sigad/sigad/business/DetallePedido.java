@@ -39,8 +39,13 @@ public class DetallePedido {
     private Integer numEntregados;
     
     //Fk
-    @OneToOne( cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @ManyToOne
     private Producto producto;
+    
+    
+    
+    @ManyToOne
+    private ProductoDescuento descuento;
     
     @ManyToOne(optional = false)
     private Pedido pedido;
@@ -56,6 +61,26 @@ public class DetallePedido {
     public DetallePedido() {
     }
 
+    public DetallePedido( boolean activo, Integer cantidad, Double precioUnitario, Integer numEntregados, Producto producto, Pedido pedido) {
+        this.activo = activo;
+        this.cantidad = cantidad;
+        this.precioUnitario = precioUnitario;
+        this.numEntregados = numEntregados;
+        this.producto = producto;
+        this.pedido = pedido;
+    }
+    
+    public DetallePedido( boolean activo, Integer cantidad, Double precioUnitario, Integer numEntregados, Producto producto, Pedido pedido, ProductoDescuento descuento) {
+        this.activo = activo;
+        this.cantidad = cantidad;
+        this.precioUnitario = precioUnitario;
+        this.numEntregados = numEntregados;
+        this.producto = producto;
+        this.pedido = pedido;
+        this.descuento = descuento;
+    }
+    
+    
     
     /**
      * @return the id

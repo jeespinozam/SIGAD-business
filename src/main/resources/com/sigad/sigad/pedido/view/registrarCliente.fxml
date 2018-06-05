@@ -6,40 +6,77 @@
 <?import java.net.URL?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.effect.Blend?>
-<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="680.0" prefWidth="1010.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.pedido.controller.RegistrarClienteController">
+<AnchorPane id="AnchorPane" prefHeight="451.0" prefWidth="760.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.pedido.controller.RegistrarClienteController">
     <stylesheets>
         <URL value="@/styles/registrarcliente.css" />
     </stylesheets>
     <children>
-        <Label layoutX="106.0" layoutY="70.0" text="Nombres" />
-        <Label layoutX="106.0" layoutY="143.0" text="Apellido Paterno" />
-        <Label layoutX="108.0" layoutY="212.0" text="Apellido Materno" />
-        <Label layoutX="106.0" layoutY="274.0" text="DNI" />
-        <Label layoutX="107.0" layoutY="332.0" text="Telefono" />
-        <Label layoutX="106.0" layoutY="384.0" text="Celular" />
-        <Label layoutX="106.0" layoutY="439.0" text="Correo" />
-        <JFXTextField layoutX="106.0" layoutY="87.0" prefColumnCount="16" />
-        <JFXTextField layoutX="106.0" layoutY="160.0" prefColumnCount="16" />
-        <JFXTextField layoutX="106.0" layoutY="229.0" prefColumnCount="16" />
-        <JFXTextField layoutX="106.0" layoutY="291.0" prefColumnCount="16" />
-        <JFXTextField layoutX="106.0" layoutY="349.0" prefColumnCount="16" />
-        <JFXTextField layoutX="106.0" layoutY="401.0" prefColumnCount="16" />
-        <JFXTextField layoutX="106.0" layoutY="456.0" prefColumnCount="16" />
-        <JFXTreeTableView id="tablaDirecciones" fx:id="tablaDirecciones" layoutX="405.0" layoutY="169.0" prefHeight="270.0" prefWidth="502.0" AnchorPane.leftAnchor="405.0" AnchorPane.rightAnchor="103.0">
-            <effect>
-                <DropShadow color="#00000093" />
-            </effect>
-        </JFXTreeTableView>
-      <Label layoutX="405.0" layoutY="460.0" text="Agregar direccion">
+        <Label layoutX="86.0" layoutY="35.0" text="Nombres">
          <font>
-            <Font name="System Italic" size="13.0" />
+            <Font size="10.0" />
+         </font></Label>
+        <Label layoutX="86.0" layoutY="93.0" text="Apellido Paterno">
+         <font>
+            <Font size="10.0" />
+         </font></Label>
+        <Label layoutX="86.0" layoutY="149.0" text="Apellido Materno">
+         <font>
+            <Font size="10.0" />
+         </font></Label>
+        <Label layoutX="86.0" layoutY="205.0" text="DNI">
+         <font>
+            <Font size="10.0" />
+         </font></Label>
+        <Label layoutX="86.0" layoutY="261.0" text="Telefono">
+         <font>
+            <Font size="10.0" />
+         </font></Label>
+        <Label layoutX="86.0" layoutY="319.0" text="Celular">
+         <font>
+            <Font size="10.0" />
+         </font></Label>
+        <Label layoutX="86.0" layoutY="377.0" text="Correo">
+         <font>
+            <Font size="10.0" />
+         </font></Label>
+        <JFXTextField fx:id="txtNombre" layoutX="86.0" layoutY="50.0" prefColumnCount="16">
+         <font>
+            <Font size="11.0" />
+         </font></JFXTextField>
+        <JFXTextField fx:id="txtApp" layoutX="86.0" layoutY="108.0" prefColumnCount="16">
+         <font>
+            <Font size="11.0" />
+         </font></JFXTextField>
+        <JFXTextField fx:id="txtApm" layoutX="86.0" layoutY="164.0" prefColumnCount="16">
+         <font>
+            <Font size="11.0" />
+         </font></JFXTextField>
+        <JFXTextField fx:id="txtdni" layoutX="86.0" layoutY="220.0" prefColumnCount="16">
+         <font>
+            <Font size="11.0" />
+         </font></JFXTextField>
+        <JFXTextField fx:id="txttel" layoutX="86.0" layoutY="276.0" prefColumnCount="16">
+         <font>
+            <Font size="11.0" />
+         </font></JFXTextField>
+        <JFXTextField fx:id="txtcel" layoutX="86.0" layoutY="336.0" prefColumnCount="16">
+         <font>
+            <Font size="11.0" />
+         </font></JFXTextField>
+        <JFXTextField fx:id="txtcorreo" layoutX="86.0" layoutY="392.0" prefColumnCount="16">
+         <font>
+            <Font size="11.0" />
+         </font></JFXTextField>
+        <JFXTreeTableView id="tablaDirecciones" fx:id="tablaDirecciones" layoutX="297.0" layoutY="68.0" prefHeight="257.0" prefWidth="400.0" AnchorPane.leftAnchor="297.0" AnchorPane.rightAnchor="70.0" />
+      <Label layoutX="297.0" layoutY="339.0" text="Agregar direccion">
+         <font>
+            <Font name="System Italic" size="11.0" />
          </font>
       </Label>
-      <Label layoutX="405.0" layoutY="125.0" text="Direcciones registradas" textAlignment="JUSTIFY">
+      <Label layoutX="297.0" layoutY="21.0" text="Direcciones registradas" textAlignment="JUSTIFY">
          <font>
             <Font size="18.0" />
          </font>
@@ -47,15 +84,15 @@
             <Blend />
          </effect>
       </Label>
-      <JFXTextField layoutX="405.0" layoutY="481.0" prefHeight="25.0" prefWidth="314.0" />
-      <JFXTextField layoutX="743.0" layoutY="481.0" prefHeight="25.0" prefWidth="159.0" />
-      <JFXButton buttonType="RAISED" layoutX="922.0" layoutY="481.0" ripplerFill="BLACK" style="-fx-background-color: #FFFFFF;" text="Agregar" />
-      <JFXButton buttonType="RAISED" layoutX="693.0" layoutY="596.0" style="-fx-background-color: #FFFFFF;" text="Cancelar">
+      <JFXTextField fx:id="txtnuevaDir" layoutX="295.0" layoutY="354.0" prefHeight="25.0" prefWidth="234.0" />
+      <JFXTextField fx:id="txtnuevoNom" layoutX="549.0" layoutY="354.0" prefHeight="25.0" prefWidth="133.0" />
+      <JFXButton fx:id="btnAgregarDireccion" buttonType="RAISED" layoutX="688.0" layoutY="354.0" onAction="#agregarDireccion" ripplerFill="BLACK" style="-fx-background-color: #FFFFFF; -fx-background-radius: 50;" text="+" />
+      <JFXButton buttonType="RAISED" layoutX="464.0" layoutY="390.0" onAction="#close" style="-fx-background-color: #FFFFFF;" text="Cancelar">
          <font>
             <Font size="14.0" />
          </font>
       </JFXButton>
-      <JFXButton buttonType="RAISED" layoutX="813.0" layoutY="596.0" style="-fx-background-color: #FFFFFF;" text="Registrar">
+      <JFXButton fx:id="btnRegistrar" buttonType="RAISED" layoutX="578.0" layoutY="390.0" onAction="#guardarUsuario" style="-fx-background-color: #FFFFFF;" text="Registrar">
          <font>
             <Font size="14.0" />
          </font>

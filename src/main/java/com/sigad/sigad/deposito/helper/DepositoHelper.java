@@ -31,7 +31,7 @@ public class DepositoHelper {
 //        Proveedor prov = new Proveedor();
 //        prov.setDescripcion("Distribuidor de rosas");
 //        prov.setNombre("Rosas SA");
-//        prov.setRuc(123489021);
+//        prov.setRuc("123489021");
 //        session.save(prov);
 
 ////
@@ -72,30 +72,30 @@ public class DepositoHelper {
 //        session.save(p);
 //        session.save(us);
 
-        String hql = String.format("from Usuario");
-        Query queryHql = this.session.createQuery(hql);
-        List<Object> usuarios = queryHql.list();
-        Usuario us=null;
-        for (Object entidad : usuarios) {
-            us = (Usuario)entidad;
-//            OrdenCompra oc = (OrdenCompra) entidad[0];
-//            Proveedor prov = (Proveedor) entidad[1];
-            System.out.println("id " + us.getId());
-            System.out.println("nombre " + us.getNombres());
-        }
+//        String hql = String.format("from Usuario");
+//        Query queryHql = this.session.createQuery(hql);
+//        List<Object> usuarios = queryHql.list();
+//        Usuario us=null;
+//        for (Object entidad : usuarios) {
+//            us = (Usuario)entidad;
+////            OrdenCompra oc = (OrdenCompra) entidad[0];
+////            Proveedor prov = (Proveedor) entidad[1];
+//            System.out.println("id " + us.getId());
+//            System.out.println("nombre " + us.getNombres());
+//        }
         
-        String hql2 = String.format("from Proveedor");
-        Query queryHql2 = this.session.createQuery(hql2);
-        List<Object > proveedores = queryHql2.list();
-        Proveedor pr=null;
-        for (Object entidad2 : proveedores) {
-            pr = (Proveedor)entidad2;
-//            OrdenCompra oc = (OrdenCompra) entidad[0];
-//            Proveedor prov = (Proveedor) entidad[1];
-            System.out.println("id prov" + pr.getId());
-            System.out.println("nombre prov " + pr.getNombre());
-        }
-//        Usuario u;
+//        String hql2 = String.format("from Proveedor");
+//        Query queryHql2 = this.session.createQuery(hql2);
+//        List<Object > proveedores = queryHql2.list();
+//        Proveedor pr=null;
+//        for (Object entidad2 : proveedores) {
+//            pr = (Proveedor)entidad2;
+////            OrdenCompra oc = (OrdenCompra) entidad[0];
+////            Proveedor prov = (Proveedor) entidad[1];
+//            System.out.println("id prov" + pr.getId());
+//            System.out.println("nombre prov " + pr.getNombre());
+//        }
+////        Usuario u;
 //        u =  (Usuario) session.get(Usuario.class, new Long(25));
 //        System.out.println("Perfil papu:" + u.getPerfil().getNombre());
 //        try {

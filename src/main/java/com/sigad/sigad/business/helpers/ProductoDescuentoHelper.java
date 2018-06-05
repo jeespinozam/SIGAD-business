@@ -11,6 +11,7 @@ import com.sigad.sigad.business.ProductoDescuento;
 import java.util.ArrayList;
 import java.util.List;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
 /**
@@ -31,18 +32,14 @@ public class ProductoDescuentoHelper {
         ArrayList<ProductoDescuento> list = null;
         try {
             Query query = session.createQuery("from ProductoDescuento");
-
-            if (!query.list().isEmpty()) {
-                list = (ArrayList<ProductoDescuento>) query.list();
-            }
+            list = (ArrayList<ProductoDescuento>) query.list();
         } catch (Exception e) {
             session.getTransaction().rollback();
             System.out.println("Error: " + e.getMessage());
             errorMessage = e.getMessage();
+        } finally {
+            return list;
         }
-
-        return list;
-
     }
 
     ;
@@ -67,7 +64,7 @@ public class ProductoDescuentoHelper {
     ;
 
     public ProductoDescuento getDescuentoByProducto(Integer producto_id) {
-       ProductoDescuento descuento = null;
+        ProductoDescuento descuento = null;
         Query query = null;
         try {
             query = session.createQuery("from ProductoDescuento where producto_id='" + producto_id + "' and activo=true ");
@@ -80,17 +77,16 @@ public class ProductoDescuentoHelper {
             System.out.println("Error: " + e.getMessage());
             session.getTransaction().rollback();
             this.errorMessage = e.getMessage();
-        }finally{
+        } finally {
             return descuento;
         }
-        
-        
+
     }
 
     ;
     
     public List<ProductoDescuento> getDescuentosByProducto(Integer producto_id) {
-       List<ProductoDescuento> descuentos = null;
+        List<ProductoDescuento> descuentos = null;
         Query query = null;
         try {
             query = session.createQuery("from ProductoDescuento where producto_id='" + producto_id + "' and activo=true ");
@@ -103,12 +99,66 @@ public class ProductoDescuentoHelper {
             System.out.println("Error: " + e.getMessage());
             session.getTransaction().rollback();
             this.errorMessage = e.getMessage();
-        }finally{
+        } finally {
             return descuentos;
         }
-        
-        
-    };
+
+    }
+
+    ;
+    
+     public Long saveDescuento(ProductoDescuento p){
+        Long id = null;
+        try {
+            Transaction tx;
+            if(session.getTransaction().isActive()){
+                tx = session.getTransaction();
+            }else{
+                tx = session.beginTransaction();
+            }
+            
+            session.save(p);
+            if(p.getId() != null){
+                id = p.getId();
+            }
+            tx.commit();
+            session.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            this.errorMessage = e.getMessage();
+        }
+        return id;
+    }
+     
+     
+     public boolean updateDescuento(ProductoDescuento uOld){
+        boolean ok = false;
+        try {
+            Transaction tx;
+            if(session.getTransaction().isActive()){
+                tx = session.getTransaction();
+            }else{
+                tx = session.beginTransaction();
+            }
+             
+            ProductoDescuento uNew = session.load(ProductoDescuento.class, uOld.getId());
+            
+            uNew.setFechaInicio(uOld.getFechaInicio());
+            uNew.setFechaFin(uOld.getFechaFin());
+            uNew.setStockMaximo(uOld.getStockMaximo());
+            uNew.setValorPct(uOld.getValorPct());
+            
+            session.merge(uNew);
+            tx.commit();
+            session.close();
+            ok = true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            this.errorMessage = e.getMessage();
+        }
+        return ok;
+    }
+    
     public void close() {
         session.getTransaction().commit();
     }

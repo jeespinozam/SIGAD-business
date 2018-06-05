@@ -6,9 +6,16 @@
 package com.sigad.sigad.business.helpers;
 
 import com.sigad.sigad.app.controller.LoginController;
+import com.sigad.sigad.business.CapacidadTienda;
+import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.Producto;
+import com.sigad.sigad.business.ProductoInsumo;
 import com.sigad.sigad.business.Tienda;
+import com.sigad.sigad.business.Usuario;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.Set;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -37,43 +44,74 @@ public class ProductoHelper {
         try {
             Query query = session.createQuery("from Producto");
 
-            if (!query.list().isEmpty()) {
-                list = (ArrayList<Producto>) query.list();
-            }
-        } catch (Exception e) {
-            session.getTransaction().rollback();
-            System.out.println("Error: " + e.getMessage());
-            errorMessage = e.getMessage();
-        }
+            //if (!query.list().isEmpty()) {
+            list = (ArrayList<Producto>) query.list();
+            //s};
 
-        return list;
+        } catch (Exception e) {
+
+            System.out.println("Error: " + e.getMessage());
+            session.getTransaction().rollback();
+            errorMessage = e.getMessage();
+        } finally {
+            return list;
+        }
 
     }
 
     ;
-    public ArrayList<Producto> getProductsByTends() {
-        ArrayList<Producto> listTienda = null;
-        try {
-            Query query = session.createQuery("from Tienda where id='" + LoginController.user.getTienda().getId() + "'");
-            Tienda tienda = (Tienda) query;
-           
-            tienda.getCapacidadTiendas().forEach((t) -> {
-            });
+//    public HashMap<Producto, Integer> recalculateStocks(HashMap<Integer, Integer> pedido){
+//    
+//    
+//    }
 
-            if (!query.list().isEmpty()) {
-                //ist = (ArrayList<Tienda>) query.list();
+
+    public HashMap<Producto, Integer> getProductsByTend(Tienda tienda) {
+        try {
+            
+            Set<CapacidadTienda> capacidades = tienda.getCapacidadTiendas();
+            HashMap<Producto, Integer> hm = new HashMap<>();
+            ArrayList<Producto> productos = getProducts();
+            for (int i = 0; i < productos.size(); i++) {
+                Producto get = productos.get(i);
+                ArrayList<ProductoInsumo> prodxinsumo = new ArrayList(get.getProductoxInsumos());
+                Integer cantidadMaxima = Integer.MAX_VALUE;
+                for (int k = 0; k < prodxinsumo.size(); k++) {
+                    ProductoInsumo pxi = prodxinsumo.get(k);
+                    ArrayList<CapacidadTienda> capTienda = new ArrayList(capacidades);
+                    Boolean contiene = false;
+                    for (int j = 0; j < capTienda.size(); j++) {
+                        CapacidadTienda ct = capTienda.get(j);
+                        if (Objects.equals(ct.getInsumo().getId(), pxi.getInsumo().getId())) {
+                            contiene = true;
+                            Double cantPotencial = ct.getCantidad() / pxi.getCantidad();
+                            cantidadMaxima = (cantidadMaxima > cantPotencial) ? cantPotencial.intValue() : cantidadMaxima;
+                            break;
+                        }
+                    }
+                    if (!contiene) {
+                        break;
+                    }
+                }
+
+                hm.put(get, (cantidadMaxima == Integer.MAX_VALUE) ? 0 : cantidadMaxima);
+
             }
+            return hm;
+
         } catch (Exception e) {
             session.getTransaction().rollback();
             System.out.println("Error: " + e.getMessage());
             errorMessage = e.getMessage();
         }
         return null;
-       //return list;
+        //return list;
 
     }
 
     ;
+    
+    
     public Producto getProductById(Integer id) {
         Producto product = null;
         Query query = null;

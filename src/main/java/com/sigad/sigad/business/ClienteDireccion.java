@@ -5,6 +5,8 @@
  */
 package com.sigad.sigad.business;
 
+import com.sigad.sigad.pedido.controller.RegistrarClienteController;
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -25,13 +27,13 @@ public class ClienteDireccion {
     private String direccionCliente;
     private String nombreDireccion;
     @NotNull
-    private boolean principal;
+    private Boolean principal;
     @NotNull
-    private boolean activo;
+    private Boolean activo;
     @NotNull
-    private double cooXDireccion;
+    private Double cooXDireccion;
     @NotNull
-    private double cooYDireccion;
+    private Double cooYDireccion;
     @ManyToOne(optional=false)
     private Usuario usuario;
 
@@ -40,6 +42,61 @@ public class ClienteDireccion {
      */
     public ClienteDireccion() {
     }
+
+    public ClienteDireccion(Long id, String direccionCliente, String nombreDireccion, Boolean principal, Boolean activo, Double cooXDireccion, Double cooYDireccion, Usuario usuario) {
+        this.id = id;
+        this.direccionCliente = direccionCliente;
+        this.nombreDireccion = nombreDireccion;
+        this.principal = principal;
+        this.activo = activo;
+        this.cooXDireccion = cooXDireccion;
+        this.cooYDireccion = cooYDireccion;
+        this.usuario = usuario;
+    }
+
+   
+    public ClienteDireccion(String direccionCliente, String nombreDireccion, Boolean principal,  Usuario usuario) {
+        this.direccionCliente = direccionCliente;
+        this.nombreDireccion = nombreDireccion;
+        this.principal = principal;
+        this.activo = Boolean.TRUE;
+        this.usuario = usuario;
+        this.cooXDireccion = 0.0;
+        this.cooYDireccion = 0.0;
+    }
+
+    /**
+     *
+     * @param o
+     * @return
+     */
+    @Override
+    public boolean equals(Object o) {
+        
+        if (o instanceof ClienteDireccion){
+            ClienteDireccion  c = (ClienteDireccion) o;
+            return c.getDireccionCliente().trim().equals(this.getDireccionCliente().trim());
+        }else if (o instanceof RegistrarClienteController.DireccionesLista){
+            RegistrarClienteController.DireccionesLista d = (RegistrarClienteController.DireccionesLista) o;
+            return getNombreDireccion().trim().equals(d.getDireccion().getValue().trim());
+        
+        }
+        return super.equals(o); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 59 * hash + Objects.hashCode(this.id);
+        return hash;
+    }
+
+    @Override
+    public String toString() {
+        return direccionCliente;
+    }
+    
+    
     
     /**
      * @return the id

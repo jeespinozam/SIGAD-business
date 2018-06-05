@@ -22,6 +22,7 @@ import javax.persistence.OneToMany;
  */
 @Entity
 public class Producto {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
@@ -45,12 +46,17 @@ public class Producto {
 
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProductosCombos> combos = new HashSet<>();
+
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProductoInsumo> insumos = new HashSet<>();
+
     /**
      * Constructor.
      */
     public Producto() {
     }
-    public Producto(String nombre, String imagen, Integer stock,Double precio, Boolean activo) {
+
+    public Producto(String nombre, String imagen, Integer stock, Double precio, Boolean activo) {
         this.nombre = nombre;
         this.imagen = imagen;
         this.stockLogico = stock;
@@ -58,14 +64,15 @@ public class Producto {
         this.activo = activo;
         this.precio = precio;
     }
-    
+
     public boolean equals(Object o) {
-            if (o instanceof Producto) {
-                Producto pl = (Producto) o;
-                return pl.id.equals(this.id);
-            }
-            return super.equals(o); //To change body of generated methods, choose Tools | Templates.
+        if (o instanceof Producto) {
+            Producto pl = (Producto) o;
+            return pl.id.equals(this.id);
         }
+        return super.equals(o); //To change body of generated methods, choose Tools | Templates.
+    }
+
     /**
      * @return the id
      */
@@ -100,14 +107,12 @@ public class Producto {
 //    public Set<ProductoPrecio> getPrecios() {
 //        return precios;
 //    }
-
     /**
      * @param precios the precios to set
      */
 //    public void setPrecios(Set<ProductoPrecio> precios) {
 //        this.precios = precios;
 //    }
-
     /**
      * @return the peso
      */
@@ -247,4 +252,31 @@ public class Producto {
     public void setStockFisico(int stockFisico) {
         this.stockFisico = stockFisico;
     }
+
+    /**
+     * @return the insumos
+     */
+    public Set<Insumo> getInsumos() {
+        Set<Insumo> insumosOb = new HashSet<>();
+        insumos.forEach((t) -> {
+            insumosOb.add(t.getInsumo());
+        });
+        return insumosOb;
+    }
+
+    public Set<ProductoInsumo> getProductoxInsumos() {
+        return insumos;
+    }
+    
+    
+    public Boolean hasInsumo(Insumo insumo) {
+        return getInsumos().contains(insumo);
+    }
+    /**
+     * @param insumos the insumos to set
+     */
+    public void setInsumos(Set<ProductoInsumo> insumos) {
+        this.insumos = insumos;
+    }
+    
 }

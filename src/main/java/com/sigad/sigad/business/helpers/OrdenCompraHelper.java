@@ -6,8 +6,13 @@
 package com.sigad.sigad.business.helpers;
 
 import com.sigad.sigad.app.controller.LoginController;
+import com.sigad.sigad.business.DetalleOrdenCompra;
+import com.sigad.sigad.business.LoteInsumo;
 import com.sigad.sigad.business.OrdenCompra;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -17,6 +22,7 @@ import org.hibernate.query.Query;
  * @author chrs
  */
 public class OrdenCompraHelper {
+    private final static Logger LOGGER = Logger.getLogger(OrdenCompraHelper.class.getName());
     Session session = null;
     private String errorMessage = "";
     public OrdenCompraHelper(){
@@ -35,17 +41,35 @@ public class OrdenCompraHelper {
         return orden;
     }
     
-    public Integer saveOrden(OrdenCompra newOrden){
+    /* mandar el objeto de orden de compra ya con todos los campos llenos y una lista de lotexInsumo con sus datos llenos obtenidos de la pantalla de front */
+    public Integer saveOrden(OrdenCompra newOrden, List<LoteInsumo> lista_lotexInsumo){
         Integer id = null;
+        Transaction tx = null;
         try {
-            Transaction tx = session.beginTransaction();
+            tx = session.beginTransaction();
             session.save(newOrden);
+            LOGGER.log(Level.INFO, "Orden de Compra generada con exito");
             if(newOrden.getId() != 0) {
                 id = newOrden.getId();
             }
-            session.getTransaction().commit();
+            for (LoteInsumo lotexInsumo : lista_lotexInsumo) {
+                lotexInsumo.getInsumo().setStockTotalLogico(lotexInsumo.getInsumo().getStockTotalLogico() + lotexInsumo.getStockLogico());
+                session.save(lotexInsumo);
+                LOGGER.log(Level.INFO, String.format("El insumo %s fue registrado como lote para la orden de compra", lotexInsumo.getInsumo().getNombre()));
+                // aqui registrar el DetalleOrdenCompra por cada lotexInsumo
+                DetalleOrdenCompra det  = new DetalleOrdenCompra();
+                det.setLoteInsumo(lotexInsumo);
+                det.setOrden(newOrden);
+                det.setPrecioDetalle(lotexInsumo.getStockLogico() * lotexInsumo.getCostoUnitario());
+                session.save(det);                               
+            }
+            tx.commit();
         } catch (Exception e) {
-            session.getTransaction().rollback();
+            if (tx!=null)   tx.rollback();
+            LOGGER.log(Level.SEVERE, "Error al intentar realizar la transaccion de orden de compra");
+            System.out.println("====================================================================");
+            System.out.println(e);
+            System.out.println("====================================================================");
             this.errorMessage = e.getMessage();
         }
         return id;
@@ -64,5 +88,48 @@ public class OrdenCompraHelper {
             errorMessage = e.getMessage();
         }
         return ordenes;
+    }
+    
+    public ArrayList<DetalleOrdenCompra> getDetalles(Integer id){
+        ArrayList<DetalleOrdenCompra> ordenes = null;
+        Query query = null;
+        try {
+            query = session.createQuery("from DetalleOrdenCompra where orden_id =" + id.toString());
+            if(!query.list().isEmpty()){
+                ordenes = (ArrayList<DetalleOrdenCompra>)query.list();
+            }
+        } catch (Exception e) {
+            errorMessage = e.getMessage();
+        }
+        return ordenes;
+    }
+    
+    public boolean updateOrdenCompra(OrdenCompra tOld){
+        boolean ok = false;
+        try {
+            Transaction tx;
+            if(session.getTransaction().isActive()){
+                tx = session.getTransaction();
+            }else{
+                tx = session.beginTransaction();
+            }
+            
+            OrdenCompra tNew = session.load(OrdenCompra.class, tOld.getId());
+            
+            tNew.setDetalleOrdenCompra(tOld.getDetalleOrdenCompra());
+            tNew.setFecha(tOld.getFecha());
+            tNew.setPrecioTotal(tOld.getPrecioTotal());
+            tNew.setProveedor(tOld.getProveedor());
+            tNew.setRecibido(tOld.isRecibido());
+            tNew.setUsuario(tOld.getUsuario());
+            
+            session.merge(tNew);
+            tx.commit();
+            ok = true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            this.errorMessage = e.getMessage();
+        }
+        return ok;
     }
 }

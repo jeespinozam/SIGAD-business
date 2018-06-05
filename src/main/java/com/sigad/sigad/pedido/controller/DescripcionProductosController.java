@@ -28,6 +28,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 /**
@@ -65,12 +66,6 @@ public class DescripcionProductosController implements Initializable {
     @FXML
     private JFXButton btnBack;
 
-    @FXML
-    private JFXTreeTableView<StockLista> tablaStock;
-    private ObservableList<StockLista> stocks = FXCollections.observableArrayList();
-    ;
-    JFXTreeTableColumn<StockLista, String> local = new JFXTreeTableColumn<>("Local");
-    JFXTreeTableColumn<StockLista, String> stock = new JFXTreeTableColumn<>("Stock");
 
     @FXML
     private JFXTreeTableView<PromocionesLista> tablaPromociones;
@@ -85,8 +80,6 @@ public class DescripcionProductosController implements Initializable {
         // TODO
 
         columnasPromociones();
-        columnasStockLista();
-        agregarColumnasTablaStock();
         agregarColumnasTablasPromociones();
         System.out.println(idProducto);
     }
@@ -102,13 +95,18 @@ public class DescripcionProductosController implements Initializable {
         if (producto != null) {
             txtNombre.setText(producto.getNombre());
             txtPrecioBase.setText(producto.getPrecio().toString());
-            //txtCategoria.setText(producto.getCategoria().getNombre());
+            txtCategoria.setText(producto.getCategoria().getNombre());
             txtDescripcion.setText(producto.getDescripcion());
             Image image = new Image(producto.getImagen());
             imageProducto.setImage(image);
         }
         llenarTablaDescuento();
         System.out.println(idProducto);
+    }
+
+    @FXML
+    void clickCerrar(MouseEvent event) {
+        SeleccionarProductosController.userDialog.close();
     }
 
     public void llenarTablaDescuento() {
@@ -118,20 +116,14 @@ public class DescripcionProductosController implements Initializable {
         if (descuentos != null) {
             descuentos.forEach((t) -> {
                 promociones.add(new PromocionesLista(t.getCodCupon(), "Descuento",
-                        String.valueOf(t.getValorPct()* 100), "D", idProducto));
+                        String.valueOf(t.getValorPct() * 100), "D", idProducto));
             });
         }
         helper.close();
 
     }
 
-    public void columnasStockLista() {
-        local.setPrefWidth(120);
-        local.setCellValueFactory((TreeTableColumn.CellDataFeatures<StockLista, String> param) -> param.getValue().getValue().local);
-        stock.setPrefWidth(120);
-        stock.setCellValueFactory((TreeTableColumn.CellDataFeatures<StockLista, String> param) -> param.getValue().getValue().stock);
-
-    }
+    
 
     public void columnasPromociones() {
         promocion.setPrefWidth(120);
@@ -143,13 +135,7 @@ public class DescripcionProductosController implements Initializable {
 
     }
 
-    public void agregarColumnasTablaStock() {
-        final TreeItem<StockLista> rootPedido = new RecursiveTreeItem<>(stocks, RecursiveTreeObject::getChildren);
-        tablaStock.setEditable(true);
-        tablaStock.getColumns().setAll(local, stock);
-        tablaStock.setRoot(rootPedido);
-        tablaStock.setShowRoot(false);
-    }
+    
 
     public void agregarColumnasTablasPromociones() {
         final TreeItem<PromocionesLista> rootPedido = new RecursiveTreeItem<>(promociones, RecursiveTreeObject::getChildren);
@@ -157,36 +143,6 @@ public class DescripcionProductosController implements Initializable {
         tablaPromociones.getColumns().setAll(promocion, tipo, descuento);
         tablaPromociones.setRoot(rootPedido);
         tablaPromociones.setShowRoot(false);
-    }
-
-    class StockLista extends RecursiveTreeObject<StockLista> {
-
-        StringProperty local;
-        StringProperty stock;
-        Integer codigo;
-
-        public StockLista(String local, String stock, Integer codigo) {
-            this.local = new SimpleStringProperty(local);
-            this.codigo = codigo;
-            this.stock = new SimpleStringProperty(stock);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o instanceof StockLista) {
-                StockLista pl = (StockLista) o;
-                return pl.codigo.equals(codigo);
-            }
-            return super.equals(o); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public int hashCode() {
-            int hash = 7;
-            hash = 29 * hash + Objects.hashCode(this.codigo);
-            return hash;
-        }
-
     }
 
     class PromocionesLista extends RecursiveTreeObject<PromocionesLista> {
