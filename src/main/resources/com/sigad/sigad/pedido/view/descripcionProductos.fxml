@@ -46,30 +46,12 @@
          <font>
             <Font size="10.0" />
          </font></Label>
-      <JFXTreeTableView id="tablaStock" fx:id="tablaPromociones" layoutX="369.0" layoutY="262.0" prefHeight="130.0" prefWidth="365.0">
-         <effect>
-            <DropShadow color="#00000093" />
-         </effect>
-      </JFXTreeTableView>
-      <JFXTreeTableView id="promocionesActivas" fx:id="tablaStock" layoutX="47.0" layoutY="262.0" prefHeight="130.0" prefWidth="245.0">
-         <effect>
-            <DropShadow color="#00000093" />
-         </effect>
-      </JFXTreeTableView>
-      <Label layoutX="47.0" layoutY="227.0" text="Stock">
-         <font>
-            <Font name="System Bold" size="20.0" />
-         </font>
-      </Label>
+      <JFXTreeTableView id="tablaStock" fx:id="tablaPromociones" layoutX="369.0" layoutY="262.0" prefHeight="130.0" prefWidth="360.0" />
       <Label layoutX="369.0" layoutY="227.0" text="Promociones activas">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
       </Label>
-      <JFXButton id="btnBack" buttonType="RAISED" layoutX="613.0" layoutY="407.0" prefHeight="30.0" prefWidth="97.0" style="-fx-background-color: #FFFFFF;" text="Cerrar">
-         <font>
-            <Font name="System Bold" size="14.0" />
-         </font>
-      </JFXButton>
+      <JFXButton id="btnBack" fx:id="btnCerrar" buttonType="RAISED" layoutX="613.0" layoutY="407.0" onMouseClicked="#clickCerrar" prefHeight="17.0" prefWidth="97.0" style="-fx-background-color: #FFFFFF;" text="Cerrar" />
    </children>
 </AnchorPane>

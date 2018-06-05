@@ -92,7 +92,8 @@ public class LoginController implements Initializable {
                 helper.close();
                 
                 Set<Permiso> list = new HashSet<>();
-                list.add(new Permiso("Productos", "SALE"));
+                list.add(new Permiso("Ventas", "SALE"));
+                list.add(new Permiso("Descuentos", "SALE"));
                 list.add(new Permiso("Insumos", "ARRANGE_SEND_BACKWARD"));
                 list.add(new Permiso("Personal", "ACCOUNT_MULTIPLE"));
                 list.add(new Permiso("Repartos", "CAR"));
@@ -101,6 +102,7 @@ public class LoginController implements Initializable {
                 list.add(new Permiso("Perfiles", "FINGERPRINT"));
                 list.add(new Permiso("Estadísticas", "ELEVATION_RISE"));
                 list.add(new Permiso("Carga Masiva", "ARROW_UP_BOLD_CIRCLE"));
+                list.add(new Permiso("Configuraciones", "SETTINGS"));
                 list.add(new Permiso("Configuraciones", "SETTINGS"));
                 
                 for (Permiso p : list) {

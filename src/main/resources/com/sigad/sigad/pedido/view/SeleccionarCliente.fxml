@@ -9,16 +9,12 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="680.0" prefWidth="1010.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.pedido.controller.SeleccionarClienteController">
+<AnchorPane id="AnchorPane" onMouseClicked="#goDatosPedido" prefHeight="680.0" prefWidth="1010.0" style="-fx-background-color: #F4F4F4;" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.pedido.controller.SeleccionarClienteController">
     <stylesheets>
         <URL value="@/styles/seleccionarcliente.css" />
     </stylesheets>
     <children>
-        <JFXTreeTableView id="tablaClientes" fx:id="tablaClientes" layoutX="47.0" layoutY="195.0" prefHeight="270.0" prefWidth="916.0" AnchorPane.leftAnchor="47.0" AnchorPane.rightAnchor="47.0">
-                    <effect>
-                        <DropShadow color="#00000093" />
-                    </effect>
-                </JFXTreeTableView>
+        <JFXTreeTableView id="tablaClientes" fx:id="tablaClientes" layoutX="47.0" layoutY="195.0" prefHeight="270.0" prefWidth="916.0" AnchorPane.leftAnchor="47.0" AnchorPane.rightAnchor="47.0" />
       <Label layoutX="55.0" layoutY="34.0" prefHeight="36.0" prefWidth="172.0" text="Clientes registrados">
          <font>
             <Font name="System Bold" size="18.0" />
@@ -30,7 +26,7 @@
          </font>
       </Label>
       <JFXTextField id="txtBuscar" fx:id="txtBuscar" layoutX="787.0" layoutY="154.0" />
-      <JFXButton id="btnCancelar" fx:id="btnCancelar" buttonType="RAISED" layoutX="613.0" layoutY="600.0" style="-fx-background-color: #FFFFFF;" text="Cancelar">
+      <JFXButton id="btnCancelar" fx:id="btnCancelar" buttonType="RAISED" layoutX="574.0" layoutY="600.0" style="-fx-background-color: #FFFFFF;" text="Cancelar">
          <font>
             <Font size="14.0" />
          </font>
@@ -38,13 +34,18 @@
             <DropShadow />
          </effect>
       </JFXButton>
-      <JFXButton id="btnRegistrar" fx:id="btnRegistrar" buttonType="RAISED" layoutX="743.0" layoutY="600.0" style="-fx-background-color: #FFFFFF;" text="Registrar cliente">
+      <JFXButton id="btnRegistrar" fx:id="btnRegistrar" buttonType="RAISED" layoutX="667.0" layoutY="600.0" onMouseClicked="#registrarCliente" style="-fx-background-color: #FFFFFF;" text="Registrar cliente">
          <font>
             <Font size="14.0" />
          </font>
          <effect>
             <DropShadow />
          </effect>
+      </JFXButton>
+      <JFXButton id="btnSiguiente" fx:id="btnSiguiente" buttonType="RAISED" layoutX="816.0" layoutY="600.0" onMouseClicked="#goDatosPedido" style="-fx-background-color: #FFFFFF;" text="Siguiente">
+         <font>
+            <Font size="14.0" />
+         </font>
       </JFXButton>
     </children>
 </AnchorPane>

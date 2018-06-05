@@ -36,7 +36,14 @@ public class EstadoPedido {
     public EstadoPedido() {
     }
 
+    public EstadoPedido( Timestamp hora, Pedido pedido, PedidoEstado estado) {
+        this.hora = hora;
+        this.pedido = pedido;
+        this.estado = estado;
+    }
+
     
+
     /**
      * @return the id
      */

@@ -5,7 +5,8 @@
  */
 package com.sigad.sigad.business;
 
-import java.security.Timestamp;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -25,9 +26,10 @@ import javax.persistence.OneToMany;
  */
 @Entity
 public class Pedido {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long id;
+    private Long id;
     @NotNull
     private Timestamp fechaVenta;
     @NotNull
@@ -46,7 +48,7 @@ public class Pedido {
     private double cooYDireccion;
     @ManyToOne(optional = false)
     private PedidoEstado estado;
-    @NotNull
+    private String turno;
     private double volumenTotal;
     @ManyToOne
     private Reparto reparto;
@@ -67,17 +69,20 @@ public class Pedido {
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<DetallePedido> detallePedido = new HashSet<>();
 
+    @ManyToOne
+    private Tienda tienda;
+
     private Timestamp horaEntrega;
-    private Timestamp horaIniEntrega;
-    private Timestamp horaFinEntrega;
-    
+    private Time horaIniEntrega;
+    private Time horaFinEntrega;
+
     public Pedido() {
     }
 
     /**
      * @return the id
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -140,28 +145,28 @@ public class Pedido {
     /**
      * @return the horaIniEntrega
      */
-    public Timestamp getHoraIniEntrega() {
+    public Time getHoraIniEntrega() {
         return horaIniEntrega;
     }
 
     /**
      * @param horaIniEntrega the horaIniEntrega to set
      */
-    public void setHoraIniEntrega(Timestamp horaIniEntrega) {
+    public void setHoraIniEntrega(Time horaIniEntrega) {
         this.horaIniEntrega = horaIniEntrega;
     }
 
     /**
      * @return the horaFinEntrega
      */
-    public Timestamp getHoraFinEntrega() {
+    public Time getHoraFinEntrega() {
         return horaFinEntrega;
     }
 
     /**
      * @param horaFinEntrega the horaFinEntrega to set
      */
-    public void setHoraFinEntrega(Timestamp horaFinEntrega) {
+    public void setHoraFinEntrega(Time horaFinEntrega) {
         this.horaFinEntrega = horaFinEntrega;
     }
 
@@ -345,6 +350,39 @@ public class Pedido {
      */
     public void setReparto(Reparto reparto) {
         this.reparto = reparto;
+    }
+
+    public void addEstado(PedidoEstado ep) {
+        EstadoPedido np = new EstadoPedido(new Timestamp(System.currentTimeMillis()), this, ep);
+        this.estadosPedido.add(np);
+    }
+
+    /**
+     * @return the turno
+     */
+    public String getTurno() {
+        return turno;
+    }
+
+    /**
+     * @param turno the turno to set
+     */
+    public void setTurno(String turno) {
+        this.turno = turno;
+    }
+
+    /**
+     * @return the tienda
+     */
+    public Tienda getTienda() {
+        return tienda;
+    }
+
+    /**
+     * @param tienda the tienda to set
+     */
+    public void setTienda(Tienda tienda) {
+        this.tienda = tienda;
     }
 
 }
