@@ -109,8 +109,12 @@ public class InsumosHelper {
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
+            System.out.println("here1");
+            System.out.println("id a actualizar" + modifiedInsumo.getId());
             session.update(modifiedInsumo);
+            System.out.println("here2");
             for (ProveedorInsumo proveedorInsumo : lista_proveedoresxInsumo) {
+                System.out.println("here3");
                 LOGGER.log(Level.INFO, String.format("Actualizando relacion entre %s y %s", proveedorInsumo.getProveedor().getNombre(), proveedorInsumo.getInsumo().getNombre()));
                 session.saveOrUpdate(proveedorInsumo);
             }
@@ -130,6 +134,38 @@ public class InsumosHelper {
         return id;
     }
     
+    public boolean updateInsumo(Insumo tOld) {
+        boolean ok = false;
+        try {
+            Transaction tx;
+            if(session.getTransaction().isActive()){
+                tx = session.getTransaction();
+            }else{
+                tx = session.beginTransaction();
+            }
+            
+            Insumo tNew = session.load(Insumo.class, tOld.getId());
+            
+            tNew.setActivo(tOld.isActivo());
+            tNew.setDescripcion(tOld.getDescripcion());
+            tNew.setImagen(tOld.getImagen());
+            tNew.setNombre(tOld.getNombre());
+            tNew.setPrecio(tOld.getPrecio());
+            tNew.setStockTotalFisico(tOld.getStockTotalFisico());
+            tNew.setStockTotalLogico(tOld.getStockTotalLogico());
+            tNew.setTiempoVida(tOld.getTiempoVida());
+            tNew.setVolumen(tOld.isVolumen());
+            
+            session.update(tNew);
+            session.merge(tNew);
+            tx.commit();
+            ok = true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            this.errorMessage = e.getMessage();
+        }
+        return ok;
+    }
     public Long disableInsumo(Insumo disabledInsumo) {
         Long id = null;
         Transaction tx = null;

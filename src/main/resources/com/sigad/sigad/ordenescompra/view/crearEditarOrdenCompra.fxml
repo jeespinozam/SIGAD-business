@@ -12,7 +12,7 @@
 
 <StackPane fx:id="hiddenSp" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="760.0" style="-fx-background-color: #fff;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.ordenescompra.controller.CrearEditarOrdenCompraController">
    <children>
-      <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0">
+      <AnchorPane fx:id="containerPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0">
          <children>
             <GridPane minWidth="-Infinity" prefHeight="450.0" prefWidth="760.0">
                <columnConstraints>

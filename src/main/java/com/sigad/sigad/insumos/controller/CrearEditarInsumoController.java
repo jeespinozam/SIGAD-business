@@ -130,17 +130,27 @@ public class CrearEditarInsumoController implements Initializable {
                 ArrayList<ProveedorInsumo> listaInsumoProv = new ArrayList<>();
                 listaProv.forEach((p)->{
                     if(!p.getPrecio().getValue().equals("")){
-                        ProveedorInsumo pr = new ProveedorInsumo();
-                        pr.setInsumo(insumo);
-                        pr.setProveedor(p.getProv());
-                        pr.setPrecio(Double.parseDouble(p.getPrecio().getValue()));
-                        pr.setActivo(true);
-                        listaInsumoProv.add(pr);
+//                       ProveedorInsumo provin = helper.getInsumoProveedorUnit(insumo, p.getProv());
+//                        if(provin != null){
+//                            System.out.println("ya esxite relacion con proveedor");
+//                            System.out.println("id insumo" + provin.getInsumo().getId());
+//                            System.out.println("id insumo" + provin.getProveedor().getId());
+//                            listaInsumoProv.add(provin);
+//                        }
+//                        else {
+//                            
+                            ProveedorInsumo pr = new ProveedorInsumo();
+                            pr.setInsumo(insumo);
+                            pr.setProveedor(p.getProv());
+                            pr.setPrecio(Double.parseDouble(p.getPrecio().getValue()));
+                            pr.setActivo(true);
+                            listaInsumoProv.add(pr);
+//                        }
                     }
                 });
                 //edicion
                 if(!ListaInsumoController.isInsumoCreate){
-                    Long id = helper.updateInsumo(insumo,listaInsumoProv);
+                    Long id = helper.updateInsumo(insumo,null);
                     if(id != null){
                         ListaInsumoController.insumosList.remove(ListaInsumoController.selectedInsumo);
                         ListaInsumoController.updateTable(insumo);
@@ -161,7 +171,7 @@ public class CrearEditarInsumoController implements Initializable {
                         error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
                     }
                 }
-                 helper.close();
+                helper.close();
             }
         });
         
@@ -171,7 +181,6 @@ public class CrearEditarInsumoController implements Initializable {
         AnchorPane.setRightAnchor(cancel, 85.0);
         cancel.setOnAction((ActionEvent event) -> {
             ListaInsumoController.insumoDialog.close();
-            //PersonalController.getDataFromDB();
         });
         
         containerPane.getChildren().add(save);
@@ -192,8 +201,6 @@ public class CrearEditarInsumoController implements Initializable {
             tglActive.setSelected(insumo.isActivo());
         }
         helper.close();
-        
-        
     }
     private void fillFields(){
         insumo.setNombre(nombreTxt.getText());
@@ -444,14 +451,22 @@ public class CrearEditarInsumoController implements Initializable {
             textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
             textField.setOnKeyPressed((KeyEvent t) -> {
                 if (t.getCode() == KeyCode.ENTER) {
-                    NumberValidator n = new NumberValidator();
+                    DoubleValidator n = new DoubleValidator();
                     textField.getValidators().add(n);
                     if(textField.validate()){
-                        commitEdit(textField.getText());
+                        if(Double.parseDouble(textField.getText()) <0){
+                            ErrorController error = new ErrorController();
+                            error.loadDialog("Atención", "Debe escribir un valor positivo", "OK", hiddenSp);
+                        }
+                        else {
+                            commitEdit(textField.getText());
+                        }
                     }
                     else {
                         textField.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
                         textField.requestFocus();
+                        ErrorController error = new ErrorController();
+                        error.loadDialog("Atención", "Debe escribir un valor numerico", "OK", hiddenSp);
                     }
 
                 } else if (t.getCode() == KeyCode.ESCAPE) {

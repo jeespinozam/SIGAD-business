@@ -25,7 +25,6 @@ public class LoteInsumo {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-    
     @ManyToOne(optional=false)
     private Insumo insumo;
     
@@ -33,11 +32,12 @@ public class LoteInsumo {
     private Integer stockLogico;
     @NotNull
     private Integer stockFisico;
-    
     @NotNull
     private Date fechaVencimiento;
     @NotNull
     private double costoUnitario;
+    @ManyToOne(optional = false)
+    private Tienda tienda;
     //cascade: un lote tiene que tener un detalle orden, sino no tiene sentido
     //cascade: se guardan automaticamente el loteInsumo en la creación de detalleCompra
     //onetoone fetch default eager
@@ -146,5 +146,13 @@ public class LoteInsumo {
      */
     public void setStockFisico(Integer stockFisico) {
         this.stockFisico = stockFisico;
+    }
+
+    public Tienda getTienda() {
+        return tienda;
+    }
+
+    public void setTienda(Tienda tienda) {
+        this.tienda = tienda;
     }
 }

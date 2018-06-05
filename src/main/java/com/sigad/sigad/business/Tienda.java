@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
@@ -36,6 +37,8 @@ public class Tienda {
     private Set<CapacidadTienda> capacidadTiendas = new HashSet<CapacidadTienda>();
     @OneToMany(mappedBy = "tienda")
     private Set<Usuario> empleadosTienda = new HashSet<Usuario>();
+    @OneToMany(mappedBy = "tienda")
+    private Set<LoteInsumo> lotesInsumo = new HashSet<LoteInsumo>();
     /**
      * Constructor.
      */
@@ -160,5 +163,13 @@ public class Tienda {
      */
     public void setEmpleadosTienda(Set<Usuario> empleadosTienda) {
         this.empleadosTienda = empleadosTienda;
+    }
+
+    public Set<LoteInsumo> getLotesInsumo() {
+        return lotesInsumo;
+    }
+
+    public void setLotesInsumo(Set<LoteInsumo> lotesInsumo) {
+        this.lotesInsumo = lotesInsumo;
     }
 }

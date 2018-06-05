@@ -6,6 +6,7 @@
 package com.sigad.sigad.business.helpers;
 
 import com.sigad.sigad.app.controller.LoginController;
+import com.sigad.sigad.business.DetalleOrdenCompra;
 import com.sigad.sigad.business.LoteInsumo;
 import com.sigad.sigad.business.OrdenCompra;
 import java.util.ArrayList;
@@ -51,11 +52,16 @@ public class OrdenCompraHelper {
             if(newOrden.getId() != 0) {
                 id = newOrden.getId();
             }
-            session.getTransaction().commit();
             for (LoteInsumo lotexInsumo : lista_lotexInsumo) {
+                lotexInsumo.getInsumo().setStockTotalLogico(lotexInsumo.getInsumo().getStockTotalLogico() + lotexInsumo.getStockLogico());
                 session.save(lotexInsumo);
                 LOGGER.log(Level.INFO, String.format("El insumo %s fue registrado como lote para la orden de compra", lotexInsumo.getInsumo().getNombre()));
                 // aqui registrar el DetalleOrdenCompra por cada lotexInsumo
+                DetalleOrdenCompra det  = new DetalleOrdenCompra();
+                det.setLoteInsumo(lotexInsumo);
+                det.setOrden(newOrden);
+                det.setPrecioDetalle(lotexInsumo.getStockLogico() * lotexInsumo.getCostoUnitario());
+                session.save(det);                               
             }
             tx.commit();
         } catch (Exception e) {
@@ -82,5 +88,48 @@ public class OrdenCompraHelper {
             errorMessage = e.getMessage();
         }
         return ordenes;
+    }
+    
+    public ArrayList<DetalleOrdenCompra> getDetalles(Integer id){
+        ArrayList<DetalleOrdenCompra> ordenes = null;
+        Query query = null;
+        try {
+            query = session.createQuery("from DetalleOrdenCompra where orden_id =" + id.toString());
+            if(!query.list().isEmpty()){
+                ordenes = (ArrayList<DetalleOrdenCompra>)query.list();
+            }
+        } catch (Exception e) {
+            errorMessage = e.getMessage();
+        }
+        return ordenes;
+    }
+    
+    public boolean updateOrdenCompra(OrdenCompra tOld){
+        boolean ok = false;
+        try {
+            Transaction tx;
+            if(session.getTransaction().isActive()){
+                tx = session.getTransaction();
+            }else{
+                tx = session.beginTransaction();
+            }
+            
+            OrdenCompra tNew = session.load(OrdenCompra.class, tOld.getId());
+            
+            tNew.setDetalleOrdenCompra(tOld.getDetalleOrdenCompra());
+            tNew.setFecha(tOld.getFecha());
+            tNew.setPrecioTotal(tOld.getPrecioTotal());
+            tNew.setProveedor(tOld.getProveedor());
+            tNew.setRecibido(tOld.isRecibido());
+            tNew.setUsuario(tOld.getUsuario());
+            
+            session.merge(tNew);
+            tx.commit();
+            ok = true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            this.errorMessage = e.getMessage();
+        }
+        return ok;
     }
 }

@@ -121,8 +121,8 @@ public class FXMLAlmacenIngresoListaOrdenCompraController implements Initializab
         List<OrdenCompra> ordenesBD= depositoHelper.getOrdenes();
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-YYYY");
         ordenesBD.forEach((orden)->{
-            OrdenCompraViewer ordenViewer = new OrdenCompraViewer(Integer.toString(orden.getId()),sdf.format(orden.getFecha()),orden.getPrecioTotal());
-            ordenes.add(ordenViewer);
+            //<OrdenCompraViewer ordenViewer = new OrdenCompraViewer(Integer.toString(orden.getId()),sdf.format(orden.getFecha()),orden.getPrecioTotal());
+            //ordenes.add(ordenViewer);
             System.out.println(orden.getId() + " " + orden.getPrecioTotal() + " " + orden.getFecha());
             
         });

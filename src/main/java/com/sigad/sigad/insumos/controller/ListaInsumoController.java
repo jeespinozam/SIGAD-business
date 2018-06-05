@@ -263,7 +263,6 @@ public class ListaInsumoController implements Initializable {
                                          insumo.getImagen(),0,insumo.getId(),insumo.getPrecio()));
     }
     
-    
     //botones
     @FXML
     private void handleAction(ActionEvent event) {
@@ -277,15 +276,12 @@ public class ListaInsumoController implements Initializable {
         else if (event.getSource() == moreBtn){
             int count = tblInsumos.getSelectionModel().getSelectedCells().size();
             if( count > 1) {
-                System.out.println("waaa1");
                 ErrorController error = new ErrorController();
                 error.loadDialog("Atención", "Debe seleccionar solo un registro de la tabla", "OK", hiddenSp);
             }else if(count <=0){
-                System.out.println("waaa2");
                 ErrorController error = new ErrorController();
                 error.loadDialog("Atención", "Debe seleccionar al menos un registro de la tabla", "OK", hiddenSp);
             }else{
-                System.out.println("waaa3");
                 int selected =tblInsumos.getSelectionModel().getSelectedIndex();
                 selectedInsumo = (InsumoViewer)  tblInsumos.getSelectionModel().getModelItem(selected).getValue();
                 showOptions();
@@ -293,7 +289,6 @@ public class ListaInsumoController implements Initializable {
             }
         }
     }
-    
     
     //dialogos
     private void showOptions(){
@@ -326,23 +321,32 @@ public class ListaInsumoController implements Initializable {
     }
     
     private void deleteInsumosDialog() {
-        JFXDialogLayout content =  new JFXDialogLayout();
-        content.setHeading(new Text("Desactivar Insumo"));
-        content.setBody(new Text("¿Seguro que desea desactivar el insumo seleccionado?"));
-        
-        InsumosHelper helperi = new InsumosHelper();
-        JFXDialog dialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
-        JFXButton button = new JFXButton("Okay");
-        System.out.println(helperi.getInsumo(selectedInsumo.getId()));
-        button.setOnAction((ActionEvent event) -> {
-            Insumo ins= helperi.getInsumo(selectedInsumo.getId());
-            helperi.disableInsumo(ins);
-            dialog.close();
-            helperi.close();
-        });
-        content.setActions(button);
-        dialog.show();
+        //delete if stock 0
+        if(Integer.parseInt(selectedInsumo.getStockTotal().getValue()) >= 0) {
+            ErrorController error = new ErrorController();
+            error.loadDialog("Atención", "No puede desactivar un insumo con stock", "OK", hiddenSp);
+        }
+        else {
+            JFXDialogLayout content =  new JFXDialogLayout();
+            content.setHeading(new Text("Desactivar Insumo"));
+            content.setBody(new Text("¿Seguro que desea desactivar el insumo seleccionado?"));
+
+            InsumosHelper helperi = new InsumosHelper();
+            JFXDialog dialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
+            JFXButton button = new JFXButton("Okay");
+            System.out.println(helperi.getInsumo(selectedInsumo.getId()));
+            button.setOnAction((ActionEvent event) -> {
+                Insumo ins= helperi.getInsumo(selectedInsumo.getId());
+                helperi.disableInsumo(ins);
+                dialog.close();
+                helperi.close();
+            });
+            content.setActions(button);
+            dialog.show();
+        }
+
     }
+    
     public void createEditInsumoDialog(boolean iscreate) throws IOException {
         isInsumoCreate = iscreate;
         
