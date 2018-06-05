@@ -5,6 +5,8 @@
  */
 package com.sigad.sigad.business;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -172,5 +174,20 @@ public class Tienda {
 
     public void setLotesInsumo(Set<LoteInsumo> lotesInsumo) {
         this.lotesInsumo = lotesInsumo;
+    }
+    
+    public HashMap<Insumo, Integer> getInsumos(){
+        ArrayList<LoteInsumo> li= new ArrayList(getLotesInsumo());
+        HashMap<Insumo, Integer> hm = new HashMap<>();
+        for (LoteInsumo loteInsumo : li) {
+            if (hm.get(loteInsumo.getInsumo()) == null){
+                hm.put(loteInsumo.getInsumo(), loteInsumo.getStockLogico());
+            }else{
+                hm.put(loteInsumo.getInsumo(),hm.get(loteInsumo.getInsumo()) + loteInsumo.getStockLogico());
+            }
+            
+        }
+        return hm;
+    
     }
 }

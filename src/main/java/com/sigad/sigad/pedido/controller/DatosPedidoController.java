@@ -6,10 +6,17 @@
 package com.sigad.sigad.pedido.controller;
 
 import com.jfoenix.controls.*;
+import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.ClienteDireccion;
+import com.sigad.sigad.business.DetallePedido;
+import com.sigad.sigad.business.Insumo;
+import com.sigad.sigad.business.LoteInsumo;
 import com.sigad.sigad.business.Pedido;
 import com.sigad.sigad.business.PedidoEstado;
+import com.sigad.sigad.business.Producto;
+import com.sigad.sigad.business.ProductoInsumo;
+import com.sigad.sigad.business.helpers.LoteInsumoHelper;
 import com.sigad.sigad.business.helpers.PedidoHelper;
 import com.sigad.sigad.deposito.helper.PedidoEstadoHelper;
 import java.io.IOException;
@@ -19,7 +26,9 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -138,9 +147,29 @@ public class DatosPedidoController implements Initializable {
             pedido.addEstado(estado);
             pedido.setEstado(estado);
             hp.close();
-            PedidoHelper helper = new PedidoHelper();
-            helper.savePedido(pedido);
-            helper.close();
+            HashMap<Insumo, Integer> insumos = new HashMap<>();
+            for (DetallePedido dp : pedido.getDetallePedido()) {
+                Producto p = dp.getProducto();
+                ArrayList<ProductoInsumo> pxi = new ArrayList(p.getProductoxInsumos());
+                for (ProductoInsumo productoInsumo : pxi) {
+                    if (insumos.get(productoInsumo.getInsumo()) != null) {
+                        insumos.put(productoInsumo.getInsumo(), productoInsumo.getCantidad().intValue() * dp.getCantidad() + insumos.get(productoInsumo.getInsumo()));
+                    } else {
+                        insumos.put(productoInsumo.getInsumo(), productoInsumo.getCantidad().intValue() * dp.getCantidad());
+                    }
+                }
+            }
+
+            LoteInsumoHelper lihelper = new LoteInsumoHelper();
+            Boolean ok = lihelper.descontarInsumos(insumos, pedido.getTienda());
+            if (ok) {
+                PedidoHelper helper = new PedidoHelper();
+                helper.savePedido(pedido);
+                helper.close();
+            }else{
+                ErrorController err = new ErrorController() ;
+                err.loadDialog("Alerta", "No hay insumos", "ok", stackPane);
+            }
             gotoInicio();
 
         } catch (Exception ex) {
@@ -153,7 +182,7 @@ public class DatosPedidoController implements Initializable {
             FXMLLoader loader = new FXMLLoader(DatosPedidoController.this.getClass().getResource(SeleccionarProductosController.viewPath));
             node = (Node) loader.load();
             SeleccionarProductosController desc = loader.getController();
-            desc.initModel( stackPane); 
+            desc.initModel(stackPane);
             stackPane.getChildren().setAll(node);
         } catch (IOException ex) {
             Logger.getLogger(DatosPedidoController.class.getName()).log(Level.SEVERE, null, ex);

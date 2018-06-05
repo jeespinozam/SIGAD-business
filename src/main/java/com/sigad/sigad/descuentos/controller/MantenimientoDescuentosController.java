@@ -159,6 +159,12 @@ public class MantenimientoDescuentosController implements Initializable {
         isEdit= Boolean.FALSE;
         editRegistrarDescuento(null);
     }
+    
+    @FXML
+    void gotAgregarCombo(MouseEvent event) {
+
+    }
+
 
     public static class DescuentosLista extends RecursiveTreeObject<DescuentosLista> {
 

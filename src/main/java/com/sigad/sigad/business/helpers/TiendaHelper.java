@@ -6,8 +6,10 @@
 package com.sigad.sigad.business.helpers;
 
 import com.sigad.sigad.app.controller.LoginController;
+import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.Tienda;
 import java.util.ArrayList;
+import java.util.HashMap;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -162,4 +164,5 @@ public class TiendaHelper {
         return ok;
     }
     
+   
 }

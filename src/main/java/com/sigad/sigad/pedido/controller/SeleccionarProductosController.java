@@ -17,11 +17,14 @@ import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoDescuento;
 import com.sigad.sigad.business.ProductoInsumo;
 import com.sigad.sigad.business.Tienda;
+import com.sigad.sigad.business.Usuario;
 import com.sigad.sigad.business.helpers.CapacidadTiendaHelper;
 import com.sigad.sigad.business.helpers.GeneralHelper;
+import com.sigad.sigad.business.helpers.InsumosHelper;
 import com.sigad.sigad.business.helpers.ProductoDescuentoHelper;
 import com.sigad.sigad.business.helpers.ProductoHelper;
 import com.sigad.sigad.business.helpers.TiendaHelper;
+import com.sigad.sigad.business.helpers.UsuarioHelper;
 import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -141,12 +144,16 @@ public class SeleccionarProductosController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-        Tienda tienda = LoginController.user.getTienda();
+        Integer id = LoginController.user.getId().intValue();
+        UsuarioHelper hp = new UsuarioHelper();
+        Usuario us = hp.getUser(id);
+        Tienda tienda = us.getTienda();
         if (tienda == null) {
             ErrorController err = new ErrorController();
             err.loadDialog("Aviso", "Su usuario no tiene una tienda asignada, contacte al administrador", "Ok", stackPane);
             return;
         }
+        pedido.setTienda(tienda);
         columnasPedidos();
         columnasProductos();
         agregarColumnasTablasPedidos();
@@ -155,22 +162,19 @@ public class SeleccionarProductosController implements Initializable {
 
         //Basede datos
         ProductoHelper gest = new ProductoHelper();
-        HashMap<Producto, Integer> productosDB = gest.getProductsByTend(tienda);
+        ArrayList<Producto> productosDB = gest.getProducts();
         gest.close();
         if (productosDB != null) {
-            productosDB.forEach((p, u) -> {
+            productosDB.forEach((p) -> {
                 Producto t = p;
-                prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), u.toString(), t.getCategoria().getNombre(), "", t.getImagen(), t.getId().intValue(), t));
+                prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), "0", t.getCategoria().getNombre(), "", t.getImagen(), t.getId().intValue(), t));
             });
 
         }
-        CapacidadTiendaHelper thelper = new CapacidadTiendaHelper();
-        insumos = thelper.getCapacidadbyTend(LoginController.user.getTienda());
+        insumos = us.getTienda().getInsumos();
         insumosCambiantes = new HashMap(insumos);
-        thelper.close();
-
+        mostrarMaximoStock();
     }
-
 
     public void agregarFiltro() {
         filtro.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
@@ -287,7 +291,7 @@ public class SeleccionarProductosController implements Initializable {
             }
         });
         cantidadPedido.setOnEditCommit(new EventHandler<TreeTableColumn.CellEditEvent<PedidoLista, Integer>>() {
-            @Override 
+            @Override
             public void handle(TreeTableColumn.CellEditEvent<PedidoLista, Integer> event) {
 
                 PedidoLista ped = event.getRowValue().getValue();
@@ -295,8 +299,8 @@ public class SeleccionarProductosController implements Initializable {
                 ProductoLista p = prod.get(index);
                 System.out.println(p.nombre.getValue() + p.stock.getValue());
                 Integer stock = Integer.valueOf(p.stock.getValue());
-                Double precio = Double.valueOf(event.getRowValue().getValue().precio.get().replaceAll(",","."));
-                Double descuentos =Double.valueOf( event.getRowValue().getValue().descuento.get().replaceAll(",",".")) / 100.0;
+                Double precio = Double.valueOf(event.getRowValue().getValue().precio.get().replaceAll(",", "."));
+                Double descuentos = Double.valueOf(event.getRowValue().getValue().descuento.get().replaceAll(",", ".")) / 100.0;
                 Double subNew = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getNewValue()) * precio * (1 - descuentos));
                 Double subOld = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getOldValue()) * precio * (1 - descuentos));
                 PedidoLista nuevo = new PedidoLista(event.getRowValue().getValue().nombre.getValue(), event.getRowValue().getValue().precio.getValue(),
@@ -452,9 +456,10 @@ public class SeleccionarProductosController implements Initializable {
         }
     }
 
-    public void initModel(StackPane stack){
+    public void initModel(StackPane stack) {
         stackPane = stack;
     }
+
     public void calcularTotal() {
         Double total = 0.0;
         for (PedidoLista pedido : pedidos) {
@@ -512,6 +517,11 @@ public class SeleccionarProductosController implements Initializable {
 
                     //prod.remove(this);
                 } else {
+                    Integer ix = pedidos.indexOf(new PedidoLista(nombre, precio, 0, "0", codigo, "0", null, producto, null));
+                    if (ix >= 0) {
+                        recalcularStock(prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, codigo, null))), 0, pedidos.get(ix).cantidad.getValue());
+                    }
+                    mostrarMaximoStock();
                     pedidos.remove(new PedidoLista(nombre, precio, 0, "0", codigo, "0", null, producto, null));
                 }
                 calcularTotal();
@@ -796,7 +806,8 @@ public class SeleccionarProductosController implements Initializable {
                     PedidoLista current = (PedidoLista) ButtonCell.this.getTreeTableRow().getItem();
                     //remove selected item from the table list
                     prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, current.codigo, null))).getSeleccion().setValue(Boolean.FALSE);
-                    recalcularStock(prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, current.codigo, null))), 0, Integer.valueOf(current.cantidad.getValue()));
+                    //recalcularStock(prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, current.codigo, null))), 0, Integer.valueOf(current.cantidad.getValue()));
+                    mostrarMaximoStock();
                     pedidos.remove(current);
                 }
             });
