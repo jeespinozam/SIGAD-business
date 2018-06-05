@@ -5,9 +5,11 @@
  */
 package com.sigad.sigad.insumos.controller;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
+import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.TipoMovimiento;
 import com.sigad.sigad.business.helpers.InsumosHelper;
@@ -15,6 +17,7 @@ import com.sigad.sigad.business.helpers.TipoMovimientoHelper;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
@@ -108,6 +111,43 @@ public class RegistrarIngresoSalidaInsumoController implements Initializable {
             });
         }
     }
+    
+    private void addDialogBtns() {
+        JFXButton save = new JFXButton("Guardar");
+        save.setPrefSize(80, 25);
+        AnchorPane.setBottomAnchor(save, -20.0);
+        AnchorPane.setRightAnchor(save, 0.0);
+//        save.setOnAction((ActionEvent event) -> {
+//            if(validateFields()){
+//                System.out.println("VALIDADO ALL FIELDS");
+//                fillFields();
+//                //ingreso
+//                    Long id = helper.saveInsumo(insumo, listaInsumoProv);
+//                    if(id != null){
+//                        ListaInsumoController.updateTable(insumo);
+//                        ListaInsumoController.insumoDialog.close();
+//                    }else {
+//                        ErrorController error = new ErrorController();
+//                        error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
+//                    }
+//               
+//                helper.close();
+//            }
+//        });
+        
+        JFXButton cancel = new JFXButton("Cancelar");
+        cancel.setPrefSize(80, 25);
+        AnchorPane.setBottomAnchor(cancel, -20.0);
+        AnchorPane.setRightAnchor(cancel, 85.0);
+        cancel.setOnAction((ActionEvent event) -> {
+            ListaInsumoController.insumoDialog.close();
+        });
+        
+        containerPane.getChildren().add(save);
+        containerPane.getChildren().add(cancel);
+    }
+    
+    
     
     
     
