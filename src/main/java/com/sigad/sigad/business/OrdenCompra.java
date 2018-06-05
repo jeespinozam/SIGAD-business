@@ -29,6 +29,8 @@ public class OrdenCompra {
     @NotNull
     private double precioTotal;
     @NotNull
+    private boolean recibido;
+    @NotNull
     private Date fecha; 
     //onetomany fetch defult lazy
     @OneToMany(mappedBy="orden")
@@ -131,7 +133,13 @@ public class OrdenCompra {
         this.usuario = usuario;
     }
 
-    
-    
+    public boolean isRecibido() {
+        return recibido;
+    }
+
+    public void setRecibido(boolean recibido) {
+        this.recibido = recibido;
+    }
+
     
 }
