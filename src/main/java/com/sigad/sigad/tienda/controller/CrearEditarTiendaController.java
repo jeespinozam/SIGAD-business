@@ -5,6 +5,7 @@
  */
 package com.sigad.sigad.tienda.controller;
 
+import com.google.maps.errors.ApiException;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXScrollPane;
 import com.jfoenix.controls.JFXTextArea;
@@ -16,12 +17,16 @@ import com.jfoenix.validation.RequiredFieldValidator;
 import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.business.Tienda;
 import com.sigad.sigad.business.Usuario;
+import com.sigad.sigad.business.helpers.GMapsHelper;
 import com.sigad.sigad.business.helpers.TiendaHelper;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -30,6 +35,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * FXML Controller class
@@ -199,8 +205,26 @@ public class CrearEditarTiendaController implements Initializable {
     }
 
     @FXML
-    private void generateLatLng(MouseEvent event) {
+    private void generateLatLng(MouseEvent event){
+        GMapsHelper helper = GMapsHelper.getInstance();
         
+        try {
+            Pair<Double, Double> pair = helper.geocodeAddress(direccionTxt.getText());
+            
+            if(pair==null){
+                ErrorController error = new ErrorController();
+                error.loadDialog("Error", "No se pudo obtener la lotitud y longitud para esta dirección", "Ok", hiddenSp);
+            }else{
+                Double lat = pair.getKey();
+                Double lng = pair.getValue();
+                
+                coordXText.setText(lat.toString());
+                coordYText.setText(lng.toString());
+            }
+            
+        } catch (InterruptedException | IOException | ApiException ex) {
+            Logger.getLogger(CrearEditarTiendaController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
 }
