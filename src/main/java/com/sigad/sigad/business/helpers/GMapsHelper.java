@@ -44,7 +44,7 @@ public class GMapsHelper {
             return null;
         }
         return Pair.of(results[0].geometry.location.lat,
-                results[0].geometry.location.lat);
+                results[0].geometry.location.lng);
     }
 
     public static GMapsHelper getInstance() {
