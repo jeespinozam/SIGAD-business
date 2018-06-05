@@ -6,6 +6,7 @@
 package com.sigad.sigad.business;
 
 import java.sql.Time;
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,12 +28,26 @@ public class PedidoEstado {
     @NotNull
     private String nombre;
     private String descripcion;
-    
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof PedidoEstado) {
+            PedidoEstado p = (PedidoEstado) o;
+            return nombre.trim().equals(p.nombre.trim());
+        }
+        return super.equals(o); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.nombre);
+        return hash;
+    }
+
     public PedidoEstado() {
     }
 
-    
-    
     /**
      * @return the id
      */

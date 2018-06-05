@@ -4,6 +4,7 @@ import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Usuario;
 import java.util.ArrayList;
+import java.util.HashSet;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -149,6 +150,9 @@ public class UsuarioHelper {
             uNew.setIntereses(uOld.getIntereses());
             uNew.setPassword(uOld.getPassword());
             uNew.setPerfil(uOld.getPerfil());
+            if (uOld.getPerfil().getNombre().equals("Cliente")){
+                uNew.setClienteDirecciones(new HashSet<>(uOld.getClienteDirecciones()));
+            }
             uNew.setTienda(uOld.getTienda());
             uNew.setTelefono(uOld.getTelefono());
             uNew.setActivo(uOld.isActivo());
@@ -163,4 +167,25 @@ public class UsuarioHelper {
         }
         return ok;
     }
+    
+    /*Get users by profile profile*/
+    public ArrayList<Usuario> getUsers(Perfil perfil){
+        ArrayList<Usuario> users = null;
+        Query query = null;
+        try {
+            query = session.createQuery("from Usuario where perfil_id='" + perfil.getId() + "'");
+            
+            if(!query.list().isEmpty()){
+                users = (ArrayList<Usuario>) query.list();
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            session.getTransaction().rollback();
+            this.errorMessage = e.getMessage();
+        } finally {
+            return users;
+        }
+    }
+    
+    
 }

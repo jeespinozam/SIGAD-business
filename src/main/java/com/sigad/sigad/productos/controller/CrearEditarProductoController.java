@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package com.sigad.sigad.productos.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -11,9 +12,9 @@ import javafx.fxml.Initializable;
 /**
  * FXML Controller class
  *
- * @author Alexandra
+ * @author chrs
  */
-public class RegistrarClienteController implements Initializable {
+public class CrearEditarProductoController implements Initializable {
 
     /**
      * Initializes the controller class.

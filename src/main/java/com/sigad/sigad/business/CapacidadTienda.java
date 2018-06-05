@@ -5,10 +5,11 @@
  */
 package com.sigad.sigad.business;
 
-import com.sigad.sigad.business.ids.CapacidadTiendaId;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Transient;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 /**
  *
@@ -16,56 +17,78 @@ import javax.persistence.Transient;
  */
 @Entity
 public class CapacidadTienda {
-    @EmbeddedId
-    private CapacidadTiendaId id = new CapacidadTiendaId();
-    private int cantidad;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
+    
+    @ManyToOne
+    private Insumo insumo;
+    @ManyToOne
+    private Tienda tienda;
+
+    private Integer cantidad;
 
     /**
      * Constructor.
      */
     public CapacidadTienda() {
     }
+
     /**
      * @return the id
      */
-    public CapacidadTiendaId getId() {
+    public Long getId() {
         return id;
     }
 
     /**
      * @param id the id to set
      */
-    public void setId(CapacidadTiendaId id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
     /**
      * @return the cantidad
      */
-    public int getCantidad() {
+    public Integer getCantidad() {
         return cantidad;
     }
 
     /**
      * @param cantidad the cantidad to set
      */
-    public void setCantidad(int cantidad) {
+    public void setCantidad(Integer cantidad) {
         this.cantidad = cantidad;
     }
 
     /**
      * @return the Tienda
      */
-    @Transient
     public Tienda getTienda() {
-        return id.getTienda();
+        return tienda;
     }
-
 
     /**
      * @param tienda the Tienda to set
      */
     public void setTienda(Tienda tienda) {
-        id.setTienda(tienda);
+        this.tienda = tienda;
+    }
+    
+    
+     /**
+     * @return the insumo
+     */
+    public Insumo getInsumo() {
+        return insumo;
+    }
+
+    /**
+     * @param insumo the insumo to set
+     */
+    public void setInsumo(Insumo insumo) {
+        this.insumo = insumo;
     }
 }
