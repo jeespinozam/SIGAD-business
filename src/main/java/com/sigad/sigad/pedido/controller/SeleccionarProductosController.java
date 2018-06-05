@@ -171,8 +171,6 @@ public class SeleccionarProductosController implements Initializable {
 
     }
 
-    public void initModel(StackPane stackPane) {
-    }
 
     public void agregarFiltro() {
         filtro.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
@@ -289,7 +287,7 @@ public class SeleccionarProductosController implements Initializable {
             }
         });
         cantidadPedido.setOnEditCommit(new EventHandler<TreeTableColumn.CellEditEvent<PedidoLista, Integer>>() {
-            @Override
+            @Override 
             public void handle(TreeTableColumn.CellEditEvent<PedidoLista, Integer> event) {
 
                 PedidoLista ped = event.getRowValue().getValue();
@@ -299,8 +297,8 @@ public class SeleccionarProductosController implements Initializable {
                 Integer stock = Integer.valueOf(p.stock.getValue());
                 Double precio = Double.valueOf(event.getRowValue().getValue().precio.get().replaceAll(",","."));
                 Double descuentos =Double.valueOf( event.getRowValue().getValue().descuento.get().replaceAll(",",".")) / 100.0;
-                Double subNew = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getNewValue()) * precio) * (1 - descuentos);
-                Double subOld = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getOldValue()) * precio) * (1 - descuentos);
+                Double subNew = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getNewValue()) * precio * (1 - descuentos));
+                Double subOld = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getOldValue()) * precio * (1 - descuentos));
                 PedidoLista nuevo = new PedidoLista(event.getRowValue().getValue().nombre.getValue(), event.getRowValue().getValue().precio.getValue(),
                         (event.getNewValue() <= stock + event.getOldValue()) ? event.getNewValue() : event.getOldValue(),
                         (event.getNewValue() <= stock + event.getOldValue()) ? subNew.toString() : subOld.toString(),
@@ -454,6 +452,9 @@ public class SeleccionarProductosController implements Initializable {
         }
     }
 
+    public void initModel(StackPane stack){
+        stackPane = stack;
+    }
     public void calcularTotal() {
         Double total = 0.0;
         for (PedidoLista pedido : pedidos) {

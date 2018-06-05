@@ -7,8 +7,10 @@ package com.sigad.sigad.business.helpers;
 
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Pedido;
+import java.util.ArrayList;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 /**
  *
@@ -35,7 +37,21 @@ public class PedidoHelper {
         return errorMessage;
     }
 
-    /*Get all the users*/
+    
+     public ArrayList<Pedido> getPedidos(){
+        ArrayList<Pedido> pedidos = null;
+         Query query = null;
+        try {
+            query = session.createQuery("from Pedido");
+            pedidos = (ArrayList<Pedido>) query.list();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            errorMessage = e.getMessage();
+        } finally{
+            return pedidos;
+        }
+    };
+    /*Get all the Pedidos*/
     public Long savePedido(Pedido pedido) {
         Long id = null;
         try {

@@ -14,8 +14,19 @@ import java.text.DecimalFormat;
 public class GeneralHelper {
 
     public static Double roundTwoDecimals(double d) {
-        DecimalFormat twoDForm = new DecimalFormat("#.##");
-        return Double.valueOf(twoDForm.format(d));
+         DecimalFormat twoDForm = new DecimalFormat("#.##");
+       String temp = twoDForm.format(d).replaceAll(",", ".");
+       return Double.valueOf(temp);
+    }
+
+    public static boolean isNumeric(String input) {
+        try {
+            Integer.parseInt(input);
+            return true;
+        } catch (NumberFormatException e) {
+            // s is not numeric
+            return false;
+        }
     }
 
 }

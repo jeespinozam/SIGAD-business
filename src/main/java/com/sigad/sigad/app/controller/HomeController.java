@@ -12,6 +12,8 @@ import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Permiso;
 import com.sigad.sigad.controller.cargaMasiva.CargaMasivaViewController;
 import com.sigad.sigad.deposito.controller.FXMLAlmacenIngresoListaOrdenCompraController;
+import com.sigad.sigad.descuentos.controller.MantenimientoDescuentosController;
+import com.sigad.sigad.pedido.controller.MantenimientoPedidosController;
 import com.sigad.sigad.pedido.controller.SeleccionarProductosController;
 import com.sigad.sigad.perfil.controller.PerfilController;
 import com.sigad.sigad.personal.controller.PersonalController;
@@ -56,7 +58,7 @@ public class HomeController implements Initializable {
     public static final Double IGV = 0.18;
     public static String windowName = "Home";
     @FXML
-    private JFXButton profileBtn, productoBtn,offertBtn;
+    private JFXButton profileBtn, productoBtn,offertBtn, descuentosBtn;
     @FXML
     private ArrayList<MaterialDesignIcon> sidebarIcons = new ArrayList<MaterialDesignIcon>();
     private ArrayList<JFXButton> sidebarBtns = new ArrayList<JFXButton>();
@@ -117,10 +119,12 @@ public class HomeController implements Initializable {
                         public void handle(ActionEvent event) {
                             try {
                                 Node node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PersonalController.viewPath));;
-                                if(name.equals("Productos")){
-                                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(SeleccionarProductosController.viewPath));
+                                if(name.equals("Ventas")){
+                                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(MantenimientoPedidosController.viewPath));
                                 }else if(name.equals("Insumos")){
-
+                                    
+                                }else if(name.equals("Descuentos")){
+                                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(MantenimientoDescuentosController.viewPath));
                                 }else if(name.equals("Personal")){
                                     node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PersonalController.viewPath));
                                 }else if(name.equals("Repartos")){
@@ -244,6 +248,7 @@ public class HomeController implements Initializable {
                 refundBtn.getStyleClass().add(clase);
                 statisticBtn.getStyleClass().add(clase);
                 settingsBtn.getStyleClass().add(clase);
+                descuentosBtn.getStyleClass().add(clase);
                 break;
             case MENU:
                 break;
@@ -262,6 +267,7 @@ public class HomeController implements Initializable {
                 refundBtn.getStyleClass().removeAll(clase);
                 statisticBtn.getStyleClass().removeAll(clase);
                 settingsBtn.getStyleClass().removeAll(clase);
+                descuentosBtn.getStyleClass().removeAll(clase);
                 break;
             case MENU:
                 break;

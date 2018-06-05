@@ -108,6 +108,13 @@ public class Usuario {
         return hash;
     }
 
+    @Override
+    public String toString() {
+        String s = this.nombres + " " + this.apellidoPaterno + " " + this.apellidoMaterno;
+        return s; //To change body of generated methods, choose Tools | Templates.
+    }
+    
+
     /**
      * @return the id
      */
