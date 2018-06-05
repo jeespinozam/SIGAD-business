@@ -26,6 +26,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -195,6 +196,11 @@ public class CrearEditarTiendaController implements Initializable {
                 else capacidadTxt.setFocusColor(new Color(0.30,0.47,0.23, 1));
             }
         });
+    }
+
+    @FXML
+    private void generateLatLng(MouseEvent event) {
+        
     }
     
 }

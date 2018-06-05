@@ -52,7 +52,7 @@
                         <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2">
                            <children>
                               <JFXTextField fx:id="direccionTxt" layoutX="19.0" layoutY="43.0" minWidth="-Infinity" prefHeight="27.0" prefWidth="327.0" promptText="Dirección" />
-                              <JFXButton fx:id="generateBtn" layoutX="195.0" layoutY="78.0" text="Generar Coordenadas">
+                              <JFXButton fx:id="generateBtn" layoutX="195.0" layoutY="78.0" onMouseClicked="#generateLatLng" text="Generar Coordenadas">
                                  <effect>
                                     <DropShadow />
                                  </effect>
