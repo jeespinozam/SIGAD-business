@@ -44,6 +44,7 @@ import com.sigad.sigad.helpers.cargaMasiva.TreeObjectInterface;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import javafx.event.Event;
 import javafx.scene.control.SelectionMode;
 
@@ -67,7 +68,7 @@ public class CargaMasivaViewController implements Initializable {
     @FXML
     private JFXButton guardarBtn;
      @FXML
-    private JFXTreeTableView<Insumo> tablaPrevia;
+    private JFXTreeTableView<HojaReporteTree> tablaPrevia;
     @FXML
     private JFXListView<String> entidadesListView;
     private ArrayList<String> entidadesSeleccionadas;
@@ -114,7 +115,7 @@ public class CargaMasivaViewController implements Initializable {
             public void handle(ActionEvent event){
                 File file = loadFile(event);
                 if(file != null){
-                    openFile(file);
+                    //openFile(file);
                     String fileName = file.getAbsolutePath();
                     archivoNombre.setText(fileName);
                     loadedFile = file;
@@ -127,9 +128,58 @@ public class CargaMasivaViewController implements Initializable {
             @Override
             public void handle(ActionEvent event){
                 String filePath = loadedFile.getAbsolutePath();
-                CargaMasivaHelper.CargaMasivaProceso(filePath);
+                List<HojaReporte> reporte = CargaMasivaHelper.CargaMasivaProceso(filePath);
+                showReport(reporte);
             }
         });
+    }
+    
+    private void showReport(List<HojaReporte> reporte){
+        
+        JFXTreeTableColumn<HojaReporteTree,String> hoja = new JFXTreeTableColumn<>("Hoja procesada");
+        hoja.setPrefWidth(300);
+        hoja.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<HojaReporteTree, String>, ObservableValue<String>>(){
+            @Override
+            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<HojaReporteTree,String> param){
+                return param.getValue().getValue().hoja;
+            }
+        });        
+        
+        JFXTreeTableColumn<HojaReporteTree,String> casosExitosos = new JFXTreeTableColumn<>("Casos Exitosos");
+        casosExitosos.setPrefWidth(100);
+        casosExitosos.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<HojaReporteTree, String>, ObservableValue<String>>(){
+            @Override
+            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<HojaReporteTree,String> param){
+                return param.getValue().getValue().casosExitosos;
+            }
+        });        
+
+        JFXTreeTableColumn<HojaReporteTree,String> casosFallidos = new JFXTreeTableColumn<>("Casos Fallidos");
+        casosFallidos.setPrefWidth(100);
+        casosFallidos.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<HojaReporteTree, String>, ObservableValue<String>>(){
+            @Override
+            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<HojaReporteTree,String> param){
+                return param.getValue().getValue().casosFallidos;
+            }
+        });
+        
+        ObservableList<HojaReporteTree> reportList = FXCollections.observableArrayList();
+        
+        if(reporte != null){
+            reporte.forEach((p) ->{
+                HojaReporte t = p;
+                reportList.add(new HojaReporteTree(
+                    String.valueOf(t.getNombreHoja()),
+                    String.valueOf(t.getCasosExitosos()),
+                    String.valueOf(t.getCasosFallidos())
+                ));
+            });
+        }
+         
+        final TreeItem<HojaReporteTree> root = new RecursiveTreeItem<HojaReporteTree>(reportList, RecursiveTreeObject::getChildren);
+        tablaPrevia.getColumns().setAll(hoja,casosExitosos,casosFallidos);
+        tablaPrevia.setRoot(root);
+        tablaPrevia.setShowRoot(false);     
     }
     
     public Window getCurrentStage(ActionEvent event){
@@ -144,13 +194,7 @@ public class CargaMasivaViewController implements Initializable {
         return fileChooser.showOpenDialog(currentStage);
     }
     
-    public void downloadTemplate(ActionEvent event){
-        System.out.println("La lista es:");
-        for (Iterator<String> iterator = entidadesSeleccionadas.iterator(); iterator.hasNext();) {
-            String next = iterator.next();
-            System.out.println(next);
-        }
-                 
+    public void downloadTemplate(ActionEvent event){                 
         Window currentStage = getCurrentStage(event);
         if(entidadesSeleccionadas != null){
             DirectoryChooser dirChooser = new DirectoryChooser();
@@ -214,8 +258,16 @@ public class CargaMasivaViewController implements Initializable {
         // Fin Insumo
     }
     
-    class Insumo extends RecursiveTreeObject<Insumo>{
-
+    class HojaReporteTree extends RecursiveTreeObject<HojaReporteTree>{
+        StringProperty hoja;
+        StringProperty casosExitosos;
+        StringProperty casosFallidos;
+        
+        public HojaReporteTree(String hoja, String casosExitosos, String casosFallidos){
+            this.hoja = new SimpleStringProperty(hoja);
+            this.casosExitosos = new SimpleStringProperty(casosExitosos);
+            this.casosFallidos = new SimpleStringProperty(casosFallidos);
+        }
     }
     
 }

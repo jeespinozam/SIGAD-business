@@ -19,6 +19,7 @@ import com.sigad.sigad.insumos.controller.ListaInsumoController;
 import com.sigad.sigad.ordenescompra.controller.ListaOrdenesCompraController;
 import com.sigad.sigad.perfil.controller.PerfilController;
 import com.sigad.sigad.personal.controller.PersonalController;
+import com.sigad.sigad.productos.controller.ProductosIndexController;
 import com.sigad.sigad.tienda.controller.TiendaController;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
@@ -121,7 +122,9 @@ public class HomeController implements Initializable {
                         public void handle(ActionEvent event) {
                             try {
                                 Node node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(PersonalController.viewPath));;
-                                if(name.equals("Ventas")){
+                                if(name.equals("Productos")){
+                                    node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(ProductosIndexController.viewPath));
+                                }else if(name.equals("Ventas")){
                                     node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(MantenimientoPedidosController.viewPath));
                                 }else if(name.equals("Insumos")){
                                     node = (Node) FXMLLoader.load(HomeController.this.getClass().getResource(ListaInsumoController.viewPath));
