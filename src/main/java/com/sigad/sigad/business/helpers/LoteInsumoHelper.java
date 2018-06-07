@@ -133,12 +133,9 @@ public class LoteInsumoHelper {
                 tx = session.beginTransaction();
             }
             ArrayList<LoteInsumo> loteinsumos = getLoteInsumos(tienda);
-            Collections.sort(loteinsumos, new Comparator<LoteInsumo>() {
-                @Override
-                public int compare(LoteInsumo s1, LoteInsumo s2) {
-                    Long i =  s1.getFechaVencimiento().getTime() - s1.getFechaVencimiento().getTime();
-                    return i.intValue();
-                }
+            Collections.sort(loteinsumos, (LoteInsumo s1, LoteInsumo s2) -> {
+                return  s1.getFechaVencimiento().compareTo(s1.getFechaVencimiento()) ;
+               
             });
             loteinsumos.forEach((t) -> {
                 System.out.println(t.getFechaVencimiento().toString());
@@ -168,9 +165,9 @@ public class LoteInsumoHelper {
                 seleccionados.add(loteSeleccionado);
             }
 
-            seleccionados.forEach((t) -> {
-                updateLoteInsumo(t);
-            });
+//            seleccionados.forEach((t) -> {
+//                updateLoteInsumo(t);
+//            });
             ok = Boolean.TRUE;
         } catch (Exception e) {
             System.out.println(e.getMessage());

@@ -301,6 +301,10 @@ public class Usuario {
         this.clienteDirecciones = clienteDirecciones;
     }
 
+    public void cleanClienteDirecciones(){
+        clienteDirecciones.clear();
+    }
+    
     /**
      * @return the clienteDirecciones
      */

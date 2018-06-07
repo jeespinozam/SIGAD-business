@@ -283,6 +283,7 @@ public class RegistrarClienteController implements Initializable {
         cliente.setCelular(txtcel.getText());
         cliente.setCorreo(txtcorreo.getText());
         cliente.getClienteDireccionesSet().clear();
+        cliente.cleanClienteDirecciones();
         direcciones.forEach((t) -> {
             cliente.addClienteDirecciones(new ClienteDireccion(t.direccion.getValue(), t.nombre.getValue(), Boolean.FALSE, cliente));
         });

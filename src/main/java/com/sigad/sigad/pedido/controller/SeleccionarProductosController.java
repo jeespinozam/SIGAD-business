@@ -365,7 +365,9 @@ public class SeleccionarProductosController implements Initializable {
         prod.forEach((t) -> {
             Integer st = Integer.MAX_VALUE;
             for (ProductoInsumo p : t.getProducto().getProductoxInsumos()) {
-                Double posStock = insumosCambiantes.get(p.getInsumo()) / p.getCantidad();
+                Integer cantidadInsumo = insumosCambiantes.get(p.getInsumo());
+                cantidadInsumo = (cantidadInsumo == null) ? 0 : cantidadInsumo;
+                Double posStock = cantidadInsumo / p.getCantidad();// Si no tengo insumos que se requiere no se debe caer
                 st = (posStock.intValue() < st) ? posStock.intValue() : st;
 
             }
