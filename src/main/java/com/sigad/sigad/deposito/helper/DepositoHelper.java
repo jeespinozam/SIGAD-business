@@ -25,7 +25,8 @@ public class DepositoHelper {
 
     public DepositoHelper() {
         
-//        session = LoginController.serviceInit();
+        session = LoginController.serviceInit();
+
 //        session.beginTransaction();
 //        Proveedor prov = new Proveedor();
 //        prov.setDescripcion("Distribuidor de rosas");
