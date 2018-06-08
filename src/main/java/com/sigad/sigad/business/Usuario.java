@@ -55,7 +55,7 @@ public class Usuario {
     private String intereses;
     @OneToMany(mappedBy = "usuario")
     private Set<ClienteFecha> clienteFechas = new HashSet<ClienteFecha>();
-    @OneToMany(fetch = FetchType.EAGER ,mappedBy = "usuario", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER ,mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ClienteDireccion> clienteDirecciones = new HashSet<ClienteDireccion>(); 
     @OneToMany(mappedBy = "insumo")
     private Set<CapacidadTienda> capacidadTiendas = new HashSet<CapacidadTienda>();
@@ -298,7 +298,8 @@ public class Usuario {
      * @param clienteDirecciones the clienteDirecciones to set
      */
     public void setClienteDirecciones(Set<ClienteDireccion> clienteDirecciones) {
-        this.clienteDirecciones = clienteDirecciones;
+        this.clienteDirecciones.clear();;
+        this.clienteDirecciones.addAll(clienteDirecciones);
     }
 
     public void cleanClienteDirecciones(){
