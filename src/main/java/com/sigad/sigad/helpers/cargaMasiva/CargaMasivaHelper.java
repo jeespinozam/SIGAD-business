@@ -92,6 +92,8 @@ public class CargaMasivaHelper {
                         rowhead.createCell(rowIndex).setCellValue("Contraseña");
                         rowIndex++;
                         rowhead.createCell(rowIndex).setCellValue("Intereses");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Tienda");
                         break;
                     case CargaMasivaConstantes.TABLA_PROVEEDORES:
                         rowhead.createCell(rowIndex).setCellValue("Nombre");
@@ -404,6 +406,18 @@ public class CargaMasivaHelper {
                 }
                 index++;
                 nuevoUsuario.setIntereses(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                // Agregar Tienda
+                String tiendaNombre = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                // Buscando la tienda
+                Tienda tiendaBuscada = (Tienda) CargaMasivaHelper.busquedaGeneralString(session, "Tienda", new String [] {"descripcion"}, new String [] {tiendaNombre});
+                if (perfilBuscado!=null)
+                    LOGGER.log(Level.INFO, String.format("Tienda %s encontrada con exito", tiendaNombre));
+                else {
+                    LOGGER.log(Level.SEVERE, String.format("Tienda %s no encontrada, cancelando operacion", tiendaNombre));
+                    return false;
+                }
+                nuevoUsuario.setTienda(tiendaBuscada);                
                 return CargaMasivaHelper.guardarObjeto(nuevoUsuario, session);
             case CargaMasivaConstantes.TABLA_PROVEEDORES:
                 Proveedor nuevoProv = new Proveedor();
