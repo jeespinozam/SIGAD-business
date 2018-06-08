@@ -7,6 +7,7 @@ package com.sigad.sigad.business.helpers;
 
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Insumo;
+import com.sigad.sigad.business.LoteInsumo;
 import com.sigad.sigad.business.Tienda;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -143,20 +144,33 @@ public class TiendaHelper {
             }else{
                 tx = session.beginTransaction();
             }
+            LoteInsumoHelper helper = new LoteInsumoHelper();
+            ArrayList<LoteInsumo> lotes = helper.getLoteInsumos(tOld);
+            double capacidadActual = 0.0;
+            for (int i = 0; i < lotes.size(); i++) {
+                capacidadActual += lotes.get(i).getStockFisico()* lotes.get(i).getInsumo().isVolumen();
+            }
+            if(tOld.getCapacidad()< capacidadActual){
+                this.errorMessage = "No se puede reducir la capacidad actual porque se cuenta con " + capacidadActual + " m^3 de insumos";
+                
+                tx.commit();
+                session.close();
+                ok = false;
+            }else{
+                Tienda tNew = session.load(Tienda.class, tOld.getId());
             
-            Tienda tNew = session.load(Tienda.class, tOld.getId());
-            
-            tNew.setCapacidad(tOld.getCapacidad());
-            tNew.setCooXDireccion(tOld.getCooXDireccion());
-            tNew.setCooYDireccion(tOld.getCooYDireccion());
-            tNew.setDescripcion(tOld.getDescripcion());
-            tNew.setDireccion(tOld.getDireccion());
-            tNew.setActivo(tOld.isActivo());
-            
-            session.merge(tNew);
-            tx.commit();
-            session.close();
-            ok = true;
+                tNew.setCapacidad(tOld.getCapacidad());
+                tNew.setCooXDireccion(tOld.getCooXDireccion());
+                tNew.setCooYDireccion(tOld.getCooYDireccion());
+                tNew.setDescripcion(tOld.getDescripcion());
+                tNew.setDireccion(tOld.getDireccion());
+                tNew.setActivo(tOld.isActivo());
+
+                session.merge(tNew);
+                tx.commit();
+                session.close();
+                ok = true;
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
             this.errorMessage = e.getMessage();
