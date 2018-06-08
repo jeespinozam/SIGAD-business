@@ -7,6 +7,7 @@ package com.sigad.sigad.helpers.cargaMasiva;
 
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Insumo;
+import com.sigad.sigad.business.PedidoEstado;
 import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Permiso;
 import com.sigad.sigad.business.Producto;
@@ -169,6 +170,11 @@ public class CargaMasivaHelper {
                         break;
                     case CargaMasivaConstantes.TABLA_TIPOPAGO:
                         rowhead.createCell(rowIndex).setCellValue("Descripcion del Tipo de Pago");
+                        break;
+                    case CargaMasivaConstantes.TABLA_PEDIDOESTADO:
+                        rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Nombre");
                         break;
                     // agregar aqui el resto de casos
                     default:
@@ -660,6 +666,20 @@ public class CargaMasivaHelper {
                     LOGGER.log(Level.SEVERE, "No se identifica una descripcion valida de tipo de pago");
                     return false;
                 }
+            case CargaMasivaConstantes.TABLA_PEDIDOESTADO:
+                PedidoEstado nuevoPedidoEstado = new PedidoEstado();
+                String descripPedidoEstado = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(descripPedidoEstado))
+                    nuevoPedidoEstado.setDescripcion(descripPedidoEstado);
+                index++;
+                String nombPedidoEstado = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(nombPedidoEstado))
+                    nuevoPedidoEstado.setNombre(nombPedidoEstado);
+                else{
+                    LOGGER.log(Level.SEVERE, "El nombre de un estado de pedido es un campo obligatorio");
+                    return false;
+                }
+                return CargaMasivaHelper.guardarObjeto(nuevoPedidoEstado, session);
             // colocar aqui los demas casos para el resto de tablas de carga masiva
             default:
                 return false;
