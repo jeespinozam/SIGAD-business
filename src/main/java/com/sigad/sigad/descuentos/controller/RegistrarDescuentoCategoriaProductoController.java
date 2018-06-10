@@ -122,5 +122,18 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
         //reloadTable();
         MantenimientoDescuentosController.descDialog.close();
     }
+    
+    
+    public void reloadTable() {
+        MantenimientoDescuentosController.descuentosCategorias.clear();
+        ProductoCategoriaDescuentoHelper pdhelper = new ProductoCategoriaDescuentoHelper();
+        ArrayList<ProductoCategoriaDescuento> ps = pdhelper.getDescuentos();
+        pdhelper.close();
+        ps.forEach((t) -> {
+            MantenimientoDescuentosController.descuentosCategorias.add(new MantenimientoDescuentosController.DescuentosCategoriaLista(t));
+        });
+
+    }
+
 
 }

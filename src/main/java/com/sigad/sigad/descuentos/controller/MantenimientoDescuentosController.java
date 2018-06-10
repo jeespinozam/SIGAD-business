@@ -12,6 +12,7 @@ import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sigad.sigad.business.ProductoCategoriaDescuento;
+import com.sigad.sigad.business.ProductoCategoriaDescuentoHelper;
 import com.sigad.sigad.business.ProductoDescuento;
 import com.sigad.sigad.business.helpers.ProductoDescuentoHelper;
 import java.io.IOException;
@@ -80,15 +81,15 @@ public class MantenimientoDescuentosController implements Initializable {
 
     
     @FXML
-    JFXTreeTableColumn<DescuentosLista, Integer> idCat = new JFXTreeTableColumn<>("id");
+    JFXTreeTableColumn<DescuentosCategoriaLista, Integer> idCat = new JFXTreeTableColumn<>("id");
     @FXML
-    JFXTreeTableColumn<DescuentosLista, String> categoria = new JFXTreeTableColumn<>("Producto");
+    JFXTreeTableColumn<DescuentosCategoriaLista, String> categoria = new JFXTreeTableColumn<>("Categoria");
     @FXML
-    JFXTreeTableColumn<DescuentosLista, String> fechaInicioCat = new JFXTreeTableColumn<>("F. Inicio");
+    JFXTreeTableColumn<DescuentosCategoriaLista, String> fechaInicioCat = new JFXTreeTableColumn<>("F. Inicio");
     @FXML
-    JFXTreeTableColumn<DescuentosLista, String> fechaFinCat = new JFXTreeTableColumn<>("F. Fin");
+    JFXTreeTableColumn<DescuentosCategoriaLista, String> fechaFinCat = new JFXTreeTableColumn<>("F. Fin");
     @FXML
-    JFXTreeTableColumn<DescuentosLista, Double> valorPctCat = new JFXTreeTableColumn<>("Valor(%)");
+    JFXTreeTableColumn<DescuentosCategoriaLista, Double> valorPctCat = new JFXTreeTableColumn<>("Valor(%)");
     @FXML
     private JFXTreeTableView<DescuentosLista> tblDescuentos;
     public static final ObservableList<DescuentosLista> descuentos = FXCollections.observableArrayList();
@@ -105,6 +106,7 @@ public class MantenimientoDescuentosController implements Initializable {
         columnasDescuentos();
         agregarColumnas();
         llenarTabla();
+        llenarTablaCategoriaDescuento();
     }
 
     public void llenarTabla() {
@@ -118,6 +120,17 @@ public class MantenimientoDescuentosController implements Initializable {
 
     }
 
+    
+    public void llenarTablaCategoriaDescuento() {
+        descuentosCategorias.clear();
+        ProductoCategoriaDescuentoHelper pdhelper = new ProductoCategoriaDescuentoHelper();
+        ArrayList<ProductoCategoriaDescuento> pd = pdhelper.getDescuentos();
+        pdhelper.close();
+        pd.forEach((t) -> {
+            descuentosCategorias.add(new DescuentosCategoriaLista(t));
+        });
+
+    }
     public void columnasDescuentos() {
         id.setPrefWidth(120);
         id.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosLista, Integer> param) -> param.getValue().getValue().id.asObject());
@@ -160,36 +173,36 @@ public class MantenimientoDescuentosController implements Initializable {
 
     
      public void columnasDescuentosCategorias() {
-//        idCat.setPrefWidth(120);
-//        idCat.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, Integer> param) -> param.getValue().getValue().id.asObject());
-//
-//        fechaFinCat.setPrefWidth(120);
-//        fechaFinCat.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, String> param) -> param.getValue().getValue().fechaFin);
-//
-//        fechaInicioCat.setPrefWidth(120);
-//        fechaInicioCat.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, String> param) -> param.getValue().getValue().fechaInicio);
-//
-//        valorPctCat.setPrefWidth(120);
-//        valorPctCat.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, Double> param) -> param.getValue().getValue().valorPct.asObject());
-//
-//        categoria.setPrefWidth(120);
-//        categoria.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, String> param) -> param.getValue().getValue().producto);
+        idCat.setPrefWidth(120);
+        idCat.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, Integer> param) -> param.getValue().getValue().id.asObject());
+
+        fechaFinCat.setPrefWidth(120);
+        fechaFinCat.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, String> param) -> param.getValue().getValue().fechaFin);
+
+        fechaInicioCat.setPrefWidth(120);
+        fechaInicioCat.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, String> param) -> param.getValue().getValue().fechaInicio);
+
+        valorPctCat.setPrefWidth(120);
+        valorPctCat.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, Double> param) -> param.getValue().getValue().valorPct.asObject());
+
+        categoria.setPrefWidth(120);
+        categoria.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, String> param) -> param.getValue().getValue().categoria );
 
     }
 
     public void agregarColumnasCategorias() {
-        final TreeItem<DescuentosLista> rootPedido = new RecursiveTreeItem<>(descuentos, RecursiveTreeObject::getChildren);
-        tblDescuentos.setEditable(true);
-        tblDescuentos.getColumns().setAll(id, fechaInicio, fechaFin, valorPct, categoria);
-        tblDescuentos.setRoot(rootPedido);
-        tblDescuentos.setShowRoot(false);
-        tblDescuentos.setRowFactory(new Callback<TreeTableView<DescuentosLista>, TreeTableRow<DescuentosLista>>() {
+        final TreeItem<DescuentosCategoriaLista> rootPedido = new RecursiveTreeItem<>(descuentosCategorias, RecursiveTreeObject::getChildren);
+        tblDescCat.setEditable(true);
+        tblDescCat.getColumns().setAll(idCat, fechaInicioCat, fechaFinCat, valorPctCat, categoria);
+        tblDescCat.setRoot(rootPedido);
+        tblDescCat.setShowRoot(false);
+        tblDescCat.setRowFactory(new Callback<TreeTableView<DescuentosCategoriaLista>, TreeTableRow<DescuentosCategoriaLista>>() {
             @Override
-            public TreeTableRow<DescuentosLista> call(TreeTableView<DescuentosLista> param) {
-                TreeTableRow<DescuentosLista> row = new TreeTableRow<>();
+            public TreeTableRow<DescuentosCategoriaLista> call(TreeTableView<DescuentosCategoriaLista> param) {
+                TreeTableRow<DescuentosCategoriaLista> row = new TreeTableRow<>();
                 row.setOnMouseClicked((event) -> {
                     if (event.getClickCount() == 2 && (!row.isEmpty())) {
-                        DescuentosLista rowData = row.getItem();
+                        DescuentosCategoriaLista rowData = row.getItem();
                         isEdit = Boolean.TRUE;
                         editRegistrarDescuento(rowData.descuentoObj);
                     }
@@ -327,6 +340,7 @@ public class MantenimientoDescuentosController implements Initializable {
         }
 
     }
+    
     
     
     
