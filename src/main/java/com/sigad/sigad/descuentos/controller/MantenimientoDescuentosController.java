@@ -160,20 +160,20 @@ public class MantenimientoDescuentosController implements Initializable {
 
     
      public void columnasDescuentosCategorias() {
-        idCat.setPrefWidth(120);
-        idCat.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, Integer> param) -> param.getValue().getValue().id.asObject());
-
-        fechaFinCat.setPrefWidth(120);
-        fechaFinCat.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, String> param) -> param.getValue().getValue().fechaFin);
-
-        fechaInicioCat.setPrefWidth(120);
-        fechaInicioCat.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, String> param) -> param.getValue().getValue().fechaInicio);
-
-        valorPctCat.setPrefWidth(120);
-        valorPctCat.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, Double> param) -> param.getValue().getValue().valorPct.asObject());
-
-        categoria.setPrefWidth(120);
-        categoria.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, String> param) -> param.getValue().getValue().producto);
+//        idCat.setPrefWidth(120);
+//        idCat.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, Integer> param) -> param.getValue().getValue().id.asObject());
+//
+//        fechaFinCat.setPrefWidth(120);
+//        fechaFinCat.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, String> param) -> param.getValue().getValue().fechaFin);
+//
+//        fechaInicioCat.setPrefWidth(120);
+//        fechaInicioCat.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, String> param) -> param.getValue().getValue().fechaInicio);
+//
+//        valorPctCat.setPrefWidth(120);
+//        valorPctCat.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, Double> param) -> param.getValue().getValue().valorPct.asObject());
+//
+//        categoria.setPrefWidth(120);
+//        categoria.setCellValueFactory((TreeTableColumn.CellDataFeatures<DescuentosCategoriaLista, String> param) -> param.getValue().getValue().producto);
 
     }
 
