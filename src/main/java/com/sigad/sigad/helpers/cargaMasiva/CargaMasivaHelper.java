@@ -7,6 +7,7 @@ package com.sigad.sigad.helpers.cargaMasiva;
 
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Insumo;
+import com.sigad.sigad.business.Pedido;
 import com.sigad.sigad.business.PedidoEstado;
 import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Permiso;
@@ -21,6 +22,8 @@ import com.sigad.sigad.business.TipoPago;
 import com.sigad.sigad.business.Usuario;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -177,6 +180,41 @@ public class CargaMasivaHelper {
                         rowhead.createCell(rowIndex).setCellValue("Descripcion");
                         rowIndex++;
                         rowhead.createCell(rowIndex).setCellValue("Nombre");
+                        break;
+                    case CargaMasivaConstantes.TABLA_PEDIDO:
+                        rowhead.createCell(rowIndex).setCellValue("Coordenada X");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Coordenada Y");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Direccion");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Fecha de Venta (yyyy-MM-dd)");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Hora de Entrega (yyyy-MM-dd)");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Hora Fin de Entrega (HH:mm)");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Hora Inicio de Entrega (HH:mm)");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Mensaje");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Total");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Turno");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Volumen");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Cliente");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Estado");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Reparto");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Tienda");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Tipo de Pago");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Vendedor");
                         break;
                     // agregar aqui el resto de casos
                     default:
@@ -694,6 +732,41 @@ public class CargaMasivaHelper {
                     return false;
                 }
                 return CargaMasivaHelper.guardarObjeto(nuevoPedidoEstado, session);
+            case CargaMasivaConstantes.TABLA_PEDIDO:
+                Pedido nuevoPedido = new Pedido();
+                // Logica de negocio
+                nuevoPedido.setActivo(true);
+                
+                Double coordX = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if (coordX!=null)
+                    nuevoPedido.setCooXDireccion(coordX);
+                else
+                    return false;
+                index++;
+                Double coordY = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if (coordY!=null)
+                    nuevoPedido.setCooYDireccion(coordY);
+                else
+                    return false;
+                index++;
+                
+                String direccionPedido = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(direccionPedido))
+                    nuevoPedido.setDireccionDeEnvio(direccionPedido);
+                index++;
+                
+                String fechaPedidoStr = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                java.sql.Timestamp fechaPedido = CargaMasivaHelper.parseDate(fechaPedidoStr);
+                if(fechaPedido != null)
+                    nuevoPedido.setFechaVenta(fechaPedido);
+                index++;
+                
+                String horaEntregaPedidoStr = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                java.sql.Timestamp entregaPedido = CargaMasivaHelper.parseDate(horaEntregaPedidoStr);
+                if(fechaPedido != null)
+                    nuevoPedido.setHoraEntrega(entregaPedido);
+                index++;                
+                
             // colocar aqui los demas casos para el resto de tablas de carga masiva
             default:
                 return false;
@@ -710,6 +783,28 @@ public class CargaMasivaHelper {
         }
         catch(Exception e) {
             LOGGER.log(Level.SEVERE, String.format("Error en el parseo, revisar el valor : %s", numero));
+            return null;
+        }
+    }
+    
+    public static java.sql.Timestamp parseDate(String dateStr){
+        SimpleDateFormat dateFormatter = new SimpleDateFormat ("yyyy-MM-dd");
+        try{
+            java.util.Date date = dateFormatter.parse(dateStr);
+            return new java.sql.Timestamp(date.getTime());
+        }
+        catch(Exception e){
+            return null;
+        }
+    }
+    
+    public static java.sql.Time parseTime(String timeStr){
+        SimpleDateFormat dateFormatter = new SimpleDateFormat ("HH:mm");
+        try{
+            java.util.Date date = dateFormatter.parse(timeStr);
+            return new java.sql.Time(date.getTime());
+        }
+        catch(Exception e){
             return null;
         }
     }
