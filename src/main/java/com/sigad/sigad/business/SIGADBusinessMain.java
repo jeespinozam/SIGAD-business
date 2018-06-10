@@ -42,7 +42,6 @@ import com.sigad.sigad.deposito.controller.FXMLAlmacenIngresoListaOrdenCompraCon
  *
  * @author cfoch
  */
-
 public class SIGADBusinessMain extends Application {
 //    public static void main(String[] args) throws NoSuchAlgorithmException {
 //        Configuration config;
@@ -83,14 +82,14 @@ public class SIGADBusinessMain extends Application {
             e.printStackTrace();
         }
     }
-    
-    public static void main(String[] args) {        
+
+    public static void main(String[] args) {
         launch(args);
     }
-    
+
     @Override
     public void stop() throws Exception {
         System.exit(0);
     }
-    
+
 }
