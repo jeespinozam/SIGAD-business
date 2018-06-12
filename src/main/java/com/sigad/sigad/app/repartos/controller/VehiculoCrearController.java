@@ -9,10 +9,17 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXTreeTableColumn;
+import com.jfoenix.controls.JFXTreeTableView;
+import com.jfoenix.controls.RecursiveTreeItem;
+import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.jfoenix.validation.RequiredFieldValidator;
 import com.jfoenix.validation.ValidationFacade;
+import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Vehiculo;
+import com.sigad.sigad.business.helpers.TipoVehiculoHelper;
+import com.sigad.sigad.business.helpers.VehiculoHelper;
 import static com.sigad.sigad.deposito.helper.DepositoHelper.session;
 import com.sigad.sigad.validations.SIGADValidations;
 import java.net.URL;
@@ -23,12 +30,19 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableColumn;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
@@ -42,17 +56,30 @@ public class VehiculoCrearController implements Initializable {
         CREAR,
         EDITAR
     };
-    public static final String VIEW_PATH =
+    public static final String viewPath =
             "/com/sigad/sigad/repartos/view/VehiculoCrear.fxml";
 
+    
+    @FXML
+    private StackPane hiddenSp;
+
+    @FXML
+    private AnchorPane containerPane;
+    
     @FXML
     JFXTextField nombreTxt;
     @FXML
     JFXTextField placaTxt;
     @FXML
-    JFXListView<Label> tipoListView;
-    @FXML
     JFXTextArea descripcionTxtArea;
+
+    
+    @FXML
+    private JFXTreeTableView<TipoVehiculoViewer> tblTipoVehiculo;
+    
+    @FXML
+    JFXListView<Label> tipoListView;
+
     @FXML
     StackPane stackPane;
 
@@ -61,247 +88,195 @@ public class VehiculoCrearController implements Initializable {
     private Long currentVehiculoId;
 
     private Map<Label, Vehiculo.Tipo> tipoListViewItems;
+    
+    public static Vehiculo vehiculo = null;
+    
+    JFXTreeTableColumn<TipoVehiculoViewer,String> marcaCol = new JFXTreeTableColumn<>("Marca");
+    JFXTreeTableColumn<TipoVehiculoViewer,String> modeloCol = new JFXTreeTableColumn<>("Modelo");
 
+    static ObservableList<TipoVehiculoViewer> listaVehiculo;
+    
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        setModo(Modo.CREAR);
-        setCurrentVehiculoId(null);
-
-        tipoListViewItems = new HashMap<>();
-        tipoListView.setVisible(true);
-        try {
-            populateTipoComboData();
-        } catch (Exception ex) {
-            Logger.getLogger(VehiculoCrearController.class.getName())
-                    .log(Level.SEVERE, null, ex);
+        listaVehiculo = FXCollections.observableArrayList();
+        setColumns();
+        addColumns();
+        if(!VehiculoController.isVehiculoCreate){
+            //tblTipoVehiculo.setDisable(true);
+            placaTxt.setDisable(true);
+            loadFields();
         }
-        populateTipoCombo();
-        setupValidators();
-    }
-
-    private void populateTipoCombo() {
-        tipoListViewItems.forEach((label, unused_value) -> {
-            tipoListView.getItems().add(label);
-        });
-    }
-
-    private void populateTipoComboData() throws Exception {
-        Query query;
-        String hql;
-        ArrayList<Vehiculo.Tipo> objs;
-        hql = "from Vehiculo$Tipo";
-
-        System.out.println("FILLINF FCOMOBOOOBOBO");
-        tipoListViewItems.clear();
-        session = LoginController.serviceInit();
-        query = session.createQuery(hql);
-        objs = (ArrayList<Vehiculo.Tipo>) query.list();
-        objs.forEach((obj) -> {
-            System.out.println("Filling data for: " + obj.getNombre());
-            Label label = new Label(obj.getNombre());
-            tipoListViewItems.put(label, obj);
-        });
-    }
-
-    private void setupValidators() {
-        RequiredFieldValidator validatorRequiredPlaca;
-        RequiredFieldValidator validatorRequiredNombre;
-        RequiredFieldValidator validatorRequiredTipo;
-        ValidationFacade comboValidationFacade = new ValidationFacade();
-        ReadOnlyBooleanProperty prop;
-
-        validatorRequiredPlaca = new RequiredFieldValidator();
-        validatorRequiredPlaca.setMessage(SIGADValidations.MSG.REQUIRED);
-        validatorRequiredNombre = new RequiredFieldValidator();
-        validatorRequiredNombre.setMessage(SIGADValidations.MSG.REQUIRED);
-        validatorRequiredTipo = new RequiredFieldValidator();
-        validatorRequiredTipo.setMessage(SIGADValidations.MSG.REQUIRED);
-
-        placaTxt.getValidators().add(validatorRequiredPlaca);
-        nombreTxt.getValidators().add(validatorRequiredNombre);
-        comboValidationFacade.setControl(tipoListView);
-
-        SIGADValidations.setupSimpleValidationListener(placaTxt);
-        SIGADValidations.setupSimpleValidationListener(nombreTxt);
-        comboValidationFacade.getValidators().add(validatorRequiredTipo);
-    }
-
-    private void editar(Vehiculo obj) {
-        obj.setNombre(nombreTxt.getText());
-        obj.setPlaca(placaTxt.getText());
-        obj.setDescripcion(placaTxt.getText());
-        // obj.setTipo(tipo);
-    }
-
-    private Vehiculo nuevo() {
-        Vehiculo ret;
-        ret = new Vehiculo();
-        editar(ret);
-        return ret;
-    }
-
-    private boolean isValid() {
-        return nombreTxt.validate() && placaTxt.validate() &&
-                ValidationFacade.validate(tipoListView);
-    }
-
-    private Vehiculo queryData(Long id, Session session) throws Exception {
-        Query query;
-        String hql;
-        Vehiculo obj;
-
-        hql = "from Vehiculo$Tipo where id = :id";
-        if (session == null){
-            session = LoginController.serviceInit();
+        else{
+            vehiculo = new Vehiculo();
         }
-        query = session.createQuery(hql).setParameter("id", id);
-        obj = (Vehiculo) query.getSingleResult();
-        return obj;
+        fillData();
+        addDialogBtns();
+        
     }
+    
+    
+    
+    public class TipoVehiculoViewer extends RecursiveTreeObject<TipoVehiculoViewer>{
 
-    public void setData(Long id) throws Exception {
-        Session session;
-        Query query;
-        Vehiculo obj;
-        /*
-        setCurrentVehiculoId(id);
+        public SimpleStringProperty getMarca() {
+            return marca;
+        }
 
-        obj = queryData(id, null);
-        nombreTxt.setText(vehiculoTipo.getNombre());
+        public SimpleStringProperty getModelo() {
+            return modelo;
+        }
 
-        capacidadTxt.setText(Double.toString(vehiculoTipo.getCapacidad()));
-        marcaTxt.setText(vehiculoTipo.getMarca());
-        modeloTxt.setText(vehiculoTipo.getModelo());
-        descripcionTxtArea.setText(vehiculoTipo.getDescripcion());
-        */
+        public Vehiculo.Tipo getVeh() {
+            return veh;
+        }
+
+        public void setMarca(String marca) {
+            this.marca = new SimpleStringProperty(marca);
+        }
+
+        public void setModelo(String modelo) {
+            this.modelo = new  SimpleStringProperty(modelo);
+        }
+
+        public void setVeh(Vehiculo.Tipo veh) {
+            this.veh = veh;
+        }
+        private SimpleStringProperty marca;
+        private SimpleStringProperty modelo;
+        private Vehiculo.Tipo veh;
+        
+        public TipoVehiculoViewer(String marca,String modelo){
+            this.marca = new SimpleStringProperty(marca);
+            this.modelo = new SimpleStringProperty(modelo);
+        }
     }
-
-    private void onEditarButtonClicked(ActionEvent e) {
-        /*
-        if (isValid()) {
-            Configuration config;
-            Session session;
-            Transaction transaction = null;
-            Vehiculo.Tipo vehiculoTipo;
-            System.out.println("Updating tx");
-
-            session = LoginController.serviceInit();
-            try {
-                transaction = session.beginTransaction();
-
-                vehiculoTipo = queryData(getCurrentVehiculoId(), session);
-                editar(vehiculoTipo);
-                System.out.println("update vehicule tipo");
-                session.update(vehiculoTipo);
-                transaction.commit();
-                showMsg(stackPane,
-                                Dialogs.HEADINGS.EXITO,
-                                Dialogs.MESSAGES.CRUD_UPDATE_SUCCESS,
-                                Dialogs.BUTTON.ACEPTAR);
-            } catch (Exception ex) {
-                Logger.getLogger(VehiculoCrearController.class.getName())
-                        .log(Level.SEVERE, null, ex);
-                if (transaction != null) {
-                    transaction.rollback();
+    
+    
+    private void addDialogBtns() {
+        JFXButton save = new JFXButton("Guardar");
+        save.setPrefSize(80, 25);
+        AnchorPane.setBottomAnchor(save, -20.0);
+        AnchorPane.setRightAnchor(save, 0.0);
+        save.setOnAction((ActionEvent event) -> {
+            if(validateFields()){
+                System.out.println("VALIDADO ALL FIELDS");
+                fillFields();
+                VehiculoHelper helperv = new VehiculoHelper();    
+                //edicion
+                if(!VehiculoController.isVehiculoCreate){
+                    Boolean ok = helperv.updateVehiculo(vehiculo);
+                    if(ok){
+                        VehiculoController.vehiculosList.remove(VehiculoController.selectedVehiculo);
+                        VehiculoController.updateTable(vehiculo);
+                        VehiculoController.vehiculoDialog.close();
+                    }else{
+                        ErrorController error = new ErrorController();
+                        error.loadDialog("Error", helperv.getErrorMessage(), "Ok", hiddenSp);
+                    }
                 }
-                showMsg(stackPane,
-                        Dialogs.HEADINGS.ERROR,
-                        Dialogs.MESSAGES.DB_GENERIC_ERROR,
-                        Dialogs.BUTTON.ACEPTAR);
-            } finally {
-                session.close();
-            }
-        }
-        */
-    }
-
-    private void onCrearButtonClicked(ActionEvent e) {
-        /*
-        if (isValid()) {
-            Configuration config;
-            Session session;
-            Transaction transaction = null;
-            Vehiculo.Tipo vehiculoTipo;
-
-            session = LoginController.serviceInit();
-            try {
-                transaction = session.beginTransaction();
-
-                vehiculoTipo = nuevo();
-                session.save(vehiculoTipo);
-                transaction.commit();
-                showMsg(stackPane,
-                                Dialogs.HEADINGS.EXITO,
-                                Dialogs.MESSAGES.CRUD_CREATE_SUCCESS,
-                                Dialogs.BUTTON.ACEPTAR);
-            } catch (Exception ex) {
-                if (transaction != null) {
-                    transaction.rollback();
+                //creacion
+                else{
+                    Long id = helperv.saveVehiculo(vehiculo);
+                    if(id != null){
+                        VehiculoController.updateTable(vehiculo);
+                        VehiculoController.vehiculoDialog.close();
+                    }else {
+                        ErrorController error = new ErrorController();
+                        error.loadDialog("Error", helperv.getErrorMessage(), "Ok", hiddenSp);
+                    }
                 }
-                showMsg(stackPane,
-                        Dialogs.HEADINGS.ERROR,
-                        Dialogs.MESSAGES.DB_GENERIC_ERROR,
-                        Dialogs.BUTTON.ACEPTAR);
-            } finally {
-                session.close();
-            }
-        }
-        */
-    }
-
-    /**
-     * @return the crearButton
-     */
-    public JFXButton getCrearButton() {
-        return crearButton;
-    }
-
-    /**
-     * @param crearButton the crearButton to set
-     */
-    public void setCrearButton(JFXButton crearButton) {
-        this.crearButton = crearButton;
-        this.crearButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                if (modo == Modo.CREAR) {
-                    onCrearButtonClicked(e);
-                } else if (modo == Modo.EDITAR) {
-                    onEditarButtonClicked(e);
-                }
+                helperv.close();
             }
         });
-
+        
+        JFXButton cancel = new JFXButton("Cancelar");
+        cancel.setPrefSize(80, 25);
+        AnchorPane.setBottomAnchor(cancel, -20.0);
+        AnchorPane.setRightAnchor(cancel, 85.0);
+        cancel.setOnAction((ActionEvent event) -> {
+            VehiculoController.vehiculoDialog.close();
+        });
+        
+        containerPane.getChildren().add(save);
+        containerPane.getChildren().add(cancel);
     }
-
-    /**
-     * @return the modo
-     */
-    public Modo getModo() {
-        return modo;
+    
+    public boolean validateFields() {
+//        if(!nombreTxt.validate()){
+//            nombreTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+//            nombreTxt.requestFocus();
+//            return false;
+//        }else if(!tiempoTxt.validate()){
+//            tiempoTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+//            tiempoTxt.requestFocus();
+//            return false;
+//        }else if(!descripcionTxt.validate()){
+//            descripcionTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+//            descripcionTxt.requestFocus();
+//            return false;
+//        }
+//        else if(!volumenTxt.validate()){
+//            volumenTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+//            volumenTxt.requestFocus();
+//            return false;
+//        }
+//        else 
+            return true;
     }
-
-    /**
-     * @param modo the modo to set
-     */
-    public void setModo(Modo modo) {
-        this.modo = modo;
+    
+    private void loadFields(){
+        
+        VehiculoHelper helperv = new VehiculoHelper();
+        vehiculo = helperv.getVehiculo(VehiculoController.selectedVehiculo.getId());
+        
+        if(vehiculo != null) {
+            nombreTxt.setText(vehiculo.getNombre());
+            nombreTxt.setDisable(true);
+            placaTxt.setText(vehiculo.getPlaca());
+            descripcionTxtArea.setText(vehiculo.getDescripcion());
+        }
+        helperv.close();
     }
-
-    /**
-     * @return the currentVehiculoId
-     */
-    public Long getCurrentVehiculoId() {
-        return currentVehiculoId;
+    private void fillFields(){
+        vehiculo.setNombre(nombreTxt.getText());
+        vehiculo.setPlaca(placaTxt.getText());
+        vehiculo.setDescripcion(descripcionTxtArea.getText());
+        vehiculo.setTipo(tblTipoVehiculo.getSelectionModel().getSelectedItem().getValue().getVeh());
     }
-
-    /**
-     * @param currentVehiculoId the currentVehiculoId to set
-     */
-    public void setCurrentVehiculoId(Long currentVehiculoId) {
-        this.currentVehiculoId = currentVehiculoId;
+    public void setColumns(){
+        marcaCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<TipoVehiculoViewer, String> param) -> param.getValue().getValue().getMarca()
+        );
+        modeloCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<TipoVehiculoViewer, String> param) -> param.getValue().getValue().getModelo()
+        );
+    }
+    
+    public void addColumns(){
+        final TreeItem<TipoVehiculoViewer> rootTipoVehiculo = new RecursiveTreeItem<>(listaVehiculo,RecursiveTreeObject::getChildren);
+        tblTipoVehiculo.getColumns().setAll(marcaCol,modeloCol);
+        tblTipoVehiculo.setRoot(rootTipoVehiculo);
+        tblTipoVehiculo.setShowRoot(false);
+        
+    }
+    public void fillData(){
+        TipoVehiculoHelper helpertv = new TipoVehiculoHelper();
+        ArrayList<Vehiculo.Tipo> listaVehiculos = null;
+        
+        listaVehiculos = helpertv.getTiposVehiculo();
+        
+        if(listaVehiculos != null){
+            listaVehiculos.forEach((i)->{
+                updateTable(i);
+            });
+        }
+        helpertv.close();
+    }
+    
+    public void updateTable(Vehiculo.Tipo tipo){
+        TipoVehiculoViewer newTipo = new TipoVehiculoViewer(tipo.getMarca(),tipo.getModelo());
+        newTipo.setVeh(tipo);
+        listaVehiculo.add(newTipo);
     }
 }

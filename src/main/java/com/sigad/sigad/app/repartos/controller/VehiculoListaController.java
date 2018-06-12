@@ -92,38 +92,38 @@ public class VehiculoListaController implements Initializable {
     }
 
     private void handleEvents() {
-        ReadOnlyObjectProperty prop =
-                treeView.getSelectionModel().selectedItemProperty();
-
-        prop.addListener((obs, oldSelection, newSelection) -> {
-            SimplePopupMenuFactory<Modo> menuFactory;
-            if (mainController == null) {
-                return;
-            }
-            menuFactory = mainController.getMenuFactory();
-            if (newSelection == null) {
-                menuFactory.getButton(Modo.BORRAR).setDisable(true);
-                menuFactory.getButton(Modo.EDITAR).setDisable(true);
-            } else {
-                menuFactory.getButton(Modo.BORRAR).setDisable(false);
-                menuFactory.getButton(Modo.EDITAR).setDisable(false);
-            }
-            if (newSelection != null && mainController != null) {
-                menuFactory.getButton(Modo.BORRAR).setOnAction((evt) -> {
-                    int i = treeView.getSelectionModel().getFocusedIndex();
-                    try {
-                        deleteData(infos.get(i));
-                        infos.remove(i);
-                        Dialogs.showMsg(stackPane, Dialogs.HEADINGS.EXITO,
-                                Dialogs.MESSAGES.CRUD_DELETE_SUCCESS,
-                                Dialogs.BUTTON.ACEPTAR);
-                    } catch (Exception ex) {
-                        Logger.getLogger(VehiculoListaController.class.getName())
-                                .log(Level.SEVERE, null, ex);
-                    }
-                });
-            }
-        });
+//        ReadOnlyObjectProperty prop =
+//                treeView.getSelectionModel().selectedItemProperty();
+//
+//        prop.addListener((obs, oldSelection, newSelection) -> {
+//            SimplePopupMenuFactory<Modo> menuFactory;
+//            if (mainController == null) {
+//                return;
+//            }
+//            menuFactory = mainController.getMenuFactory();
+//            if (newSelection == null) {
+//                menuFactory.getButton(Modo.BORRAR).setDisable(true);
+//                menuFactory.getButton(Modo.EDITAR).setDisable(true);
+//            } else {
+//                menuFactory.getButton(Modo.BORRAR).setDisable(false);
+//                menuFactory.getButton(Modo.EDITAR).setDisable(false);
+//            }
+//            if (newSelection != null && mainController != null) {
+//                menuFactory.getButton(Modo.BORRAR).setOnAction((evt) -> {
+//                    int i = treeView.getSelectionModel().getFocusedIndex();
+//                    try {
+//                        deleteData(infos.get(i));
+//                        infos.remove(i);
+//                        Dialogs.showMsg(stackPane, Dialogs.HEADINGS.EXITO,
+//                                Dialogs.MESSAGES.CRUD_DELETE_SUCCESS,
+//                                Dialogs.BUTTON.ACEPTAR);
+//                    } catch (Exception ex) {
+//                        Logger.getLogger(VehiculoListaController.class.getName())
+//                                .log(Level.SEVERE, null, ex);
+//                    }
+//                });
+//            }
+//        });
     }
 
     private void populate() {
