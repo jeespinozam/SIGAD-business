@@ -14,7 +14,6 @@ import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
-import com.jfoenix.validation.NumberValidator;
 import com.jfoenix.validation.RequiredFieldValidator;
 import com.jfoenix.validation.ValidationFacade;
 import com.sigad.sigad.app.controller.ErrorController;
@@ -130,7 +129,8 @@ public class RegistrarDescuentoProductoController implements Initializable {
         cargarDatos();
         setuValidations();
         txtDescuentopct.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (GeneralHelper.isNumericDouble(txtDescuentopct.getText())) {
+            
+            if (GeneralHelper.isNumericDouble(txtDescuentopct.getText()) && GeneralHelper.isNumericDouble(txtPrecio.getText()) ) {
                 Double pct = Double.valueOf(txtDescuentopct.getText()) / 100;
                 Double nprecio = (1.0 - pct) * Double.valueOf(txtPrecio.getText());
                 txtNuevoPrecio.setText(GeneralHelper.roundTwoDecimals(nprecio).toString());

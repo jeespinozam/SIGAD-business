@@ -71,7 +71,7 @@ public class RegistrarComboProductosController implements Initializable {
 
     @FXML
     private Label lblError;
-    
+
     @FXML
     private JFXDatePicker txtFechaInicio;
 
@@ -188,7 +188,6 @@ public class RegistrarComboProductosController implements Initializable {
             }
         });
 
-        
         r = new RequiredFieldValidator();
         r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
         r.setMessage("Agrega Prodcutos");
@@ -268,7 +267,7 @@ public class RegistrarComboProductosController implements Initializable {
             }
         });
     }
-    
+
     public boolean validateFields() {
         if (!txtNombre.validate()) {
             txtNombre.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
@@ -278,10 +277,16 @@ public class RegistrarComboProductosController implements Initializable {
             txtDescripcion.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             txtDescripcion.requestFocus();
             return false;
-        } else if(txtFechaInicio.getValue().isAfter(txtFechaFin.getValue())) {
+        } else if (txtFechaInicio.getValue().isAfter(txtFechaFin.getValue())) {
             lblError.setText("Verifique el rango de fechas");
             return false;
-        } else if (!txtPrecioBase.validate() && GeneralHelper.isNumericDouble(txtPrecioBase.getText())) {
+        }else if (txtFechaInicio.getValue() == null) {
+            lblError.setText("Verifique el rango de fechas");
+            return false;
+        } else if (txtFechaFin.getValue() == null) {
+            lblError.setText("Verifique el rango de fechas");
+            return false;
+        }else if (!txtPrecioBase.validate() && !GeneralHelper.isNumericDouble(txtPrecioBase.getText())) {
             txtPrecioBase.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             txtPrecioBase.requestFocus();
             return false;
@@ -289,7 +294,7 @@ public class RegistrarComboProductosController implements Initializable {
             txtPrecioReal.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             txtPrecioReal.requestFocus();
             return false;
-        } else{
+        } else {
             return true;
         }
     }
@@ -437,11 +442,13 @@ public class RegistrarComboProductosController implements Initializable {
     @FXML
     void guardarDescuento(MouseEvent event) {
         ComboPromocionHelper helper = new ComboPromocionHelper();
-        construirDescuento(combo);
+
         if (!isEdit && validateFields()) {
+            construirDescuento(combo);
             combo.setNumVendidos(0);
             helper.saveCombo(combo);
         } else if (isEdit && validateFields()) {
+            construirDescuento(combo);
             helper.updateCombo(combo);
         }
     }

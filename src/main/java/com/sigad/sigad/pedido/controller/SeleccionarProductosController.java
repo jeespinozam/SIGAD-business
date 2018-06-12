@@ -352,11 +352,7 @@ public class SeleccionarProductosController implements Initializable {
             System.out.println(nuevoValor + " + " + viejoValor);
             Double nuevoStockInsumo = insumosCambiantes.get(get.getInsumo()) - nuevoValor * get.getCantidad() + (viejoValor) * get.getCantidad();
             insumosCambiantes.put(get.getInsumo(), nuevoStockInsumo.intValue());
-//            ArrayList<Producto> productosAfectados = new ArrayList(get.getInsumo().getProductos());
-//            productosAfectados.forEach((t) -> {
-//                t.getProductoxInsumos();
-//                prod.get(prod.indexOf(t));
-//            });
+
         }
         insumosCambiantes.forEach((t, u) -> {
             System.out.println(t.getNombre() + "->" + u.toString());

@@ -192,15 +192,21 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
 
     @FXML
     void close(MouseEvent event) {
-
+        MantenimientoDescuentosController.descDialog.close();
     }
 
     public boolean validateFields() {
-        if (!txtValuePct.validate() && GeneralHelper.isNumericDouble(txtValuePct.getText())) {
+        if (!txtValuePct.validate() && !GeneralHelper.isNumericDouble(txtValuePct.getText()) && txtValuePct.getLength() ==0) {
             txtValuePct.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             txtValuePct.requestFocus();
             return false;
         } else if (txtFechaInicio.getValue().isAfter(txtFechaFin.getValue())) {
+            lblError.setText("Verifique el rango de fechas");
+            return false;
+        } else if (txtFechaInicio.getValue() == null) {
+            lblError.setText("Verifique el rango de fechas");
+            return false;
+        } else if (txtFechaFin.getValue() == null) {
             lblError.setText("Verifique el rango de fechas");
             return false;
         } else {

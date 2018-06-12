@@ -10,6 +10,7 @@ import com.jfoenix.validation.RequiredFieldValidator;
 import com.sigad.sigad.business.ClienteDescuento;
 import com.sigad.sigad.business.Constantes;
 import com.sigad.sigad.business.helpers.ClienteDescuentoHelper;
+import com.sigad.sigad.business.helpers.GeneralHelper;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.net.URL;
@@ -42,7 +43,7 @@ public class RegistrarDescuentoClientesController implements Initializable {
      */
     @FXML
     private Label lblError;
-    
+
     @FXML
     private JFXDatePicker txtFechaInicio;
 
@@ -133,6 +134,20 @@ public class RegistrarDescuentoClientesController implements Initializable {
             }
         });
         
+        r = new RequiredFieldValidator();
+        r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
+        r.setMessage("Campo obligatorio");
+        txtCondicion.getValidators().add(r);
+        txtCondicion.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (!newValue) {
+
+                if (!txtCondicion.validate()) {
+                    txtCondicion.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+                } else {
+                    txtCondicion.setFocusColor(new Color(0.30, 0.47, 0.23, 1));
+                }
+            }
+        });
 
         JFXDatePicker minDate = new JFXDatePicker();
         minDate.setValue(LocalDate.now(ZoneId.systemDefault())); // colocar la fecha de hoy como el minimo
@@ -157,8 +172,7 @@ public class RegistrarDescuentoClientesController implements Initializable {
         };
         txtFechaInicio.setDayCellFactory(dayCellFactory);
         txtFechaFin.setDayCellFactory(dayCellFactory);
-       
-        
+
         txtFechaInicio.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
 
             try {
@@ -212,12 +226,22 @@ public class RegistrarDescuentoClientesController implements Initializable {
         pc.setCondicion(Double.valueOf(txtCondicion.getText()));
 
     }
-     public boolean validateFields() {
-        if (!txtValue.validate()) {
+
+    public boolean validateFields() {
+        if (!txtValue.validate() && !GeneralHelper.isNumericDouble(txtValue.getText())) {
             txtValue.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             txtValue.requestFocus();
             return false;
-        } else if(txtFechaInicio.getValue().isAfter(txtFechaFin.getValue())) {
+        } else if (txtCondicion.validate() && !GeneralHelper.isNumericDouble(txtValue.getText())) {
+            lblError.setText("Verifique el rango de fechas");
+            return false;
+        }else if (txtFechaInicio.getValue().isAfter(txtFechaFin.getValue())) {
+            lblError.setText("Verifique el rango de fechas");
+            return false;
+        } else if (txtFechaInicio.getValue() == null) {
+            lblError.setText("Verifique el rango de fechas");
+            return false;
+        } else if (txtFechaFin.getValue() == null) {
             lblError.setText("Verifique el rango de fechas");
             return false;
         } else {
@@ -228,16 +252,18 @@ public class RegistrarDescuentoClientesController implements Initializable {
     @FXML
     void guardarDescuento(ActionEvent event) {
         ClienteDescuentoHelper helper = new ClienteDescuentoHelper();
-        if (/*validarCampos() && cant == 1 &&*/ validateFields() &&!isEdit) {
+        if (/*validarCampos() && cant == 1 &&*/validateFields() && !isEdit) {
             construirDescuento();
-
             helper.saveDescuento(pc);
-        } else if (/*validarCampos() && cant == 1 &&*/ validateFields() && isEdit) {
+            reloadTable();
+            MantenimientoDescuentosController.descCliDialog.close();
+        } else if (/*validarCampos() && cant == 1 &&*/validateFields() && isEdit) {
             construirDescuento();
             helper.updateDescuento(pc);
+            reloadTable();
+            MantenimientoDescuentosController.descCliDialog.close();
         }
-        reloadTable();
-        MantenimientoDescuentosController.descCliDialog.close();
+
     }
 
     @FXML
