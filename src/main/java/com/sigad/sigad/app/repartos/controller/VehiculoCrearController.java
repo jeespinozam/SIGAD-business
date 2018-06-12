@@ -9,14 +9,16 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
-import com.jfoenix.validation.NumberValidator;
 import com.jfoenix.validation.RequiredFieldValidator;
+import com.jfoenix.validation.ValidationFacade;
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Vehiculo;
-import com.sigad.sigad.utils.ui.UIFuncs.Dialogs;
-import static com.sigad.sigad.utils.ui.UIFuncs.Dialogs.showMsg;
+import static com.sigad.sigad.deposito.helper.DepositoHelper.session;
 import com.sigad.sigad.validations.SIGADValidations;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,8 +30,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 
 /**
@@ -37,113 +37,150 @@ import org.hibernate.query.Query;
  *
  * @author cfoch
  */
-public class VehiculoTipoCrearController implements Initializable {
+public class VehiculoCrearController implements Initializable {
     public static enum Modo {
         CREAR,
         EDITAR
     };
     public static final String VIEW_PATH =
-            "/com/sigad/sigad/repartos/view/VehiculoTipoCrear.fxml";
+            "/com/sigad/sigad/repartos/view/VehiculoCrear.fxml";
 
     @FXML
     JFXTextField nombreTxt;
     @FXML
-    JFXTextField capacidadTxt;
+    JFXTextField placaTxt;
     @FXML
-    JFXTextField marcaTxt;
-    @FXML
-    JFXTextField modeloTxt;
+    JFXListView<Label> tipoListView;
     @FXML
     JFXTextArea descripcionTxtArea;
     @FXML
     StackPane stackPane;
-    @FXML
-    private JFXListView<Label> tipoListView;
+
     private JFXButton crearButton;
     private Modo modo;
     private Long currentVehiculoId;
+
+    private Map<Label, Vehiculo.Tipo> tipoListViewItems;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        setModo(Modo.CREAR);
+        setCurrentVehiculoId(null);
+
+        tipoListViewItems = new HashMap<>();
+        tipoListView.setVisible(true);
+        try {
+            populateTipoComboData();
+        } catch (Exception ex) {
+            Logger.getLogger(VehiculoCrearController.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
+        populateTipoCombo();
         setupValidators();
     }
 
+    private void populateTipoCombo() {
+        tipoListViewItems.forEach((label, unused_value) -> {
+            tipoListView.getItems().add(label);
+        });
+    }
+
+    private void populateTipoComboData() throws Exception {
+        Query query;
+        String hql;
+        ArrayList<Vehiculo.Tipo> objs;
+        hql = "from Vehiculo$Tipo";
+
+        System.out.println("FILLINF FCOMOBOOOBOBO");
+        tipoListViewItems.clear();
+        session = LoginController.serviceInit();
+        query = session.createQuery(hql);
+        objs = (ArrayList<Vehiculo.Tipo>) query.list();
+        objs.forEach((obj) -> {
+            System.out.println("Filling data for: " + obj.getNombre());
+            Label label = new Label(obj.getNombre());
+            tipoListViewItems.put(label, obj);
+        });
+    }
+
     private void setupValidators() {
+        RequiredFieldValidator validatorRequiredPlaca;
         RequiredFieldValidator validatorRequiredNombre;
-        RequiredFieldValidator validatorRequiredCapacidad;
-        NumberValidator validatorNumericCapacidad;
+        RequiredFieldValidator validatorRequiredTipo;
+        ValidationFacade comboValidationFacade = new ValidationFacade();
         ReadOnlyBooleanProperty prop;
 
-        modo = Modo.CREAR;
-        setCurrentVehiculoId(null);
-
-        validatorRequiredNombre = new RequiredFieldValidator();   
+        validatorRequiredPlaca = new RequiredFieldValidator();
+        validatorRequiredPlaca.setMessage(SIGADValidations.MSG.REQUIRED);
+        validatorRequiredNombre = new RequiredFieldValidator();
         validatorRequiredNombre.setMessage(SIGADValidations.MSG.REQUIRED);
-        validatorRequiredCapacidad = new RequiredFieldValidator();
-        validatorRequiredCapacidad.setMessage(SIGADValidations.MSG.REQUIRED);
-        validatorNumericCapacidad = new NumberValidator();
-        validatorNumericCapacidad.setMessage(SIGADValidations.MSG.NUMERIC);
+        validatorRequiredTipo = new RequiredFieldValidator();
+        validatorRequiredTipo.setMessage(SIGADValidations.MSG.REQUIRED);
 
+        placaTxt.getValidators().add(validatorRequiredPlaca);
         nombreTxt.getValidators().add(validatorRequiredNombre);
-        capacidadTxt.getValidators().add(validatorRequiredCapacidad);
-        capacidadTxt.getValidators().add(validatorNumericCapacidad);
+        comboValidationFacade.setControl(tipoListView);
 
+        SIGADValidations.setupSimpleValidationListener(placaTxt);
         SIGADValidations.setupSimpleValidationListener(nombreTxt);
-        SIGADValidations.setupSimpleValidationListener(capacidadTxt);
+        comboValidationFacade.getValidators().add(validatorRequiredTipo);
     }
 
-    private void editar(Vehiculo.Tipo tipo) {
-        tipo.setNombre(nombreTxt.getText());
-        tipo.setCapacidad(Double.parseDouble(capacidadTxt.getText()));
-        tipo.setMarca(marcaTxt.getText());
-        tipo.setModelo(modeloTxt.getText());
-        tipo.setModelo(descripcionTxtArea.getText());
+    private void editar(Vehiculo obj) {
+        obj.setNombre(nombreTxt.getText());
+        obj.setPlaca(placaTxt.getText());
+        obj.setDescripcion(placaTxt.getText());
+        // obj.setTipo(tipo);
     }
 
-    private Vehiculo.Tipo nuevo() {
-        Vehiculo.Tipo ret;
-        ret = new Vehiculo.Tipo();
+    private Vehiculo nuevo() {
+        Vehiculo ret;
+        ret = new Vehiculo();
         editar(ret);
         return ret;
     }
 
     private boolean isValid() {
-        return nombreTxt.validate() && capacidadTxt.validate();
+        return nombreTxt.validate() && placaTxt.validate() &&
+                ValidationFacade.validate(tipoListView);
     }
 
-    private Vehiculo.Tipo queryData(Long id, Session session) throws Exception {
+    private Vehiculo queryData(Long id, Session session) throws Exception {
         Query query;
         String hql;
-        Vehiculo.Tipo vehiculoTipo;
+        Vehiculo obj;
 
         hql = "from Vehiculo$Tipo where id = :id";
         if (session == null){
             session = LoginController.serviceInit();
         }
         query = session.createQuery(hql).setParameter("id", id);
-        vehiculoTipo = (Vehiculo.Tipo) query.getSingleResult();
-        return vehiculoTipo;
+        obj = (Vehiculo) query.getSingleResult();
+        return obj;
     }
 
     public void setData(Long id) throws Exception {
         Session session;
         Query query;
-        Vehiculo.Tipo vehiculoTipo;
-
+        Vehiculo obj;
+        /*
         setCurrentVehiculoId(id);
 
-        vehiculoTipo = queryData(id, null);
+        obj = queryData(id, null);
         nombreTxt.setText(vehiculoTipo.getNombre());
+
         capacidadTxt.setText(Double.toString(vehiculoTipo.getCapacidad()));
         marcaTxt.setText(vehiculoTipo.getMarca());
         modeloTxt.setText(vehiculoTipo.getModelo());
         descripcionTxtArea.setText(vehiculoTipo.getDescripcion());
+        */
     }
 
     private void onEditarButtonClicked(ActionEvent e) {
+        /*
         if (isValid()) {
             Configuration config;
             Session session;
@@ -165,7 +202,7 @@ public class VehiculoTipoCrearController implements Initializable {
                                 Dialogs.MESSAGES.CRUD_UPDATE_SUCCESS,
                                 Dialogs.BUTTON.ACEPTAR);
             } catch (Exception ex) {
-                Logger.getLogger(VehiculoTipoCrearController.class.getName())
+                Logger.getLogger(VehiculoCrearController.class.getName())
                         .log(Level.SEVERE, null, ex);
                 if (transaction != null) {
                     transaction.rollback();
@@ -178,9 +215,11 @@ public class VehiculoTipoCrearController implements Initializable {
                 session.close();
             }
         }
+        */
     }
 
     private void onCrearButtonClicked(ActionEvent e) {
+        /*
         if (isValid()) {
             Configuration config;
             Session session;
@@ -210,6 +249,7 @@ public class VehiculoTipoCrearController implements Initializable {
                 session.close();
             }
         }
+        */
     }
 
     /**

@@ -24,7 +24,6 @@ import com.sigad.sigad.productos.controller.ProductosManagementController;
 import com.sigad.sigad.tienda.controller.TiendaController;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
-import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;

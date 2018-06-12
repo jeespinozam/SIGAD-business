@@ -29,7 +29,7 @@ import javafx.scene.layout.VBox;
  *
  * @author cfoch
  */
-public class VehiculoTipoController implements Initializable {
+public class VehiculoController implements Initializable {
 
     public static enum Modo {
         EDITAR,
@@ -38,9 +38,9 @@ public class VehiculoTipoController implements Initializable {
     };
 
     public static final String VIEW_PATH =
-            "/com/sigad/sigad/repartos/view/vehiculoTipo.fxml";
+            "/com/sigad/sigad/repartos/view/vehiculo.fxml";
 
-    private VehiculoTipoController.Modo modo;
+    private VehiculoController.Modo modo;
 
     //@FXML
     private JFXButton borrarBtn;
@@ -58,8 +58,7 @@ public class VehiculoTipoController implements Initializable {
     private StackPane stackPane;
 
     private SimplePopupMenuFactory<Modo> menuFactory;
-    //private SimplePopupMenuFactory<VehiculoTipoController.Modo> menuFactory;
-    private VehiculoTipoListaController listarController;
+    private VehiculoListaController listarController;
 
     /**
      * Initializes the controller class.
@@ -69,7 +68,7 @@ public class VehiculoTipoController implements Initializable {
         try {
             setListarNode();
         } catch (IOException ex) {
-            Logger.getLogger(VehiculoTipoController.class.getName()).
+            Logger.getLogger(VehiculoController.class.getName()).
                     log(Level.SEVERE, null, ex);
         }
         menuFactory = new SimplePopupMenuFactory<Modo>(Modo.values());
@@ -79,9 +78,12 @@ public class VehiculoTipoController implements Initializable {
         getMenuFactory().getButton(Modo.CREAR).setOnAction((event) -> {
             onMenuCrearBtnClicked(event);
         });
+        /*
+
         getMenuFactory().getButton(Modo.EDITAR).setOnAction((event) -> {
             onMenuEditarBtnClicked(event);
         });
+        */
     }
 
     @FXML
@@ -95,11 +97,11 @@ public class VehiculoTipoController implements Initializable {
         try {
             JFXDialog dialog;
             Node node;
-            VehiculoTipoCrearController controller;
+            VehiculoCrearController controller;
             JFXButton button = new JFXButton(Dialogs.BUTTON.CREAR);
             FXMLLoader loader = getCrearLoader();
             node = (Node) loader.load();
-            controller = loader.<VehiculoTipoCrearController>getController();
+            controller = loader.<VehiculoCrearController>getController();
             controller.setCrearButton(button);
             dialog = Dialogs.buildDialog(stackPane,
                     Dialogs.HEADINGS.EMPTY, node, button, false);
@@ -108,14 +110,14 @@ public class VehiculoTipoController implements Initializable {
                     setListarNode();
                     resetMenuBtnVisibility();
                 } catch (IOException ex) {
-                    Logger.getLogger(VehiculoTipoController.class.getName())
+                    Logger.getLogger(VehiculoController.class.getName())
                             .log(Level.SEVERE, null, ex);
                 }
             });
             dialog.show();
 
         } catch (IOException ex) {
-            Logger.getLogger(VehiculoTipoController.class.getName())
+            Logger.getLogger(VehiculoController.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
     }
@@ -124,14 +126,14 @@ public class VehiculoTipoController implements Initializable {
         try {
             JFXDialog dialog;
             Node node;
-            VehiculoTipoCrearController controller;
+            VehiculoCrearController controller;
             Long selectedId;
             JFXButton button = new JFXButton(Dialogs.BUTTON.EDITAR);
             FXMLLoader loader = getCrearLoader();
             node = (Node) loader.load();
-            controller = loader.<VehiculoTipoCrearController>getController();
+            controller = loader.<VehiculoCrearController>getController();
             controller.setCrearButton(button);
-            controller.setModo(VehiculoTipoCrearController.Modo.EDITAR);
+            controller.setModo(VehiculoCrearController.Modo.EDITAR);
             selectedId = listarController.getSelectedId();
             controller.setData(selectedId);
             dialog = Dialogs.buildDialog(stackPane,
@@ -141,17 +143,17 @@ public class VehiculoTipoController implements Initializable {
                     setListarNode();
                     resetMenuBtnVisibility();
                 } catch (IOException ex) {
-                    Logger.getLogger(VehiculoTipoController.class.getName())
+                    Logger.getLogger(VehiculoController.class.getName())
                             .log(Level.SEVERE, null, ex);
                 }
             });
             dialog.show();
 
         } catch (IOException ex) {
-            Logger.getLogger(VehiculoTipoController.class.getName())
+            Logger.getLogger(VehiculoController.class.getName())
                     .log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
-            Logger.getLogger(VehiculoTipoController.class.getName())
+            Logger.getLogger(VehiculoController.class.getName())
                     .log(Level.SEVERE, null, ex);
             Dialogs.showMsg(stackPane, Dialogs.HEADINGS.ERROR,
                     Dialogs.MESSAGES.CRUD_UPDATE_ERROR,
@@ -162,7 +164,7 @@ public class VehiculoTipoController implements Initializable {
     /**
      * @return the modo
      */
-    public VehiculoTipoController.Modo getModo() {
+    public VehiculoController.Modo getModo() {
         return modo;
     }
 
@@ -171,13 +173,13 @@ public class VehiculoTipoController implements Initializable {
         URL resource;
         String resourcePath;
         FXMLLoader loader;
-        resourcePath = VehiculoTipoListaController.VIEW_PATH;
+        resourcePath = VehiculoListaController.VIEW_PATH;
         resource = getClass().getResource(resourcePath);
 
         loader = new FXMLLoader(resource);
 
         node = (Node) loader.load();
-        listarController = loader.<VehiculoTipoListaController>getController();
+        listarController = loader.<VehiculoListaController>getController();
         listarController.setMainController(this);
         box.getChildren().setAll(node);
     }
@@ -187,9 +189,9 @@ public class VehiculoTipoController implements Initializable {
         URL resource;
         String resourcePath;
         FXMLLoader loader;
-        VehiculoTipoCrearController controller;
+        VehiculoCrearController controller;
 
-        resourcePath = VehiculoTipoCrearController.VIEW_PATH;
+        resourcePath = VehiculoCrearController.VIEW_PATH;
         resource = getClass().getResource(resourcePath);
 
         loader = new FXMLLoader(resource);

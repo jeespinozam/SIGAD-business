@@ -139,6 +139,9 @@ public class Vehiculo {
     private String nombre;
     private String descripcion;
 
+    public Vehiculo() {
+    }
+
     public Vehiculo(Vehiculo.Tipo tipo, String placa) {
         setTipo(tipo);
         setPlaca(placa);
