@@ -135,7 +135,7 @@ public class SeleccionarProductosController implements Initializable {
     @FXML
     private Label lbligv;
 
-    private Pedido pedido = new Pedido();
+    private Pedido pedido;
     private HashMap<Insumo, Integer> insumos = new HashMap<>();
     private HashMap<Insumo, Integer> insumosCambiantes;
     private final ObservableList<PedidoLista> pedidos = FXCollections.observableArrayList();
@@ -461,8 +461,9 @@ public class SeleccionarProductosController implements Initializable {
         }
     }
 
-    public void initModel(StackPane stack) {
+    public void initModel(Pedido pedido, StackPane stack) {
         stackPane = stack;
+        this.pedido = pedido;
     }
 
     public void calcularTotal() {

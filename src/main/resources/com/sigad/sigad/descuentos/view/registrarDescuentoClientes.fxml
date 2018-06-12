@@ -11,9 +11,9 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="280.0" prefWidth="432.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.descuentos.controller.RegistrarDescuentoCategoriaProductoController">
+<AnchorPane id="AnchorPane" prefHeight="280.0" prefWidth="432.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.descuentos.controller.RegistrarDescuentoClientesController">
     <stylesheets>
-        <URL value="@/styles/registrardescuentocategoriaproducto.css" />
+        <URL value="@/styles/registrardescuentoclientes.css" />
     </stylesheets>
     <children>
       <StackPane prefHeight="400.0" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -22,7 +22,7 @@
                <children>
                   <JFXDatePicker fx:id="txtFechaInicio" defaultColor="#455a64" layoutX="42.0" layoutY="107.0" prefHeight="17.0" prefWidth="171.0" promptText="Fecha Inicio" />
                   <JFXDatePicker fx:id="txtFechaFin" defaultColor="#455a64" layoutX="42.0" layoutY="154.0" promptText="Fecha Fin" />
-                  <JFXTextField fx:id="txtValuePct" layoutX="266.0" layoutY="56.0" prefHeight="25.0" prefWidth="135.0" promptText="Descuento (%) ">
+                  <JFXTextField fx:id="txtValue" layoutX="280.0" layoutY="107.0" prefHeight="25.0" prefWidth="99.0" promptText="Descuento (%) ">
                      <font>
                         <Font name="System Italic" size="12.0" />
                      </font>
@@ -37,8 +37,12 @@
                         <DropShadow color="#000000f3" />
                      </effect>
                   </JFXButton>
-                  <Label fx:id="lblError" layoutX="150.0" layoutY="249.0" prefHeight="17.0" prefWidth="31.0" />
-                  <JFXComboBox fx:id="cmbCategorias" layoutX="40.0" layoutY="56.0" prefHeight="25.0" prefWidth="171.0" promptText="Categorias" />
+                  <Label layoutX="391.0" layoutY="111.0" text="\%" />
+                  <JFXComboBox fx:id="cmbTiposDescuento" layoutX="40.0" layoutY="56.0" onAction="#handleAction" prefHeight="25.0" prefWidth="164.0" promptText="Tipo" />
+                  <JFXTextField fx:id="txtCondicion" layoutX="280.0" layoutY="56.0" prefHeight="25.0" prefWidth="99.0" promptText="Monto" />
+                  <Label fx:id="lblunit" layoutX="391.0" layoutY="60.0" text="PEN" />
+                  <Label layoutX="216.0" layoutY="60.0" text="Más de" />
+                  <Label fx:id="lblError" layoutX="108.0" layoutY="249.0" />
                </children>
             </AnchorPane>
          </children>

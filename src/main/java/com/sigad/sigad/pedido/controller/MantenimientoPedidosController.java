@@ -73,7 +73,7 @@ public class MantenimientoPedidosController implements Initializable {
     JFXTreeTableColumn<PedidoOrdenLista, String> estado = new JFXTreeTableColumn<>("Estado");
     @FXML
     private JFXTreeTableView<PedidoOrdenLista> tablaPedidos;
-    Pedido pedido;
+    Pedido pedido = new Pedido();
 
     private final ObservableList<PedidoOrdenLista> pedidos = FXCollections.observableArrayList();
     public static final String viewPath = "/com/sigad/sigad/pedido/view/mantenimientoPedidos.fxml";
@@ -129,7 +129,7 @@ public class MantenimientoPedidosController implements Initializable {
             public void handle(ActionEvent event) {
                 popup.hide();
                 try {
-
+                    //editarPedido();
                 } catch (Exception ex) {
 
                 }
@@ -141,7 +141,7 @@ public class MantenimientoPedidosController implements Initializable {
             public void handle(ActionEvent event) {
                 popup.hide();
                 try {
-
+                  
                 } catch (Exception ex) {
 
                 }
@@ -167,12 +167,17 @@ public class MantenimientoPedidosController implements Initializable {
             FXMLLoader loader = new FXMLLoader(MantenimientoPedidosController.this.getClass().getResource(SeleccionarProductosController.viewPath));
             node = (Node) loader.load();
             SeleccionarProductosController sel = loader.getController();
-            sel.initModel(hiddenSp);
+            sel.initModel(pedido, hiddenSp);
             hiddenSp.getChildren().setAll(node);
         } catch (IOException ex) {
             Logger.getLogger(MantenimientoPedidosController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+    
+    void editarPedido(){
+    
+    
     }
 
     @FXML
@@ -195,6 +200,7 @@ public class MantenimientoPedidosController implements Initializable {
 
         }
     }
+    
 
     class PedidoOrdenLista extends RecursiveTreeObject<PedidoOrdenLista> {
 

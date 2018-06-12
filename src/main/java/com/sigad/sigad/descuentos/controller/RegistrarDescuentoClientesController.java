@@ -7,26 +7,19 @@ package com.sigad.sigad.descuentos.controller;
 
 import com.jfoenix.controls.*;
 import com.jfoenix.validation.RequiredFieldValidator;
-import com.sigad.sigad.business.ProductoCategoria;
-import com.sigad.sigad.business.ProductoCategoriaDescuento;
-import com.sigad.sigad.business.helpers.ProductoCategoriaDescuentoHelper;
-import com.sigad.sigad.business.helpers.ProductoCategoriaHelper;
-import com.sigad.sigad.business.helpers.ProductoDescuentoHelper;
+import com.sigad.sigad.business.ClienteDescuento;
+import com.sigad.sigad.business.Constantes;
+import com.sigad.sigad.business.helpers.ClienteDescuentoHelper;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.net.URL;
 import java.sql.Date;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Observable;
 import java.util.ResourceBundle;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.DateCell;
@@ -42,13 +35,14 @@ import javafx.util.Callback;
  *
  * @author Alexandra
  */
-public class RegistrarDescuentoCategoriaProductoController implements Initializable {
+public class RegistrarDescuentoClientesController implements Initializable {
 
     /**
      * Initializes the controller class.
      */
-    public static final String viewPath = "/com/sigad/sigad/descuentos/view/registrarDescuentoCategoriaProducto.fxml";
-
+    @FXML
+    private Label lblError;
+    
     @FXML
     private JFXDatePicker txtFechaInicio;
 
@@ -56,10 +50,11 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
     private JFXDatePicker txtFechaFin;
 
     @FXML
-    private JFXTextField txtValuePct;
+    private JFXTextField txtValue;
 
     @FXML
-    private Label lblError;
+    private JFXTextField txtCondicion;
+
     @FXML
     private JFXButton btnGuardar;
 
@@ -67,39 +62,54 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
     private JFXButton btnCancelar;
 
     @FXML
-    private JFXComboBox<ProductoCategoria> cmbCategorias;
+    private Label lblunit;
 
-    Boolean isEdit;
+    @FXML
+    private JFXComboBox<String> cmbTiposDescuento;
 
-    ProductoCategoriaDescuento pc;
-    ObservableList<ProductoCategoria> categoriasproductos;
+    private Boolean isEdit;
+
+    private ClienteDescuento pc;
+
+    public static final String viewPath = "/com/sigad/sigad/descuentos/view/registrarDescuentoClientes.fxml";
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
     }
 
-    public void cargarCategorias() {
-        ProductoCategoriaHelper helper = new ProductoCategoriaHelper();
-        ArrayList<ProductoCategoria> categorias = helper.getActiveProductCategories();
-        categoriasproductos = FXCollections.observableArrayList(categorias);
-        cmbCategorias.setItems(categoriasproductos);
-        cmbCategorias.setPromptText("Categorias");
-//        cmbCategorias.setOnAction((event) -> {
-//            pc.setCategoria(cmbCategorias.getSelectionModel().getSelectedItem());
-//        });
-
+    public void cargarTipoDescuento() {
+        cmbTiposDescuento.getItems().addAll(Constantes.TIPO_DCTO_USUARIO_X_MONTO, Constantes.TIPO_DCTO_USUARIO_X_NPEDIDOS);
     }
 
-    public void initModel(Boolean isedit, ProductoCategoriaDescuento pc, StackPane st) {
+    public void cargarDatos() {
+
+        LocalDate localDate = pc.getFechaInicio().toLocalDate();
+        txtFechaInicio.setValue(localDate);
+        localDate = pc.getFechaFin().toLocalDate();
+        txtFechaFin.setValue(localDate);
+        txtCondicion.setText(pc.getCondicion().toString());
+        Double pct = pc.getValue() * 100;
+        if (pc.getTipo().equals(Constantes.TIPO_DCTO_USUARIO_X_MONTO)) {
+            txtValue.setText(pct.toString());
+            lblunit.setText("PEN");
+        } else {
+            lblunit.setText("ped.");
+        }
+
+        cmbTiposDescuento.getItems().clear();
+        cmbTiposDescuento.getItems().add(pc.getTipo());
+        cmbTiposDescuento.setValue(pc.getTipo());
+    }
+
+    public void initModel(Boolean isedit, ClienteDescuento pc, StackPane st) {
         this.isEdit = isedit;
         this.pc = pc;
-        cargarCategorias();
+        cargarTipoDescuento();
         if (isedit) {
             cargarDatos();
         } else {
-
-            this.pc = new ProductoCategoriaDescuento();
+            this.pc = new ClienteDescuento();
         }
 
     }
@@ -110,17 +120,18 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
         r = new RequiredFieldValidator();
         r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
         r.setMessage("Campo obligatorio");
-        txtValuePct.getValidators().add(r);
-        txtValuePct.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+        txtValue.getValidators().add(r);
+        txtValue.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (!newValue) {
 
-                if (!txtValuePct.validate()) {
-                    txtValuePct.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+                if (!txtValue.validate()) {
+                    txtValue.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
                 } else {
-                    txtValuePct.setFocusColor(new Color(0.30, 0.47, 0.23, 1));
+                    txtValue.setFocusColor(new Color(0.30, 0.47, 0.23, 1));
                 }
             }
         });
+        
 
         JFXDatePicker minDate = new JFXDatePicker();
         minDate.setValue(LocalDate.now(ZoneId.systemDefault())); // colocar la fecha de hoy como el minimo
@@ -145,7 +156,8 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
         };
         txtFechaInicio.setDayCellFactory(dayCellFactory);
         txtFechaFin.setDayCellFactory(dayCellFactory);
-
+       
+        
         txtFechaInicio.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
 
             try {
@@ -188,17 +200,23 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
         });
     }
 
-    @FXML
-    void close(MouseEvent event) {
+    public void construirDescuento() {
+        pc.setTipo(cmbTiposDescuento.getValue());
+        Date dateIni = Date.valueOf(txtFechaInicio.getValue());
+        Date dateFin = Date.valueOf(txtFechaFin.getValue());
+        pc.setFechaInicio(dateIni);
+        pc.setFechaFin(dateFin);
+        pc.setValue(Double.valueOf(txtValue.getText()) / 100);
+        pc.setActivo(Boolean.TRUE);
+        pc.setCondicion(Double.valueOf(txtCondicion.getText()));
 
     }
-
-    public boolean validateFields() {
-        if (!txtValuePct.validate()) {
-            txtValuePct.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
-            txtValuePct.requestFocus();
+     public boolean validateFields() {
+        if (!txtValue.validate()) {
+            txtValue.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+            txtValue.requestFocus();
             return false;
-        } else if (txtFechaInicio.getValue().isAfter(txtFechaFin.getValue())) {
+        } else if(txtFechaInicio.getValue().isAfter(txtFechaFin.getValue())) {
             lblError.setText("Verifique el rango de fechas");
             return false;
         } else {
@@ -206,53 +224,44 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
         }
     }
 
-    public void cargarDatos() {
-
-        LocalDate localDate = pc.getFechaInicio().toLocalDate();
-        txtFechaInicio.setValue(localDate);
-        localDate = pc.getFechaFin().toLocalDate();
-        txtFechaFin.setValue(localDate);
-        Double pct = pc.getValue() * 100;
-        txtValuePct.setText(pct.toString());
-        cmbCategorias.getItems().clear();
-        cmbCategorias.getItems().add(pc.getCategoria());
-        cmbCategorias.setValue(pc.getCategoria());
-    }
-
-    public void construirDescuento() {
-        pc.setCategoria(cmbCategorias.getValue());
-        Date dateIni = Date.valueOf(txtFechaInicio.getValue());
-        Date dateFin = Date.valueOf(txtFechaFin.getValue());
-        pc.setFechaInicio(dateIni);
-        pc.setFechaFin(dateFin);
-        pc.setValue(Double.valueOf(txtValuePct.getText()) / 100);
-
-    }
-
     @FXML
     void guardarDescuento(ActionEvent event) {
-        ProductoCategoriaDescuentoHelper helper = new ProductoCategoriaDescuentoHelper();
-        if (/*validarCampos() && cant == 1 &&*/validateFields() && !isEdit) {
+        ClienteDescuentoHelper helper = new ClienteDescuentoHelper();
+        if (/*validarCampos() && cant == 1 &&*/ validateFields() &&!isEdit) {
             construirDescuento();
 
             helper.saveDescuento(pc);
-        } else if (/*validarCampos() && cant == 1 &&*/validateFields() && isEdit) {
+        } else if (/*validarCampos() && cant == 1 &&*/ validateFields() && isEdit) {
             construirDescuento();
             helper.updateDescuento(pc);
         }
         reloadTable();
-        MantenimientoDescuentosController.descDialog.close();
+        MantenimientoDescuentosController.descCliDialog.close();
+    }
+
+    @FXML
+    void handleAction(ActionEvent event) {
+        if (cmbTiposDescuento.getValue().equals(Constantes.TIPO_DCTO_USUARIO_X_MONTO)) {
+            lblunit.setText("PEN");
+        } else {
+            lblunit.setText("Unit.");
+        }
     }
 
     public void reloadTable() {
-        MantenimientoDescuentosController.descuentosCategorias.clear();
-        ProductoCategoriaDescuentoHelper pdhelper = new ProductoCategoriaDescuentoHelper();
-        ArrayList<ProductoCategoriaDescuento> ps = pdhelper.getDescuentos();
+        MantenimientoDescuentosController.descuentosUsuarios.clear();
+        ClienteDescuentoHelper pdhelper = new ClienteDescuentoHelper();
+        ArrayList<ClienteDescuento> ps = pdhelper.getDescuentos();
         pdhelper.close();
         ps.forEach((t) -> {
-            MantenimientoDescuentosController.descuentosCategorias.add(new MantenimientoDescuentosController.DescuentosCategoriaLista(t));
+            MantenimientoDescuentosController.descuentosUsuarios.add(new MantenimientoDescuentosController.DescuentosUsuariosLista(t));
         });
 
+    }
+
+    @FXML
+    void close(MouseEvent event) {
+        MantenimientoDescuentosController.descCliDialog.close();
     }
 
 }

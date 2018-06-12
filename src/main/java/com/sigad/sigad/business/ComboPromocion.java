@@ -5,7 +5,8 @@
  */
 package com.sigad.sigad.business;
 
-import java.util.Date;
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -21,12 +22,15 @@ import javax.persistence.OneToMany;
  */
 @Entity
 public class ComboPromocion {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String nombre;
-    private Double preciounitario;
+    private Double preciounitario;//base
+    private Double preciounireal;//real
     private Integer maxDisponible;
+    private String descripcion;
     private Integer numVendidos;
     private Date fechaInicio;
     private Date fechaFin;
@@ -37,8 +41,6 @@ public class ComboPromocion {
 
     public ComboPromocion() {
     }
-    
-    
 
     /**
      * @return the id
@@ -164,5 +166,51 @@ public class ComboPromocion {
      */
     public void setDuracionDias(Integer duracionDias) {
         this.duracionDias = duracionDias;
+    }
+
+    /**
+     * @return the productosxCombo
+     */
+    public Set<ProductosCombos> getProductosxCombo() {
+        return productosxCombo;
+    }
+
+    public ArrayList<ProductosCombos> getProductosxComboArray() {
+        return new ArrayList(productosxCombo);
+    }
+
+    /**
+     * @param productosxCombo the productosxCombo to set
+     */
+    public void setProductosxCombo(Set<ProductosCombos> productosxCombo) {
+        this.productosxCombo = productosxCombo;
+    }
+
+    /**
+     * @return the preciounireal
+     */
+    public Double getPreciounireal() {
+        return preciounireal;
+    }
+
+    /**
+     * @param preciounireal the preciounireal to set
+     */
+    public void setPreciounireal(Double preciounireal) {
+        this.preciounireal = preciounireal;
+    }
+
+    /**
+     * @return the descripcion
+     */
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    /**
+     * @param descripcion the descripcion to set
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 }
