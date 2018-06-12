@@ -17,6 +17,7 @@ import java.net.URL;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.beans.value.ObservableValue;
@@ -73,6 +74,7 @@ public class RegistrarDescuentoClientesController implements Initializable {
     private ClienteDescuento pc;
 
     public static final String viewPath = "/com/sigad/sigad/descuentos/view/registrarDescuentoClientes.fxml";
+    private  DateTimeFormatter  formatter  = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -178,7 +180,7 @@ public class RegistrarDescuentoClientesController implements Initializable {
             try {
 
                 if (newValue.length() == 10) {
-                    LocalDate newDate = LocalDate.parse(newValue);
+                    LocalDate newDate = LocalDate.parse(newValue, formatter);
                     System.out.println("Valor actual de END FIELD " + txtFechaFin.getValue());
                     System.out.println("Valor actual de START FIELD " + txtFechaInicio.getValue());
 
@@ -199,7 +201,7 @@ public class RegistrarDescuentoClientesController implements Initializable {
             try {
 
                 if (newValue.length() == 10) {
-                    LocalDate newDate = LocalDate.parse(newValue);
+                    LocalDate newDate = LocalDate.parse(newValue, formatter);
 
                     if (newDate.isBefore(txtFechaInicio.getValue())) {
                         txtFechaFin.getEditor().textProperty().setValue("");

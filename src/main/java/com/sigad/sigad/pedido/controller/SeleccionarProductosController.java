@@ -153,6 +153,7 @@ public class SeleccionarProductosController implements Initializable {
             err.loadDialog("Aviso", "Su usuario no tiene una tienda asignada, contacte al administrador", "Ok", stackPane);
             return;
         }
+        pedido = new Pedido();
         pedido.setTienda(tienda);
         columnasPedidos();
         columnasProductos();

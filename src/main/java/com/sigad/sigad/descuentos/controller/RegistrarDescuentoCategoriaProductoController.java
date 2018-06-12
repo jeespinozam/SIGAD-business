@@ -20,6 +20,7 @@ import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.ResourceBundle;
@@ -74,6 +75,7 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
 
     ProductoCategoriaDescuento pc;
     ObservableList<ProductoCategoria> categoriasproductos;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -153,7 +155,7 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
             try {
 
                 if (newValue.length() == 10) {
-                    LocalDate newDate = LocalDate.parse(newValue);
+                    LocalDate newDate = LocalDate.parse(newValue, formatter);
                     System.out.println("Valor actual de END FIELD " + txtFechaFin.getValue());
                     System.out.println("Valor actual de START FIELD " + txtFechaInicio.getValue());
 
@@ -174,7 +176,7 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
             try {
 
                 if (newValue.length() == 10) {
-                    LocalDate newDate = LocalDate.parse(newValue);
+                    LocalDate newDate = LocalDate.parse(newValue, formatter);
 
                     if (newDate.isBefore(txtFechaInicio.getValue())) {
                         txtFechaFin.getEditor().textProperty().setValue("");
@@ -196,7 +198,7 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
     }
 
     public boolean validateFields() {
-        if (!txtValuePct.validate() && !GeneralHelper.isNumericDouble(txtValuePct.getText()) && txtValuePct.getLength() ==0) {
+        if (!txtValuePct.validate() && !GeneralHelper.isNumericDouble(txtValuePct.getText()) && txtValuePct.getLength() == 0) {
             txtValuePct.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             txtValuePct.requestFocus();
             return false;

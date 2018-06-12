@@ -31,6 +31,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.beans.property.IntegerProperty;
@@ -118,6 +119,7 @@ public class RegistrarDescuentoProductoController implements Initializable {
 
     private final ObservableList<ProductoLista> prod = FXCollections.observableArrayList();
     private Paint colorStd;
+    private  DateTimeFormatter  formatter  = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -129,8 +131,8 @@ public class RegistrarDescuentoProductoController implements Initializable {
         cargarDatos();
         setuValidations();
         txtDescuentopct.textProperty().addListener((observable, oldValue, newValue) -> {
-            
-            if (GeneralHelper.isNumericDouble(txtDescuentopct.getText()) && GeneralHelper.isNumericDouble(txtPrecio.getText()) ) {
+
+            if (GeneralHelper.isNumericDouble(txtDescuentopct.getText()) && GeneralHelper.isNumericDouble(txtPrecio.getText())) {
                 Double pct = Double.valueOf(txtDescuentopct.getText()) / 100;
                 Double nprecio = (1.0 - pct) * Double.valueOf(txtPrecio.getText());
                 txtNuevoPrecio.setText(GeneralHelper.roundTwoDecimals(nprecio).toString());
@@ -143,12 +145,11 @@ public class RegistrarDescuentoProductoController implements Initializable {
 
     public void setuValidations() {
         RequiredFieldValidator r;
-        
+
         r = new RequiredFieldValidator();
         r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
         r.setMessage("Campo obligatorio");
-        
-        
+
         txtDescuentopct.getValidators().add(r);
         txtDescuentopct.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (!newValue) {
@@ -204,7 +205,7 @@ public class RegistrarDescuentoProductoController implements Initializable {
             try {
 
                 if (newValue.length() == 10) {
-                    LocalDate newDate = LocalDate.parse(newValue);
+                    LocalDate newDate = LocalDate.parse(newValue, formatter);
                     System.out.println("Valor actual de END FIELD " + txtFechaFin.getValue());
                     System.out.println("Valor actual de START FIELD " + txtFechaInicio.getValue());
 
@@ -228,7 +229,7 @@ public class RegistrarDescuentoProductoController implements Initializable {
             try {
 
                 if (newValue.length() == 10) {
-                    LocalDate newDate = LocalDate.parse(newValue);
+                    LocalDate newDate = LocalDate.parse(newValue, formatter);
 
                     if (newDate.isBefore(txtFechaInicio.getValue())) {
                         txtFechaFin.getEditor().textProperty().setValue("");
@@ -274,6 +275,7 @@ public class RegistrarDescuentoProductoController implements Initializable {
             Double pct = pd.getValorPct() * 100;
             txtPrecio.setDisable(true);
             txtNuevoPrecio.setText(String.valueOf(GeneralHelper.roundTwoDecimals(pd.getValorPct() * pd.getProducto().getPrecio())));
+
             txtNuevoPrecio.setDisable(true);
             txtDescuentopct.setText(pct.toString());
             if (pd.getStockMaximo() != null) {
@@ -336,14 +338,14 @@ public class RegistrarDescuentoProductoController implements Initializable {
         } else if (txtFechaInicio.getValue().isAfter(txtFechaFin.getValue())) {
             lblError.setText("Verifique el rango de fechas");
             return false;
-        }else if (txtFechaInicio.getValue() == null) {
+        } else if (txtFechaInicio.getValue() == null) {
             lblError.setText("Verifique el rango de fechas");
             return false;
-        }else if (txtFechaFin.getValue() == null) {
+        } else if (txtFechaFin.getValue() == null) {
             lblError.setText("Verifique el rango de fechas");
             return false;
-        }else {
-                
+        } else {
+
             return true;
         }
     }

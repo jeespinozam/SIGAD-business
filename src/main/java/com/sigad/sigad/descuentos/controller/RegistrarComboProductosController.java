@@ -21,6 +21,7 @@ import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Objects;
@@ -119,6 +120,7 @@ public class RegistrarComboProductosController implements Initializable {
     @FXML
     JFXTreeTableColumn<ProductoLista, Integer> cantidad = new JFXTreeTableColumn<>("Cantidad");
     private final ObservableList<ProductoLista> prod = FXCollections.observableArrayList();
+    private  DateTimeFormatter  formatter  = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -231,7 +233,7 @@ public class RegistrarComboProductosController implements Initializable {
             try {
 
                 if (newValue.length() == 10) {
-                    LocalDate newDate = LocalDate.parse(newValue);
+                    LocalDate newDate = LocalDate.parse(newValue, formatter);
                     System.out.println("Valor actual de END FIELD " + txtFechaFin.getValue());
                     System.out.println("Valor actual de START FIELD " + txtFechaInicio.getValue());
 
@@ -252,7 +254,7 @@ public class RegistrarComboProductosController implements Initializable {
             try {
 
                 if (newValue.length() == 10) {
-                    LocalDate newDate = LocalDate.parse(newValue);
+                    LocalDate newDate = LocalDate.parse(newValue, formatter);
 
                     if (newDate.isBefore(txtFechaInicio.getValue())) {
                         txtFechaFin.getEditor().textProperty().setValue("");
