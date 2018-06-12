@@ -56,7 +56,7 @@ public class Usuario {
     private String intereses;
     @OneToMany(mappedBy = "usuario")
     private Set<ClienteFecha> clienteFechas = new HashSet<ClienteFecha>();
-    @OneToMany(fetch = FetchType.EAGER ,mappedBy = "usuario", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER ,mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ClienteDireccion> clienteDirecciones = new HashSet<ClienteDireccion>(); 
     @OneToMany(mappedBy = "insumo")
     private Set<CapacidadTienda> capacidadTiendas = new HashSet<CapacidadTienda>();
@@ -66,6 +66,8 @@ public class Usuario {
     private Set<ProductoDescuento> descuentos = new HashSet<ProductoDescuento>();
     @ManyToMany(mappedBy = "usuarios", cascade = {CascadeType.ALL})
     private Set<Producto> favoritos = new HashSet<>();
+    @ManyToMany(mappedBy = "clientes", cascade = {CascadeType.ALL})
+    private Set<ClienteDescuento> descuentoCliente = new HashSet<ClienteDescuento>();
             
     @ManyToOne
     private Tienda tienda;
@@ -301,9 +303,14 @@ public class Usuario {
      * @param clienteDirecciones the clienteDirecciones to set
      */
     public void setClienteDirecciones(Set<ClienteDireccion> clienteDirecciones) {
-        this.clienteDirecciones = clienteDirecciones;
+        this.clienteDirecciones.clear();;
+        this.clienteDirecciones.addAll(clienteDirecciones);
     }
 
+    public void cleanClienteDirecciones(){
+        clienteDirecciones.clear();
+    }
+    
     /**
      * @return the clienteDirecciones
      */
@@ -396,5 +403,19 @@ public class Usuario {
      */
     public void setFavoritos(Set<Producto> favoritos) {
         this.favoritos = favoritos;
+    }
+
+    /**
+     * @return the descuentoCliente
+     */
+    public Set<ClienteDescuento> getDescuentoCliente() {
+        return descuentoCliente;
+    }
+
+    /**
+     * @param descuentoCliente the descuentoCliente to set
+     */
+    public void setDescuentoCliente(Set<ClienteDescuento> descuentoCliente) {
+        this.descuentoCliente = descuentoCliente;
     }
 }

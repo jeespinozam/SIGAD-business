@@ -6,10 +6,12 @@
 package com.sigad.sigad.business;
 
 import java.sql.Date;
+import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 /**
@@ -17,17 +19,19 @@ import javax.persistence.ManyToOne;
  * @author Alexandra
  */
 @Entity
-public class ProductoCategoriaDescuento {
+public class ClienteDescuento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+    private Boolean activo;
+    private String tipo;// Monto o NumeroDePedidos
     private Double value;
+    private Double condicion; //condicion mas de 
     private Date fechaInicio;
     private Date fechaFin;
-    private Boolean activo;
-    @ManyToOne
-    private ProductoCategoria categoria;
+    @ManyToMany
+    private Set<Usuario> clientes;
 
     /**
      * @return the id
@@ -41,6 +45,34 @@ public class ProductoCategoriaDescuento {
      */
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     * @return the activo
+     */
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    /**
+     * @param activo the activo to set
+     */
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    /**
+     * @return the tipo
+     */
+    public String getTipo() {
+        return tipo;
+    }
+
+    /**
+     * @param tipo the tipo to set
+     */
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     /**
@@ -86,17 +118,31 @@ public class ProductoCategoriaDescuento {
     }
 
     /**
-     * @return the pd
+     * @return the clientes
      */
-    public ProductoCategoria getCategoria() {
-        return categoria;
+    public Set<Usuario> getClientes() {
+        return clientes;
     }
 
     /**
-     * @param pd the pd to set
+     * @param clientes the clientes to set
      */
-    public void setCategoria(ProductoCategoria pd) {
-        this.categoria = pd;
+    public void setClientes(Set<Usuario> clientes) {
+        this.clientes = clientes;
+    }
+
+    /**
+     * @return the condicion
+     */
+    public Double getCondicion() {
+        return condicion;
+    }
+
+    /**
+     * @param condicion the condicion to set
+     */
+    public void setCondicion(Double condicion) {
+        this.condicion = condicion;
     }
 
 }

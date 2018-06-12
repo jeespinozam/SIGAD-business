@@ -47,6 +47,11 @@ public class DetallePedido {
     @ManyToOne
     private ProductoDescuento descuento;
     
+    @ManyToOne
+    private ComboPromocion combo;
+    
+    @ManyToOne
+    private ProductoCategoriaDescuento descuentoCategoria;
     @ManyToOne(optional = false)
     private Pedido pedido;
     

@@ -30,6 +30,11 @@ public class ProductosCombos {
     public ProductosCombos() {
     }
     
+    public ProductosCombos(Producto pd, Integer c, ComboPromocion cb) {
+        this.producto = pd;
+        this.cantidad = c;
+        this.combopromocion = cb;
+    }
     
 
     /**
