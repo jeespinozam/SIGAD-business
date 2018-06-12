@@ -504,6 +504,7 @@ public class CargaMasivaHelper {
                 return CargaMasivaHelper.guardarObjeto(nuevoInsumo, session);
             case CargaMasivaConstantes.TABLA_TIENDAS:
                 Tienda nuevaTienda = new Tienda();
+                nuevaTienda.setActivo(true);
                 nuevaTienda.setDireccion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 index++;
                 Double codX = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
@@ -641,17 +642,16 @@ public class CargaMasivaHelper {
                 else
                     LOGGER.log(Level.WARNING, String.format("No se especifico categoria para producto %s, se continua el proceso", nuevoProd.getNombre()));
                 index++;
-                String intensidadAsociada = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
-                if (StringUtils.isNotBlank(intensidadAsociada)) {
-                    Integer valorIntensidadAsociada = (Integer) validarParsing(intensidadAsociada, true);
-                    if (valorIntensidadAsociada != null) {
-                        ProductoFragilidad fragilidadAsociada = (ProductoFragilidad) CargaMasivaHelper.busquedaGeneralInt(session, "ProductoFragilidad", new String [] {"valor"}, new int [] {valorIntensidadAsociada});
-                        if (fragilidadAsociada!=null) {
-                            LOGGER.log(Level.INFO, String.format("Fragilidad %s encontrada con exito", intensidadAsociada));
-                            nuevoProd.setFragilidad(fragilidadAsociada);
+                String fragilidadAsociada = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(fragilidadAsociada)) {
+                    if (fragilidadAsociada != null) {
+                            ProductoFragilidad fragilidadProducto = (ProductoFragilidad) CargaMasivaHelper.busquedaGeneralString(session, "ProductoFragilidad", new String [] {"descripcion"}, new String [] {fragilidadAsociada});
+                        if (fragilidadProducto!=null) {
+                            LOGGER.log(Level.INFO, String.format("Fragilidad %s encontrada con exito", fragilidadProducto));
+                            nuevoProd.setFragilidad(fragilidadProducto);
                         }
                         else
-                            LOGGER.log(Level.SEVERE, String.format("Fragilidad %s no encontrada, no se tendra en consideracion", intensidadAsociada));
+                            LOGGER.log(Level.SEVERE, String.format("Fragilidad %s no encontrada, no se tendra en consideracion", fragilidadProducto));
                     }
                 }
                 else
@@ -736,6 +736,7 @@ public class CargaMasivaHelper {
                 Pedido nuevoPedido = new Pedido();
                 // Logica de negocio
                 nuevoPedido.setActivo(true);
+                nuevoPedido.setModificable(true);
                 
                 Double coordX = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
                 if (coordX!=null)
@@ -763,9 +764,87 @@ public class CargaMasivaHelper {
                 
                 String horaEntregaPedidoStr = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 java.sql.Timestamp entregaPedido = CargaMasivaHelper.parseDate(horaEntregaPedidoStr);
-                if(fechaPedido != null)
+                if(entregaPedido != null)
                     nuevoPedido.setHoraEntrega(entregaPedido);
+                index++;
+                
+                String horaSalidaStr = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                java.sql.Time salidaPedido = CargaMasivaHelper.parseTime(horaSalidaStr);
+                if(salidaPedido != null)
+                    nuevoPedido.setHoraFinEntrega(salidaPedido);
+                index++;
+                
+                String horaInicioStr = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                java.sql.Time inicioPedido = CargaMasivaHelper.parseTime(horaInicioStr);
+                if(inicioPedido != null)
+                    nuevoPedido.setHoraIniEntrega(inicioPedido);
                 index++;                
+                
+                String mensajePedido = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(mensajePedido))
+                    nuevoPedido.setMensajeDescripicion(mensajePedido);
+                index++;
+                
+                Double totalPedido = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if(totalPedido != null)
+                    nuevoPedido.setTotal(totalPedido);
+                index++;
+                
+                String turnoPedido = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(turnoPedido))
+                    nuevoPedido.setTurno(turnoPedido);
+                index++;
+                
+                Double volumenPedido = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if(volumenPedido != null)
+                    nuevoPedido.setVolumenTotal(volumenPedido);
+                index++;
+                
+                /*
+                
+                                String clienteAsociadoStr = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(clienteAsociadoStr)) {
+                    Usuario clienteAsociado = (Usuario) CargaMasivaHelper.busquedaGeneralString(session, "Usuario", new String[] {"correo"}, new String[] {clienteAsociadoStr});
+                    if (clienteAsociado!=null) {
+                        LOGGER.log(Level.INFO, String.format("Usuario %s encontrado con exito", clienteAsociadoStr));
+                        index++;
+                        String estadoPedidoStr = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                        if (StringUtils.isNotBlank(estadoPedidoStr)) {
+                            PedidoEstado estadoPedido = (PedidoEstado) CargaMasivaHelper.busquedaGeneralString(session, "PedidoEstado", new String[] {"nombre"}, new String[] {estadoPedidoStr});
+                            if (estadoPedido!=null) {
+                                LOGGER.log(Level.INFO, String.format("Estado %s encontrado con exito", estadoPedidoStr));
+                                index++;
+                                String repartoPedidoStr = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                                if (StringUtils.isNotBlank(repartoPedidoStr)) {
+                                  //WIP
+                                  Reparto repartoPedido = (Reparto) CargaMasivaHelper.busquedaGeneralString(session, "Reparto", new String[] {"nombre"}, new String[] {estadoPedidoStr});
+                                }
+                                else{
+                                  LOGGER.log(Level.SEVERE, String.format("Reparto %s no encontrado, cancelando operacion", repartoPedidoStr));
+                                  return false;  
+                                }
+                            }
+                            else {
+                                LOGGER.log(Level.SEVERE, String.format("Estado %s no encontrado, cancelando operacion", estadoPedidoStr));
+                                return false;
+                            }
+                        }
+                        else {
+                            LOGGER.log(Level.SEVERE, String.format("Estado %s no detectado", estadoPedidoStr));
+                            return false;
+                        }
+                    }
+                    else {
+                        LOGGER.log(Level.SEVERE, String.format("Usuario %s no encontrado, cancelando operacion", clienteAsociadoStr));
+                        return false;
+                    }
+                }
+                else {
+                    LOGGER.log(Level.SEVERE, String.format("Usuario %s no detectado", clienteAsociadoStr));
+                    return false;
+                }
+                */
+                
                 
             // colocar aqui los demas casos para el resto de tablas de carga masiva
             default:

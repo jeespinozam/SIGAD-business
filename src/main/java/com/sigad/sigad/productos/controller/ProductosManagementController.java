@@ -147,40 +147,39 @@ public class ProductosManagementController implements Initializable {
         
         if(insumos != null){
             if(this.producto == null){
-                insumos.forEach((p) ->{
-                    Insumo t = p;
-                    insumosList.add(new ProductosManagementController.InsumoLista(
-                        String.valueOf(t.getId()),
-                        t.getNombre(),
-                        String.valueOf(t.getPrecio())
-                    ));
-                });   
+                for (Insumo insumo : insumos) {
+                    String id = String.valueOf(insumo.getId());
+                    String nombre = insumo.getNombre();
+                    String precio = String.valueOf(insumo.getPrecio());
+                    String cantidad = "0";
+                    InsumoLista nuevoInsumoLista = new InsumoLista(id,nombre,precio,cantidad);
+                    insumosList.add(nuevoInsumoLista);
+                }
             }
             else{
                 ArrayList<ProductoInsumo> savedRegisters = productSupplies();
-                insumos.forEach((p) ->{
-                    Insumo t = p;
+                for (Insumo insumo : insumos) {
                     Double ammount = null;
-                    for (ProductoInsumo savedRegister : savedRegisters) {
-                        if(savedRegister.getInsumo().getId() == t.getId())
-                            ammount = savedRegister.getCantidad();
+                    if(savedRegisters != null){
+                        for (ProductoInsumo savedRegister : savedRegisters) {
+                            if(savedRegister.getInsumo().getId() == insumo.getId())
+                                ammount = savedRegister.getCantidad();
+                        }   
                     }
+                    
+                    String id = String.valueOf(insumo.getId());
+                    String nombre = insumo.getNombre();
+                    String precio = String.valueOf(insumo.getPrecio());
+
                     if(ammount != null){
-                        insumosList.add(new ProductosManagementController.InsumoLista(
-                            String.valueOf(t.getId()),
-                            t.getNombre(),
-                            String.valueOf(t.getPrecio()),
-                            String.valueOf(ammount.intValue())
-                        ));                           
+                        InsumoLista nuevoInsumoLista = new InsumoLista(id,nombre,precio,String.valueOf(ammount.intValue()));
+                        insumosList.add(nuevoInsumoLista);
                     }
                     else{
-                        insumosList.add(new ProductosManagementController.InsumoLista(
-                            String.valueOf(t.getId()),
-                            t.getNombre(),
-                            String.valueOf(t.getPrecio())
-                        ));   
+                        InsumoLista nuevoInsumoLista = new InsumoLista(id,nombre,precio,"0");
+                        insumosList.add(nuevoInsumoLista);
                     }
-                });   
+                };   
             }
         }
         
@@ -390,12 +389,6 @@ public class ProductosManagementController implements Initializable {
         StringProperty precio;
         StringProperty cantidad;
         
-        public InsumoLista(String id, String nombre, String precio){
-            this.id = new SimpleStringProperty(id);
-            this.nombre = new SimpleStringProperty(nombre);
-            setPrecio(precio, nombre);
-            this.cantidad = new SimpleStringProperty("0");
-        }
         
         public InsumoLista(String id, String nombre, String precio, String cantidad){
             this.id = new SimpleStringProperty(id);
@@ -435,11 +428,13 @@ public class ProductosManagementController implements Initializable {
             Double price = 0.0;
             Integer count = 0;
             
-            for (LoteInsumo lote : lotes) {
-                if(lote.getInsumo().getNombre().equals(nombre)){
-                    price += lote.getCostoUnitario();
-                    count++;
-                }
+            if(lotes != null){
+                for (LoteInsumo lote : lotes) {
+                    if(lote.getInsumo().getNombre().equals(nombre)){
+                        price += lote.getCostoUnitario();
+                        count++;
+                    }
+                }   
             }
             if (count > 0)
                 price = price/count;
