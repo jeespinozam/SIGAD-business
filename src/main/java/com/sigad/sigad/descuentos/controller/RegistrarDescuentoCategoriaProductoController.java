@@ -9,6 +9,7 @@ import com.jfoenix.controls.*;
 import com.jfoenix.validation.RequiredFieldValidator;
 import com.sigad.sigad.business.ProductoCategoria;
 import com.sigad.sigad.business.ProductoCategoriaDescuento;
+import com.sigad.sigad.business.helpers.GeneralHelper;
 import com.sigad.sigad.business.helpers.ProductoCategoriaDescuentoHelper;
 import com.sigad.sigad.business.helpers.ProductoCategoriaHelper;
 import com.sigad.sigad.business.helpers.ProductoDescuentoHelper;
@@ -76,7 +77,8 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        // TODO\
+        setupValidations();
     }
 
     public void cargarCategorias() {
@@ -104,12 +106,12 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
 
     }
 
-    public void setuValidations() {
+    public void setupValidations() {
         RequiredFieldValidator r;
 
         r = new RequiredFieldValidator();
         r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
-        r.setMessage("Campo obligatorio");
+        r.setMessage("Campo obligatorio y númerico");
         txtValuePct.getValidators().add(r);
         txtValuePct.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (!newValue) {
@@ -194,7 +196,7 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
     }
 
     public boolean validateFields() {
-        if (!txtValuePct.validate()) {
+        if (!txtValuePct.validate() && GeneralHelper.isNumericDouble(txtValuePct.getText())) {
             txtValuePct.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             txtValuePct.requestFocus();
             return false;
@@ -202,6 +204,7 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
             lblError.setText("Verifique el rango de fechas");
             return false;
         } else {
+            lblError.setText("");
             return true;
         }
     }
@@ -234,14 +237,16 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
         ProductoCategoriaDescuentoHelper helper = new ProductoCategoriaDescuentoHelper();
         if (/*validarCampos() && cant == 1 &&*/validateFields() && !isEdit) {
             construirDescuento();
-
             helper.saveDescuento(pc);
+            reloadTable();
+            MantenimientoDescuentosController.descDialog.close();
         } else if (/*validarCampos() && cant == 1 &&*/validateFields() && isEdit) {
             construirDescuento();
             helper.updateDescuento(pc);
+            reloadTable();
+            MantenimientoDescuentosController.descDialog.close();
         }
-        reloadTable();
-        MantenimientoDescuentosController.descDialog.close();
+
     }
 
     public void reloadTable() {

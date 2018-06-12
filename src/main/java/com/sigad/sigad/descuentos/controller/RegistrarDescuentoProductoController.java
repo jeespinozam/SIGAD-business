@@ -14,6 +14,7 @@ import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import com.jfoenix.validation.NumberValidator;
 import com.jfoenix.validation.RequiredFieldValidator;
 import com.jfoenix.validation.ValidationFacade;
 import com.sigad.sigad.app.controller.ErrorController;
@@ -70,7 +71,7 @@ public class RegistrarDescuentoProductoController implements Initializable {
      */
     public AnchorPane container;
     StackPane stackpane;
-    
+
     @FXML
     private Label lblError;
 
@@ -129,7 +130,7 @@ public class RegistrarDescuentoProductoController implements Initializable {
         cargarDatos();
         setuValidations();
         txtDescuentopct.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (GeneralHelper.isNumeric(txtDescuentopct.getText())) {
+            if (GeneralHelper.isNumericDouble(txtDescuentopct.getText())) {
                 Double pct = Double.valueOf(txtDescuentopct.getText()) / 100;
                 Double nprecio = (1.0 - pct) * Double.valueOf(txtPrecio.getText());
                 txtNuevoPrecio.setText(GeneralHelper.roundTwoDecimals(nprecio).toString());
@@ -142,15 +143,17 @@ public class RegistrarDescuentoProductoController implements Initializable {
 
     public void setuValidations() {
         RequiredFieldValidator r;
-
+        
         r = new RequiredFieldValidator();
         r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
         r.setMessage("Campo obligatorio");
+        
+        
         txtDescuentopct.getValidators().add(r);
         txtDescuentopct.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (!newValue) {
 
-                if (!txtDescuentopct.validate()) {
+                if (!txtDescuentopct.validate() && GeneralHelper.isNumericDouble(txtDescuentopct.getText())) {
                     txtDescuentopct.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
                 } else {
                     txtDescuentopct.setFocusColor(new Color(0.30, 0.47, 0.23, 1));
@@ -163,7 +166,7 @@ public class RegistrarDescuentoProductoController implements Initializable {
         txtStockMaximo.getValidators().add(r);
         txtStockMaximo.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (!newValue && checkboxStock.isSelected()) {
-                if (!txtStockMaximo.validate()) {
+                if (!txtStockMaximo.validate() && GeneralHelper.isNumeric(txtStockMaximo.getText())) {
                     txtStockMaximo.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
                 } else {
                     txtStockMaximo.setFocusColor(new Color(0.30, 0.47, 0.23, 1));
@@ -194,8 +197,7 @@ public class RegistrarDescuentoProductoController implements Initializable {
         };
         txtFechaInicio.setDayCellFactory(dayCellFactory);
         txtFechaFin.setDayCellFactory(dayCellFactory);
-       
-        
+
         txtFechaInicio.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
             JFXSnackbar snackbar = new JFXSnackbar(container);
 
@@ -323,18 +325,25 @@ public class RegistrarDescuentoProductoController implements Initializable {
     }
 
     public boolean validateFields() {
-        if (!txtDescuentopct.validate()) {
+        if (!txtDescuentopct.validate() && !GeneralHelper.isNumericDouble(txtDescuentopct.getText())) {
             txtDescuentopct.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             txtDescuentopct.requestFocus();
             return false;
-        } else if (!txtStockMaximo.validate() && checkboxStock.isSelected()) {
+        } else if (txtStockMaximo.lengthProperty().getValue().equals(0) && checkboxStock.isSelected() && !GeneralHelper.isNumeric(txtDescuentopct.getText())) {
             txtStockMaximo.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             txtStockMaximo.requestFocus();
             return false;
         } else if (txtFechaInicio.getValue().isAfter(txtFechaFin.getValue())) {
             lblError.setText("Verifique el rango de fechas");
             return false;
-        } else {
+        }else if (txtFechaInicio.getValue() == null) {
+            lblError.setText("Verifique el rango de fechas");
+            return false;
+        }else if (txtFechaFin.getValue() == null) {
+            lblError.setText("Verifique el rango de fechas");
+            return false;
+        }else {
+                
             return true;
         }
     }
@@ -359,14 +368,16 @@ public class RegistrarDescuentoProductoController implements Initializable {
             ProductoDescuento nuevo = new ProductoDescuento();
             nuevo.setActivo(Boolean.TRUE);
             construirDescuento(nuevo);
-
             helper.saveDescuento(nuevo);
+            reloadTable();
+            MantenimientoDescuentosController.descDialog.close();
         } else if (validateFields() && cant == 1 && isEdit) {
             construirDescuento(pd);
             helper.updateDescuento(pd);
+            reloadTable();
+            MantenimientoDescuentosController.descDialog.close();
         }
-        reloadTable();
-        MantenimientoDescuentosController.descDialog.close();
+
     }
 
     @FXML

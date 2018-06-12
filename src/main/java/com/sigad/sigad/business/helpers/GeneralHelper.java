@@ -29,4 +29,13 @@ public class GeneralHelper {
         }
     }
 
+    public static boolean isNumericDouble(String input) {
+        try {
+            Double.parseDouble(input);
+            return true;
+        } catch (NumberFormatException e) {
+            // s is not numeric
+            return false;
+        }
+    }
 }

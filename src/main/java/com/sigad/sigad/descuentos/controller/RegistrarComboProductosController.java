@@ -7,12 +7,15 @@ package com.sigad.sigad.descuentos.controller;
 
 import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import com.jfoenix.validation.RequiredFieldValidator;
 import com.sigad.sigad.business.ComboPromocion;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductosCombos;
 import com.sigad.sigad.business.helpers.ComboPromocionHelper;
 import com.sigad.sigad.business.helpers.GeneralHelper;
 import com.sigad.sigad.business.helpers.ProductoHelper;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.net.URL;
 import java.sql.Date;
 import java.time.Instant;
@@ -41,6 +44,9 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
@@ -48,6 +54,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
 /**
@@ -62,6 +69,9 @@ public class RegistrarComboProductosController implements Initializable {
      */
     public static final String viewPath = "/com/sigad/sigad/descuentos/view/registrarComboProductos.fxml";
 
+    @FXML
+    private Label lblError;
+    
     @FXML
     private JFXDatePicker txtFechaInicio;
 
@@ -113,6 +123,7 @@ public class RegistrarComboProductosController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
+        setuValidations();
         txtPrecioBase.setDisable(true);
         columnas();
         agregarColumnas();
@@ -127,6 +138,160 @@ public class RegistrarComboProductosController implements Initializable {
                 return flag;
             });
         });
+    }
+
+    public void setuValidations() {
+        RequiredFieldValidator r;
+
+        r = new RequiredFieldValidator();
+        r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
+        r.setMessage("Campo obligatorio");
+        txtNombre.getValidators().add(r);
+        txtNombre.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (!newValue) {
+
+                if (!txtNombre.validate()) {
+                    txtNombre.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+                } else {
+                    txtNombre.setFocusColor(new Color(0.30, 0.47, 0.23, 1));
+                }
+            }
+        });
+
+        r = new RequiredFieldValidator();
+        r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
+        r.setMessage("Campo obligatorio");
+        txtDescripcion.getValidators().add(r);
+        txtDescripcion.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (!newValue) {
+
+                if (!txtDescripcion.validate()) {
+                    txtDescripcion.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+                } else {
+                    txtDescripcion.setFocusColor(new Color(0.30, 0.47, 0.23, 1));
+                }
+            }
+        });
+
+        r = new RequiredFieldValidator();
+        r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
+        r.setMessage("Campo obligatorio");
+        txtPrecioReal.getValidators().add(r);
+        txtPrecioReal.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (!newValue) {
+
+                if (!txtPrecioReal.validate()) {
+                    txtPrecioReal.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+                } else {
+                    txtPrecioReal.setFocusColor(new Color(0.30, 0.47, 0.23, 1));
+                }
+            }
+        });
+
+        
+        r = new RequiredFieldValidator();
+        r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
+        r.setMessage("Agrega Prodcutos");
+        txtPrecioBase.getValidators().add(r);
+        txtPrecioBase.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (!newValue) {
+
+                if (!txtPrecioBase.validate()) {
+                    txtPrecioBase.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+                } else {
+                    txtPrecioBase.setFocusColor(new Color(0.30, 0.47, 0.23, 1));
+                }
+            }
+        });
+        JFXDatePicker minDate = new JFXDatePicker();
+        minDate.setValue(LocalDate.now(ZoneId.systemDefault())); // colocar la fecha de hoy como el minimo
+
+        final Callback<DatePicker, DateCell> dayCellFactory;
+
+        dayCellFactory = (final DatePicker datePicker) -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (item.isBefore(minDate.getValue())) {
+                    setDisable(true);
+                    setVisible(false);
+
+                } else {
+                    setVisible(true);
+                    setDisable(false);
+                }
+            }
+
+        };
+        txtFechaInicio.setDayCellFactory(dayCellFactory);
+        txtFechaFin.setDayCellFactory(dayCellFactory);
+
+        txtFechaInicio.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+
+            try {
+
+                if (newValue.length() == 10) {
+                    LocalDate newDate = LocalDate.parse(newValue);
+                    System.out.println("Valor actual de END FIELD " + txtFechaFin.getValue());
+                    System.out.println("Valor actual de START FIELD " + txtFechaInicio.getValue());
+
+                    if (txtFechaFin.getValue() != null && txtFechaFin.getValue().isBefore(newDate)) {
+                        lblError.setText("La fecha de inicio debe ser menor a fecha fin");
+                    }
+                    lblError.setText("");
+
+                }
+            } catch (Exception e) {
+                System.out.println("Entre al catch");
+                System.err.println(e.getLocalizedMessage());
+            }
+        });
+
+        txtFechaFin.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+
+            try {
+
+                if (newValue.length() == 10) {
+                    LocalDate newDate = LocalDate.parse(newValue);
+
+                    if (newDate.isBefore(txtFechaInicio.getValue())) {
+                        txtFechaFin.getEditor().textProperty().setValue("");
+                        lblError.setText("Verifique el rango de fechas");
+                    }
+                    lblError.setText("");
+                }
+
+            } catch (Exception e) {
+                System.out.println("Entre al catch");
+                System.err.println(e.getLocalizedMessage());
+            }
+        });
+    }
+    
+    public boolean validateFields() {
+        if (!txtNombre.validate()) {
+            txtNombre.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+            txtNombre.requestFocus();
+            return false;
+        } else if (!txtDescripcion.validate()) {
+            txtDescripcion.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+            txtDescripcion.requestFocus();
+            return false;
+        } else if(txtFechaInicio.getValue().isAfter(txtFechaFin.getValue())) {
+            lblError.setText("Verifique el rango de fechas");
+            return false;
+        } else if (!txtPrecioBase.validate() && GeneralHelper.isNumericDouble(txtPrecioBase.getText())) {
+            txtPrecioBase.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+            txtPrecioBase.requestFocus();
+            return false;
+        } else if (!txtPrecioReal.validate()) {
+            txtPrecioReal.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+            txtPrecioReal.requestFocus();
+            return false;
+        } else{
+            return true;
+        }
     }
 
     public void columnas() {
@@ -219,7 +384,9 @@ public class RegistrarComboProductosController implements Initializable {
         txtPrecioReal.setText(GeneralHelper.roundTwoDecimals(precioreal).toString());
         txtDescripcion.setText(combo.getDescripcion());
         combo.getProductosxComboArray().forEach((t) -> {
-            Integer i = prod.indexOf(new ProductoLista(t.getProducto(), Integer.SIZE));
+            ProductoLista pd = new ProductoLista(t.getProducto(), Integer.SIZE);
+            Integer i = prod.indexOf(pd);
+            System.out.println(t.getProducto().getId());
             if (i >= 0) {
                 prod.get(i).cantidad.set(t.getCantidad());
             }
@@ -271,10 +438,10 @@ public class RegistrarComboProductosController implements Initializable {
     void guardarDescuento(MouseEvent event) {
         ComboPromocionHelper helper = new ComboPromocionHelper();
         construirDescuento(combo);
-        if (!isEdit) {
+        if (!isEdit && validateFields()) {
             combo.setNumVendidos(0);
             helper.saveCombo(combo);
-        } else {
+        } else if (isEdit && validateFields()) {
             helper.updateCombo(combo);
         }
     }
@@ -301,7 +468,7 @@ public class RegistrarComboProductosController implements Initializable {
         public boolean equals(Object o) {
             if (o instanceof ProductoLista) {
                 ProductoLista pl = (ProductoLista) o;
-                return pl.id.equals(this.id);
+                return pl.id.getValue().equals(this.id.getValue());
             }
             return super.equals(o); //To change body of generated methods, choose Tools | Templates.
         }

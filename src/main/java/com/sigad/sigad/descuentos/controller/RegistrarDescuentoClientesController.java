@@ -76,6 +76,7 @@ public class RegistrarDescuentoClientesController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
+        setuValidations();
     }
 
     public void cargarTipoDescuento() {

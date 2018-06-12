@@ -10,6 +10,7 @@
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane id="AnchorPane" prefHeight="450.0" prefWidth="584.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.descuentos.controller.RegistrarDescuentoProductoController">
     <stylesheets>
@@ -22,9 +23,9 @@
                <children>
                    <JFXTreeTableView id="tblProductos" fx:id="tblProductos" layoutX="40.0" layoutY="76.0" prefHeight="129.0" prefWidth="458.0" />
                   <JFXTextField fx:id="filtro" labelFloat="true" layoutX="40.0" layoutY="38.0" prefHeight="25.0" prefWidth="184.0" promptText="Buscar" />
-                  <JFXDatePicker fx:id="txtFechaInicio" defaultColor="#455a64" layoutX="38.0" layoutY="279.0" prefHeight="17.0" prefWidth="171.0" promptText="Fecha Inicio" />
-                  <JFXDatePicker fx:id="txtFechaFin" defaultColor="#455a64" layoutX="38.0" layoutY="328.0" promptText="Fecha Fin" />
-                  <JFXTextField fx:id="txtDescuentopct" labelFloat="true" layoutX="38.0" layoutY="379.0" onInputMethodTextChanged="#calcularNuevoPrecio" promptText="Descuento (%)" />
+                  <JFXDatePicker fx:id="txtFechaInicio" defaultColor="#455a64" layoutX="38.0" layoutY="267.0" prefHeight="17.0" prefWidth="171.0" promptText="Fecha Inicio" />
+                  <JFXDatePicker fx:id="txtFechaFin" defaultColor="#455a64" layoutX="38.0" layoutY="317.0" promptText="Fecha Fin" />
+                  <JFXTextField fx:id="txtDescuentopct" labelFloat="true" layoutX="40.0" layoutY="379.0" onInputMethodTextChanged="#calcularNuevoPrecio" promptText="Descuento (%)" />
                   <JFXButton fx:id="btnGuardar" buttonType="RAISED" layoutX="436.0" layoutY="379.0" onAction="#guardarDescuento" style="-fx-background-color: #FFFFFF;" text="Guardar">
                      <effect>
                         <DropShadow color="#000000f5" />
@@ -39,7 +40,10 @@
                   <JFXTextField fx:id="txtStockMaximo" labelFloat="true" layoutX="368.0" layoutY="292.0" promptText="Stock Maximo" />
                   <JFXTextField fx:id="txtNuevoPrecio" disable="true" labelFloat="true" layoutX="360.0" layoutY="225.0" promptText="Nuevo precio" />
                   <JFXTextField fx:id="txtPrecio" disable="true" labelFloat="true" layoutX="40.0" layoutY="225.0" promptText="Precio" />
-                  <Label fx:id="lblError" layoutX="291.0" layoutY="345.0" prefHeight="17.0" prefWidth="0.0" textFill="#de0000" />
+                  <Label fx:id="lblError" layoutX="37.0" layoutY="347.0" prefHeight="21.0" prefWidth="171.0" textFill="#de0000">
+                     <font>
+                        <Font size="9.0" />
+                     </font></Label>
                </children>
             </AnchorPane>
          </children>
