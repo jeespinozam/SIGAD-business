@@ -119,7 +119,7 @@ public class RegistrarDescuentoProductoController implements Initializable {
 
     private final ObservableList<ProductoLista> prod = FXCollections.observableArrayList();
     private Paint colorStd;
-    private  DateTimeFormatter  formatter  = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -131,11 +131,24 @@ public class RegistrarDescuentoProductoController implements Initializable {
         cargarDatos();
         setuValidations();
         txtDescuentopct.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*(\\.\\d*)?")) {
+
+                txtDescuentopct.setText(oldValue);
+            } else {
+                if (newValue.length() > 0) {
+                    Double n = Double.valueOf(newValue);
+                    System.out.println(n);
+                    if (n > 100.0 || n < 0.0) {
+                        txtDescuentopct.setText(oldValue);
+                    }
+                }
+            }
 
             if (GeneralHelper.isNumericDouble(txtDescuentopct.getText()) && GeneralHelper.isNumericDouble(txtPrecio.getText())) {
                 Double pct = Double.valueOf(txtDescuentopct.getText()) / 100;
                 Double nprecio = (1.0 - pct) * Double.valueOf(txtPrecio.getText());
                 txtNuevoPrecio.setText(GeneralHelper.roundTwoDecimals(nprecio).toString());
+
             } else {
                 txtNuevoPrecio.clear();
             }
@@ -155,12 +168,16 @@ public class RegistrarDescuentoProductoController implements Initializable {
             if (!newValue) {
 
                 if (!txtDescuentopct.validate() && GeneralHelper.isNumericDouble(txtDescuentopct.getText())) {
-                    txtDescuentopct.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+                    Double t = Double.valueOf(txtDescuentopct.getText());
+                    if (t <= 100 & t > 0) {
+                        txtDescuentopct.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+                    }
                 } else {
                     txtDescuentopct.setFocusColor(new Color(0.30, 0.47, 0.23, 1));
                 }
             }
         });
+
         r = new RequiredFieldValidator();
         r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
         r.setMessage("Campo obligatorio");

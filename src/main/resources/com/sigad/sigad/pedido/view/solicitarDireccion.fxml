@@ -12,14 +12,14 @@
          <children>
             <AnchorPane prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <JFXTextField labelFloat="true" layoutX="71.0" layoutY="113.0" prefHeight="25.0" prefWidth="445.0" promptText="Ingrese la direccion" />
-                  <JFXTextField disable="true" labelFloat="true" layoutX="71.0" layoutY="223.0" prefHeight="25.0" prefWidth="445.0" promptText="Tienda mas cercana" />
-                  <JFXButton fx:id="btnBuscarTienda" buttonType="RAISED" layoutX="324.0" layoutY="160.0" onMouseClicked="#encontrarTiendaCercana" prefHeight="25.0" prefWidth="192.0" style="-fx-background-color: #FFFFFF;" text="Encontrar tienda mas cercana" wrapText="true">
+                  <JFXTextField fx:id="txtdireccion" labelFloat="true" layoutX="56.0" layoutY="117.0" prefHeight="25.0" prefWidth="445.0" promptText="Ingrese la direccion" />
+                  <JFXTextField fx:id="txtTiendaDireccion" disable="true" labelFloat="true" layoutX="56.0" layoutY="217.0" prefHeight="25.0" prefWidth="445.0" promptText="Tienda mas cercana" />
+                  <JFXButton fx:id="btnBuscarTienda" buttonType="RAISED" layoutX="309.0" layoutY="157.0" onMouseClicked="#encontrarTiendaCercana" prefHeight="25.0" prefWidth="192.0" style="-fx-background-color: #FFFFFF;" text="Encontrar tienda mas cercana" wrapText="true">
                      <effect>
                         <DropShadow color="#000000fc" />
                      </effect>
                   </JFXButton>
-                  <JFXButton fx:id="btnContinuar" buttonType="RAISED" disable="true" layoutX="395.0" layoutY="331.0" prefHeight="25.0" prefWidth="121.0" style="-fx-background-color: #FFFFFF;" text="Continuar" wrapText="true">
+                  <JFXButton fx:id="btnContinuar" buttonType="RAISED" disable="true" layoutX="395.0" layoutY="331.0" onMouseClicked="#crearPedido" prefHeight="25.0" prefWidth="121.0" style="-fx-background-color: #FFFFFF;" text="Continuar" wrapText="true">
                      <effect>
                         <DropShadow color="#000000fc" />
                      </effect>

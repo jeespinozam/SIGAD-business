@@ -169,14 +169,14 @@ public class MantenimientoPedidosController implements Initializable {
     void crearPedido(MouseEvent event) {
         try {
             if (verificarTienda()) {
-                Node node;
-                FXMLLoader loader = new FXMLLoader(MantenimientoPedidosController.this.getClass().getResource(SeleccionarProductosController.viewPath));
-                node = (Node) loader.load();
-                SeleccionarProductosController sel = loader.getController();
-                sel.initModel(pedido, hiddenSp);
-                hiddenSp.getChildren().setAll(node);
+//                Node node;
+//                FXMLLoader loader = new FXMLLoader(MantenimientoPedidosController.this.getClass().getResource(SeleccionarProductosController.viewPath));
+//                node = (Node) loader.load();
+//                SeleccionarProductosController sel = loader.getController();
+//                sel.initModel(pedido, hiddenSp);
+//                hiddenSp.getChildren().setAll(node);
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(MantenimientoPedidosController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -185,16 +185,17 @@ public class MantenimientoPedidosController implements Initializable {
     public Boolean verificarTienda() {
         try {
             JFXDialogLayout content = new JFXDialogLayout();
-            content.setHeading(new Text("Agregar descuento por Clientes"));
+            content.setHeading(new Text("Encontrar tienda mas cercana"));
             Node node;
             FXMLLoader loader = new FXMLLoader(MantenimientoPedidosController.this.getClass().getResource(SolicitarDireccionController.viewPath));
             node = (Node) loader.load();
             SolicitarDireccionController dir = loader.getController();
             Tienda tienda = new Tienda();
-            dir.initModel(isEdit, tienda);
+            dir.initModel(isEdit, tienda, hiddenSp);
             content.setBody(node);
             direccionDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
             direccionDialog.show();
+            //return Boolean.TRUE;
         } catch (IOException ex) {
             Logger.getLogger(MantenimientoPedidosController.class.getName()).log(Level.SEVERE, null, ex);
         }

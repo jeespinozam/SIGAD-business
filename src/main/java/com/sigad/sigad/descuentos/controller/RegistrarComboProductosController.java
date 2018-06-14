@@ -18,7 +18,6 @@ import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.net.URL;
 import java.sql.Date;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -26,15 +25,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -51,6 +42,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableRow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -120,7 +112,7 @@ public class RegistrarComboProductosController implements Initializable {
     @FXML
     JFXTreeTableColumn<ProductoLista, Integer> cantidad = new JFXTreeTableColumn<>("Cantidad");
     private final ObservableList<ProductoLista> prod = FXCollections.observableArrayList();
-    private  DateTimeFormatter  formatter  = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -189,6 +181,11 @@ public class RegistrarComboProductosController implements Initializable {
                 }
             }
         });
+        txtPrecioReal.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*(\\.\\d*)?")) {
+                txtPrecioReal.setText(oldValue);
+            }
+        });
 
         r = new RequiredFieldValidator();
         r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
@@ -202,6 +199,11 @@ public class RegistrarComboProductosController implements Initializable {
                 } else {
                     txtPrecioBase.setFocusColor(new Color(0.30, 0.47, 0.23, 1));
                 }
+            }
+        });
+        txtPrecioBase.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*(\\.\\d*)?")) {
+                txtPrecioBase.setText(oldValue);
             }
         });
         JFXDatePicker minDate = new JFXDatePicker();
@@ -282,13 +284,13 @@ public class RegistrarComboProductosController implements Initializable {
         } else if (txtFechaInicio.getValue().isAfter(txtFechaFin.getValue())) {
             lblError.setText("Verifique el rango de fechas");
             return false;
-        }else if (txtFechaInicio.getValue() == null) {
+        } else if (txtFechaInicio.getValue() == null) {
             lblError.setText("Verifique el rango de fechas");
             return false;
         } else if (txtFechaFin.getValue() == null) {
             lblError.setText("Verifique el rango de fechas");
             return false;
-        }else if (!txtPrecioBase.validate() && !GeneralHelper.isNumericDouble(txtPrecioBase.getText())) {
+        } else if (!txtPrecioBase.validate() && !GeneralHelper.isNumericDouble(txtPrecioBase.getText())) {
             txtPrecioBase.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             txtPrecioBase.requestFocus();
             return false;
@@ -314,19 +316,10 @@ public class RegistrarComboProductosController implements Initializable {
         pu.setPrefWidth(80);
         pu.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, String> param) -> param.getValue().getValue().precio);
 
-        cantidad.setPrefWidth(80);
-        cantidad.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<ProductoLista, Integer>, ObservableValue<Integer>>() {
-            @Override
-            public ObservableValue<Integer> call(TreeTableColumn.CellDataFeatures<ProductoLista, Integer> param) {
-                return param.getValue().getValue().cantidad.asObject();
-            }
-        });
-        cantidad.setCellFactory(new Callback<TreeTableColumn<ProductoLista, Integer>, TreeTableCell<ProductoLista, Integer>>() {
-            @Override
-            public TreeTableCell<ProductoLista, Integer> call(TreeTableColumn<ProductoLista, Integer> param) {
-                return new EditingCell();
-            }
-        });
+        cantidad.setPrefWidth(200);
+        cantidad.setSortType(TreeTableColumn.SortType.DESCENDING);
+        cantidad.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProductoLista, Integer> param) -> param.getValue().getValue().cantidad.asObject());
+        cantidad.setCellFactory((TreeTableColumn<ProductoLista, Integer> param) -> new EditingCell());
         cantidad.setOnEditCommit((event) -> {
             ProductoLista p = event.getRowValue().getValue();
             p.cantidad.setValue(event.getNewValue());
@@ -449,10 +442,13 @@ public class RegistrarComboProductosController implements Initializable {
             construirDescuento(combo);
             combo.setNumVendidos(0);
             helper.saveCombo(combo);
+            MantenimientoDescuentosController.comboDialog.close();
         } else if (isEdit && validateFields()) {
             construirDescuento(combo);
             helper.updateCombo(combo);
+            MantenimientoDescuentosController.comboDialog.close();
         }
+        
     }
 
     class ProductoLista extends RecursiveTreeObject<ProductoLista> {
@@ -521,7 +517,7 @@ public class RegistrarComboProductosController implements Initializable {
         @Override
         public void updateItem(Integer item, boolean empty) {
             super.updateItem(item, empty);
-
+            TreeTableRow<ProductoLista> currentRow = getTreeTableRow();
             if (empty) {
                 setText(null);
                 setGraphic(null);
@@ -535,6 +531,11 @@ public class RegistrarComboProductosController implements Initializable {
                 } else {
                     setText(getString());
                     setContentDisplay(ContentDisplay.TEXT_ONLY);
+                }
+                if (item > 0) {
+                    currentRow.setStyle("-fx-background-color:#F3F3F3;");
+                }else{
+                    currentRow.setStyle("-fx-background-color:transparent;");
                 }
             }
         }
