@@ -12,6 +12,8 @@ import java.text.DecimalFormat;
  * @author Alexandra
  */
 public class GeneralHelper {
+    
+    public static String defaultImage = "/images/producto_generico.jpg";
 
     public static Double roundTwoDecimals(double d) {
 

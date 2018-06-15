@@ -509,7 +509,7 @@ public class SeleccionarProductosController implements Initializable {
                 Image im = new Image(pathImagen);
                 this.imagen = new ImageView(im);
             } catch (Exception e) {
-                Image im = new Image("/images/producto_generico.jpg");
+                Image im = new Image(GeneralHelper.defaultImage);
                 this.imagen = new ImageView(im);
             }
             this.seleccion = new SimpleBooleanProperty(false);
@@ -779,18 +779,15 @@ public class SeleccionarProductosController implements Initializable {
         private void createTextField() {
             textField = new JFXTextField(getString());
             textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
-            textField.setOnKeyPressed(new EventHandler<KeyEvent>() {
-                @Override
-                public void handle(KeyEvent t) {
-                    if (t.getCode() == KeyCode.ENTER) {
-                        if (isNumeric(textField.getText())) {
-
-                            commitEdit(Integer.parseInt(textField.getText()));
-                        }
-
-                    } else if (t.getCode() == KeyCode.ESCAPE) {
-                        cancelEdit();
+            textField.setOnKeyPressed((KeyEvent t) -> {
+                if (t.getCode() == KeyCode.ENTER) {
+                    if (isNumeric(textField.getText())) {
+                        
+                        commitEdit(Integer.parseInt(textField.getText()));
                     }
+                    
+                } else if (t.getCode() == KeyCode.ESCAPE) {
+                    cancelEdit();
                 }
             });
         }

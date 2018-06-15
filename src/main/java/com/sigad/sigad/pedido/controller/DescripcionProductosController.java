@@ -7,10 +7,13 @@ package com.sigad.sigad.pedido.controller;
 
 import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import com.sigad.sigad.business.ClienteDescuento;
 import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.Producto;
+import com.sigad.sigad.business.ProductoCategoriaDescuento;
 import com.sigad.sigad.business.ProductoDescuento;
 import com.sigad.sigad.business.ProductoInsumo;
+import com.sigad.sigad.business.helpers.GeneralHelper;
 import com.sigad.sigad.business.helpers.ProductoDescuentoHelper;
 import com.sigad.sigad.business.helpers.ProductoHelper;
 import java.net.URL;
@@ -67,14 +70,13 @@ public class DescripcionProductosController implements Initializable {
     @FXML
     private JFXButton btnBack;
 
-
     @FXML
     private JFXTreeTableView<PromocionesLista> tablaPromociones;
     private ObservableList<PromocionesLista> promociones = FXCollections.observableArrayList();
     JFXTreeTableColumn<PromocionesLista, String> promocion = new JFXTreeTableColumn<>("Promocion");
     JFXTreeTableColumn<PromocionesLista, String> tipo = new JFXTreeTableColumn<>("Tipo");
     JFXTreeTableColumn<PromocionesLista, String> descuento = new JFXTreeTableColumn<>("Descuento");
-    
+
     @FXML
     private JFXTreeTableView<InsumosLista> tablaInsumos;
     private ObservableList<InsumosLista> insumos = FXCollections.observableArrayList();
@@ -96,20 +98,27 @@ public class DescripcionProductosController implements Initializable {
      * @param idProducto the idProducto to set
      */
     public void initModel(Integer idProducto) {
+        //db
         this.idProducto = idProducto;
         ProductoHelper helper = new ProductoHelper();
         Producto producto = helper.getProductById(idProducto);
         helper.close();
         if (producto != null) {
-            txtNombre.setText(producto.getNombre());
-            txtPrecioBase.setText(producto.getPrecio().toString());
-            txtCategoria.setText(producto.getCategoria().getNombre());
-            txtDescripcion.setText(producto.getDescripcion());
-            Image image = new Image(producto.getImagen());
-            imageProducto.setImage(image);
+            txtNombre.setText((producto.getNombre() != null) ? producto.getNombre() : "");
+            txtPrecioBase.setText((producto.getPrecio() != null) ? producto.getPrecio().toString() : "");
+            txtCategoria.setText((producto.getCategoria() != null && producto.getCategoria().getNombre() != null) ? producto.getCategoria().getNombre() : "");
+            txtDescripcion.setText((producto.getDescripcion() != null) ? producto.getDescripcion() : "");
+            try {
+                Image image = new Image(producto.getImagen());
+                imageProducto.setImage(image);
+            } catch (Exception e) {
+                Image image = new Image(GeneralHelper.defaultImage);
+                imageProducto.setImage(image);
+            }
+            
         }
         llenarTablaDescuento();
-        ArrayList<ProductoInsumo> pd = new ArrayList<>(producto.getProductoxInsumos());
+        ArrayList<ProductoInsumo> pd = new ArrayList((producto.getProductoxInsumos()!=null)? producto.getProductoxInsumos(): new ArrayList<ProductoInsumo>());
         pd.forEach((t) -> {
             insumos.add(new InsumosLista(t.getInsumo(), t.getCantidad().intValue()));
         });
@@ -134,8 +143,6 @@ public class DescripcionProductosController implements Initializable {
 
     }
 
-    
-
     public void columnasPromociones() {
         promocion.setPrefWidth(120);
         promocion.setCellValueFactory((TreeTableColumn.CellDataFeatures<PromocionesLista, String> param) -> param.getValue().getValue().promocion);
@@ -146,7 +153,7 @@ public class DescripcionProductosController implements Initializable {
 
     }
 
-     public void columnasInsumos() {
+    public void columnasInsumos() {
         nombre.setPrefWidth(120);
         nombre.setCellValueFactory((TreeTableColumn.CellDataFeatures<InsumosLista, String> param) -> param.getValue().getValue().nombre);
         cantidad.setPrefWidth(120);
@@ -154,7 +161,7 @@ public class DescripcionProductosController implements Initializable {
 
     }
 
-     public void agregarColumnasTablasInsumos() {
+    public void agregarColumnasTablasInsumos() {
         final TreeItem<InsumosLista> rootPedido = new RecursiveTreeItem<>(insumos, RecursiveTreeObject::getChildren);
         tablaInsumos.setEditable(true);
         tablaInsumos.getColumns().setAll(nombre, cantidad);
@@ -177,12 +184,22 @@ public class DescripcionProductosController implements Initializable {
         StringProperty descuento;
         StringProperty descripcion;
         Integer codigo;
+        ProductoDescuento descuentoProd;
+        ClienteDescuento descuentoCliente;
+        ProductoCategoriaDescuento descuentoCategoria;
+        
 
         public PromocionesLista(String promocion, String tipo, String descuento, String descripcion, Integer codigo) {
             this.promocion = new SimpleStringProperty(promocion);
             this.codigo = codigo;
             this.tipo = new SimpleStringProperty(tipo);
             this.descuento = new SimpleStringProperty(descuento);
+        }
+        
+        public PromocionesLista(ProductoDescuento descuentos){
+            this.codigo = descuentos.getId().intValue()
+                    ;
+            
         }
 
         @Override
@@ -202,8 +219,7 @@ public class DescripcionProductosController implements Initializable {
         }
 
     }
-    
-    
+
     class InsumosLista extends RecursiveTreeObject<InsumosLista> {
 
         StringProperty nombre;
@@ -231,7 +247,6 @@ public class DescripcionProductosController implements Initializable {
             hash = 23 * hash + Objects.hashCode(this.insumo);
             return hash;
         }
-
 
     }
 }
