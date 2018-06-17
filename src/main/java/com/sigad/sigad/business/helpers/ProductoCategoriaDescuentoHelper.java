@@ -62,11 +62,11 @@ public class ProductoCategoriaDescuentoHelper {
 
     ;
 
-    public ProductoCategoriaDescuento getDescuentoByProducto(Integer producto_id) {
+    public ProductoCategoriaDescuento getDescuentoByCategoria(Integer productocategoria_id) {
         ProductoCategoriaDescuento descuento = null;
         Query query = null;
         try {
-            query = session.createQuery("from ProductoCategoriaDescuento where producto_id='" + producto_id);
+            query = session.createQuery("from ProductoCategoriaDescuento where categoria_id='" + productocategoria_id + "'");
 
             if (!query.list().isEmpty()) {
                 descuento = (ProductoCategoriaDescuento) query.list().get(0);
@@ -84,11 +84,11 @@ public class ProductoCategoriaDescuentoHelper {
 
     ;
     
-    public List<ProductoCategoriaDescuento> getDescuentosByProducto(Integer producto_id) {
+    public List<ProductoCategoriaDescuento> getDescuentosByCategoria(Integer productocategoria_id) {
         List<ProductoCategoriaDescuento> descuentos = null;
         Query query = null;
         try {
-            query = session.createQuery("from ProductoCategoriaDescuento where producto_id='" + producto_id);
+            query = session.createQuery("from ProductoCategoriaDescuento where categoria_id='" + productocategoria_id + "'");
 
             descuentos = (List<ProductoCategoriaDescuento>) query.list();
         } catch (Exception e) {

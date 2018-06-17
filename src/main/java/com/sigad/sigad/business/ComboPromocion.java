@@ -8,6 +8,7 @@ package com.sigad.sigad.business;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -42,6 +43,24 @@ public class ComboPromocion {
 
     public ComboPromocion() {
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof ComboPromocion){
+            ComboPromocion c = (ComboPromocion) o;
+            return c.getId().equals(this.getId()) && c.getNombre().equals(getNombre());
+        }
+        return super.equals(o); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 11 * hash + Objects.hashCode(this.id);
+        hash = 11 * hash + Objects.hashCode(this.nombre);
+        return hash;
+    }
+    
 
     /**
      * @return the id

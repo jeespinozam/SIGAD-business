@@ -314,5 +314,19 @@ public class Producto {
         this.precioCompra = precioCompra;
     }
 
+    /**
+     * @return the combos
+     */
+    public Set<ProductosCombos> getCombos() {
+        return combos;
+    }
+
+    /**
+     * @param combos the combos to set
+     */
+    public void setCombos(Set<ProductosCombos> combos) {
+        this.combos = combos;
+    }
+
     
 }

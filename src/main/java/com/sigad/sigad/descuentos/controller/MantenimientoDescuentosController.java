@@ -206,7 +206,7 @@ public class MantenimientoDescuentosController implements Initializable {
     public void llenarTablaCombos() {
         descuentosCombos.clear();
         ComboPromocionHelper pdhelper = new ComboPromocionHelper();
-        ArrayList<ComboPromocion> pd = pdhelper.getDescuentos();
+        ArrayList<ComboPromocion> pd = pdhelper.getCombos();
         pdhelper.close();
         pd.forEach((t) -> {
             descuentosCombos.add(new CombosProductosLista(t));

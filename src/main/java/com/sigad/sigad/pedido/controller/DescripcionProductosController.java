@@ -8,16 +8,21 @@ package com.sigad.sigad.pedido.controller;
 import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sigad.sigad.business.ClienteDescuento;
+import com.sigad.sigad.business.ComboPromocion;
 import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoCategoriaDescuento;
 import com.sigad.sigad.business.ProductoDescuento;
 import com.sigad.sigad.business.ProductoInsumo;
+import com.sigad.sigad.business.ProductosCombos;
+import com.sigad.sigad.business.helpers.ComboPromocionHelper;
 import com.sigad.sigad.business.helpers.GeneralHelper;
+import com.sigad.sigad.business.helpers.ProductoCategoriaDescuentoHelper;
 import com.sigad.sigad.business.helpers.ProductoDescuentoHelper;
 import com.sigad.sigad.business.helpers.ProductoHelper;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -46,7 +51,12 @@ public class DescripcionProductosController implements Initializable {
     /**
      * Initializes the controller class.
      */
+    private final String TIPO_DESCPROD = "PROD";
+    private final String TIPO_DESCCAT = "CAT";
+    private final String TIPO_COMBO = "COMBO";
+
     private Integer idProducto;
+    private Producto producto;
 
     @FXML
     private ImageView imageProducto;
@@ -101,7 +111,7 @@ public class DescripcionProductosController implements Initializable {
         //db
         this.idProducto = idProducto;
         ProductoHelper helper = new ProductoHelper();
-        Producto producto = helper.getProductById(idProducto);
+        producto = helper.getProductById(idProducto);
         helper.close();
         if (producto != null) {
             txtNombre.setText((producto.getNombre() != null) ? producto.getNombre() : "");
@@ -115,10 +125,10 @@ public class DescripcionProductosController implements Initializable {
                 Image image = new Image(GeneralHelper.defaultImage);
                 imageProducto.setImage(image);
             }
-            
+
         }
         llenarTablaDescuento();
-        ArrayList<ProductoInsumo> pd = new ArrayList((producto.getProductoxInsumos()!=null)? producto.getProductoxInsumos(): new ArrayList<ProductoInsumo>());
+        ArrayList<ProductoInsumo> pd = new ArrayList((producto.getProductoxInsumos() != null) ? producto.getProductoxInsumos() : new ArrayList<>());
         pd.forEach((t) -> {
             insumos.add(new InsumosLista(t.getInsumo(), t.getCantidad().intValue()));
         });
@@ -135,11 +145,36 @@ public class DescripcionProductosController implements Initializable {
         List<ProductoDescuento> descuentos = helper.getDescuentosByProducto(idProducto);
         if (descuentos != null) {
             descuentos.forEach((t) -> {
-                promociones.add(new PromocionesLista(t.getCodCupon(), "Descuento",
-                        String.valueOf(t.getValorPct() * 100), "D", idProducto));
+                 if (t.getFechaInicio().before(new Date()) && t.getFechaFin().after(new Date())) {
+                    promociones.add(new PromocionesLista(t));
+                }
+                
             });
         }
         helper.close();
+        ProductoCategoriaDescuentoHelper helperCat = new ProductoCategoriaDescuentoHelper();
+        List<ProductoCategoriaDescuento> catdescuentos = helperCat.getDescuentosByCategoria(producto.getCategoria().getId().intValue());
+        if (catdescuentos != null) {
+            System.out.println("--->l" + catdescuentos.size());
+            catdescuentos.forEach((t) -> {
+                if (t.getFechaInicio().before(new Date()) && t.getFechaFin().after(new Date())) {
+                    promociones.add(new PromocionesLista(t));
+                }
+
+            });
+        }
+        helperCat.close();
+        ComboPromocionHelper cmbHelper = new ComboPromocionHelper();
+        List<ProductosCombos> combos = cmbHelper.getCombosByProducto(idProducto);
+        if (combos != null) {
+            combos.forEach((t) -> {
+                if (t.getCombopromocion().getFechaInicio().before(new Date()) && t.getCombopromocion().getFechaFin().after(new Date())) {
+                    promociones.add(new PromocionesLista(t.getCombopromocion()));
+                }
+                
+            });
+        }
+        cmbHelper.close();
 
     }
 
@@ -177,6 +212,15 @@ public class DescripcionProductosController implements Initializable {
         tablaPromociones.setShowRoot(false);
     }
 
+    public String getPct(Double pct) {
+        if (pct != null) {
+            Double p = GeneralHelper.roundTwoDecimals(pct * 100);
+            return p.toString() + " %";
+        } else {
+            return "";
+        }
+    }
+
     class PromocionesLista extends RecursiveTreeObject<PromocionesLista> {
 
         StringProperty promocion;
@@ -187,7 +231,6 @@ public class DescripcionProductosController implements Initializable {
         ProductoDescuento descuentoProd;
         ClienteDescuento descuentoCliente;
         ProductoCategoriaDescuento descuentoCategoria;
-        
 
         public PromocionesLista(String promocion, String tipo, String descuento, String descripcion, Integer codigo) {
             this.promocion = new SimpleStringProperty(promocion);
@@ -195,11 +238,26 @@ public class DescripcionProductosController implements Initializable {
             this.tipo = new SimpleStringProperty(tipo);
             this.descuento = new SimpleStringProperty(descuento);
         }
-        
-        public PromocionesLista(ProductoDescuento descuentos){
-            this.codigo = descuentos.getId().intValue()
-                    ;
-            
+
+        public PromocionesLista(ProductoDescuento descuentos) {
+            this.codigo = descuentos.getId().intValue();
+            this.descuento = new SimpleStringProperty(getPct(descuentos.getValorPct()));
+            this.promocion = new SimpleStringProperty(TIPO_DESCPROD + codigo);
+            this.tipo = new SimpleStringProperty(TIPO_DESCPROD);
+        }
+
+        public PromocionesLista(ProductoCategoriaDescuento descuentos) {
+            this.codigo = descuentos.getId().intValue();
+            this.descuento = new SimpleStringProperty(getPct(descuentos.getValue()));
+            this.promocion = new SimpleStringProperty(TIPO_DESCCAT + codigo);
+            this.tipo = new SimpleStringProperty(TIPO_DESCCAT);
+        }
+
+        public PromocionesLista(ComboPromocion combo) {
+            this.codigo = combo.getId().intValue();
+            this.descuento = new SimpleStringProperty(combo.getPreciounireal().toString());
+            this.promocion = new SimpleStringProperty(combo.getNombre());
+            this.tipo = new SimpleStringProperty(TIPO_COMBO);
         }
 
         @Override

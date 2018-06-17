@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sigad.sigad.perfil.controller;
+package com.sigad.sigad.pedido.controller;
 
 import com.google.maps.errors.ApiException;
 import com.jfoenix.controls.*;
@@ -77,6 +77,9 @@ public class SolicitarDireccionController implements Initializable {
     @FXML
     void encontrarTiendaCercana(MouseEvent event) {
         try {
+            if (txtdireccion.getText().length() <= 0) {
+                return;
+            }
             GMapsHelper helper = GMapsHelper.getInstance();
             Pair<Double, Double> pair = helper.geocodeAddress(txtdireccion.getText());
             tiendas.forEach((t) -> {

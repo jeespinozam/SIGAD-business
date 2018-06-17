@@ -10,15 +10,19 @@ import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.app.controller.HomeController;
 import com.sigad.sigad.app.controller.LoginController;
+import com.sigad.sigad.business.ComboPromocion;
 import com.sigad.sigad.business.DetallePedido;
 import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.Pedido;
 import com.sigad.sigad.business.Producto;
+import com.sigad.sigad.business.ProductoCategoriaDescuento;
 import com.sigad.sigad.business.ProductoDescuento;
 import com.sigad.sigad.business.ProductoInsumo;
+import com.sigad.sigad.business.ProductosCombos;
 import com.sigad.sigad.business.Tienda;
 import com.sigad.sigad.business.Usuario;
 import com.sigad.sigad.business.helpers.CapacidadTiendaHelper;
+import com.sigad.sigad.business.helpers.ComboPromocionHelper;
 import com.sigad.sigad.business.helpers.GeneralHelper;
 import com.sigad.sigad.business.helpers.InsumosHelper;
 import com.sigad.sigad.business.helpers.ProductoDescuentoHelper;
@@ -161,7 +165,6 @@ public class SeleccionarProductosController implements Initializable {
         agregarColumnasTablasProductos();
         agregarFiltro();
 
-       
     }
 
     public void agregarFiltro() {
@@ -287,20 +290,20 @@ public class SeleccionarProductosController implements Initializable {
                 ProductoLista p = prod.get(index);
                 System.out.println(p.nombre.getValue() + p.stock.getValue());
                 Integer stock = Integer.valueOf(p.stock.getValue());
-                Double precio = Double.valueOf(event.getRowValue().getValue().precio.get().replaceAll(",", "."));
-                Double descuentos = Double.valueOf(event.getRowValue().getValue().descuento.get().replaceAll(",", ".")) / 100.0;
+                Double precio = Double.valueOf(ped.precio.get().replaceAll(",", "."));
+                Double descuentos = (ped.descuento == null) ? 0.0 : Double.valueOf(ped.descuento.get().replaceAll(",", ".")) / 100.0;
                 Double subNew = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getNewValue()) * precio * (1 - descuentos));
                 Double subOld = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getOldValue()) * precio * (1 - descuentos));
-                PedidoLista nuevo = new PedidoLista(event.getRowValue().getValue().nombre.getValue(), event.getRowValue().getValue().precio.getValue(),
+                PedidoLista nuevo = new PedidoLista(ped.nombre.getValue(), event.getRowValue().getValue().precio.getValue(),
                         (event.getNewValue() <= stock + event.getOldValue()) ? event.getNewValue() : event.getOldValue(),
                         (event.getNewValue() <= stock + event.getOldValue()) ? subNew.toString() : subOld.toString(),
-                        event.getRowValue().getValue().codigo, event.getRowValue().getValue().descuento.get(),
-                        event.getRowValue().getValue().codigoDescuento, event.getRowValue().getValue().producto, event.getRowValue().getValue().descuentoProducto);
+                        ped.codigo, event.getRowValue().getValue().descuento.get(),
+                        ped.codigoDescuento, ped.producto, ped.descuentoProducto);
                 Integer i = pedidos.indexOf(nuevo);
                 Integer oldValue = event.getOldValue();
                 if (event.getNewValue() <= stock + oldValue) {
                     System.out.println("rec->" + event.getNewValue().toString());
-                    recalcularStock(p, event.getNewValue(), event.getOldValue());
+                    recalcularStockDetalle(p, event.getNewValue(), event.getOldValue());
                     mostrarMaximoStock();
 
                 }
@@ -332,7 +335,7 @@ public class SeleccionarProductosController implements Initializable {
 
     }
 
-    public void recalcularStock(ProductoLista producto, Integer nuevoValor, Integer viejoValor) {
+    public void recalcularStockProducto(ProductoLista producto, Integer nuevoValor, Integer viejoValor) {//Producto
 
         ArrayList<ProductoInsumo> productoxinsumos = new ArrayList(producto.getProducto().getProductoxInsumos());
         for (int i = 0; i < productoxinsumos.size(); i++) {
@@ -348,18 +351,44 @@ public class SeleccionarProductosController implements Initializable {
 
     }
 
+    public void recalcularStockDetalle(ProductoLista item, Integer nuevoValor, Integer viejoValor) {
+        if (item.combo != null) {
+            ComboPromocion combo = item.combo;
+            for (ProductosCombos combopromo : combo.getProductosxComboArray()) {
+                Producto p = combopromo.getProducto();
+                Integer cantidad = combopromo.getCantidad();
+                recalcularStockProducto(item, nuevoValor * cantidad, viejoValor * cantidad);
+            }
+
+        } else if (item.producto != null) {
+            recalcularStockProducto(item, nuevoValor, viejoValor);
+        }
+    }
+
+    public Integer mostrarMaximoStockProducto(Producto t) {
+        Integer st = Integer.MAX_VALUE;
+        for (ProductoInsumo p : t.getProductoxInsumos()) {
+            Integer cantidadInsumo = insumosCambiantes.get(p.getInsumo());
+            cantidadInsumo = (cantidadInsumo == null) ? 0 : cantidadInsumo;
+            Double posStock = cantidadInsumo / (p.getCantidad());// Si no tengo insumos que se requiere no se debe caer
+            st = (posStock.intValue() < st) ? posStock.intValue() : st;
+        }
+        return st;
+    }
+
     public void mostrarMaximoStock() {
         prod.forEach((t) -> {
-            Integer st = Integer.MAX_VALUE;
-            for (ProductoInsumo p : t.getProducto().getProductoxInsumos()) {
-                Integer cantidadInsumo = insumosCambiantes.get(p.getInsumo());
-                cantidadInsumo = (cantidadInsumo == null) ? 0 : cantidadInsumo;
-                Double posStock = cantidadInsumo / p.getCantidad();// Si no tengo insumos que se requiere no se debe caer
-                st = (posStock.intValue() < st) ? posStock.intValue() : st;
-
+            if (t.producto != null) {
+                Integer st = mostrarMaximoStockProducto(t.getProducto());
+                prod.get(prod.indexOf(t)).stock.setValue(st.toString());
+            } else if (t.combo != null) {
+                Integer ct = Integer.MAX_VALUE;
+                for (ProductosCombos c : t.combo.getProductosxComboArray()) {
+                    Integer st = mostrarMaximoStockProducto(c.getProducto()) / c.getCantidad();
+                    ct = (st < ct) ? st : ct;
+                }
+                prod.get(prod.indexOf(t)).stock.setValue(ct.toString());
             }
-            prod.get(prod.indexOf(t)).stock.setValue(st.toString());
-
         });
     }
 
@@ -378,7 +407,7 @@ public class SeleccionarProductosController implements Initializable {
 
         treeView.setEditable(true);
         treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        treeView.getColumns().setAll(select, imagen, nombre, precio, stock, categoria, almacen);
+        treeView.getColumns().setAll(select, imagen, nombre, precio, stock, categoria);
         treeView.setRoot(root);
         treeView.setShowRoot(false);
 
@@ -450,7 +479,7 @@ public class SeleccionarProductosController implements Initializable {
         this.pedido = pedido;
         this.pedido.setTienda(tienda);
         this.pedido.setDireccionDeEnvio(direccion);
-         //Basede datos
+        //Basede datos
         ProductoHelper gest = new ProductoHelper();
         ArrayList<Producto> productosDB = gest.getProducts();
         gest.close();
@@ -461,6 +490,15 @@ public class SeleccionarProductosController implements Initializable {
             });
 
         }
+        ComboPromocionHelper helper = new ComboPromocionHelper();
+        ArrayList<ComboPromocion> combosDB = helper.getCombos();
+        helper.close();
+        if (combosDB != null) {
+            combosDB.forEach((t) -> {
+                prod.add(new ProductoLista(t, "0"));
+            });
+
+        }
         insumos = tienda.getInsumos();
         insumosCambiantes = new HashMap(insumos);
         mostrarMaximoStock();
@@ -468,8 +506,8 @@ public class SeleccionarProductosController implements Initializable {
 
     public void calcularTotal() {
         Double total = 0.0;
-        for (PedidoLista pedido : pedidos) {
-            total = Double.valueOf(pedido.subtotal.getValue()) + total;
+        for (PedidoLista ped : pedidos) {
+            total = Double.valueOf(ped.subtotal.getValue()) + total;
         }
         Double igv = GeneralHelper.roundTwoDecimals(total * HomeController.IGV);
         total = GeneralHelper.roundTwoDecimals(total + igv);
@@ -485,6 +523,15 @@ public class SeleccionarProductosController implements Initializable {
         treeViewPedido.setShowRoot(false);
     }
 
+    public String getPct(Double pct) {
+        if (pct != null) {
+            Double p = GeneralHelper.roundTwoDecimals(pct * 100);
+            return p.toString();
+        } else {
+            return "";
+        }
+    }
+
     class ProductoLista extends RecursiveTreeObject<ProductoLista> {
 
         ImageView imagen;
@@ -493,10 +540,11 @@ public class SeleccionarProductosController implements Initializable {
         private StringProperty nombre;
         private StringProperty precio;
         private StringProperty stock;
-        private Integer stockFijo;
+        Integer stockFijo;
         private StringProperty categoria;
         private StringProperty almacen;
-        private Producto producto;
+        Producto producto;
+        ComboPromocion combo;
 
         public ProductoLista(String nombre, String precio, String stock, String categoria, String almacen, String pathImagen, Integer codigo, Producto producto) {
             this.nombre = new SimpleStringProperty(nombre);
@@ -531,10 +579,51 @@ public class SeleccionarProductosController implements Initializable {
                 } else {
                     Integer ix = pedidos.indexOf(new PedidoLista(nombre, precio, 0, "0", codigo, "0", null, producto, null));
                     if (ix >= 0) {
-                        recalcularStock(prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, codigo, null))), 0, pedidos.get(ix).cantidad.getValue());
+                        recalcularStockDetalle(prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, codigo, null))), 0, pedidos.get(ix).cantidad.getValue());
                     }
                     mostrarMaximoStock();
                     pedidos.remove(new PedidoLista(nombre, precio, 0, "0", codigo, "0", null, producto, null));
+                }
+                calcularTotal();
+            });
+        }
+
+        public ProductoLista(ComboPromocion combo, String stock) {
+            this.nombre = new SimpleStringProperty(combo.getNombre());
+            this.precio = new SimpleStringProperty(combo.getPreciounireal().toString());
+            this.stock = new SimpleStringProperty(stock);
+            this.stockFijo = Integer.valueOf(stock);
+            this.categoria = new SimpleStringProperty("Combo");
+            try {
+                Image im = new Image(combo.getImagen());
+                this.imagen = new ImageView(im);
+            } catch (Exception e) {
+                Image im = new Image(GeneralHelper.defaultImage);
+                this.imagen = new ImageView(im);
+            }
+            this.seleccion = new SimpleBooleanProperty(false);
+            this.codigo = combo.getId().intValue();
+            this.combo = combo;
+            seleccion.addListener((observable, oldValue, newValue) -> {
+                calcularTotal();
+                if (newValue) {
+                    ProductoDescuentoHelper helper = new ProductoDescuentoHelper();
+                    ProductoDescuento descuento = helper.getDescuentoByProducto(codigo);
+                    if (descuento != null) {
+                        pedidos.add(new PedidoLista(0, "0", combo));
+                    } else {
+                        pedidos.add(new PedidoLista(0, "0", combo));
+                    }
+                    helper.close();
+
+                    //prod.remove(this);
+                } else {
+                    Integer ix = pedidos.indexOf(new PedidoLista(0, "0", combo));
+                    if (ix >= 0) {
+                        recalcularStockDetalle(prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, codigo, null))), 0, pedidos.get(ix).cantidad.getValue());
+                    }
+                    mostrarMaximoStock();
+                    pedidos.remove(new PedidoLista(0, "0", combo));
                 }
                 calcularTotal();
             });
@@ -695,7 +784,9 @@ public class SeleccionarProductosController implements Initializable {
         Integer codigoDescuento;
         Integer codigo;
         Producto producto;
+        ComboPromocion combo;
         ProductoDescuento descuentoProducto;
+        ProductoCategoriaDescuento descuentoCategoria;
 
         public PedidoLista(String nombre, String precio, Integer cantidad, String subtotal, Integer codigo, String descuento, Integer codigoDesc, Producto producto, ProductoDescuento descuentoProducto) {
             this.nombre = new SimpleStringProperty(nombre);
@@ -706,14 +797,53 @@ public class SeleccionarProductosController implements Initializable {
             this.codigoDescuento = codigoDesc;
             this.descuento = new SimpleStringProperty(descuento);
             this.producto = producto;
+            this.combo = null;
             this.descuentoProducto = descuentoProducto;
+            this.descuentoCategoria = null;
+        }
+
+        public PedidoLista(Integer cantidad, String subtotal, Producto producto, ProductoDescuento descuentoProducto) {
+            this.nombre = new SimpleStringProperty(producto.getNombre());
+            this.precio = new SimpleStringProperty(producto.getPrecio().toString());
+            this.cantidad = new SimpleIntegerProperty(cantidad);
+            this.subtotal = new SimpleStringProperty(subtotal);
+            this.codigo = producto.getId().intValue();
+            this.codigoDescuento = descuentoProducto.getId().intValue();
+            this.descuento = new SimpleStringProperty(getPct(descuentoProducto.getValorPct()));
+            this.producto = producto;
+            this.combo = null;
+            this.descuentoProducto = descuentoProducto;
+            this.descuentoCategoria = null;
+        }
+
+        public PedidoLista(Integer cantidad, String subtotal, Producto producto, ProductoCategoriaDescuento descuentoCategoria) {
+            this.nombre = new SimpleStringProperty(producto.getNombre());
+            this.precio = new SimpleStringProperty(producto.getPrecio().toString());
+            this.cantidad = new SimpleIntegerProperty(cantidad);
+            this.subtotal = new SimpleStringProperty(subtotal);
+            this.codigo = producto.getId().intValue();
+            this.codigoDescuento = descuentoCategoria.getId().intValue();
+            this.descuento = new SimpleStringProperty(getPct(descuentoCategoria.getValue()));
+            this.producto = producto;
+            this.combo = null;
+            this.descuentoProducto = null;
+            this.descuentoCategoria = descuentoCategoria;
+        }
+
+        public PedidoLista(Integer cantidad, String subtotal, ComboPromocion combo) {
+            this.nombre = new SimpleStringProperty(combo.getNombre());
+            this.precio = new SimpleStringProperty(combo.getPreciounireal().toString());
+            this.cantidad = new SimpleIntegerProperty(cantidad);
+            this.subtotal = new SimpleStringProperty(subtotal);
+            this.codigo = combo.getId().intValue();
+            this.combo = combo;
         }
 
         @Override
         public boolean equals(Object o) {
             if (o instanceof PedidoLista) {
                 PedidoLista pl = (PedidoLista) o;
-                return pl.codigo.equals(codigo);
+                return producto.equals(pl.producto) || combo.equals(pl.combo);
             }
             return super.equals(o); //To change body of generated methods, choose Tools | Templates.
         }
@@ -721,7 +851,8 @@ public class SeleccionarProductosController implements Initializable {
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = 29 * hash + Objects.hashCode(this.codigo);
+            hash = 43 * hash + Objects.hashCode(this.producto);
+            hash = 43 * hash + Objects.hashCode(this.combo);
             return hash;
         }
 
@@ -782,10 +913,10 @@ public class SeleccionarProductosController implements Initializable {
             textField.setOnKeyPressed((KeyEvent t) -> {
                 if (t.getCode() == KeyCode.ENTER) {
                     if (isNumeric(textField.getText())) {
-                        
+
                         commitEdit(Integer.parseInt(textField.getText()));
                     }
-                    
+
                 } else if (t.getCode() == KeyCode.ESCAPE) {
                     cancelEdit();
                 }
