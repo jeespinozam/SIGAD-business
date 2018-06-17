@@ -19,25 +19,8 @@ import org.hibernate.query.Query;
  *
  * @author jorgeespinoza
  */
-public class TiendaHelper {
-    
-    Session session = null;
-    private String errorMessage = "";
-    
+public class TiendaHelper extends BaseHelper{    
     public TiendaHelper() {
-        session = LoginController.serviceInit();
-    }
-    
-    /*Close session*/
-    public void close(){
-        session.close();
-    }
-
-    /**
-     * @return the errorMessage
-     */
-    public String getErrorMessage() {
-        return errorMessage;
     }
     
     /*Get all stores*/

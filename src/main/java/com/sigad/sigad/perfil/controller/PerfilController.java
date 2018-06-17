@@ -188,7 +188,7 @@ public class PerfilController implements Initializable {
             });
         }
         
-        //Double click on row
+        //click on row
         profilesTbl.setRowFactory(ord -> {
             JFXTreeTableRow<Profile> row = new JFXTreeTableRow<>();
             row.setOnMouseClicked((event) -> {
@@ -274,7 +274,7 @@ public class PerfilController implements Initializable {
             Perfil p = helper.getProfile(selectedProfile.name.getValue());
             if(p == null){
                 ErrorController error = new ErrorController();
-                error.loadDialog("Error", "No se pudo obtener el perfil", "Ok", hiddenSp);
+                error.loadDialog("Error", "No se logró obtener el perfil", "Ok", hiddenSp);
                 System.out.println("Error al obtener el perfil" + selectedProfile.name.getValue());
                 return;
             }
@@ -289,20 +289,34 @@ public class PerfilController implements Initializable {
     }  
     
     private void deleteProfileDialog() {
-        JFXDialogLayout content =  new JFXDialogLayout();
-        content.setHeading(new Text("Error"));
-        content.setBody(new Text("Cuenta o contraseña incorrectas"));
+//        JFXDialogLayout content =  new JFXDialogLayout();
+//        content.setHeading(new Text("Error"));
+//        content.setBody(new Text("Cuenta o contraseña incorrectas"));
                 
-        JFXDialog dialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
-        JFXButton button = new JFXButton("Okay");
-        button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                dialog.close();
-            }
-        });
-        content.setActions(button);
-        dialog.show();
+//        JFXDialog dialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
+//        JFXButton button = new JFXButton("Okay");
+//        button.setOnAction(new EventHandler<ActionEvent>() {
+//            @Override
+//            public void handle(ActionEvent event) {
+//                dialog.close();
+//            }
+//        });
+//        content.setActions(button);
+//        dialog.show();
+        PerfilHelper helper = new PerfilHelper();
+        Perfil p = helper.getProfile(selectedProfile.name.getValue());
+        if(p!= null){
+            p.setActivo(!selectedProfile.active.getValue().equals("Activo"));
+            helper.updateProfile(p);
+            helper.close();
+            
+            dataPerfilTbl.remove(selectedProfile);
+            selectedProfile.active = new SimpleStringProperty(p.isActivo()? "Activo": "Inactivo");
+            dataPerfilTbl.add(selectedProfile);
+        }else{
+            ErrorController error = new ErrorController();
+            error.loadDialog("Erro", "No se logró desactivar este perfil", "Ok", hiddenSp);
+        }
     }
     
     private void permissionInitPopup(){
@@ -340,7 +354,7 @@ public class PerfilController implements Initializable {
             Permiso p = helper.getPermission(selectedPermission.menu.getValue());
             if(p == null){
                 ErrorController error = new ErrorController();
-                error.loadDialog("Error", "No se pudo obtener el permiso", "Ok", hiddenSp);
+                error.loadDialog("Error", "No se logró obtener el permiso", "Ok", hiddenSp);
                 System.out.println("Error al obtener el permiso" + selectedProfile.name.getValue());
                 return;
             }
@@ -386,22 +400,25 @@ public class PerfilController implements Initializable {
         Perfil ptemp = ph.getProfile(profileName);
         if(ptemp == null){
             ErrorController error = new ErrorController();
-            error.loadDialog("Error", "No se pudo obtener el perfil seleccionado", "Ok", hiddenSp);
+            error.loadDialog("Error", "No se logró obtener el perfil seleccionado", "Ok", hiddenSp);
             return;
         }
         Set<Permiso> currPermissions= ptemp.getPermisos();
-        
-        PermisoHelper helper = new PermisoHelper();
-        ArrayList<Permiso> list = helper.getPermissions();
-        if(list != null){
-            list.forEach(p -> {
-                currPermissions.forEach((curr)->{
-                   if(p.getMenu().equals(curr.getMenu())){
-                       updatePermissionData(p);
-                   } 
-                });
-            });
+        for (Permiso currPermission : currPermissions) {
+            updatePermissionData(currPermission);
         }
+        
+//        PermisoHelper helper = new PermisoHelper();
+//        ArrayList<Permiso> list = helper.getPermissions();
+//        if(list != null){
+//            list.forEach(p -> {
+//                currPermissions.forEach((curr)->{
+//                   if(p.getMenu().equals(curr.getMenu())){
+//                       updatePermissionData(p);
+//                   } 
+//                });
+//            });
+//        }
         
         final TreeItem<Permission> root = new RecursiveTreeItem<>(dataPermisoTbl, RecursiveTreeObject::getChildren);
         
@@ -429,7 +446,7 @@ public class PerfilController implements Initializable {
         public boolean equals(Object o) {
             if (o instanceof Profile) {
                 Profile u = (Profile) o;
-                return u.name.equals(name);
+                return u.name.equals(this.name);
             }
             return super.equals(o); //To change body of generated methods, choose Tools | Templates.
         }

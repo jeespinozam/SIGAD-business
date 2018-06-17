@@ -20,27 +20,10 @@ import org.hibernate.query.Query;
  *
  * @author jorgeespinoza
  */
-public class UsuarioHelper {
-
-    Session session = null;
-    private String errorMessage = "";
-    
+public class UsuarioHelper extends BaseHelper{
     public UsuarioHelper() {
-        session = LoginController.serviceInit();
     }
-    
-    /*Close session*/
-    public void close(){
-        session.close();
-    }
-
-    /**
-     * @return the errorMessage
-     */
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-    
+        
     /*Get all the users*/
     public ArrayList<Usuario> getUsers(){
         ArrayList<Usuario> users = null;
