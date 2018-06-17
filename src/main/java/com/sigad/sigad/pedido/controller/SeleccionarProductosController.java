@@ -294,14 +294,24 @@ public class SeleccionarProductosController implements Initializable {
                 Double descuentos = (ped.descuento == null) ? 0.0 : Double.valueOf(ped.descuento.get().replaceAll(",", ".")) / 100.0;
                 Double subNew = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getNewValue()) * precio * (1 - descuentos));
                 Double subOld = GeneralHelper.roundTwoDecimals(Float.valueOf(event.getOldValue()) * precio * (1 - descuentos));
-                PedidoLista nuevo = new PedidoLista(ped.nombre.getValue(), event.getRowValue().getValue().precio.getValue(),
-                        (event.getNewValue() <= stock + event.getOldValue()) ? event.getNewValue() : event.getOldValue(),
-                        (event.getNewValue() <= stock + event.getOldValue()) ? subNew.toString() : subOld.toString(),
-                        ped.codigo, event.getRowValue().getValue().descuento.get(),
-                        ped.codigoDescuento, ped.producto, ped.descuentoProducto);
-                Integer i = pedidos.indexOf(nuevo);
+                PedidoLista nuevo = null;
+                if (ped.descuentoProducto != null) {
+                    nuevo = new PedidoLista((event.getNewValue() <= stock + event.getOldValue()) ? event.getNewValue() : event.getOldValue(),
+                            (event.getNewValue() <= stock + event.getOldValue()) ? subNew.toString() : subOld.toString(),
+                            ped.producto, ped.descuentoProducto);
+                } else if (ped.descuentoCategoria != null) {
+                    nuevo = new PedidoLista((event.getNewValue() <= stock + event.getOldValue()) ? event.getNewValue() : event.getOldValue(),
+                            (event.getNewValue() <= stock + event.getOldValue()) ? subNew.toString() : subOld.toString(),
+                            ped.producto, ped.descuentoCategoria);
+
+                } else if (ped.combo != null) {
+                    nuevo = new PedidoLista((event.getNewValue() <= stock + event.getOldValue()) ? event.getNewValue() : event.getOldValue(),
+                            (event.getNewValue() <= stock + event.getOldValue()) ? subNew.toString() : subOld.toString(), ped.combo);
+                } 
+                
+                Integer i = pedidos.indexOf(new PedidoLista(nuevo.nombre.getValue(), viewPath, index, viewPath, nuevo.codigo, viewPath, nuevo.codigo, null, null));
                 Integer oldValue = event.getOldValue();
-                if (event.getNewValue() <= stock + oldValue) {
+                if (event.getNewValue() <= stock + oldValue && i > 0) {
                     System.out.println("rec->" + event.getNewValue().toString());
                     recalcularStockDetalle(p, event.getNewValue(), event.getOldValue());
                     mostrarMaximoStock();
@@ -335,9 +345,9 @@ public class SeleccionarProductosController implements Initializable {
 
     }
 
-    public void recalcularStockProducto(ProductoLista producto, Integer nuevoValor, Integer viejoValor) {//Producto
+    public void recalcularStockProducto(Producto producto, Integer nuevoValor, Integer viejoValor) {//Producto
 
-        ArrayList<ProductoInsumo> productoxinsumos = new ArrayList(producto.getProducto().getProductoxInsumos());
+        ArrayList<ProductoInsumo> productoxinsumos = new ArrayList(producto.getProductoxInsumos());
         for (int i = 0; i < productoxinsumos.size(); i++) {
             ProductoInsumo get = productoxinsumos.get(i);
             System.out.println(nuevoValor + " + " + viejoValor);
@@ -357,11 +367,11 @@ public class SeleccionarProductosController implements Initializable {
             for (ProductosCombos combopromo : combo.getProductosxComboArray()) {
                 Producto p = combopromo.getProducto();
                 Integer cantidad = combopromo.getCantidad();
-                recalcularStockProducto(item, nuevoValor * cantidad, viejoValor * cantidad);
+                recalcularStockProducto(p, nuevoValor * cantidad, viejoValor * cantidad);
             }
 
         } else if (item.producto != null) {
-            recalcularStockProducto(item, nuevoValor, viejoValor);
+            recalcularStockProducto(item.getProducto(), nuevoValor, viejoValor);
         }
     }
 
@@ -418,7 +428,11 @@ public class SeleccionarProductosController implements Initializable {
                 row.setOnMouseClicked((event) -> {
                     if (event.getClickCount() == 2 && (!row.isEmpty())) {
                         ProductoLista rowData = row.getItem();
-                        mostrarInfoProducto(rowData.getCodigo());
+                        if (rowData.producto != null) {
+                            mostrarInfoProducto(rowData.getCodigo());
+                        } else {
+                            mostrarInfoCombo(rowData.combo);
+                        }
 
                     }
                 });
@@ -431,7 +445,7 @@ public class SeleccionarProductosController implements Initializable {
         try {
             popup = new JFXPopup();
             JFXDialogLayout content = new JFXDialogLayout();
-            content.setHeading(new Text("Crear Usuario"));
+            content.setHeading(new Text("Producto"));
             Node node;
             //           node = (Node) FXMLLoader.load(SeleccionarProductosController.this.getClass().getResource(DescripcionProductosController.viewPath));
 
@@ -439,6 +453,27 @@ public class SeleccionarProductosController implements Initializable {
             node = (Node) loader.load();
             DescripcionProductosController desc = loader.getController();
             desc.initModel(codigo);
+
+            content.setBody(node);
+            userDialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
+            userDialog.show();
+        } catch (IOException ex) {
+            Logger.getLogger(DescripcionProductosController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void mostrarInfoCombo(ComboPromocion combo) {
+        try {
+            popup = new JFXPopup();
+            JFXDialogLayout content = new JFXDialogLayout();
+            content.setHeading(new Text("Producto"));
+            Node node;
+            //           node = (Node) FXMLLoader.load(SeleccionarProductosController.this.getClass().getResource(DescripcionProductosController.viewPath));
+
+            FXMLLoader loader = new FXMLLoader(SeleccionarProductosController.this.getClass().getResource(DescripcionProductosController.viewPath));
+            node = (Node) loader.load();
+            DescripcionProductosController desc = loader.getController();
+            desc.initModel(combo);
 
             content.setBody(node);
             userDialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
@@ -843,7 +878,7 @@ public class SeleccionarProductosController implements Initializable {
         public boolean equals(Object o) {
             if (o instanceof PedidoLista) {
                 PedidoLista pl = (PedidoLista) o;
-                return producto.equals(pl.producto) || combo.equals(pl.combo);
+                return codigo.equals(pl.codigo) && nombre.equals(pl.nombre);
             }
             return super.equals(o); //To change body of generated methods, choose Tools | Templates.
         }
@@ -851,8 +886,8 @@ public class SeleccionarProductosController implements Initializable {
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = 43 * hash + Objects.hashCode(this.producto);
-            hash = 43 * hash + Objects.hashCode(this.combo);
+            hash = 43 * hash + Objects.hashCode(this.codigo);
+
             return hash;
         }
 

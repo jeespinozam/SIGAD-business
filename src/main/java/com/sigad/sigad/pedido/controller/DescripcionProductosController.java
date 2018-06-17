@@ -33,6 +33,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.image.Image;
@@ -57,6 +58,8 @@ public class DescripcionProductosController implements Initializable {
 
     private Integer idProducto;
     private Producto producto;
+    
+    private ComboPromocion combo;
 
     @FXML
     private ImageView imageProducto;
@@ -76,6 +79,13 @@ public class DescripcionProductosController implements Initializable {
 
     @FXML
     private JFXTextArea txtDescripcion;
+    @FXML
+    private Label lblProductosInsumos;
+    
+    @FXML
+    private Label lblPromociones;
+    
+    
 
     @FXML
     private JFXButton btnBack;
@@ -131,6 +141,34 @@ public class DescripcionProductosController implements Initializable {
         ArrayList<ProductoInsumo> pd = new ArrayList((producto.getProductoxInsumos() != null) ? producto.getProductoxInsumos() : new ArrayList<>());
         pd.forEach((t) -> {
             insumos.add(new InsumosLista(t.getInsumo(), t.getCantidad().intValue()));
+        });
+    }
+    
+    
+    public void initModel(ComboPromocion combo) {
+        //db
+        this.combo = combo;
+        
+        if (combo != null) {
+            lblProductosInsumos.setText("Productos");
+            txtNombre.setText((combo.getNombre() != null) ? combo.getNombre() : "");
+            txtPrecioBase.setText((combo.getPreciounireal()!= null) ? combo.getPreciounireal().toString() : "");
+            txtCategoria.setText("Combo");
+            txtDescripcion.setText((combo.getDescripcion() != null) ? combo.getDescripcion() : "");
+            lblPromociones.setText("");
+            anchorPane.getChildren().remove(tablaPromociones);
+            try {
+                Image image = new Image(combo.getImagen());
+                imageProducto.setImage(image);
+            } catch (Exception e) {
+                Image image = new Image(GeneralHelper.defaultImage);
+                imageProducto.setImage(image);
+            }
+
+        }
+        ArrayList<ProductosCombos> pd = new ArrayList((this.combo.getProductosxComboArray() != null) ? this.combo.getProductosxComboArray() : new ArrayList<>());
+        pd.forEach((t) -> {
+            insumos.add(new InsumosLista(t.getProducto(), t.getCantidad()));
         });
     }
 
@@ -283,13 +321,22 @@ public class DescripcionProductosController implements Initializable {
         StringProperty nombre;
         StringProperty cantidad;
         Insumo insumo;
+        Producto producto;
 
         public InsumosLista(Insumo insumo, Integer cantidad) {
             this.nombre = new SimpleStringProperty(insumo.getNombre());
             this.cantidad = new SimpleStringProperty(cantidad.toString());
             this.insumo = insumo;
+            this.producto = null;
         }
 
+        
+        public InsumosLista(Producto producto, Integer cantidad) {
+            this.nombre = new SimpleStringProperty(producto.getNombre());
+            this.cantidad = new SimpleStringProperty(cantidad.toString());
+            this.insumo = null;
+            this.producto = producto;
+        }
         @Override
         public boolean equals(Object o) {
             if (o instanceof InsumosLista) {
