@@ -54,6 +54,10 @@ public class DetallePedido {
     private ProductoCategoriaDescuento descuentoCategoria;
     @ManyToOne(optional = false)
     private Pedido pedido;
+    @ManyToOne
+    private ProductosCombos combo;
+    @ManyToOne
+    private ProductoCategoriaDescuento descuentoCategoria;
     
     //Campos de auditoria
     @Column (name = "`timestamp`")
