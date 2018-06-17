@@ -124,7 +124,19 @@ public class CrearEditarPerfilController implements Initializable {
             nameTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             nameTxt.requestFocus();
             return false;
-        }else return true;
+        }else{
+            for (PerfilController.Profile profile : PerfilController.dataPerfilTbl) {
+                if(profile.name.getValue().equals(nameTxt.getText())){
+                    ErrorController error = new ErrorController();
+                    error.loadDialog("Erro", "No se puede crear este perfil porque ya existe este nombre", "Ok", hiddenSp);
+                    
+                    this.nameTxt.requestFocus();
+                    
+                    return false;
+                }
+            }
+            return true;
+        }
     }
     
     public void updateFields() {

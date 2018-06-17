@@ -24,7 +24,6 @@ import com.sigad.sigad.productos.controller.ProductosManagementController;
 import com.sigad.sigad.tienda.controller.TiendaController;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
-import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -94,6 +93,7 @@ public class HomeController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         initsidebar();
+        menuProfile.setText(LoginController.user.getNombres() + " " + LoginController.user.getApellidoPaterno());
     }   
     
     private void initsidebar(){
@@ -285,15 +285,15 @@ public class HomeController implements Initializable {
     }
     
     private void initPopup(){
-        JFXButton perfil = new JFXButton("Mi perfil");
+//        JFXButton perfil = new JFXButton("Mi perfil");
         JFXButton configurations = new JFXButton("Configuraciones");
         JFXButton logout = new JFXButton("Logout");
         
-        perfil.setPadding(new Insets(20));
+//        perfil.setPadding(new Insets(20));
         configurations.setPadding(new Insets(20));
         logout.setPadding(new Insets(20));
         
-        perfil.setPrefSize(150.0,40.0);
+//        perfil.setPrefSize(150.0,40.0);
         configurations.setPrefSize(150.0,40.0);
         logout.setPrefSize(150.0,40.0);
         
@@ -305,7 +305,7 @@ public class HomeController implements Initializable {
             }
         });
         
-        VBox vBox = new VBox(perfil, configurations, logout);
+        VBox vBox = new VBox(configurations, logout);
         
         
         popup = new JFXPopup();

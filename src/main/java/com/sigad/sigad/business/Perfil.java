@@ -11,6 +11,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.validation.constraints.NotNull;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,6 +36,8 @@ public class Perfil {
     private boolean activo;
     @ManyToMany
     private Set<Permiso> permisos = new HashSet<>();
+    @OneToMany(mappedBy = "perfil",fetch = FetchType.LAZY)
+    private Set<Usuario> usuarios = new HashSet<>();
     /**
      * Constructor.
      */
@@ -128,6 +131,20 @@ public class Perfil {
      
     public void addPermiso(Permiso permiso) {
         this.permisos.add(permiso);
+    }
+
+    /**
+     * @return the usuarios
+     */
+    public Set<Usuario> getUsuarios() {
+        return usuarios;
+    }
+
+    /**
+     * @param usuarios the usuarios to set
+     */
+    public void setUsuarios(Set<Usuario> usuarios) {
+        this.usuarios = usuarios;
     }
    
 }

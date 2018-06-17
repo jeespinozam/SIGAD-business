@@ -86,16 +86,16 @@ public class LoginController implements Initializable {
                     tx = session.beginTransaction();
                 }
                 //Crear un perfil de cliente
-                PerfilHelper helper = new PerfilHelper();
-                Perfil cliente = new Perfil("Cliente", "Cliente de aplicación móvil", true, null);
-                helper.saveProfile(cliente);
-                helper.close();
+//                PerfilHelper helper = new PerfilHelper();
+//                Perfil cliente = new Perfil("Cliente", "Cliente de aplicación móvil", true, null);
+//                helper.saveProfile(cliente);
+//                helper.close();
                 
                 Set<Permiso> list = new HashSet<>();
                 list.add(new Permiso("Ventas", "SALE"));
                 list.add(new Permiso("Descuentos", "SALE"));
                 list.add(new Permiso("Insumos", "ARRANGE_SEND_BACKWARD"));
-                list.add(new Permiso("Personal", "ACCOUNT_MULTIPLE"));
+                list.add(new Permiso("Usuarios", "ACCOUNT_MULTIPLE"));
                 list.add(new Permiso("Repartos", "CAR"));
                 list.add(new Permiso("Pedidos", "CART"));
                 list.add(new Permiso("Tiendas", "STORE"));

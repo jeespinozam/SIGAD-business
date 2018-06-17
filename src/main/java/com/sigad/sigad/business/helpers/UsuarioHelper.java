@@ -5,8 +5,6 @@ import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Usuario;
 import java.util.ArrayList;
 import java.util.HashSet;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 

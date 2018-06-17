@@ -35,9 +35,9 @@ public class Permiso {
     public Permiso() {
     }
 
-    public Permiso(String opcion, String descripcion) {
-        this.menu = opcion;
-        this.icono = descripcion;
+    public Permiso(String menu, String icono) {
+        this.menu = menu;
+        this.icono = icono;
     }
     
     
