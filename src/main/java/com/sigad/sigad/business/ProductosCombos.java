@@ -78,4 +78,18 @@ public class ProductosCombos {
     public void setProducto(Producto producto) {
         this.producto = producto;
     }
+
+    /**
+     * @return the combopromocion
+     */
+    public ComboPromocion getCombopromocion() {
+        return combopromocion;
+    }
+
+    /**
+     * @param combopromocion the combopromocion to set
+     */
+    public void setCombopromocion(ComboPromocion combopromocion) {
+        this.combopromocion = combopromocion;
+    }
 }

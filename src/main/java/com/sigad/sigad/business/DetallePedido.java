@@ -54,10 +54,6 @@ public class DetallePedido {
     private ProductoCategoriaDescuento descuentoCategoria;
     @ManyToOne(optional = false)
     private Pedido pedido;
-    @ManyToOne
-    private ProductosCombos combo;
-    @ManyToOne
-    private ProductoCategoriaDescuento descuentoCategoria;
     
     //Campos de auditoria
     @Column (name = "`timestamp`")
@@ -180,6 +176,48 @@ public class DetallePedido {
      */
     public void setProducto(Producto producto) {
         this.producto = producto;
+    }
+
+    /**
+     * @return the descuento
+     */
+    public ProductoDescuento getDescuentoProducto() {
+        return descuento;
+    }
+
+    /**
+     * @param descuento the descuento to set
+     */
+    public void setDescuentoProducto(ProductoDescuento descuento) {
+        this.descuento = descuento;
+    }
+
+    /**
+     * @return the combo
+     */
+    public ComboPromocion getCombo() {
+        return combo;
+    }
+
+    /**
+     * @param combo the combo to set
+     */
+    public void setCombo(ComboPromocion combo) {
+        this.combo = combo;
+    }
+
+    /**
+     * @return the descuentoCategoria
+     */
+    public ProductoCategoriaDescuento getDescuentoCategoria() {
+        return descuentoCategoria;
+    }
+
+    /**
+     * @param descuentoCategoria the descuentoCategoria to set
+     */
+    public void setDescuentoCategoria(ProductoCategoriaDescuento descuentoCategoria) {
+        this.descuentoCategoria = descuentoCategoria;
     }
 
   
