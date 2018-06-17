@@ -266,12 +266,12 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
             construirDescuento();
             helper.saveDescuento(pc);
             reloadTable();
-            MantenimientoDescuentosController.descDialog.close();
+            MantenimientoDescuentosController.descCatDialog.close();
         } else if (/*validarCampos() && cant == 1 &&*/validateFields() && isEdit) {
             construirDescuento();
             helper.updateDescuento(pc);
             reloadTable();
-            MantenimientoDescuentosController.descDialog.close();
+            MantenimientoDescuentosController.descCatDialog.close();
         }
 
     }
