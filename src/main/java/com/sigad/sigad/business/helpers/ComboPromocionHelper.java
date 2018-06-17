@@ -131,6 +131,8 @@ public class ComboPromocionHelper {
             uNew.setFechaFin(uOld.getFechaFin());
             uNew.setMaxDisponible(uOld.getMaxDisponible());
             uNew.setActivo(uOld.getActivo());
+            uNew.setNombre(uOld.getNombre());
+            uNew.setDescripcion(uOld.getDescripcion());
             uNew.setDuracionDias(uOld.getDuracionDias());
             uNew.setPreciounitario(uOld.getPreciounitario());//Aunq no deberia, si es que la cantidad de vendidos es mayos que 0
 

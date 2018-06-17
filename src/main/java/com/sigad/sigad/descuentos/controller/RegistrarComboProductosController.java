@@ -381,17 +381,21 @@ public class RegistrarComboProductosController implements Initializable {
         Double precio = combo.getPreciounitario();
         Double precioreal = combo.getPreciounireal();
         txtPrecioBase.setText(precio.toString());
+        txtPrecioBase.setDisable(true);
         txtPrecioReal.setText(GeneralHelper.roundTwoDecimals(precioreal).toString());
+        txtPrecioReal.setDisable(true);
+        tblProductos.setEditable(false);
         txtDescripcion.setText(combo.getDescripcion());
         combo.getProductosxComboArray().forEach((t) -> {
             ProductoLista pd = new ProductoLista(t.getProducto(), Integer.SIZE);
             Integer i = prod.indexOf(pd);
             System.out.println(t.getProducto().getId());
-            if (i >= 0) {
+            if (i >= 0 && t.getCantidad() > 0) {
                 prod.get(i).cantidad.set(t.getCantidad());
+            } else if (i >= 0 && t.getCantidad() <= 0) {
+                prod.remove(pd);
             }
         });
-
     }
 
     public void initModel(Boolean isedit, ComboPromocion cb, StackPane stackpane) {
@@ -448,7 +452,7 @@ public class RegistrarComboProductosController implements Initializable {
             helper.updateCombo(combo);
             MantenimientoDescuentosController.comboDialog.close();
         }
-        
+
     }
 
     class ProductoLista extends RecursiveTreeObject<ProductoLista> {
@@ -534,7 +538,7 @@ public class RegistrarComboProductosController implements Initializable {
                 }
                 if (item > 0) {
                     currentRow.setStyle("-fx-background-color:#F3F3F3;");
-                }else{
+                } else {
                     currentRow.setStyle("-fx-background-color:transparent;");
                 }
             }
