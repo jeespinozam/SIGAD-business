@@ -7,7 +7,9 @@ package com.sigad.sigad.business.helpers;
 
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.ClienteDescuento;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -41,8 +43,9 @@ public class ClienteDescuentoHelper {
         }
     }
 
-    ;
+    ;    
     
+
     public ClienteDescuento getDescuentoById(Integer id) {
         ClienteDescuento descuento = null;
         Query query = null;
@@ -62,11 +65,34 @@ public class ClienteDescuentoHelper {
 
     ;
 
-    public ClienteDescuento getDescuentoByCliente(Integer cliente_id) {
+    public ArrayList<ClienteDescuento> getDescuentosVigentes() {
+        ArrayList<ClienteDescuento> descuentos = null;
+        Query query = null;
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String date = format.format(new Date());
+            query = session.createQuery("SELECT c FROM ClienteDescuento AS c WHERE c.fechaInicio <= :today AND c.fechaFin <= :today and c.activo='true'");
+            query.setParameter("today", date);
+            descuentos = (ArrayList<ClienteDescuento>) query.list();
+        } catch (Exception e) {
+
+            System.out.println("Error: " + e.getMessage());
+            session.getTransaction().rollback();
+            this.errorMessage = e.getMessage();
+        } finally {
+            return descuentos;
+        }
+    }
+
+    ;
+    
+    
+    public ClienteDescuento getDescuento() {
         ClienteDescuento descuento = null;
         Query query = null;
         try {
-            query = session.createQuery("from ClienteDescuento where producto_id='" + cliente_id + "' and activo=true");
+            query = session.createQuery("SELECT p FROM ClienteDescuento p JOIN p.Usuario c WHERE c.id = :idCliente and p.tipo = :tipo");
+
             descuento = (ClienteDescuento) query.list().get(0);
         } catch (Exception e) {
 
@@ -76,7 +102,6 @@ public class ClienteDescuentoHelper {
         } finally {
             return descuento;
         }
-
     }
 
     ;

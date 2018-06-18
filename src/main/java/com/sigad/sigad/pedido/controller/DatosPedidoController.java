@@ -8,7 +8,10 @@ package com.sigad.sigad.pedido.controller;
 import com.jfoenix.controls.*;
 import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.app.controller.LoginController;
+import com.sigad.sigad.business.ClienteDescuento;
 import com.sigad.sigad.business.ClienteDireccion;
+import com.sigad.sigad.business.ComboPromocion;
+import com.sigad.sigad.business.Constantes;
 import com.sigad.sigad.business.DetallePedido;
 import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.LoteInsumo;
@@ -16,6 +19,9 @@ import com.sigad.sigad.business.Pedido;
 import com.sigad.sigad.business.PedidoEstado;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoInsumo;
+import com.sigad.sigad.business.ProductosCombos;
+import com.sigad.sigad.business.Usuario;
+import com.sigad.sigad.business.helpers.ClienteDescuentoHelper;
 import com.sigad.sigad.business.helpers.LoteInsumoHelper;
 import com.sigad.sigad.business.helpers.PedidoHelper;
 import com.sigad.sigad.deposito.helper.PedidoEstadoHelper;
@@ -28,11 +34,15 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -70,12 +80,6 @@ public class DatosPedidoController implements Initializable {
     private ToggleGroup pago;
 
     @FXML
-    private JFXTextField txtMonto;
-
-    @FXML
-    private JFXRadioButton btnPOS;
-
-    @FXML
     private JFXTextArea cmbDedicatoria;
 
     @FXML
@@ -89,15 +93,42 @@ public class DatosPedidoController implements Initializable {
 
     @FXML
     private JFXComboBox<String> cmbInicio;
-    private final ObservableList<String> horasInicio = FXCollections.observableArrayList();
 
     @FXML
-    private JFXComboBox<ClienteDireccion> cmbDireccion;
-    private final ObservableList<ClienteDireccion> direcciones = FXCollections.observableArrayList();
+    private JFXComboBox<String> cmbDireccion;
 
     @FXML
-    private JFXComboBox<String> cmbTarjeta;
-    private final ObservableList<String> tarjetas = FXCollections.observableArrayList();
+    private JFXTextField txtTotal;
+
+    @FXML
+    private JFXTextField txtDescuento;
+
+    @FXML
+    private JFXTextField txtTotalPago;
+
+    @FXML
+    private JFXTextField txtCliente;
+
+    @FXML
+    private JFXTextField txtEmpresa;
+
+    @FXML
+    private JFXTextField txtdoc;
+
+    @FXML
+    private JFXTextField txtcorreo;
+
+    @FXML
+    private JFXButton btnGenerar;
+
+    @FXML
+    private JFXTextField txtTipo;
+
+    @FXML
+    private JFXTextField txtDireccion;
+
+    private final ObservableList<String> direcciones = FXCollections.observableArrayList();
+    private HashMap<Insumo, Integer> insumos = new HashMap<>();
     /**
      * Initializes the controller class.
      */
@@ -105,67 +136,103 @@ public class DatosPedidoController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-//        dpFechaEntrega.setDayCellFactory(picker -> new DateCell(){
-//           @Override
-//            public void updateItem(LocalDate date, boolean empty) {
-//                super.updateItem(date, empty);
-//                setDisable(empty || date.getDayOfWeek() == DayOfWeek.MONDAY);
-//            }
-//        });
 
     }
 
     public void llenarComboBox() {
         cmbDireccion.setItems(direcciones);
-        pedido.getCliente().getClienteDirecciones().forEach((t) -> {
-            direcciones.add(t);
-        });
-        cmbDireccion.hide();
-        cmbTarjeta.getItems().addAll("Visa", "Mastercard");
-        cmbInicio.getItems().addAll("M", "T", "N");
-
+        direcciones.add(pedido.getDireccionDeEnvio());
     }
 
     public void initModel(Pedido pedido, StackPane stackPane) {
         this.pedido = pedido;
         this.stackPane = stackPane;
-        txtMonto.setText(pedido.getTotal().toString());
-        txtMonto.setDisable(true);
+        txtTotal.setText(pedido.getTotal().toString());
+        txtTotal.setDisable(true);
         llenarComboBox();
+        obtenerDescuentos();
 
+    }
+
+    public void obtenerDescuentos() {
+        try {
+            ClienteDescuentoHelper helper = new ClienteDescuentoHelper();
+            ArrayList<ClienteDescuento> descuentos = helper.getDescuentosVigentes();
+            helper.close();
+            Integer numPedidos = pedido.getCliente().getPedidoCliente().size();
+            for (Iterator<ClienteDescuento> iterator = descuentos.iterator(); iterator.hasNext();) {
+                ClienteDescuento t = iterator.next();
+                if (t.getTipo() == Constantes.TIPO_DCTO_USUARIO_X_MONTO) {
+                    if (pedido.getTotal() < t.getCondicion()) {
+                        iterator.remove();
+                    }
+                } else if (t.getTipo() == Constantes.TIPO_DCTO_USUARIO_X_NPEDIDOS) {
+                    if (numPedidos < t.getCondicion()) {
+                        iterator.remove();
+                    }
+                }
+            }
+
+            ClienteDescuento descuentoCliente = descuentos.stream().max(Comparator.comparing(ClienteDescuento::getValue)).orElseThrow(NoSuchElementException::new);
+            if (descuentoCliente != null) {
+                pedido.setTotal(pedido.getTotal() * (1 - descuentoCliente.getValue()));
+                pedido.setDescuentoCliente(descuentoCliente);
+                txtTipo.setText("Por superar " + descuentoCliente.getCondicion().toString() + " en " + descuentoCliente.getTipo());
+                txtDescuento.setText(String.valueOf(descuentoCliente.getValue() * 100) + " %");
+                txtTotalPago.setText(pedido.getTotal().toString());
+            } else {
+                txtDescuento.setText("No aplica");
+                txtTotalPago.setText(pedido.getTotal().toString());
+
+            }
+
+        } catch (Exception e) {
+
+        }
     }
 
     public void isValid() {
 
     }
 
+    public void construirPedido() {
+        pedido.setMensajeDescripicion(cmbDedicatoria.getText());
+        Date date = Date.from(dpFechaEntrega.getValue().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+        Timestamp timeStamp = new Timestamp(date.getTime());
+        pedido.setFechaVenta(timeStamp);
+        pedido.setVendedor(LoginController.user);
+        PedidoEstadoHelper hp = new PedidoEstadoHelper();
+        pedido.setTurno(cmbInicio.getValue());
+        PedidoEstado estado = hp.getEstadoByName("pendiente");
+        pedido.addEstado(estado);
+        pedido.setEstado(estado);
+        hp.close();
+
+    }
+
+    void calcularInsumos(Producto p, Integer cantidad) {
+        ArrayList<ProductoInsumo> pxi = new ArrayList(p.getProductoxInsumos());
+        for (ProductoInsumo productoInsumo : pxi) {
+            if (insumos.get(productoInsumo.getInsumo()) != null) {
+                insumos.put(productoInsumo.getInsumo(), productoInsumo.getCantidad().intValue() * cantidad + insumos.get(productoInsumo.getInsumo()));
+            } else {
+                insumos.put(productoInsumo.getInsumo(), productoInsumo.getCantidad().intValue() * cantidad);
+            }
+        }
+    }
+
     @FXML
     void registrarPedido(MouseEvent event) {
         try {
-            pedido.setDireccionDeEnvio(cmbDireccion.getValue().getDireccionCliente());
-            pedido.setCooXDireccion(cmbDireccion.getValue().getCooXDireccion());
-            pedido.setCooYDireccion(cmbDireccion.getValue().getCooXDireccion());
-            pedido.setMensajeDescripicion(cmbDedicatoria.getText());
-            Date date = Date.from(dpFechaEntrega.getValue().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
-            Timestamp timeStamp = new Timestamp(date.getTime());
-            pedido.setFechaVenta(timeStamp);
-            pedido.setVendedor(LoginController.user);
-            PedidoEstadoHelper hp = new PedidoEstadoHelper();
-            pedido.setTurno(cmbInicio.getValue());
-            PedidoEstado estado = hp.getEstadoByName("venta");
-            pedido.addEstado(estado);
-            pedido.setEstado(estado);
-            hp.close();
-            HashMap<Insumo, Integer> insumos = new HashMap<>();
+            construirPedido();
+
             for (DetallePedido dp : pedido.getDetallePedido()) {
-                Producto p = dp.getProducto();
-                ArrayList<ProductoInsumo> pxi = new ArrayList(p.getProductoxInsumos());
-                for (ProductoInsumo productoInsumo : pxi) {
-                    if (insumos.get(productoInsumo.getInsumo()) != null) {
-                        insumos.put(productoInsumo.getInsumo(), productoInsumo.getCantidad().intValue() * dp.getCantidad() + insumos.get(productoInsumo.getInsumo()));
-                    } else {
-                        insumos.put(productoInsumo.getInsumo(), productoInsumo.getCantidad().intValue() * dp.getCantidad());
+                if (dp.getProducto() != null) {
+                    calcularInsumos(dp.getProducto(), dp.getCantidad() );
+                } else if (dp.getCombo() != null) {
+                    ComboPromocion p = dp.getCombo();
+                    for (ProductosCombos productosCombos : p.getProductosxComboArray()) {
+                        calcularInsumos(productosCombos.getProducto(), productosCombos.getCantidad() * dp.getCantidad());
                     }
                 }
             }
@@ -176,11 +243,11 @@ public class DatosPedidoController implements Initializable {
                 PedidoHelper helper = new PedidoHelper();
                 helper.savePedido(pedido);
                 helper.close();
-            }else{
-                ErrorController err = new ErrorController() ;
+            } else {
+                ErrorController err = new ErrorController();
                 err.loadDialog("Alerta", "No hay insumos", "ok", stackPane);
             }
-            gotoInicio();
+//            gotoInicio();
 
         } catch (Exception ex) {
         }

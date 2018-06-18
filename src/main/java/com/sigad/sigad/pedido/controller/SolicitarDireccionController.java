@@ -42,6 +42,8 @@ public class SolicitarDireccionController implements Initializable {
     private ArrayList<Tienda> tiendas;
     private Double distancia;
     private StackPane sc;
+    private Double x;
+    private Double y;
     @FXML
     private JFXButton btnBuscarTienda;
 
@@ -82,6 +84,8 @@ public class SolicitarDireccionController implements Initializable {
             }
             GMapsHelper helper = GMapsHelper.getInstance();
             Pair<Double, Double> pair = helper.geocodeAddress(txtdireccion.getText());
+            x = pair.getLeft();
+            y = pair.getRight();
             tiendas.forEach((t) -> {
                 Double d = GeneralHelper.distanceBetweenTwoPoints(pair.getLeft(), t.getCooXDireccion(), pair.getRight(), t.getCooYDireccion());
                 if (d < distancia) {
@@ -107,7 +111,7 @@ public class SolicitarDireccionController implements Initializable {
             FXMLLoader loader = new FXMLLoader(SolicitarDireccionController.this.getClass().getResource(SeleccionarProductosController.viewPath));
             node = (Node) loader.load();
             SeleccionarProductosController sel = loader.getController();
-            sel.initModel(new Pedido(), sc, tienda, txtdireccion.getText());
+            sel.initModel(new Pedido(), sc, tienda, txtdireccion.getText(), x, y);
             sc.getChildren().setAll(node);
 
         } catch (Exception ex) {

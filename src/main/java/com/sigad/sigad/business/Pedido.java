@@ -57,7 +57,7 @@ public class Pedido {
     private Reparto reparto;
 
     //fk
-    @ManyToOne(optional = false)
+    @ManyToOne
     private Usuario vendedor;
 
     @ManyToOne(optional = false)
@@ -406,6 +406,20 @@ public class Pedido {
      */
     public void setDocumentos(Set<DocumentoLegal> documentos) {
         this.documentos = documentos;
+    }
+
+    /**
+     * @return the descuentoCliente
+     */
+    public ClienteDescuento getDescuentoCliente() {
+        return descuentoCliente;
+    }
+
+    /**
+     * @param descuentoCliente the descuentoCliente to set
+     */
+    public void setDescuentoCliente(ClienteDescuento descuentoCliente) {
+        this.descuentoCliente = descuentoCliente;
     }
 
 }

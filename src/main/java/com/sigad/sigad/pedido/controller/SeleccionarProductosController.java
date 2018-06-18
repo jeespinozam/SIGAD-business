@@ -522,11 +522,13 @@ public class SeleccionarProductosController implements Initializable {
         }
     }
 
-    public void initModel(Pedido pedido, StackPane stack, Tienda tienda, String direccion) {
+    public void initModel(Pedido pedido, StackPane stack, Tienda tienda, String direccion, Double x, Double y) {
         stackPane = stack;
         this.pedido = pedido;
         this.pedido.setTienda(tienda);
         this.pedido.setDireccionDeEnvio(direccion);
+        this.pedido.setCooXDireccion(x);
+        this.pedido.setCooXDireccion(y);
         //Basede datos
         ProductoHelper gest = new ProductoHelper();
         ArrayList<Producto> productosDB = gest.getProducts();

@@ -58,7 +58,7 @@ public class DescripcionProductosController implements Initializable {
 
     private Integer idProducto;
     private Producto producto;
-    
+
     private ComboPromocion combo;
 
     @FXML
@@ -81,11 +81,9 @@ public class DescripcionProductosController implements Initializable {
     private JFXTextArea txtDescripcion;
     @FXML
     private Label lblProductosInsumos;
-    
+
     @FXML
     private Label lblPromociones;
-    
-    
 
     @FXML
     private JFXButton btnBack;
@@ -127,6 +125,7 @@ public class DescripcionProductosController implements Initializable {
             txtPrecioBase.setText((producto.getPrecio() != null) ? producto.getPrecio().toString() : "");
             txtCategoria.setText((producto.getCategoria() != null && producto.getCategoria().getNombre() != null) ? producto.getCategoria().getNombre() : "");
             txtDescripcion.setText((producto.getDescripcion() != null) ? producto.getDescripcion() : "");
+            txtFragilidad.setText((producto.getFragilidad() != null) ? producto.getFragilidad().getDescripcion() : "");
             try {
                 Image image = new Image(producto.getImagen());
                 imageProducto.setImage(image);
@@ -142,16 +141,15 @@ public class DescripcionProductosController implements Initializable {
             insumos.add(new InsumosLista(t.getInsumo(), t.getCantidad().intValue()));
         });
     }
-    
-    
+
     public void initModel(ComboPromocion combo) {
         //db
         this.combo = combo;
-        
+
         if (combo != null) {
             lblProductosInsumos.setText("Productos");
             txtNombre.setText((combo.getNombre() != null) ? combo.getNombre() : "");
-            txtPrecioBase.setText((combo.getPreciounireal()!= null) ? combo.getPreciounireal().toString() : "");
+            txtPrecioBase.setText((combo.getPreciounireal() != null) ? combo.getPreciounireal().toString() : "");
             txtCategoria.setText("Combo");
             txtDescripcion.setText((combo.getDescripcion() != null) ? combo.getDescripcion() : "");
             lblPromociones.setText("");
@@ -182,10 +180,10 @@ public class DescripcionProductosController implements Initializable {
         List<ProductoDescuento> descuentos = helper.getDescuentosByProducto(idProducto);
         if (descuentos != null) {
             descuentos.forEach((t) -> {
-                 if (t.getFechaInicio().before(new Date()) && t.getFechaFin().after(new Date())) {
+                if (t.getFechaInicio().before(new Date()) && t.getFechaFin().after(new Date())) {
                     promociones.add(new PromocionesLista(t));
                 }
-                
+
             });
         }
         helper.close();
@@ -208,7 +206,7 @@ public class DescripcionProductosController implements Initializable {
                 if (t.getCombopromocion().getFechaInicio().before(new Date()) && t.getCombopromocion().getFechaFin().after(new Date())) {
                     promociones.add(new PromocionesLista(t.getCombopromocion()));
                 }
-                
+
             });
         }
         cmbHelper.close();
@@ -329,18 +327,23 @@ public class DescripcionProductosController implements Initializable {
             this.producto = null;
         }
 
-        
         public InsumosLista(Producto producto, Integer cantidad) {
             this.nombre = new SimpleStringProperty(producto.getNombre());
             this.cantidad = new SimpleStringProperty(cantidad.toString());
             this.insumo = null;
             this.producto = producto;
         }
+
         @Override
         public boolean equals(Object o) {
             if (o instanceof InsumosLista) {
                 InsumosLista pl = (InsumosLista) o;
-                return pl.insumo.equals(pl.insumo);
+                if (pl.insumo != null) {
+                    return pl.insumo.equals(insumo);
+                } else {
+                    return pl.producto.equals(producto);
+                }
+
             }
             return super.equals(o); //To change body of generated methods, choose Tools | Templates.
         }
@@ -348,7 +351,11 @@ public class DescripcionProductosController implements Initializable {
         @Override
         public int hashCode() {
             int hash = 3;
-            hash = 23 * hash + Objects.hashCode(this.insumo);
+            if (insumo != null) {
+                hash = 23 * hash + Objects.hashCode(this.insumo);
+            } else {
+                hash = 23 * hash + Objects.hashCode(this.producto);
+            }
             return hash;
         }
 
