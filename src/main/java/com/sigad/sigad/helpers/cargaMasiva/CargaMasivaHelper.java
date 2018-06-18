@@ -20,28 +20,23 @@ import com.sigad.sigad.business.Tienda;
 import com.sigad.sigad.business.TipoMovimiento;
 import com.sigad.sigad.business.TipoPago;
 import com.sigad.sigad.business.Usuario;
+import com.sigad.sigad.business.Vehiculo;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
 
 /**
  *
@@ -74,6 +69,8 @@ public class CargaMasivaHelper {
                         rowhead.createCell(rowIndex).setCellValue("Nombre");
                         rowIndex++;
                         rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Editable (S/N)");
                         break;
                     case CargaMasivaConstantes.TABLA_USUARIOS:
                         rowhead.createCell(rowIndex).setCellValue("Nombre(s)");
@@ -181,40 +178,25 @@ public class CargaMasivaHelper {
                         rowIndex++;
                         rowhead.createCell(rowIndex).setCellValue("Nombre");
                         break;
-                    case CargaMasivaConstantes.TABLA_PEDIDO:
-                        rowhead.createCell(rowIndex).setCellValue("Coordenada X");
+                    case CargaMasivaConstantes.TABLA_TIPOVEHICULOS:
+                        rowhead.createCell(rowIndex).setCellValue("Capacidad");
                         rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Coordenada Y");
+                        rowhead.createCell(rowIndex).setCellValue("Descripcion");
                         rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Direccion");
+                        rowhead.createCell(rowIndex).setCellValue("Marca");
                         rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Fecha de Venta (yyyy-MM-dd)");
+                        rowhead.createCell(rowIndex).setCellValue("Modelo");
                         rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Hora de Entrega (yyyy-MM-dd)");
+                        rowhead.createCell(rowIndex).setCellValue("Nombre");
+                        break;
+                    case CargaMasivaConstantes.TABLA_VEHICULOS:
+                        rowhead.createCell(rowIndex).setCellValue("Descripcion");
                         rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Hora Fin de Entrega (HH:mm)");
+                        rowhead.createCell(rowIndex).setCellValue("Nombre");
                         rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Hora Inicio de Entrega (HH:mm)");
+                        rowhead.createCell(rowIndex).setCellValue("Placa");
                         rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Mensaje");
-                        rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Total");
-                        rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Turno");
-                        rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Volumen");
-                        rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Cliente");
-                        rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Estado");
-                        rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Reparto");
-                        rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Tienda");
-                        rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Tipo de Pago");
-                        rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Vendedor");
+                        rowhead.createCell(rowIndex).setCellValue("Tipo");
                         break;
                     // agregar aqui el resto de casos
                     default:
@@ -252,14 +234,7 @@ public class CargaMasivaHelper {
             //Iterator<Cell> cellIterator;
             int casosExitosos, casosFallidos;
             int hojasReconocidas = 0;
-            // Abriendo conexion a Base de Datos
-            Configuration config;
-            SessionFactory sessionFactory;
-            Session session;
-            config = new Configuration();
-            config.configure("hibernate.cfg.xml");
-            sessionFactory = config.buildSessionFactory();
-            session = sessionFactory.openSession();
+            Session session = LoginController.serviceInit();
             LOGGER.log(Level.INFO, "Se procede a inspeccionar archivo ...");
             // se itera sobre la prioridad establecida en CargaMasivaConstantes
             List<HojaReporte> reporteFinal = new ArrayList<>();
@@ -292,7 +267,6 @@ public class CargaMasivaHelper {
             }
             // Cerrando conexion a Base de Datos
             session.close();
-            sessionFactory.close();
             workbook.close();
             LOGGER.log(Level.INFO, "Procesamiento Finalizado, reporte final :");
             LOGGER.log(Level.INFO, String.format("Cantidad de Hojas Procesadas : %s", hojasReconocidas));
@@ -374,6 +348,12 @@ public class CargaMasivaHelper {
                 }
                 index++;
                 nuevoPerfil.setDescripcion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                String editableTxtPerfil = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                Boolean editable = false;
+                if(StringUtils.equals(editableTxtPerfil, "S"))
+                    editable = true;
+                nuevoPerfil.setEditable(editable);
                 return CargaMasivaHelper.guardarObjeto(nuevoPerfil, session);
             case CargaMasivaConstantes.TABLA_USUARIOS:
                 Usuario nuevoUsuario = new Usuario();
@@ -445,17 +425,21 @@ public class CargaMasivaHelper {
                 index++;
                 nuevoUsuario.setIntereses(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 index++;
-                // Agregar Tienda
-                String tiendaNombre = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
-                // Buscando la tienda
-                Tienda tiendaBuscada = (Tienda) CargaMasivaHelper.busquedaGeneralString(session, "Tienda", new String [] {"descripcion"}, new String [] {tiendaNombre});
-                if (perfilBuscado!=null)
-                    LOGGER.log(Level.INFO, String.format("Tienda %s encontrada con exito", tiendaNombre));
-                else {
-                    LOGGER.log(Level.SEVERE, String.format("Tienda %s no encontrada, cancelando operacion", tiendaNombre));
+                String tiendaUsuario = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if(StringUtils.isNotBlank(tiendaUsuario)){
+                    Tienda tiendaBuscada = (Tienda) CargaMasivaHelper.busquedaGeneralString(session, "Tienda", new String [] {"direccion"}, new String [] {tiendaUsuario});    
+                    if(tiendaBuscada != null){
+                        nuevoUsuario.setTienda(tiendaBuscada);
+                    }
+                    else{
+                        LOGGER.log(Level.SEVERE, String.format("No se introdujo una tienda existente"));
+                        return false;
+                    }
+                }
+                else{
+                    LOGGER.log(Level.SEVERE, String.format("No se introdujo una tienda para el usuario"));
                     return false;
                 }
-                nuevoUsuario.setTienda(tiendaBuscada);                
                 return CargaMasivaHelper.guardarObjeto(nuevoUsuario, session);
             case CargaMasivaConstantes.TABLA_PROVEEDORES:
                 Proveedor nuevoProv = new Proveedor();
@@ -732,120 +716,72 @@ public class CargaMasivaHelper {
                     return false;
                 }
                 return CargaMasivaHelper.guardarObjeto(nuevoPedidoEstado, session);
-            case CargaMasivaConstantes.TABLA_PEDIDO:
-                Pedido nuevoPedido = new Pedido();
-                // Logica de negocio
-                nuevoPedido.setActivo(true);
-                nuevoPedido.setModificable(true);
-                
-                Double coordX = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
-                if (coordX!=null)
-                    nuevoPedido.setCooXDireccion(coordX);
-                else
-                    return false;
-                index++;
-                Double coordY = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
-                if (coordY!=null)
-                    nuevoPedido.setCooYDireccion(coordY);
-                else
-                    return false;
-                index++;
-                
-                String direccionPedido = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
-                if (StringUtils.isNotBlank(direccionPedido))
-                    nuevoPedido.setDireccionDeEnvio(direccionPedido);
-                index++;
-                
-                String fechaPedidoStr = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
-                java.sql.Timestamp fechaPedido = CargaMasivaHelper.parseDate(fechaPedidoStr);
-                if(fechaPedido != null)
-                    nuevoPedido.setFechaVenta(fechaPedido);
-                index++;
-                
-                String horaEntregaPedidoStr = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
-                java.sql.Timestamp entregaPedido = CargaMasivaHelper.parseDate(horaEntregaPedidoStr);
-                if(entregaPedido != null)
-                    nuevoPedido.setHoraEntrega(entregaPedido);
-                index++;
-                
-                String horaSalidaStr = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
-                java.sql.Time salidaPedido = CargaMasivaHelper.parseTime(horaSalidaStr);
-                if(salidaPedido != null)
-                    nuevoPedido.setHoraFinEntrega(salidaPedido);
-                index++;
-                
-                String horaInicioStr = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
-                java.sql.Time inicioPedido = CargaMasivaHelper.parseTime(horaInicioStr);
-                if(inicioPedido != null)
-                    nuevoPedido.setHoraIniEntrega(inicioPedido);
-                index++;                
-                
-                String mensajePedido = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
-                if (StringUtils.isNotBlank(mensajePedido))
-                    nuevoPedido.setMensajeDescripicion(mensajePedido);
-                index++;
-                
-                Double totalPedido = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
-                if(totalPedido != null)
-                    nuevoPedido.setTotal(totalPedido);
-                index++;
-                
-                String turnoPedido = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
-                if (StringUtils.isNotBlank(turnoPedido))
-                    nuevoPedido.setTurno(turnoPedido);
-                index++;
-                
-                Double volumenPedido = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
-                if(volumenPedido != null)
-                    nuevoPedido.setVolumenTotal(volumenPedido);
-                index++;
-                
-                /*
-                
-                                String clienteAsociadoStr = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
-                if (StringUtils.isNotBlank(clienteAsociadoStr)) {
-                    Usuario clienteAsociado = (Usuario) CargaMasivaHelper.busquedaGeneralString(session, "Usuario", new String[] {"correo"}, new String[] {clienteAsociadoStr});
-                    if (clienteAsociado!=null) {
-                        LOGGER.log(Level.INFO, String.format("Usuario %s encontrado con exito", clienteAsociadoStr));
+            case CargaMasivaConstantes.TABLA_TIPOVEHICULOS:
+                Double capacidadTipoVehiculo = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if (capacidadTipoVehiculo != null){
+                    index++;
+                    String descripcionTipoVehiculo = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                    if(StringUtils.isNotBlank(descripcionTipoVehiculo)){
                         index++;
-                        String estadoPedidoStr = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
-                        if (StringUtils.isNotBlank(estadoPedidoStr)) {
-                            PedidoEstado estadoPedido = (PedidoEstado) CargaMasivaHelper.busquedaGeneralString(session, "PedidoEstado", new String[] {"nombre"}, new String[] {estadoPedidoStr});
-                            if (estadoPedido!=null) {
-                                LOGGER.log(Level.INFO, String.format("Estado %s encontrado con exito", estadoPedidoStr));
-                                index++;
-                                String repartoPedidoStr = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
-                                if (StringUtils.isNotBlank(repartoPedidoStr)) {
-                                  //WIP
-                                  Reparto repartoPedido = (Reparto) CargaMasivaHelper.busquedaGeneralString(session, "Reparto", new String[] {"nombre"}, new String[] {estadoPedidoStr});
-                                }
-                                else{
-                                  LOGGER.log(Level.SEVERE, String.format("Reparto %s no encontrado, cancelando operacion", repartoPedidoStr));
-                                  return false;  
-                                }
-                            }
-                            else {
-                                LOGGER.log(Level.SEVERE, String.format("Estado %s no encontrado, cancelando operacion", estadoPedidoStr));
-                                return false;
-                            }
+                        String marcaTipoVehiculo = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                        index++;
+                        String modeloTipoVehiculo = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                        index++;
+                        String nombreTipoVehiculo = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                        if(StringUtils.isNotBlank(nombreTipoVehiculo)){
+                            Vehiculo.Tipo nuevoTipoVehiculo = new Vehiculo.Tipo();
+                            nuevoTipoVehiculo.setCapacidad(capacidadTipoVehiculo);
+                            nuevoTipoVehiculo.setDescripcion(descripcionTipoVehiculo);
+                            nuevoTipoVehiculo.setMarca(marcaTipoVehiculo);
+                            nuevoTipoVehiculo.setModelo(modeloTipoVehiculo);
+                            nuevoTipoVehiculo.setNombre(nombreTipoVehiculo);
+                            return CargaMasivaHelper.guardarObjeto(nuevoTipoVehiculo, session);
                         }
-                        else {
-                            LOGGER.log(Level.SEVERE, String.format("Estado %s no detectado", estadoPedidoStr));
-                            return false;
+                        else{
+                            LOGGER.log(Level.SEVERE, "No se identifica un nombre valido de tipo de vehiculo");
+                            return false;    
                         }
                     }
-                    else {
-                        LOGGER.log(Level.SEVERE, String.format("Usuario %s no encontrado, cancelando operacion", clienteAsociadoStr));
+                    else{
+                        LOGGER.log(Level.SEVERE, "No se identifica una descripcion valida de tipo de vehiculo");
                         return false;
                     }
                 }
-                else {
-                    LOGGER.log(Level.SEVERE, String.format("Usuario %s no detectado", clienteAsociadoStr));
+                else{
+                    LOGGER.log(Level.SEVERE, "No se identifica una capacidad valida de tipo de vehiculo");
                     return false;
                 }
-                */
-                
-                
+            case CargaMasivaConstantes.TABLA_VEHICULOS:
+                String descripcionVehiculo = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                index++;
+                String nombreVehiculo = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                index++;
+                String placaVehiculo = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if(StringUtils.isNotBlank(placaVehiculo)){
+                    index++;
+                    String nombreTipoVehiculoAsociado = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                    if(StringUtils.isNotBlank(nombreTipoVehiculoAsociado)){
+                        Vehiculo.Tipo tipoVehiculoAsociado = (Vehiculo.Tipo) CargaMasivaHelper.busquedaGeneralString(session, "Vehiculo$Tipo", new String[] {"nombre"}, new String[] {nombreTipoVehiculoAsociado});    
+                        if(tipoVehiculoAsociado != null){
+                            Vehiculo nuevoVehiculo = new Vehiculo(tipoVehiculoAsociado, placaVehiculo);
+                            nuevoVehiculo.setNombre(nombreVehiculo);
+                            nuevoVehiculo.setDescripcion(descripcionVehiculo);
+                            return CargaMasivaHelper.guardarObjeto(nuevoVehiculo, session);
+                        }
+                        else{
+                            LOGGER.log(Level.SEVERE, "No se identifica un tipo de vehiculo valido para el vehiculo");
+                            return false;    
+                        }
+                    }
+                    else{
+                        LOGGER.log(Level.SEVERE, "No se identifica un nombre de tipo de vehiculo para el vehiculo");
+                        return false;
+                    }
+                }
+                else{
+                    LOGGER.log(Level.SEVERE, "No se identifica una placa correcta para el vehiculo");
+                    return false;
+                }
             // colocar aqui los demas casos para el resto de tablas de carga masiva
             default:
                 return false;

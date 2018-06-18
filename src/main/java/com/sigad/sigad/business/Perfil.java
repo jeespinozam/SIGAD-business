@@ -30,6 +30,7 @@ public class Perfil {
     @NotNull
     @Column(unique = true)
     private String nombre;
+    private Boolean editable;
     private String descripcion;
     @NotNull
     private boolean activo;
@@ -129,5 +130,20 @@ public class Perfil {
     public void addPermiso(Permiso permiso) {
         this.permisos.add(permiso);
     }
+
+    /**
+     * @return the editable
+     */
+    public Boolean getEditable() {
+        return editable;
+    }
+
+    /**
+     * @param editable the editable to set
+     */
+    public void setEditable(Boolean editable) {
+        this.editable = editable;
+    }
    
+    
 }
