@@ -96,6 +96,9 @@ public class RegistrarComboProductosController implements Initializable {
     private JFXTextField txtVolumenTotal;
 
     @FXML
+    private JFXTextField txtstockMaximo;
+
+    @FXML
     private JFXTreeTableView<ProductoLista> tblProductos;
 
     @FXML
@@ -161,14 +164,29 @@ public class RegistrarComboProductosController implements Initializable {
         r = new RequiredFieldValidator();
         r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
         r.setMessage("Campo obligatorio");
-        txtDescripcion.getValidators().add(r);
-        txtDescripcion.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+        txtNombre.getValidators().add(r);
+        txtNombre.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (!newValue) {
 
-                if (!txtDescripcion.validate()) {
-                    txtDescripcion.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+                if (!txtNombre.validate()) {
+                    txtNombre.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
                 } else {
-                    txtDescripcion.setFocusColor(new Color(0.30, 0.47, 0.23, 1));
+                    txtNombre.setFocusColor(new Color(0.30, 0.47, 0.23, 1));
+                }
+            }
+        });
+
+        r = new RequiredFieldValidator();
+        r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
+        r.setMessage("Campo obligatorio y numerico");
+        txtstockMaximo.getValidators().add(r);
+        txtstockMaximo.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (!newValue) {
+
+                if (!txtstockMaximo.validate()) {
+                    txtstockMaximo.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+                } else {
+                    txtstockMaximo.setFocusColor(new Color(0.30, 0.47, 0.23, 1));
                 }
             }
         });
@@ -304,6 +322,19 @@ public class RegistrarComboProductosController implements Initializable {
             txtPrecioReal.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             txtPrecioReal.requestFocus();
             return false;
+        } else if (!txtstockMaximo.validate() && !GeneralHelper.isNumeric(txtstockMaximo.getText())) {
+            try {
+                if (Integer.valueOf(txtstockMaximo.getText()) > combo.getNumVendidos()) {
+                    txtstockMaximo.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+                    txtstockMaximo.requestFocus();
+                }
+            } catch (NumberFormatException e) {
+                txtstockMaximo.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+                txtstockMaximo.requestFocus();
+            } finally {
+                return false;
+            }
+
         } else {
             return true;
         }
@@ -349,7 +380,7 @@ public class RegistrarComboProductosController implements Initializable {
         Double volumen = 0.0;
         for (ProductoLista t : prod) {
             if (t.cantidad.getValue() > 0) {
-                precioBase = precioBase + t.cantidad.getValue() *  ((t.producto.getPrecio() == null) ? 0.0 :t.producto.getPrecio()) ;
+                precioBase = precioBase + t.cantidad.getValue() * ((t.producto.getPrecio() == null) ? 0.0 : t.producto.getPrecio());
                 precioCompra = precioCompra + t.cantidad.getValue() * ((t.producto.getPrecioCompra() == null) ? 0.0 : t.producto.getPrecioCompra());
                 volumen = volumen + t.cantidad.getValue() * t.producto.getVolumen();
             }
@@ -435,6 +466,8 @@ public class RegistrarComboProductosController implements Initializable {
         nuevo.setPreciounireal(Double.valueOf(txtPrecioReal.getText()));
         nuevo.setPreciounitario(Double.valueOf(txtPrecioBase.getText()));
         nuevo.setNombre(txtNombre.getText());
+        nuevo.setMaxDisponible(Integer.valueOf(txtstockMaximo.getText()));
+        nuevo.setVolumen(Double.valueOf(txtVolumenTotal.getText()));
         ArrayList<ProductosCombos> pc = new ArrayList<>();
         prod.forEach((t) -> {
             if (t.cantidad.getValue() > 0) {
