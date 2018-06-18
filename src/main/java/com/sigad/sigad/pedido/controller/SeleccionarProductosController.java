@@ -25,6 +25,7 @@ import com.sigad.sigad.business.helpers.CapacidadTiendaHelper;
 import com.sigad.sigad.business.helpers.ComboPromocionHelper;
 import com.sigad.sigad.business.helpers.GeneralHelper;
 import com.sigad.sigad.business.helpers.InsumosHelper;
+import com.sigad.sigad.business.helpers.ProductoCategoriaDescuentoHelper;
 import com.sigad.sigad.business.helpers.ProductoDescuentoHelper;
 import com.sigad.sigad.business.helpers.ProductoHelper;
 import com.sigad.sigad.business.helpers.TiendaHelper;
@@ -307,11 +308,12 @@ public class SeleccionarProductosController implements Initializable {
                 } else if (ped.combo != null) {
                     nuevo = new PedidoLista((event.getNewValue() <= stock + event.getOldValue()) ? event.getNewValue() : event.getOldValue(),
                             (event.getNewValue() <= stock + event.getOldValue()) ? subNew.toString() : subOld.toString(), ped.combo);
-                } 
-                
+                }
+
                 Integer i = pedidos.indexOf(new PedidoLista(nuevo.nombre.getValue(), viewPath, index, viewPath, nuevo.codigo, viewPath, nuevo.codigo, null, null));
                 Integer oldValue = event.getOldValue();
-                if (event.getNewValue() <= stock + oldValue && i > 0) {
+                System.out.println("i->>>>>" + i);
+                if (event.getNewValue() <= stock + oldValue && i >= 0) {
                     System.out.println("rec->" + event.getNewValue().toString());
                     recalcularStockDetalle(p, event.getNewValue(), event.getOldValue());
                     mostrarMaximoStock();
@@ -396,6 +398,10 @@ public class SeleccionarProductosController implements Initializable {
                 for (ProductosCombos c : t.combo.getProductosxComboArray()) {
                     Integer st = mostrarMaximoStockProducto(c.getProducto()) / c.getCantidad();
                     ct = (st < ct) ? st : ct;
+                }
+                if(t.combo.getMaxDisponible() !=null && t.combo.getMaxDisponible()!=null &&
+                        t.combo.getMaxDisponible() - t.combo.getNumVendidos() < ct){
+                    ct = t.combo.getMaxDisponible() - t.combo.getNumVendidos();
                 }
                 prod.get(prod.indexOf(t)).stock.setValue(ct.toString());
             }
@@ -603,12 +609,25 @@ public class SeleccionarProductosController implements Initializable {
                 if (newValue) {
                     ProductoDescuentoHelper helper = new ProductoDescuentoHelper();
                     ProductoDescuento descuento = helper.getDescuentoByProducto(codigo);
-                    if (descuento != null) {
-                        pedidos.add(new PedidoLista(nombre, precio, 0, "0", codigo, String.valueOf(descuento.getValorPct() * 100.0), descuento.getId().intValue(), producto, descuento));
-                    } else {
+                    helper.close();
+                    ProductoCategoriaDescuentoHelper hcar = new ProductoCategoriaDescuentoHelper();
+                    ProductoCategoriaDescuento descCat = hcar.getDescuentoByCategoria(producto.getCategoria().getId().intValue());
+                    hcar.close();
+                    if (descuento != null && descCat != null){
+                        if (descuento.getValorPct()>descCat.getValue()){
+                            pedidos.add(new PedidoLista(0, "0", producto, descuento));
+                        }else{
+                            pedidos.add(new PedidoLista(0, "0", producto, descCat));
+                        }
+                        
+                    }else if (descuento !=null){
+                        pedidos.add(new PedidoLista(0, "0", producto, descuento));
+                    }else if (descCat !=null){
+                        pedidos.add(new PedidoLista(0, "0", producto, descCat));
+                    }else{
                         pedidos.add(new PedidoLista(nombre, precio, 0, "0", codigo, "0", null, producto, null));
                     }
-                    helper.close();
+                    
 
                     //prod.remove(this);
                 } else {
@@ -642,15 +661,7 @@ public class SeleccionarProductosController implements Initializable {
             seleccion.addListener((observable, oldValue, newValue) -> {
                 calcularTotal();
                 if (newValue) {
-                    ProductoDescuentoHelper helper = new ProductoDescuentoHelper();
-                    ProductoDescuento descuento = helper.getDescuentoByProducto(codigo);
-                    if (descuento != null) {
-                        pedidos.add(new PedidoLista(0, "0", combo));
-                    } else {
-                        pedidos.add(new PedidoLista(0, "0", combo));
-                    }
-                    helper.close();
-
+                    pedidos.add(new PedidoLista(0, "0", combo));
                     //prod.remove(this);
                 } else {
                     Integer ix = pedidos.indexOf(new PedidoLista(0, "0", combo));
@@ -878,7 +889,7 @@ public class SeleccionarProductosController implements Initializable {
         public boolean equals(Object o) {
             if (o instanceof PedidoLista) {
                 PedidoLista pl = (PedidoLista) o;
-                return codigo.equals(pl.codigo) && nombre.equals(pl.nombre);
+                return codigo.equals(pl.codigo) && nombre.getValue().equals(pl.nombre.getValue());
             }
             return super.equals(o); //To change body of generated methods, choose Tools | Templates.
         }
@@ -966,15 +977,16 @@ public class SeleccionarProductosController implements Initializable {
 
     private class ButtonCell extends TreeTableCell<PedidoLista, Boolean> {
 
-        final JFXButton cellButton = new JFXButton("Delete");
+        final JFXButton cellButton = new JFXButton("X");
 
         ButtonCell() {
 
             //Action when the button is pressed
             cellButton.setButtonType(JFXButton.ButtonType.RAISED);
             cellButton.setBorder(Border.EMPTY);
+            cellButton.setStyle("-fx-background-color: white;");
+            this.setAlignment(Pos.CENTER);
             cellButton.setOnAction(new EventHandler<ActionEvent>() {
-
                 @Override
                 public void handle(ActionEvent t) {
                     // get Selected Item

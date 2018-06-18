@@ -9,7 +9,9 @@ import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoDescuento;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -65,12 +67,15 @@ public class ProductoDescuentoHelper {
 
     public ProductoDescuento getDescuentoByProducto(Integer producto_id) {
         ProductoDescuento descuento = null;
+        ArrayList<ProductoDescuento> descuentos = new ArrayList<>();
         Query query = null;
         try {
             query = session.createQuery("from ProductoDescuento where producto_id='" + producto_id + "' and activo=true ");
 
             if (!query.list().isEmpty()) {
-                descuento = (ProductoDescuento) query.list().get(0);
+                descuentos = (ArrayList<ProductoDescuento>) query.list();
+                descuento = descuentos.stream().max(Comparator.comparing(ProductoDescuento::getValorPct)).orElseThrow(NoSuchElementException::new);
+                
             }
         } catch (Exception e) {
 
