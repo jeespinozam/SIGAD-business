@@ -20,7 +20,6 @@ import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.LoteInsumo;
 import com.sigad.sigad.business.helpers.InsumosHelper;
 import com.sigad.sigad.business.helpers.LoteInsumoHelper;
-import com.sigad.sigad.personal.controller.PersonalController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -31,26 +30,21 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.cell.CheckBoxTreeTableCell;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.util.Callback;
 
 /**
  * FXML Controller class
@@ -87,13 +81,13 @@ public class ListaInsumoController implements Initializable {
     
     
     public static InsumoViewer selectedInsumo = null;
-    // table elements;
     
     JFXTreeTableColumn<InsumoViewer,Boolean> selectCol = new JFXTreeTableColumn<>("Seleccionar");
     JFXTreeTableColumn<InsumoViewer,String> nombreCol = new JFXTreeTableColumn<>("Nombre");
     JFXTreeTableColumn<InsumoViewer,String> stockLCol = new JFXTreeTableColumn<>("Stock Total Logico");
     JFXTreeTableColumn<InsumoViewer,String> stockFCol = new JFXTreeTableColumn<>("Stock Total Fisico");
     JFXTreeTableColumn<InsumoViewer,String> volumenCol = new JFXTreeTableColumn<>("Volumen");
+    JFXTreeTableColumn<InsumoViewer,String> activoCol = new JFXTreeTableColumn<>("Activo");
     static ObservableList<InsumoViewer> insumosList;
     
     public static class InsumoViewer extends RecursiveTreeObject<InsumoViewer>{
@@ -219,7 +213,6 @@ public class ListaInsumoController implements Initializable {
         addColumns();
         fillData();
     }    
-    
     private void setColumns(){
         nombreCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<InsumoViewer, String> param) -> param.getValue().getValue().getNombre() //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         );
@@ -249,7 +242,6 @@ public class ListaInsumoController implements Initializable {
         });
        
     }
-    
     private void addColumns(){
         final TreeItem<InsumoViewer> rootInsumo = new RecursiveTreeItem<>(insumosList,RecursiveTreeObject::getChildren);
         tblInsumos.setEditable(true);
@@ -257,7 +249,6 @@ public class ListaInsumoController implements Initializable {
         tblInsumos.setRoot(rootInsumo);
         tblInsumos.setShowRoot(false);
     }
-    
     private void fillData(){
         InsumosHelper helper = new InsumosHelper();
         ArrayList<Insumo> listaInsumos = helper.getInsumos();
@@ -268,7 +259,6 @@ public class ListaInsumoController implements Initializable {
         }
         helper.close();
     }
-    
     public static void updateTable(Insumo insumo){
         LoteInsumoHelper helperli = new LoteInsumoHelper();
         Integer stockFisico = 0;
@@ -291,9 +281,6 @@ public class ListaInsumoController implements Initializable {
                                          insumo.isVolumen().toString(),
                                          insumo.getImagen(),0,insumo.getId(),insumo.getPrecio()));
     }
-    
-    
-    //botones
     @FXML
     private void handleAction(ActionEvent event) {
         if(event.getSource() == addBtn ) {
@@ -319,8 +306,6 @@ public class ListaInsumoController implements Initializable {
             }
         }
     }
-    
-    //dialogos
     private void showOptions(){
         JFXButton edit = new JFXButton("Editar");
         JFXButton delete = new JFXButton("Desactivar");
@@ -361,7 +346,6 @@ public class ListaInsumoController implements Initializable {
         popup = new JFXPopup();
         popup.setPopupContent(vBox);
     }
-    
     private void deleteInsumosDialog() {
         //delete if stock 0 validacion falta
         if((Integer.parseInt(selectedInsumo.getStockTotalLogico().getValue()) >= 0)|| (Integer.parseInt(selectedInsumo.getStockTotalFisico().getValue()) >= 0)) {
@@ -388,7 +372,6 @@ public class ListaInsumoController implements Initializable {
         }
 
     }
-    
     public void createEditInsumoDialog(boolean iscreate) throws IOException {
         isInsumoCreate = iscreate;
         
@@ -407,8 +390,6 @@ public class ListaInsumoController implements Initializable {
         insumoDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
         insumoDialog.show();
     }  
-    
-    // ingresos por hallazgo y salidas por accidente
     private void registraringresoSalidaDialog() throws IOException{
         JFXDialogLayout content = new JFXDialogLayout();
         

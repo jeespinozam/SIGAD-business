@@ -13,9 +13,11 @@ import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.validation.NumberValidator;
 import com.jfoenix.validation.RequiredFieldValidator;
 import com.sigad.sigad.app.controller.ErrorController;
+import com.sigad.sigad.business.Pedido;
 import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Tienda;
 import com.sigad.sigad.business.Usuario;
+import com.sigad.sigad.business.helpers.PedidoHelper;
 import com.sigad.sigad.business.helpers.PerfilHelper;
 import com.sigad.sigad.business.helpers.TiendaHelper;
 import com.sigad.sigad.business.helpers.UsuarioHelper;
@@ -55,6 +57,9 @@ public class CrearEditarUsuarioController implements Initializable {
     private JFXListView<Label> storesListView,profilesListView;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        //initElements
+        initElements();
+        
         //Add the buttons of the static dialog
         addDialogBtns();
         
@@ -77,6 +82,55 @@ public class CrearEditarUsuarioController implements Initializable {
         
     }
 
+    private ArrayList<Pedido> deactivateClient(){
+        PedidoHelper helperp = new PedidoHelper();
+        ArrayList<Pedido> listaPedidos = helperp.getPedidosCliente(user.getId());
+        if(listaPedidos==null){
+            ErrorController error = new ErrorController();
+            error.loadDialog("Error", "No se puede desactivar cliente con pedidos asignados", "Ok", hiddenSp);
+        }
+        helperp.close();
+        return listaPedidos;
+    }
+    private ArrayList<Pedido> deactivateRepartidor(){
+        PedidoHelper helperp = new PedidoHelper();
+        ArrayList<Pedido> listaPedidos = helperp.getPedidosVendedor(user.getId());
+        if(listaPedidos==null){
+            ErrorController error = new ErrorController();
+            error.loadDialog("Error", "No se puede desactivar repartidor con pedidos asignados", "Ok", hiddenSp);          
+        }
+        helperp.close();
+        return listaPedidos;
+    }
+    private void initElements(){
+        isActiveBtn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            if(!newValue){
+                //verify to deactivate
+                switch (user.getPerfil().getNombre()){
+                    case "Cliente":
+                        if(deactivateClient() == null){
+                            isActiveBtn.setSelected(true);
+                        }
+                        break;
+                    case "Repartidor":
+                        if(deactivateRepartidor()== null){
+                            isActiveBtn.setSelected(true);
+                        }
+                        break;                   
+                }
+            }
+            else {
+                //verify to activate
+                if(!PersonalController.isUserCreate){
+                    if(!user.getPerfil().isActivo()){
+                        ErrorController error = new ErrorController();
+                        error.loadDialog("Error", "No se puede activar este usuario, su perfil esta desactivado", "Ok", hiddenSp); 
+                        isActiveBtn.setSelected(true);
+                    }
+                }
+            }
+        }));
+    }
     private void addDialogBtns() {
         JFXButton save = new JFXButton("Guardar");
         save.setPrefSize(80, 25);

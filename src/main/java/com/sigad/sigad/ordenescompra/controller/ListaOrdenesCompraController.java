@@ -27,21 +27,17 @@ import com.sigad.sigad.business.helpers.LoteInsumoHelper;
 import com.sigad.sigad.business.helpers.MovimientoHelper;
 import com.sigad.sigad.business.helpers.OrdenCompraHelper;
 import com.sigad.sigad.business.helpers.TipoMovimientoHelper;
-import com.sigad.sigad.deposito.helper.DepositoHelper;
 import java.io.IOException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -56,7 +52,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.util.Callback;
 
 /**
  * FXML Controller class
@@ -187,25 +182,25 @@ public class ListaOrdenesCompraController implements Initializable {
                 param.getValue().getValue().getPrecio() //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         );
         //Double click on row
-//        tblOrdenesCompra.setRowFactory(ord -> {
-//            JFXTreeTableRow<OrdenCompraViewer> row = new JFXTreeTableRow<>();
-//            row.setOnMouseClicked((event) -> {
-//                if (! row.isEmpty() && event.getButton()==MouseButton.PRIMARY 
-//                     && event.getClickCount() == 2) {
-//                    OrdenCompraViewer clickedRow = row.getItem();
-//                    try {
-//                        createEditOrdenDialog(false);
-//                    } catch (IOException ex) {
-//                        Logger.getLogger(ListaOrdenesCompraController.class.getName()).log(Level.SEVERE, null, ex);
-//                    }
-//                }
-//            });
-//            return row;
-//        });
+        tblOrdenesCompra.setRowFactory(ord -> {
+            JFXTreeTableRow<OrdenCompraViewer> row = new JFXTreeTableRow<>();
+            row.setOnMouseClicked((event) -> {
+                if (! row.isEmpty() && event.getButton()==MouseButton.PRIMARY 
+                     && event.getClickCount() == 2) {
+                    OrdenCompraViewer clickedRow = row.getItem();
+                    selectedOrdenCompra = clickedRow;
+                    try {
+                        createEditOrdenDialog(false);
+                    } catch (IOException ex) {
+                        Logger.getLogger(ListaOrdenesCompraController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });
+            return row;
+        });
         recibidoCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<OrdenCompraViewer, String> param) -> param.getValue().getValue().getRecibido()
         );
     }
-    
     private void addColumns(){
         final TreeItem<OrdenCompraViewer> root = new RecursiveTreeItem<>(ordenesList,RecursiveTreeObject::getChildren);
         tblOrdenesCompra.getColumns().setAll(codCol,fechaCol,precioCol,recibidoCol);
@@ -213,7 +208,6 @@ public class ListaOrdenesCompraController implements Initializable {
         tblOrdenesCompra.setShowRoot(false);
         
     }
-    
     private void fillData() {
         OrdenCompraHelper helpero = new OrdenCompraHelper();
         ArrayList<OrdenCompra> listaOrdenes= helpero.getOrdenes();
@@ -230,9 +224,8 @@ public class ListaOrdenesCompraController implements Initializable {
         ordev.setOrdenCompra(orden);
         ordenesList.add(ordev);
     }
-    
     @FXML
-    void handleAction(ActionEvent event) {
+    private void handleAction(ActionEvent event) {
         if(event.getSource() == addBtn) {
             Tienda currentStore = LoginController.user.getTienda();
             if(currentStore == null){
@@ -264,8 +257,6 @@ public class ListaOrdenesCompraController implements Initializable {
             }
         }
     }
-    
-    //dialogos
     private void showOptions(){
         JFXButton edit = new JFXButton("Editar");
         JFXButton io = new JFXButton("Ingreso");
@@ -335,6 +326,8 @@ public class ListaOrdenesCompraController implements Initializable {
                     movNew.setTienda(currentStore);
                     movNew.setTipoMovimiento(helpertm.getTipoMov("Ingreso"));
                     movNew.setTrabajador(LoginController.user);
+                    movNew.setLoteInsumo(loteNew);
+                    helpermo.saveMovement(movNew);
 
                 }
             }
@@ -342,8 +335,6 @@ public class ListaOrdenesCompraController implements Initializable {
             helperi.close();
             helperli.close();
             helperoc.close();
-            
-            
         });
         edit.setOnAction((ActionEvent event) -> {
             popup.hide();
@@ -381,7 +372,6 @@ public class ListaOrdenesCompraController implements Initializable {
         }
 
     }
-    
     private void deleteOrdenesDialog() {
         JFXDialogLayout content =  new JFXDialogLayout();
         content.setHeading(new Text("Eliminar Orden"));
@@ -395,7 +385,6 @@ public class ListaOrdenesCompraController implements Initializable {
         content.setActions(button);
         dialog.show();
     }
-    
     public void createEditOrdenDialog(boolean iscreate) throws IOException {
         isOrdenCreate = iscreate;
         
@@ -405,7 +394,7 @@ public class ListaOrdenesCompraController implements Initializable {
         if(isOrdenCreate){
             content.setHeading(new Text("Crear Orden"));
         }else{
-            content.setHeading(new Text("Editar Orden"));
+            content.setHeading(new Text("Detalle Orden"));
         }
         
         Node node;

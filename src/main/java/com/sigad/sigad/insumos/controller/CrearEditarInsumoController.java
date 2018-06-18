@@ -99,6 +99,8 @@ public class CrearEditarInsumoController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         
+        
+        
         listaProv = FXCollections.observableArrayList();
         setColumns();
         addColumns();
@@ -111,12 +113,19 @@ public class CrearEditarInsumoController implements Initializable {
         }
         fillData();
         addDialogBtns();
-
-        
         initValidator();
+        
+        tglActive.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            if(!newValue){
+                //verify if insumo has stock
+                if(insumo.getStockTotalLogico() > 0 || insumo.getStockTotalFisico() > 0){
+                    ErrorController error = new ErrorController();
+                    error.loadDialog("Error", "No puede desactivar el insumo, este cuenta con stock", "Ok", hiddenSp);
+                    tglActive.setSelected(true);
+                }
+            }
+        }));
     }
-    
-    
     private void addDialogBtns() {
         JFXButton save = new JFXButton("Guardar");
         save.setPrefSize(80, 25);
@@ -186,9 +195,7 @@ public class CrearEditarInsumoController implements Initializable {
         containerPane.getChildren().add(save);
         containerPane.getChildren().add(cancel);
     }
-    
     private void loadFields(){
-        
         InsumosHelper helper = new InsumosHelper();
         insumo = helper.getInsumo(ListaInsumoController.selectedInsumo.getId());
         
@@ -198,6 +205,7 @@ public class CrearEditarInsumoController implements Initializable {
             tiempoTxt.setText(insumo.getTiempoVida() + "");
             descripcionTxt.setText(insumo.getDescripcion());
             volumenTxt.setText(insumo.isVolumen()+"");
+            volumenTxt.setDisable(true);
             tglActive.setSelected(insumo.isActivo());
         }
         helper.close();
@@ -212,7 +220,6 @@ public class CrearEditarInsumoController implements Initializable {
         insumo.setDescripcion(descripcionTxt.getText());
         insumo.setActivo(tglActive.isSelected());
     }
-    
     public boolean validateFields() {
         if(!nombreTxt.validate()){
             nombreTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
@@ -234,7 +241,6 @@ public class CrearEditarInsumoController implements Initializable {
         }
         else return true;
     }
-    
     private void initValidator() {
         RequiredFieldValidator r;
         NumberValidator n;
@@ -295,8 +301,6 @@ public class CrearEditarInsumoController implements Initializable {
             }
         });
     }
-    
-    
     public class ProveedorViewer extends RecursiveTreeObject<ProveedorViewer>{
 
         public Proveedor getProv() {
@@ -335,8 +339,6 @@ public class CrearEditarInsumoController implements Initializable {
             this.precio = new SimpleStringProperty(precio);
         }
     }
-    
-    
     private void setColumns(){
         nombreCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<ProveedorViewer, String> param) -> param.getValue().getValue().getNombre()//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         );
@@ -388,13 +390,11 @@ public class CrearEditarInsumoController implements Initializable {
         helperp.close();
         helperi.close();
     }
-    
     public void updateTable(Proveedor p,String cant){
         ProveedorViewer newprov = new ProveedorViewer(p.getNombre(), cant);
         newprov.setProv(p);
         listaProv.add(newprov);
     }
-    
     class EditingCell extends TreeTableCell<ProveedorViewer, String> {
 
         private JFXTextField textField;

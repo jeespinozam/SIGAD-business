@@ -132,4 +132,17 @@ public class OrdenCompraHelper {
         }
         return ok;
     }
+    public OrdenCompra getOrdenCompra(Integer id){
+        OrdenCompra orden = null;
+        Query query = null;
+        try {
+            query = session.createQuery("from OrdenCompra where id=" + id);
+            if(!query.list().isEmpty()){
+                orden = (OrdenCompra) query.list().get(0);
+            }
+        } catch (Exception e) {
+            this.errorMessage = e.getMessage();
+        }
+        return orden;
+    }
 }
