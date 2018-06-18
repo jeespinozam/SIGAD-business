@@ -135,6 +135,7 @@ public class Perfil {
     }
 
     /**
+<<<<<<< HEAD
      * @return the usuarios
      */
     public Set<Usuario> getUsuarios() {
@@ -148,6 +149,8 @@ public class Perfil {
         this.usuarios = usuarios;
     }
     /**
+=======
+>>>>>>> 7f3200619b35784707a29e1624d000e9da5bc458
      * @return the editable
      */
     public Boolean getEditable() {

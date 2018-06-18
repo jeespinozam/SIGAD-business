@@ -214,6 +214,7 @@ public class ComboPromocion {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+
     /**
      * @return the imagen
      */
