@@ -88,9 +88,12 @@ public class RegistrarComboProductosController implements Initializable {
 
     @FXML
     private JFXTextField txtPrecioBase;
-    
+
     @FXML
     private JFXTextField txtPrecioCompra;
+
+    @FXML
+    private JFXTextField txtVolumenTotal;
 
     @FXML
     private JFXTreeTableView<ProductoLista> tblProductos;
@@ -343,13 +346,17 @@ public class RegistrarComboProductosController implements Initializable {
     public void calcularPrecioBase() {
         Double precioBase = 0.0;
         Double precioCompra = 0.0;
+        Double volumen = 0.0;
         for (ProductoLista t : prod) {
             if (t.cantidad.getValue() > 0) {
-                precioBase = precioBase + t.cantidad.getValue() * t.producto.getPrecio();
-                precioCompra = precioCompra + t.cantidad.getValue() * t.producto.getPrecio();
+                precioBase = precioBase + t.cantidad.getValue() *  ((t.producto.getPrecio() == null) ? 0.0 :t.producto.getPrecio()) ;
+                precioCompra = precioCompra + t.cantidad.getValue() * ((t.producto.getPrecioCompra() == null) ? 0.0 : t.producto.getPrecioCompra());
+                volumen = volumen + t.cantidad.getValue() * t.producto.getVolumen();
             }
         }
         txtPrecioBase.setText(precioBase.toString());
+        txtPrecioCompra.setText(precioCompra.toString());
+        txtVolumenTotal.setText(volumen.toString());
     }
 
     public void cargarTabla() {
@@ -401,6 +408,7 @@ public class RegistrarComboProductosController implements Initializable {
                 prod.remove(pd);
             }
         });
+        calcularPrecioBase();
     }
 
     public void initModel(Boolean isedit, ComboPromocion cb, StackPane stackpane) {
