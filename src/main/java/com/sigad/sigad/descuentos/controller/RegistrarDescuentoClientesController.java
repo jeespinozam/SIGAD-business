@@ -44,7 +44,7 @@ public class RegistrarDescuentoClientesController implements Initializable {
      */
     @FXML
     private Label lblError;
-    
+
     @FXML
     private Label lblError1;
 
@@ -101,6 +101,7 @@ public class RegistrarDescuentoClientesController implements Initializable {
             txtValue.setText(pct.toString());
             lblunit.setText("PEN");
         } else {
+            txtValue.setText(pct.toString());
             lblunit.setText("ped.");
         }
 

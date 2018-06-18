@@ -492,15 +492,28 @@ public class RegistrarComboProductosController implements Initializable {
             construirDescuento(combo);
             combo.setNumVendidos(0);
             helper.saveCombo(combo);
+            reloadTable();
             MantenimientoDescuentosController.comboDialog.close();
+            
         } else if (isEdit && validateFields()) {
             construirDescuento(combo);
             helper.updateCombo(combo);
+            reloadTable();
             MantenimientoDescuentosController.comboDialog.close();
         }
 
     }
 
+    public void reloadTable() {
+        MantenimientoDescuentosController.descuentosCombos.clear();
+        ComboPromocionHelper pdhelper = new ComboPromocionHelper();
+        ArrayList<ComboPromocion> ps = pdhelper.getCombos();
+        pdhelper.close();
+        ps.forEach((t) -> {
+            MantenimientoDescuentosController.descuentosCombos.add(new MantenimientoDescuentosController.CombosProductosLista(t));
+        });
+
+    }
     class ProductoLista extends RecursiveTreeObject<ProductoLista> {
 
         private IntegerProperty id;
