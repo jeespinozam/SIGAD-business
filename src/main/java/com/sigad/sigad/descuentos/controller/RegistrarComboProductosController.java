@@ -88,6 +88,9 @@ public class RegistrarComboProductosController implements Initializable {
 
     @FXML
     private JFXTextField txtPrecioBase;
+    
+    @FXML
+    private JFXTextField txtPrecioCompra;
 
     @FXML
     private JFXTreeTableView<ProductoLista> tblProductos;
@@ -339,9 +342,11 @@ public class RegistrarComboProductosController implements Initializable {
 
     public void calcularPrecioBase() {
         Double precioBase = 0.0;
+        Double precioCompra = 0.0;
         for (ProductoLista t : prod) {
             if (t.cantidad.getValue() > 0) {
                 precioBase = precioBase + t.cantidad.getValue() * t.producto.getPrecio();
+                precioCompra = precioCompra + t.cantidad.getValue() * t.producto.getPrecio();
             }
         }
         txtPrecioBase.setText(precioBase.toString());
