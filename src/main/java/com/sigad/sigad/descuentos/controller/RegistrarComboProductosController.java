@@ -467,6 +467,7 @@ public class RegistrarComboProductosController implements Initializable {
         nuevo.setPreciounitario(Double.valueOf(txtPrecioBase.getText()));
         nuevo.setNombre(txtNombre.getText());
         nuevo.setMaxDisponible(Integer.valueOf(txtstockMaximo.getText()));
+        nuevo.setVolumen(Double.valueOf(txtVolumenTotal.getText()));
         ArrayList<ProductosCombos> pc = new ArrayList<>();
         prod.forEach((t) -> {
             if (t.cantidad.getValue() > 0) {
