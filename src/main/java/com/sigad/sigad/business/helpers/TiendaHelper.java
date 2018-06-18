@@ -130,18 +130,34 @@ public class TiendaHelper extends BaseHelper{
             LoteInsumoHelper helper = new LoteInsumoHelper();
             ArrayList<LoteInsumo> lotes = helper.getLoteInsumos(tOld);
             double capacidadActual = 0.0;
-            for (int i = 0; i < lotes.size(); i++) {
-                capacidadActual += lotes.get(i).getStockFisico()* lotes.get(i).getInsumo().isVolumen();
-            }
-            if(tOld.getCapacidad()< capacidadActual){
-                this.errorMessage = "No se puede reducir la capacidad actual porque se cuenta con " + capacidadActual + " m^3 de insumos";
-                
-                tx.commit();
-                session.close();
-                ok = false;
+            if(lotes!= null){
+                for (int i = 0; i < lotes.size(); i++) {
+                    capacidadActual += lotes.get(i).getStockFisico()* lotes.get(i).getInsumo().isVolumen();
+                }
+                if(tOld.getCapacidad()< capacidadActual){
+                    this.errorMessage = "No se puede reducir la capacidad actual porque se cuenta con " + capacidadActual + " m^3 de insumos";
+
+                    tx.commit();
+                    session.close();
+                    ok = false;
+                }else{
+                    Tienda tNew = session.load(Tienda.class, tOld.getId());
+
+                    tNew.setCapacidad(tOld.getCapacidad());
+                    tNew.setCooXDireccion(tOld.getCooXDireccion());
+                    tNew.setCooYDireccion(tOld.getCooYDireccion());
+                    tNew.setDescripcion(tOld.getDescripcion());
+                    tNew.setDireccion(tOld.getDireccion());
+                    tNew.setActivo(tOld.isActivo());
+
+                    session.merge(tNew);
+                    tx.commit();
+                    session.close();
+                    ok = true;
+                }
             }else{
                 Tienda tNew = session.load(Tienda.class, tOld.getId());
-            
+
                 tNew.setCapacidad(tOld.getCapacidad());
                 tNew.setCooXDireccion(tOld.getCooXDireccion());
                 tNew.setCooYDireccion(tOld.getCooYDireccion());
