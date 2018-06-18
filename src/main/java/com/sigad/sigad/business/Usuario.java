@@ -403,17 +403,4 @@ public class Usuario {
         this.descuentoCliente = descuentoCliente;
     }
 
-    /**
-     * @return the descuentoCliente
-     */
-    public Set<ClienteDescuento> getDescuentoCliente() {
-        return descuentoCliente;
-    }
-
-    /**
-     * @param descuentoCliente the descuentoCliente to set
-     */
-    public void setDescuentoCliente(Set<ClienteDescuento> descuentoCliente) {
-        this.descuentoCliente = descuentoCliente;
-    }
 }
