@@ -16,6 +16,7 @@ import com.sigad.sigad.descuentos.controller.MantenimientoDescuentosController;
 import com.sigad.sigad.pedido.controller.MantenimientoPedidosController;
 import com.sigad.sigad.pedido.controller.SeleccionarProductosController;
 import com.sigad.sigad.insumos.controller.ListaInsumoController;
+import com.sigad.sigad.movimientos.controller.MovimientosController;
 import com.sigad.sigad.ordenescompra.controller.ListaOrdenesCompraController;
 import com.sigad.sigad.perfil.controller.PerfilController;
 import com.sigad.sigad.personal.controller.PersonalController;
@@ -88,7 +89,7 @@ public class HomeController implements Initializable {
     public static final String SIDEBAR_BUTTON_ICON_SIZE = "30";
  
     private Color mainColor = new Color(0.27, 0.31, 0.42, 1);
-    private double  baseTop = 80.0;
+    private double  baseTop = 60.0;
 
     private enum Container{
         SIDEBAR, MENU, PANEL
@@ -171,7 +172,9 @@ public class HomeController implements Initializable {
                                 }else if(name.equals("Carga Masiva")){
                                     node = (Node) FXMLLoader.load(getClass().getResource(CargaMasivaViewController.viewPath));
                                 }else if(name.equals("Configuraciones")){
-
+                                    
+                                }else if(name.equals("Movimientos")){
+                                    node = (Node) FXMLLoader.load(getClass().getResource(MovimientosController.viewPath));
                                 }
 
                                 firstPanel.getChildren().setAll(node);
