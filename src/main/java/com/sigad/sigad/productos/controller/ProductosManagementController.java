@@ -393,7 +393,7 @@ public class ProductosManagementController implements Initializable {
         public InsumoLista(String id, String nombre, String precio, String cantidad){
             this.id = new SimpleStringProperty(id);
             this.nombre = new SimpleStringProperty(nombre);
-            setPrecio(precio, nombre);
+            setPrecio(precio);
             this.cantidad = new SimpleStringProperty(cantidad);
         }
         
@@ -417,7 +417,7 @@ public class ProductosManagementController implements Initializable {
         public void setCantidad(String cantidad){
             this.cantidad = new SimpleStringProperty(cantidad);
         }
-        public void setPrecio(String precio, String nombre){
+        public void setPrecio(String precio){
             //Usuario user = ProductosManagementController.currentUser;
             TiendaHelper tiendaHelper = new TiendaHelper();
             LoteInsumoHelper loteInsumoHelper = new LoteInsumoHelper();
@@ -430,7 +430,7 @@ public class ProductosManagementController implements Initializable {
             
             if(lotes != null){
                 for (LoteInsumo lote : lotes) {
-                    if(lote.getInsumo().getNombre().equals(nombre)){
+                    if(lote.getInsumo().getId() == Long.parseLong(this.id.getValue()) ){
                         price += lote.getCostoUnitario();
                         count++;
                     }
