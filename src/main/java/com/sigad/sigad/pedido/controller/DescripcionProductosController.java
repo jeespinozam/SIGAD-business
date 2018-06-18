@@ -111,7 +111,6 @@ public class DescripcionProductosController implements Initializable {
         columnasInsumos();
         agregarColumnasTablasInsumos();
         agregarColumnasTablasPromociones();
-        System.out.println(idProducto);
     }
 
     /**

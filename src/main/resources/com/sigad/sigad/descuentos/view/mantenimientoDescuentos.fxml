@@ -16,7 +16,7 @@
         <URL value="@/styles/mantenimientodescuentos.css" />
     </stylesheets>
    <children>
-      <JFXTabPane prefHeight="680.0" prefWidth="1010.0">
+      <JFXTabPane prefHeight="680.0" prefWidth="1010.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <tabs>
             <Tab text="Descuentos por productos">
               <content>

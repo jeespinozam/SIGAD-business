@@ -399,8 +399,8 @@ public class SeleccionarProductosController implements Initializable {
                     Integer st = mostrarMaximoStockProducto(c.getProducto()) / c.getCantidad();
                     ct = (st < ct) ? st : ct;
                 }
-                if(t.combo.getMaxDisponible() !=null && t.combo.getMaxDisponible()!=null &&
-                        t.combo.getMaxDisponible() - t.combo.getNumVendidos() < ct){
+                if (t.combo.getMaxDisponible() != null && t.combo.getMaxDisponible() != null
+                        && t.combo.getMaxDisponible() - t.combo.getNumVendidos() < ct) {
                     ct = t.combo.getMaxDisponible() - t.combo.getNumVendidos();
                 }
                 prod.get(prod.indexOf(t)).stock.setValue(ct.toString());
@@ -495,16 +495,23 @@ public class SeleccionarProductosController implements Initializable {
             Set<DetallePedido> detalles = new HashSet<>();
             pedido.setVolumenTotal(0.0);
             pedidos.forEach((t) -> {
-                DetallePedido detalle = new DetallePedido(true, t.cantidad.getValue(), Double.valueOf(t.precio.getValue()), t.codigo, t.producto, pedido, t.descuentoProducto);
-                detalles.add(detalle);
-                pedido.setVolumenTotal(pedido.getVolumenTotal() + t.producto.getVolumen());
+                if (t.combo != null) {
+                    DetallePedido detalle = new DetallePedido(true, t.cantidad.getValue(),  Double.valueOf(t.precio.getValue()), 0, t.combo, pedido);
+                    detalles.add(detalle);
+                    pedido.setVolumenTotal(pedido.getVolumenTotal() + t.combo.getVolumen());
+
+                } else if (t.producto != null) {
+                    DetallePedido detalle = new DetallePedido(true, t.cantidad.getValue(), Double.valueOf(t.precio.getValue()), 0, t.producto, pedido, t.descuentoProducto, t.descuentoCategoria);
+                    detalles.add(detalle);
+                    pedido.setVolumenTotal(pedido.getVolumenTotal() + t.producto.getVolumen());
+
+                }
+
             });
             pedido.setTotal(Double.valueOf(lblTotal.getText()));
             pedido.setDetallePedido(detalles);
             pedido.setActivo(true);
             pedido.setModificable(true);
-            //           node = (Node) FXMLLoader.load(SeleccionarProductosController.this.getClass().getResource(DescripcionProductosController.viewPath));
-
             FXMLLoader loader = new FXMLLoader(SeleccionarProductosController.this.getClass().getResource(SeleccionarClienteController.viewPath));
             node = (Node) loader.load();
             SeleccionarClienteController desc = loader.getController();
@@ -613,21 +620,20 @@ public class SeleccionarProductosController implements Initializable {
                     ProductoCategoriaDescuentoHelper hcar = new ProductoCategoriaDescuentoHelper();
                     ProductoCategoriaDescuento descCat = hcar.getDescuentoByCategoria(producto.getCategoria().getId().intValue());
                     hcar.close();
-                    if (descuento != null && descCat != null){
-                        if (descuento.getValorPct()>descCat.getValue()){
+                    if (descuento != null && descCat != null) {
+                        if (descuento.getValorPct() > descCat.getValue()) {
                             pedidos.add(new PedidoLista(0, "0", producto, descuento));
-                        }else{
+                        } else {
                             pedidos.add(new PedidoLista(0, "0", producto, descCat));
                         }
-                        
-                    }else if (descuento !=null){
+
+                    } else if (descuento != null) {
                         pedidos.add(new PedidoLista(0, "0", producto, descuento));
-                    }else if (descCat !=null){
+                    } else if (descCat != null) {
                         pedidos.add(new PedidoLista(0, "0", producto, descCat));
-                    }else{
+                    } else {
                         pedidos.add(new PedidoLista(nombre, precio, 0, "0", codigo, "0", null, producto, null));
                     }
-                    
 
                     //prod.remove(this);
                 } else {
