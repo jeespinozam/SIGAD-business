@@ -63,6 +63,7 @@ public class CrearEditarPerfilController implements Initializable {
             loadFields();
         }else{
             perfil = new Perfil();
+            messageLbl.setVisible(false);
         }
         
         //Inmediate validations
