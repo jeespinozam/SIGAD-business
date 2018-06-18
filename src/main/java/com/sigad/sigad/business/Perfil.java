@@ -31,6 +31,7 @@ public class Perfil {
     @NotNull
     @Column(unique = true)
     private String nombre;
+    private Boolean editable;
     private String descripcion;
     @NotNull
     private boolean activo;
@@ -146,5 +147,19 @@ public class Perfil {
     public void setUsuarios(Set<Usuario> usuarios) {
         this.usuarios = usuarios;
     }
+    /**
+     * @return the editable
+     */
+    public Boolean getEditable() {
+        return editable;
+    }
+
+    /**
+     * @param editable the editable to set
+     */
+    public void setEditable(Boolean editable) {
+        this.editable = editable;
+    }
    
+    
 }
