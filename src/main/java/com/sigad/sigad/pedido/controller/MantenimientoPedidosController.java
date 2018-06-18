@@ -6,6 +6,8 @@
 package com.sigad.sigad.pedido.controller;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
@@ -13,7 +15,9 @@ import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.business.Pedido;
+import com.sigad.sigad.business.Tienda;
 import com.sigad.sigad.business.helpers.PedidoHelper;
+import com.sigad.sigad.perfil.controller.SolicitarDireccionController;
 import java.io.IOException;
 import java.net.URL;
 import java.text.DateFormat;
@@ -43,13 +47,13 @@ import javafx.scene.control.TreeTableView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
 /**
  * FXML Controller class
  *
  * @author Alexandra
  */
-
 public class MantenimientoPedidosController implements Initializable {
 
     /**
@@ -61,6 +65,7 @@ public class MantenimientoPedidosController implements Initializable {
     JFXButton moreBtn;
     @FXML
     StackPane hiddenSp;
+    JFXDialog direccionDialog;
     @FXML
     JFXTreeTableColumn<PedidoOrdenLista, Integer> id = new JFXTreeTableColumn<>("ID");
     @FXML
@@ -77,7 +82,7 @@ public class MantenimientoPedidosController implements Initializable {
 
     private final ObservableList<PedidoOrdenLista> pedidos = FXCollections.observableArrayList();
     public static final String viewPath = "/com/sigad/sigad/pedido/view/mantenimientoPedidos.fxml";
-
+    private Boolean isEdit;
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
@@ -156,6 +161,7 @@ public class MantenimientoPedidosController implements Initializable {
 
         VBox vBox = new VBox(edit, eliminar);
 
+
         popup = new JFXPopup();
         popup.setPopupContent(vBox);
     }
@@ -163,23 +169,45 @@ public class MantenimientoPedidosController implements Initializable {
     @FXML
     void crearPedido(MouseEvent event) {
         try {
-            Node node;
-            FXMLLoader loader = new FXMLLoader(MantenimientoPedidosController.this.getClass().getResource(SeleccionarProductosController.viewPath));
-            node = (Node) loader.load();
-            SeleccionarProductosController sel = loader.getController();
-            sel.initModel(pedido, hiddenSp);
-            hiddenSp.getChildren().setAll(node);
-        } catch (IOException ex) {
+            if (verificarTienda()) {
+//                Node node;
+//                FXMLLoader loader = new FXMLLoader(MantenimientoPedidosController.this.getClass().getResource(SeleccionarProductosController.viewPath));
+//                node = (Node) loader.load();
+//                SeleccionarProductosController sel = loader.getController();
+//                sel.initModel(pedido, hiddenSp);
+//                hiddenSp.getChildren().setAll(node);
+            }
+        } catch (Exception ex) {
             Logger.getLogger(MantenimientoPedidosController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
-    
-    void editarPedido(){
-    
-    
+
+    public Boolean verificarTienda() {
+        try {
+            JFXDialogLayout content = new JFXDialogLayout();
+            content.setHeading(new Text("Encontrar tienda mas cercana"));
+            Node node;
+            FXMLLoader loader = new FXMLLoader(MantenimientoPedidosController.this.getClass().getResource(SolicitarDireccionController.viewPath));
+            node = (Node) loader.load();
+            SolicitarDireccionController dir = loader.getController();
+            Tienda tienda = new Tienda();
+            dir.initModel(isEdit, tienda, hiddenSp);
+            content.setBody(node);
+            direccionDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
+            direccionDialog.show();
+            //return Boolean.TRUE;
+        } catch (IOException ex) {
+            Logger.getLogger(MantenimientoPedidosController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return Boolean.FALSE;
     }
 
+    void editarPedido() {
+
+    }
+    
+ 
     @FXML
     public void handleAction(Event event) {
 
