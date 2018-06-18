@@ -27,11 +27,16 @@ import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -102,7 +107,10 @@ public class HomeController implements Initializable {
         Perfil perfil = LoginController.user.getPerfil();
         Set<Permiso> permisos = perfil.getPermisos();
         if(permisos != null){
-            Iterator<Permiso> itr = permisos.iterator();
+            List<Permiso> permisosSorted = permisos.stream().collect(Collectors.toList());
+            Collections.sort(permisosSorted, (o1, o2) -> o1.getOrden()-o2.getOrden());
+            
+            Iterator<Permiso> itr = permisosSorted.iterator();
             int i = 0;
             while(itr.hasNext()){
                 Permiso p = itr.next();
@@ -113,7 +121,7 @@ public class HomeController implements Initializable {
                 i++;
             }
 
-            Iterator<Permiso> itr1 = permisos.iterator();
+            Iterator<Permiso> itr1 = permisosSorted.iterator();
             int j = 0;
             while(itr1.hasNext()){
                 String name = itr1.next().getMenu();

@@ -92,18 +92,18 @@ public class LoginController implements Initializable {
 //                helper.close();
                 
                 Set<Permiso> list = new HashSet<>();
-                list.add(new Permiso("Ventas", "SALE"));
-                list.add(new Permiso("Descuentos", "SALE"));
-                list.add(new Permiso("Insumos", "ARRANGE_SEND_BACKWARD"));
-                list.add(new Permiso("Usuarios", "ACCOUNT_MULTIPLE"));
-                list.add(new Permiso("Repartos", "CAR"));
-                list.add(new Permiso("Pedidos", "CART"));
-                list.add(new Permiso("Tiendas", "STORE"));
-                list.add(new Permiso("Perfiles", "FINGERPRINT"));
-                list.add(new Permiso("Estadísticas", "ELEVATION_RISE"));
-                list.add(new Permiso("Carga Masiva", "ARROW_UP_BOLD_CIRCLE"));
-                list.add(new Permiso("Configuraciones", "SETTINGS"));
-                list.add(new Permiso("Productos", "STORE"));
+                list.add(new Permiso(8, "Ventas", "SALE"));
+                list.add(new Permiso(7, "Descuentos", "SALE"));
+                list.add(new Permiso(4, "Insumos", "ARRANGE_SEND_BACKWARD"));
+                list.add(new Permiso(3, "Usuarios", "ACCOUNT_MULTIPLE"));
+                list.add(new Permiso(9, "Repartos", "CAR"));
+                list.add(new Permiso(5, "Pedidos", "CART"));
+                list.add(new Permiso(1, "Tiendas", "STORE"));
+                list.add(new Permiso(2, "Perfiles", "FINGERPRINT"));
+                list.add(new Permiso(10, "Estadísticas", "ELEVATION_RISE"));
+                list.add(new Permiso(0, "Carga Masiva", "ARROW_UP_BOLD_CIRCLE"));
+                list.add(new Permiso(11, "Configuraciones", "SETTINGS"));
+                list.add(new Permiso(6, "Productos", "STORE"));
                 
                 for (Permiso p : list) {
                     PermisoHelper helper1 = new PermisoHelper();

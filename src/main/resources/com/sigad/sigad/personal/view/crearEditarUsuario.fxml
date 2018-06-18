@@ -63,8 +63,8 @@
                               <JFXTextField fx:id="telephoneTxt" layoutX="329.0" layoutY="105.0" minWidth="-Infinity" prefWidth="150.0" promptText="Teléfono" />
                               <JFXTextField fx:id="cellphoneTxt" layoutX="329.0" layoutY="163.0" minWidth="-Infinity" prefWidth="150.0" promptText="Celular" />
                               <JFXTextField fx:id="emailTxt" layoutX="491.0" layoutY="50.0" minWidth="-Infinity" prefWidth="150.0" promptText="Correo" />
-                              <JFXToggleButton fx:id="isActiveBtn" layoutX="488.0" layoutY="140.0" text="Activo" />
                               <JFXPasswordField fx:id="passwordTxt" layoutX="491.0" layoutY="105.0" promptText="Contraseña" />
+                              <JFXToggleButton fx:id="isActiveBtn" layoutX="488.0" layoutY="140.0" text="Activo" />
                            </children>
                         </AnchorPane>
                         <AnchorPane prefHeight="33.0" prefWidth="927.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;" GridPane.columnIndex="3" GridPane.rowIndex="1">

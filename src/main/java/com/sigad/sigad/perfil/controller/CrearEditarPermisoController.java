@@ -178,7 +178,7 @@ public class CrearEditarPermisoController implements Initializable {
         Set<Permiso> currPermissions= ptemp.getPermisos();
         ArrayList<Permiso> permisoActualList = new ArrayList<Permiso>();
         currPermissions.forEach((currPermission) -> {
-            permisoActualList.add(new Permiso(currPermission.getMenu(), currPermission.getIcono()));
+            permisoActualList.add(new Permiso(currPermission.getOrden(), currPermission.getMenu(), currPermission.getIcono()));
         });
         
         //load profiles
