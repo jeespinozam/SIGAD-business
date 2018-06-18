@@ -370,7 +370,7 @@ public class RegistrarComboProductosController implements Initializable {
                 calcularPrecioBase();
             }
 
-            // Colorear la huevada
+            // Colorear la 
         });
     }
 
@@ -428,6 +428,7 @@ public class RegistrarComboProductosController implements Initializable {
         txtPrecioReal.setText(GeneralHelper.roundTwoDecimals(precioreal).toString());
         txtPrecioReal.setDisable(true);
         tblProductos.setEditable(false);
+        txtstockMaximo.setText(combo.getMaxDisponible().toString());
         txtDescripcion.setText(combo.getDescripcion());
         combo.getProductosxComboArray().forEach((t) -> {
             ProductoLista pd = new ProductoLista(t.getProducto(), Integer.SIZE);
