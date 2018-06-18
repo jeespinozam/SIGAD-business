@@ -87,7 +87,7 @@ public class ListaInsumoController implements Initializable {
     JFXTreeTableColumn<InsumoViewer,String> stockLCol = new JFXTreeTableColumn<>("Stock Total Logico");
     JFXTreeTableColumn<InsumoViewer,String> stockFCol = new JFXTreeTableColumn<>("Stock Total Fisico");
     JFXTreeTableColumn<InsumoViewer,String> volumenCol = new JFXTreeTableColumn<>("Volumen");
-    JFXTreeTableColumn<InsumoViewer,String> activoCol = new JFXTreeTableColumn<>("Activo");
+    JFXTreeTableColumn<InsumoViewer,String> estadoCol = new JFXTreeTableColumn<>("Estado");
     static ObservableList<InsumoViewer> insumosList;
     
     public static class InsumoViewer extends RecursiveTreeObject<InsumoViewer>{
@@ -120,8 +120,11 @@ public class ListaInsumoController implements Initializable {
             return tiempoVida;
         }
 
-        public SimpleBooleanProperty getActivo() {
-            return activo;
+        public SimpleStringProperty getActivo() {
+            if(activo.getValue()){
+                return new SimpleStringProperty("Activo");
+            }
+            return new SimpleStringProperty("No Activo");
         }
 
         public SimpleStringProperty getVolumen() {
@@ -155,33 +158,7 @@ public class ListaInsumoController implements Initializable {
         public void setSeleccion(BooleanProperty seleccion) {
             this.seleccion = seleccion;
         }
-
-        private SimpleStringProperty nombre;
-        private SimpleStringProperty descripcion;
-        private SimpleStringProperty tiempoVida;
-        private SimpleStringProperty stockTotalLogico;
-        private SimpleStringProperty stockTotalFisico;
-        private SimpleBooleanProperty activo;
-        private SimpleStringProperty volumen;
-        private BooleanProperty seleccion;
-        private SimpleIntegerProperty cantidad;
-        ImageView imagen;
-        private Long id;
-        private Double precio;
         
-        public InsumoViewer(String nombre,String descripcion, String tiempoVida,String stockTotalLogico, String stockTotalFisico, Boolean activo, String volumen ,String imagePath, Integer cantidad,Long id,Double precio) {
-            this.nombre = new SimpleStringProperty(nombre);
-            this.descripcion = new SimpleStringProperty(descripcion);
-            this.tiempoVida = new SimpleStringProperty(tiempoVida);
-            this.stockTotalLogico = new SimpleStringProperty(stockTotalLogico);
-            this.stockTotalFisico = new SimpleStringProperty(stockTotalFisico);
-            this.activo = new SimpleBooleanProperty(activo);
-            this.volumen = new SimpleStringProperty(volumen);
-            this.cantidad = new SimpleIntegerProperty(cantidad);
-            this.id = id;
-            this.precio = precio;
-        }
-
         public SimpleIntegerProperty getCantidad() {
             return cantidad;
         }
@@ -194,16 +171,31 @@ public class ListaInsumoController implements Initializable {
             return id;
         }
 
-        public Double getPrecio() {
-            return precio;
-        }
-
         public void setId(Long id) {
             this.id = id;
         }
 
-        public void setPrecio(Double precio) {
-            this.precio = precio;
+        private SimpleStringProperty nombre;
+        private SimpleStringProperty descripcion;
+        private SimpleStringProperty tiempoVida;
+        private SimpleStringProperty stockTotalLogico;
+        private SimpleStringProperty stockTotalFisico;
+        private SimpleBooleanProperty activo;
+        private SimpleStringProperty volumen;
+        private BooleanProperty seleccion;
+        private SimpleIntegerProperty cantidad;
+        private Long id;
+        
+        public InsumoViewer(String nombre,String descripcion, String tiempoVida,String stockTotalLogico, String stockTotalFisico, Boolean activo, String volumen, Integer cantidad,Long id) {
+            this.nombre = new SimpleStringProperty(nombre);
+            this.descripcion = new SimpleStringProperty(descripcion);
+            this.tiempoVida = new SimpleStringProperty(tiempoVida);
+            this.stockTotalLogico = new SimpleStringProperty(stockTotalLogico);
+            this.stockTotalFisico = new SimpleStringProperty(stockTotalFisico);
+            this.activo = new SimpleBooleanProperty(activo);
+            this.volumen = new SimpleStringProperty(volumen);
+            this.cantidad = new SimpleIntegerProperty(cantidad);
+            this.id = id;
         }
     }
     @Override
@@ -228,8 +220,7 @@ public class ListaInsumoController implements Initializable {
             row.setOnMouseClicked((event) -> {
                 if (! row.isEmpty() && event.getButton()==MouseButton.PRIMARY 
                      && event.getClickCount() == 2) {
-                    InsumoViewer clickedRow = row.getItem();
-                    System.out.println("Selected nombre" + clickedRow.nombre);           
+                    InsumoViewer clickedRow = row.getItem();          
                     selectedInsumo = clickedRow;
                     try {
                         createEditInsumoDialog(false);
@@ -240,12 +231,14 @@ public class ListaInsumoController implements Initializable {
             });
             return row;
         });
+        estadoCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<InsumoViewer, String> param) -> param.getValue().getValue().getActivo()//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        );
        
     }
     private void addColumns(){
         final TreeItem<InsumoViewer> rootInsumo = new RecursiveTreeItem<>(insumosList,RecursiveTreeObject::getChildren);
         tblInsumos.setEditable(true);
-        tblInsumos.getColumns().setAll(nombreCol,stockLCol,stockFCol,volumenCol);
+        tblInsumos.getColumns().setAll(nombreCol,stockLCol,stockFCol,volumenCol,estadoCol);
         tblInsumos.setRoot(rootInsumo);
         tblInsumos.setShowRoot(false);
     }
@@ -279,7 +272,8 @@ public class ListaInsumoController implements Initializable {
                                          stockFisico.toString(),
                                          insumo.isActivo(),
                                          insumo.isVolumen().toString(),
-                                         insumo.getImagen(),0,insumo.getId(),insumo.getPrecio()));
+                                         0,
+                                         insumo.getId()));
     }
     @FXML
     private void handleAction(ActionEvent event) {

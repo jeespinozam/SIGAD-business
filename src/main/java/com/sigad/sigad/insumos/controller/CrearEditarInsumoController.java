@@ -137,36 +137,40 @@ public class CrearEditarInsumoController implements Initializable {
                 fillFields();
                 InsumosHelper helper = new InsumosHelper();    
                 ArrayList<ProveedorInsumo> listaInsumoProv = new ArrayList<>();
-                listaProv.forEach((p)->{
-                    if(!p.getPrecio().getValue().equals("")){
-//                       ProveedorInsumo provin = helper.getInsumoProveedorUnit(insumo, p.getProv());
-//                        if(provin != null){
-//                            System.out.println("ya esxite relacion con proveedor");
-//                            System.out.println("id insumo" + provin.getInsumo().getId());
-//                            System.out.println("id insumo" + provin.getProveedor().getId());
-//                            listaInsumoProv.add(provin);
-//                        }
-//                        else {
-//                            
-                            ProveedorInsumo pr = new ProveedorInsumo();
-                            pr.setInsumo(insumo);
-                            pr.setProveedor(p.getProv());
-                            pr.setPrecio(Double.parseDouble(p.getPrecio().getValue()));
-                            pr.setActivo(true);
-                            listaInsumoProv.add(pr);
-//                        }
-                    }
-                });
+                Boolean success = false;                
                 //edicion
                 if(!ListaInsumoController.isInsumoCreate){
-                    Long id = helper.updateInsumo(insumo,null);
-                    if(id != null){
+                    for (int i = 0; i < listaProv.size(); i++) {
+                        if(!listaProv.get(i).getPrecio().getValue().equals("")){
+                           ProveedorInsumo provin = helper.getInsumoProveedorUnit(insumo, listaProv.get(i).getProv());
+                            if(provin != null){
+                                provin.setPrecio(Double.parseDouble(listaProv.get(i).getPrecio().getValue()));
+                                success=helper.updateProveedorInsumo(provin);
+                                if(!success){
+                                    ErrorController error = new ErrorController();
+                                    error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
+                                    break;
+                                }
+                            }
+                            else {
+                                ProveedorInsumo pr = new ProveedorInsumo();
+                                pr.setInsumo(insumo);
+                                pr.setProveedor(listaProv.get(i).getProv());
+                                pr.setPrecio(Double.parseDouble(listaProv.get(i).getPrecio().getValue()));
+                                pr.setActivo(true);
+                                success = helper.saveProveedorInsumo(pr);
+                                if(!success){
+                                    ErrorController error = new ErrorController();
+                                    error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if(success){
                         ListaInsumoController.insumosList.remove(ListaInsumoController.selectedInsumo);
                         ListaInsumoController.updateTable(insumo);
                         ListaInsumoController.insumoDialog.close();
-                    }else{
-                        ErrorController error = new ErrorController();
-                        error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
                     }
                 }
                 //creacion
