@@ -21,6 +21,7 @@ import org.hibernate.query.Query;
  */
 public class TiendaHelper extends BaseHelper{    
     public TiendaHelper() {
+        super();
     }
     
     /*Get all stores*/

@@ -297,6 +297,14 @@ public class DatosPedidoController implements Initializable {
             ErrorController err = new ErrorController();
             err.loadDialog("Aviso", "Seleccion un documento legal", "ok", stackPane);
             return false;
+        } else if (dpFechaEntrega.getValue() == null) {
+            ErrorController err = new ErrorController();
+            err.loadDialog("Aviso", "Seleccione una fecha del pedido", "ok", stackPane);
+            return false;
+        } else if (cmbInicio.getValue() == null) {
+            ErrorController err = new ErrorController();
+            err.loadDialog("Aviso", "Seleccione un turno de entrega", "ok", stackPane);
+            return false;
         } else {
 
             return true;
@@ -311,7 +319,7 @@ public class DatosPedidoController implements Initializable {
         pedido.setVendedor(LoginController.user);
         PedidoEstadoHelper hp = new PedidoEstadoHelper();
         pedido.setTurno(cmbInicio.getValue());
-        PedidoEstado estado = hp.getEstadoByName("pendiente");
+        PedidoEstado estado = hp.getEstadoByName(Constantes.ESTADO_VENTA);
         pedido.addEstado(estado);
         pedido.setEstado(estado);
         if (btnFactura.isSelected()) {
