@@ -219,7 +219,7 @@ public class CrearEditarUsuarioController implements Initializable {
             telephoneTxt.setText(user.getTelefono());
             cellphoneTxt.setText(user.getCelular());
             emailTxt.setText(user.getCorreo());
-            passwordTxt.setText(user.getPassword());
+            passwordTxt.setText(LoginController.decrypt(user.getPassword()));
             isActiveBtn.setSelected(user.isActivo());
             //styles
             //passwordTxt.setEditable(false);
