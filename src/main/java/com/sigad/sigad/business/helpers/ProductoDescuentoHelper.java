@@ -8,8 +8,10 @@ package com.sigad.sigad.business.helpers;
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoDescuento;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.hibernate.Session;
@@ -70,8 +72,11 @@ public class ProductoDescuentoHelper {
         ArrayList<ProductoDescuento> descuentos = new ArrayList<>();
         Query query = null;
         try {
-            query = session.createQuery("from ProductoDescuento where producto_id='" + producto_id + "' and activo=true ");
 
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            query = session.createQuery("SELECT c FROM ProductoDescuento AS c WHERE c.fechaInicio <= :today AND c.fechaFin >= :today  AND producto_id='" + producto_id + "' AND activo=true ");
+            query.setParameter("today", new Date());
+            
             if (!query.list().isEmpty()) {
                 descuentos = (ArrayList<ProductoDescuento>) query.list();
                 descuento = descuentos.stream().max(Comparator.comparing(ProductoDescuento::getValorPct)).orElseThrow(NoSuchElementException::new);

@@ -36,12 +36,14 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class MigracionPedidosHelper {
 
-    private ArrayList<Pedido> pedidos;
+    private ArrayList<Pedido> pedidos = new ArrayList<>();
+    ;
     private Integer cantidadDetalles;
     private Integer cantidadPedidos;
     private Random rand;
-    private ArrayList<Producto> productos;
-    private ArrayList<Usuario> clientes;
+    private ArrayList<Producto> productos = new ArrayList<>();
+    private ArrayList<Usuario> clientes = new ArrayList<>();
+    ;
     private ArrayList<String> direcciones = new ArrayList<>();
     String[][] dir = {{"Av. Tingo Maria 840, Lima", "Avenida Naciones Unidas 1721, Lima", "Av. Arica 1391, Breña", "Av. la Alborada 1327, Lima", "Av. Rep. de Venezuela 2291"},
     {"Av de los Precursores 1031, Lima", "Av. Rafael Escardó 545", "Av. Rafael Escardó 414, San Miguel", "Av. de los Patriotas 323, San Miguel", "Av. de la Marina 2563, San Miguel"},
@@ -52,13 +54,20 @@ public class MigracionPedidosHelper {
     public MigracionPedidosHelper() {
         //crear
         pedidos = new ArrayList<>();
-        cantidadPedidos = 5;
+        cantidadPedidos = 2;
         cantidadDetalles = 5;
         rand = new Random();
         ProductoHelper helper = new ProductoHelper();
         productos = helper.getProducts();
         helper.close();
-
+        PerfilHelper perfilHelper = new PerfilHelper();
+        Perfil p = perfilHelper.getProfile(Constantes.PERFIL_CLIENTE);
+        perfilHelper.close();
+        UsuarioHelper usHelper = new UsuarioHelper();
+        clientes = usHelper.getUsers(p);
+        for (Usuario cliente : clientes) {
+            System.out.println(cliente.getNombres());
+        }
     }
 
     public void direcciones() {
@@ -66,13 +75,13 @@ public class MigracionPedidosHelper {
         //-12.054172, -77.056751
     }
 
-   
-
     public void crearPedidos() {
         TiendaHelper helper = new TiendaHelper();
         ArrayList<Tienda> tiendas = helper.getStores();
         Integer z = 0;
-        for (Tienda tienda : tiendas) {
+        for (Tienda ti : tiendas) {
+            TiendaHelper helperTienda = new TiendaHelper();
+            Tienda tienda = helperTienda.getStore(ti.getId().intValue());
             HashMap<Insumo, Integer> insumosTienda = tienda.getInsumos();
             HashMap<Producto, Integer> maxStockProductos = new HashMap<>();
             ArrayList<Producto> prod = new ArrayList<>(); //Para sacar random productos con stock
@@ -105,10 +114,11 @@ public class MigracionPedidosHelper {
                 Set<DetallePedido> detalles = new HashSet<>();
                 int n = rand.nextInt(cantidadDetalles) + 1;
                 for (int j = 0; j < n; j++) {
-                    if (disponibles.isEmpty()) {
+                    if (disponibles.size()==0) {
                         break;
                     }
-                    int indexProd = rand.nextInt(prod.size() - 1) + 1;
+                    System.out.println(disponibles.size());
+                    int indexProd = rand.nextInt(disponibles.size() - 1) + 1;
                     Producto producto = disponibles.get(indexProd);
                     DetallePedido detalle = new DetallePedido();
                     detalle.setProducto(producto);
@@ -153,6 +163,7 @@ public class MigracionPedidosHelper {
                         detalle.setDescuentoCategoria(null);
                     }
                     detalle.setCombo(null);
+                    detalle.setPedido(pedido);
                     detalles.add(detalle);
                     disponibles.remove(producto);
                     recalcularStockProducto(producto, cant, 0, insumosTienda);

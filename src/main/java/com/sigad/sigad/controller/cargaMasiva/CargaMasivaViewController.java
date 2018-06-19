@@ -13,6 +13,7 @@ import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sigad.sigad.business.helpers.DBPopulationHelper;
+import com.sigad.sigad.business.helpers.MigracionPedidosHelper;
 import com.sigad.sigad.helpers.cargaMasiva.*;
 import static com.sigad.sigad.helpers.cargaMasiva.CargaMasivaHelper.generarCargaMasivaTemplate;
 import java.awt.Desktop;
@@ -39,6 +40,7 @@ import javafx.scene.Node;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
@@ -231,6 +233,12 @@ public class CargaMasivaViewController implements Initializable {
         this.entidadesSeleccionadas = options;
     }
 
+    
+    @FXML
+    void generarOrdenesDeCompra(MouseEvent event) {
+        MigracionPedidosHelper helper = new MigracionPedidosHelper();
+        helper.crearPedidos();
+    }
     private void initializeGrid(File file){
         // Insumo
         /*
