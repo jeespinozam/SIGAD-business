@@ -149,17 +149,7 @@ public class SeleccionarProductosController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-        Integer id = LoginController.user.getId().intValue();
-        UsuarioHelper hp = new UsuarioHelper();
-        Usuario us = hp.getUser(id);
-        Tienda tienda = us.getTienda();
-        if (tienda == null) {
-            ErrorController err = new ErrorController();
-            err.loadDialog("Aviso", "Su usuario no tiene una tienda asignada, contacte al administrador", "Ok", stackPane);
-            return;
-        }
-        pedido = new Pedido();
-        pedido.setTienda(tienda);
+        
         columnasPedidos();
         columnasProductos();
         agregarColumnasTablasPedidos();

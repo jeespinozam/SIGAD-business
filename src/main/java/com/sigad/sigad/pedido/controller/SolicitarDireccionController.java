@@ -60,8 +60,6 @@ public class SolicitarDireccionController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
         distancia = Double.MAX_VALUE;
-        TiendaHelper helper = new TiendaHelper();
-        tiendas = helper.getStores();
 
     }
 
@@ -86,7 +84,9 @@ public class SolicitarDireccionController implements Initializable {
             Pair<Double, Double> pair = helper.geocodeAddress(txtdireccion.getText());
             x = pair.getLeft();
             y = pair.getRight();
-            tiendas.forEach((t) -> {
+            
+            TiendaHelper helpertienda = new TiendaHelper();
+            helpertienda.getStores().forEach((t) -> {
                 Double d = GeneralHelper.distanceBetweenTwoPoints(pair.getLeft(), t.getCooXDireccion(), pair.getRight(), t.getCooYDireccion());
                 if (d < distancia) {
                     tienda = t;
