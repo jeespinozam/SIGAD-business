@@ -13,7 +13,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 
 /**
  *
@@ -21,12 +20,10 @@ import javax.persistence.ManyToOne;
  */
 @Entity
 public class Permiso {
-
-    
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+    private Integer orden;
     private String menu;
     private String icono;
     @ManyToMany(mappedBy = "permisos", cascade = { CascadeType.ALL })
@@ -35,9 +32,10 @@ public class Permiso {
     public Permiso() {
     }
 
-    public Permiso(String opcion, String descripcion) {
-        this.menu = opcion;
-        this.icono = descripcion;
+    public Permiso(int orden, String menu, String icono) {
+        this.orden = orden;
+        this.menu = menu;
+        this.icono = icono;
     }
     
     
@@ -102,6 +100,20 @@ public class Permiso {
      */
     public void addPerfil(Perfil perfil) {
         this.perfiles.add(perfil);
+    }
+
+    /**
+     * @return the orden
+     */
+    public int getOrden() {
+        return orden;
+    }
+
+    /**
+     * @param orden the orden to set
+     */
+    public void setOrden(int orden) {
+        this.orden = orden;
     }
    
 }

@@ -7,15 +7,19 @@ package com.sigad.sigad.personal.controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXListView;
+import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXScrollPane;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.validation.NumberValidator;
 import com.jfoenix.validation.RequiredFieldValidator;
 import com.sigad.sigad.app.controller.ErrorController;
+import com.sigad.sigad.business.Pedido;
+import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Tienda;
 import com.sigad.sigad.business.Usuario;
+import com.sigad.sigad.business.helpers.PedidoHelper;
 import com.sigad.sigad.business.helpers.PerfilHelper;
 import com.sigad.sigad.business.helpers.TiendaHelper;
 import com.sigad.sigad.business.helpers.UsuarioHelper;
@@ -42,7 +46,9 @@ public class CrearEditarUsuarioController implements Initializable {
     public static final String viewPath = "/com/sigad/sigad/personal/view/crearEditarUsuario.fxml";
     public static Usuario user = null;
     @FXML
-    private JFXTextField nameTxt,appTxt,apmTxt,dniTxt,telephoneTxt,cellphoneTxt,emailTxt,passwordTxt;
+    private JFXTextField nameTxt,appTxt,apmTxt,dniTxt,telephoneTxt,cellphoneTxt,emailTxt;
+    @FXML 
+    private JFXPasswordField passwordTxt;
     @FXML
     private StackPane hiddenSp;
     @FXML
@@ -55,6 +61,9 @@ public class CrearEditarUsuarioController implements Initializable {
     private JFXListView<Label> storesListView,profilesListView;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        //initElements
+        initElements();
+        
         //Add the buttons of the static dialog
         addDialogBtns();
         
@@ -77,6 +86,55 @@ public class CrearEditarUsuarioController implements Initializable {
         
     }
 
+    private ArrayList<Pedido> deactivateClient(){
+        PedidoHelper helperp = new PedidoHelper();
+        ArrayList<Pedido> listaPedidos = helperp.getPedidosCliente(user.getId());
+        if(listaPedidos==null){
+            ErrorController error = new ErrorController();
+            error.loadDialog("Error", "No se puede desactivar cliente con pedidos asignados", "Ok", hiddenSp);
+        }
+        helperp.close();
+        return listaPedidos;
+    }
+    private ArrayList<Pedido> deactivateRepartidor(){
+        PedidoHelper helperp = new PedidoHelper();
+        ArrayList<Pedido> listaPedidos = helperp.getPedidosVendedor(user.getId());
+        if(listaPedidos==null){
+            ErrorController error = new ErrorController();
+            error.loadDialog("Error", "No se puede desactivar repartidor con pedidos asignados", "Ok", hiddenSp);          
+        }
+        helperp.close();
+        return listaPedidos;
+    }
+    private void initElements(){
+        isActiveBtn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            if(!newValue){
+                //verify to deactivate
+                switch (user.getPerfil().getNombre()){
+                    case "Cliente":
+                        if(deactivateClient() == null){
+                            isActiveBtn.setSelected(true);
+                        }
+                        break;
+                    case "Repartidor":
+                        if(deactivateRepartidor()== null){
+                            isActiveBtn.setSelected(true);
+                        }
+                        break;                   
+                }
+            }
+            else {
+                //verify to activate
+                if(!PersonalController.isUserCreate){
+                    if(!user.getPerfil().isActivo()){
+                        ErrorController error = new ErrorController();
+                        error.loadDialog("Error", "No se puede activar este usuario, su perfil esta desactivado", "Ok", hiddenSp); 
+                        isActiveBtn.setSelected(true);
+                    }
+                }
+            }
+        }));
+    }
     private void addDialogBtns() {
         JFXButton save = new JFXButton("Guardar");
         save.setPrefSize(80, 25);
@@ -109,12 +167,14 @@ public class CrearEditarUsuarioController implements Initializable {
                     if(id != null){
                         PersonalController.updateTable(user);
                         PersonalController.userDialog.close();
+                        
                     }else{
                         ErrorController error = new ErrorController();
                         error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
                     }
                     
                 }
+                helper.close();
             }
         });
         
@@ -162,8 +222,8 @@ public class CrearEditarUsuarioController implements Initializable {
             passwordTxt.setText(user.getPassword());
             isActiveBtn.setSelected(user.isActivo());
             //styles
-            passwordTxt.setEditable(false);
-            passwordTxt.setOpacity(0.5);
+            //passwordTxt.setEditable(false);
+            //passwordTxt.setOpacity(0.5);
         }
     }
     
@@ -184,7 +244,7 @@ public class CrearEditarUsuarioController implements Initializable {
             dniTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             dniTxt.requestFocus();
             return false;
-        }else if(dniTxt.getText().length()<8){
+        }else if(dniTxt.getText().length()!=8){
             ErrorController r= new ErrorController();
             r.loadDialog("Error", "Debe el dni debe tener 8 dígitos", "Ok", hiddenSp);
             dniTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
@@ -229,7 +289,7 @@ public class CrearEditarUsuarioController implements Initializable {
         user.setTelefono(telephoneTxt.getText());
         user.setCelular(cellphoneTxt.getText());
         user.setCorreo(emailTxt.getText());
-        user.setPassword(passwordTxt.getText());
+        user.setPassword(LoginController.encrypt(passwordTxt.getText()));
         user.setActivo(isActiveBtn.isSelected());
         
         int indexProfile = profilesListView.getSelectionModel().getSelectedIndex();

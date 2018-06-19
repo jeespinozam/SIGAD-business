@@ -45,7 +45,8 @@ public class Producto {
     @ManyToOne
     private ProductoFragilidad fragilidad;
     private double volumen;
-    private Double precio;
+    private Double precio;///venta
+    private Double precioCompra;//costo
 
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProductosCombos> combos = new HashSet<>();
@@ -297,6 +298,34 @@ public class Producto {
      */
     public void setUsuarios(Set<Usuario> usuarios) {
         this.usuarios = usuarios;
+    }
+
+    /**
+<<<<<<< HEAD
+     * @return the combos
+     */
+    public Set<ProductosCombos> getCombos() {
+        return combos;
+    }
+
+    /**
+     * @param combos the combos to set
+     */
+    public void setCombos(Set<ProductosCombos> combos) {
+        this.combos = combos;
+    }
+    /**
+     * @return the precioCompra
+     */
+    public Double getPrecioCompra() {
+        return precioCompra;
+    }
+
+    /**
+     * @param precioCompra the precioCompra to set
+     */
+    public void setPrecioCompra(Double precioCompra) {
+        this.precioCompra = precioCompra;
     }
 
     

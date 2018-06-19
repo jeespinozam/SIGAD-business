@@ -24,20 +24,19 @@
               </columnConstraints>
               <rowConstraints>
                   <RowConstraints maxHeight="319.0" minHeight="10.0" prefHeight="31.0" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="319.0" minHeight="10.0" prefHeight="33.0" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="319.0" minHeight="10.0" prefHeight="32.0" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="337.0" minHeight="10.0" prefHeight="322.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="319.0" minHeight="10.0" prefHeight="43.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="319.0" minHeight="0.0" prefHeight="31.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="337.0" minHeight="10.0" prefHeight="309.0" vgrow="SOMETIMES" />
                 <RowConstraints maxHeight="168.0" minHeight="10.0" prefHeight="45.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
                   <AnchorPane prefHeight="64.0" prefWidth="433.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                   <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ECEFF1; -fx-border-color: #C8C8C8;" GridPane.columnIndex="1" GridPane.rowIndex="2">
                      <children>
-                        <Label layoutX="14.0" layoutY="6.0" text="Selecciona un permiso para" />
-                        <Label fx:id="profileName" layoutX="199.0" layoutY="6.0" prefHeight="17.0" prefWidth="222.0" AnchorPane.leftAnchor="199.0" />
+                        <Label fx:id="profileName" layoutX="14.0" layoutY="6.0" text="Selecciona un permiso para" />
                      </children>
                   </AnchorPane>
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                  <AnchorPane prefHeight="25.0" prefWidth="568.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <children>
                         <Label layoutX="14.0" layoutY="7.0" text="Permisos" />
                      </children>

@@ -46,6 +46,9 @@ public class Pedido {
     private double cooXDireccion;
     @NotNull
     private double cooYDireccion;
+    private String rucFactura;
+    private String nombreEmpresa;
+    
     @ManyToOne(optional = false)
     private PedidoEstado estado;
     private String turno;
@@ -54,7 +57,7 @@ public class Pedido {
     private Reparto reparto;
 
     //fk
-    @ManyToOne(optional = false)
+    @ManyToOne
     private Usuario vendedor;
 
     @ManyToOne(optional = false)
@@ -74,6 +77,9 @@ public class Pedido {
     
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<DocumentoLegal> documentos = new HashSet<>();
+    
+    @ManyToOne
+    private ClienteDescuento descuentoCliente;
 
     private Timestamp horaEntrega;
     private Time horaIniEntrega;

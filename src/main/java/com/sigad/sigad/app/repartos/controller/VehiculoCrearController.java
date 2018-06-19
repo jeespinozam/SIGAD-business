@@ -20,7 +20,6 @@ import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Vehiculo;
 import com.sigad.sigad.business.helpers.TipoVehiculoHelper;
 import com.sigad.sigad.business.helpers.VehiculoHelper;
-import static com.sigad.sigad.deposito.helper.DepositoHelper.session;
 import com.sigad.sigad.validations.SIGADValidations;
 import java.net.URL;
 import java.util.ArrayList;
