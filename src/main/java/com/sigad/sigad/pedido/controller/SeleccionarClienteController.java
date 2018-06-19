@@ -199,7 +199,8 @@ public class SeleccionarClienteController implements Initializable {
             FXMLLoader loader = new FXMLLoader(SeleccionarClienteController.this.getClass().getResource(RegistrarClienteController.viewPath));
             node = (Node) loader.load();
             RegistrarClienteController ctrl = new RegistrarClienteController();
-            ctrl.initModel(stackPane);
+            ClienteDireccion c = new ClienteDireccion(pedido.getDireccionDeEnvio(), "Pedido", Boolean.TRUE, pedido.getCooXDireccion(), pedido.getCooYDireccion());
+            ctrl.initModel(stackPane, c);
             content.setBody(node);
             userDialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
             userDialog.show();

@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 public class ClienteDireccion {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
@@ -34,7 +35,7 @@ public class ClienteDireccion {
     private Double cooXDireccion;
     @NotNull
     private Double cooYDireccion;
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     private Usuario usuario;
 
     /**
@@ -54,8 +55,15 @@ public class ClienteDireccion {
         this.usuario = usuario;
     }
 
-   
-    public ClienteDireccion(String direccionCliente, String nombreDireccion, Boolean principal,  Usuario usuario) {
+    public ClienteDireccion(String direccionCliente, String nombreDireccion,Boolean activo, Double cooXDireccion, Double cooYDireccion) {
+        this.direccionCliente = direccionCliente;
+        this.nombreDireccion = nombreDireccion;
+        this.activo = activo;
+        this.cooXDireccion = cooXDireccion;
+        this.cooYDireccion = cooYDireccion;
+    }
+
+    public ClienteDireccion(String direccionCliente, String nombreDireccion, Boolean principal, Usuario usuario) {
         this.direccionCliente = direccionCliente;
         this.nombreDireccion = nombreDireccion;
         this.principal = principal;
@@ -72,14 +80,14 @@ public class ClienteDireccion {
      */
     @Override
     public boolean equals(Object o) {
-        
-        if (o instanceof ClienteDireccion){
-            ClienteDireccion  c = (ClienteDireccion) o;
+
+        if (o instanceof ClienteDireccion) {
+            ClienteDireccion c = (ClienteDireccion) o;
             return c.getDireccionCliente().trim().equals(this.getDireccionCliente().trim());
-        }else if (o instanceof RegistrarClienteController.DireccionesLista){
+        } else if (o instanceof RegistrarClienteController.DireccionesLista) {
             RegistrarClienteController.DireccionesLista d = (RegistrarClienteController.DireccionesLista) o;
             return getNombreDireccion().trim().equals(d.getDireccion().getValue().trim());
-        
+
         }
         return super.equals(o); //To change body of generated methods, choose Tools | Templates.
     }
@@ -95,9 +103,7 @@ public class ClienteDireccion {
     public String toString() {
         return direccionCliente;
     }
-    
-    
-    
+
     /**
      * @return the id
      */

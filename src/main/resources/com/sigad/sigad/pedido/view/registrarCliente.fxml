@@ -19,37 +19,37 @@
          <children>
             <AnchorPane>
                <children>
-                    <JFXTextField fx:id="txtNombre" layoutY="29.0" prefColumnCount="16" promptText="Nombres">
+                    <JFXTextField fx:id="txtNombre" labelFloat="true" layoutY="29.0" prefColumnCount="16" promptText="Nombres">
                      <font>
                         <Font size="11.0" />
                      </font>
                   </JFXTextField>
-                    <JFXTextField fx:id="txtApp" layoutY="87.0" prefColumnCount="16" promptText="Apellido Paterno">
+                    <JFXTextField fx:id="txtApp" labelFloat="true" layoutY="87.0" prefColumnCount="16" promptText="Apellido Paterno">
                      <font>
                         <Font size="11.0" />
                      </font>
                   </JFXTextField>
-                    <JFXTextField fx:id="txtApm" layoutY="143.0" prefColumnCount="16" promptText="Apellido Materno">
+                    <JFXTextField fx:id="txtApm" labelFloat="true" layoutY="143.0" prefColumnCount="16" promptText="Apellido Materno">
                      <font>
                         <Font size="11.0" />
                      </font>
                   </JFXTextField>
-                    <JFXTextField fx:id="txtdni" layoutY="199.0" prefColumnCount="16" promptText="DNI">
+                    <JFXTextField fx:id="txtdni" labelFloat="true" layoutY="199.0" prefColumnCount="16" promptText="DNI">
                      <font>
                         <Font size="11.0" />
                      </font>
                   </JFXTextField>
-                    <JFXTextField fx:id="txttel" layoutY="255.0" prefColumnCount="16" promptText="Telefono">
+                    <JFXTextField fx:id="txttel" labelFloat="true" layoutY="255.0" prefColumnCount="16" promptText="Telefono">
                      <font>
                         <Font size="11.0" />
                      </font>
                   </JFXTextField>
-                    <JFXTextField fx:id="txtcel" layoutY="315.0" prefColumnCount="16" promptText=" Celular">
+                    <JFXTextField fx:id="txtcel" labelFloat="true" layoutY="315.0" prefColumnCount="16" promptText=" Celular">
                      <font>
                         <Font size="11.0" />
                      </font>
                   </JFXTextField>
-                    <JFXTextField fx:id="txtcorreo" layoutY="371.0" prefColumnCount="16" promptText="Correo">
+                    <JFXTextField fx:id="txtcorreo" labelFloat="true" layoutY="371.0" prefColumnCount="16" promptText="Correo">
                      <font>
                         <Font size="11.0" />
                      </font>
@@ -63,12 +63,12 @@
                         <Blend />
                      </effect>
                   </Label>
-                  <JFXTextField fx:id="txtnuevaDir" layoutX="209.0" layoutY="333.0" prefHeight="25.0" prefWidth="234.0" promptText="Direccion">
+                  <JFXTextField fx:id="txtnuevaDir" labelFloat="true" layoutX="209.0" layoutY="333.0" prefHeight="25.0" prefWidth="234.0" promptText="Direccion">
                      <font>
                         <Font name="System Italic" size="12.0" />
                      </font>
                   </JFXTextField>
-                  <JFXTextField fx:id="txtnuevoNom" layoutX="463.0" layoutY="333.0" prefHeight="25.0" prefWidth="133.0" promptText="Nombre">
+                  <JFXTextField fx:id="txtnuevoNom" labelFloat="true" layoutX="463.0" layoutY="333.0" prefHeight="25.0" prefWidth="133.0" promptText="Nombre">
                      <font>
                         <Font name="System Italic" size="12.0" />
                      </font>
