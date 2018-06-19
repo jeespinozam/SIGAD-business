@@ -27,6 +27,7 @@ public class CargaMasivaConstantes {
     public static final String TABLA_PRODUCTOS = "Productos";
     public static final String TABLA_TIPOPAGO = "Tipos de Pago";
     public static final String TABLA_PRODXINSUMO = "Producto x Insumo";
+    public static final String TABLA_PEDIDOESTADO = "Tipo de Estado de pedido";
     public static final String TABLA_TIPOVEHICULOS = "Tipos de Vehiculo";
     public static final String TABLA_VEHICULOS = "Vehiculos";
     public static final String TABLA_PROVEEDORXINSUMO = "Proveedor x Insumo";
@@ -38,7 +39,7 @@ public class CargaMasivaConstantes {
     public static ObservableList<String> getList(){
         return FXCollections.observableArrayList(
                 TABLA_PRODUCTOCATEGORIA, TABLA_DESCUENTOSCATEGORIA, TABLA_TIPOPAGO,TABLA_TIENDAS,TABLA_PERFILES, TABLA_USUARIOS, TABLA_DESCUENTOXUSUARIO, TABLA_PROVEEDORES, TABLA_INSUMOS, TABLA_PROVEEDORXINSUMO,
-                TABLA_TIPOMOV, TABLA_PERMISOS, TABLA_FRAGILIDAD, TABLA_PRODUCTOS, TABLA_PRODUCTODESCUENTO,TABLA_PERFILXPERMISO, TABLA_PRODXINSUMO, TABLA_TIPOVEHICULOS, TABLA_VEHICULOS
+                TABLA_TIPOMOV, TABLA_PERMISOS, TABLA_FRAGILIDAD, TABLA_PRODUCTOS, TABLA_PRODUCTODESCUENTO,TABLA_PERFILXPERMISO, TABLA_PRODXINSUMO, TABLA_TIPOVEHICULOS, TABLA_VEHICULOS, TABLA_PEDIDOESTADO
         );
     };
 }

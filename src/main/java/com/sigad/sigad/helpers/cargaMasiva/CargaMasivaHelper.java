@@ -8,6 +8,8 @@ package com.sigad.sigad.helpers.cargaMasiva;
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.ClienteDescuento;
 import com.sigad.sigad.business.Insumo;
+import com.sigad.sigad.business.Pedido;
+import com.sigad.sigad.business.PedidoEstado;
 import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Permiso;
 import com.sigad.sigad.business.Producto;
@@ -217,6 +219,11 @@ public class CargaMasivaHelper {
                         break;
                     case CargaMasivaConstantes.TABLA_TIPOPAGO:
                         rowhead.createCell(rowIndex).setCellValue("Descripcion del Tipo de Pago");
+                        break;
+                    case CargaMasivaConstantes.TABLA_PEDIDOESTADO:
+                        rowhead.createCell(rowIndex).setCellValue("Descripcion");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Nombre");
                         break;
                     case CargaMasivaConstantes.TABLA_TIPOVEHICULOS:
                         rowhead.createCell(rowIndex).setCellValue("Capacidad");
@@ -442,9 +449,9 @@ public class CargaMasivaHelper {
                 index++;
                 DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
                 try {
-                    Date fechaInicio = df.parse(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                    java.util.Date fechaInicio = df.parse(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                     index++;
-                    Date fechaFin = df.parse(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                    java.util.Date fechaFin = df.parse(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                     if (dsctoCategoria!=null && dsctoCategoria>0.0) {
                         LOGGER.log(Level.INFO, "Orden de fechas correcto");
                         ProductoCategoria pc = (ProductoCategoria) CargaMasivaHelper.busquedaGeneralString(session, "ProductoCategoria", new String[] {"nombre"}, new String [] {nombreCategoriaProd});
@@ -655,6 +662,7 @@ public class CargaMasivaHelper {
                 return CargaMasivaHelper.guardarObjeto(nuevoInsumo, session);
             case CargaMasivaConstantes.TABLA_TIENDAS:
                 Tienda nuevaTienda = new Tienda();
+                nuevaTienda.setActivo(true);
                 nuevaTienda.setDireccion(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                 index++;
                 Double codX = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
@@ -792,17 +800,16 @@ public class CargaMasivaHelper {
                 else
                     LOGGER.log(Level.WARNING, String.format("No se especifico categoria para producto %s, se continua el proceso", nuevoProd.getNombre()));
                 index++;
-                String intensidadAsociada = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
-                if (StringUtils.isNotBlank(intensidadAsociada)) {
-                    Integer valorIntensidadAsociada = (Integer) validarParsing(intensidadAsociada, true);
-                    if (valorIntensidadAsociada != null) {
-                        ProductoFragilidad fragilidadAsociada = (ProductoFragilidad) CargaMasivaHelper.busquedaGeneralInt(session, "ProductoFragilidad", new String [] {"valor"}, new int [] {valorIntensidadAsociada});
-                        if (fragilidadAsociada!=null) {
-                            LOGGER.log(Level.INFO, String.format("Fragilidad %s encontrada con exito", intensidadAsociada));
-                            nuevoProd.setFragilidad(fragilidadAsociada);
+                String fragilidadAsociada = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(fragilidadAsociada)) {
+                    if (fragilidadAsociada != null) {
+                            ProductoFragilidad fragilidadProducto = (ProductoFragilidad) CargaMasivaHelper.busquedaGeneralString(session, "ProductoFragilidad", new String [] {"descripcion"}, new String [] {fragilidadAsociada});
+                        if (fragilidadProducto!=null) {
+                            LOGGER.log(Level.INFO, String.format("Fragilidad %s encontrada con exito", fragilidadProducto));
+                            nuevoProd.setFragilidad(fragilidadProducto);
                         }
                         else
-                            LOGGER.log(Level.SEVERE, String.format("Fragilidad %s no encontrada, no se tendra en consideracion", intensidadAsociada));
+                            LOGGER.log(Level.SEVERE, String.format("Fragilidad %s no encontrada, no se tendra en consideracion", fragilidadProducto));
                     }
                 }
                 else
@@ -869,6 +876,20 @@ public class CargaMasivaHelper {
                     LOGGER.log(Level.SEVERE, "No se identifica una descripcion valida de tipo de pago");
                     return false;
                 }
+            case CargaMasivaConstantes.TABLA_PEDIDOESTADO:
+                PedidoEstado nuevoPedidoEstado = new PedidoEstado();
+                String descripPedidoEstado = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(descripPedidoEstado))
+                    nuevoPedidoEstado.setDescripcion(descripPedidoEstado);
+                index++;
+                String nombPedidoEstado = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(nombPedidoEstado))
+                    nuevoPedidoEstado.setNombre(nombPedidoEstado);
+                else{
+                    LOGGER.log(Level.SEVERE, "El nombre de un estado de pedido es un campo obligatorio");
+                    return false;
+                }
+                return CargaMasivaHelper.guardarObjeto(nuevoPedidoEstado, session);
             case CargaMasivaConstantes.TABLA_TIPOVEHICULOS:
                 Double capacidadTipoVehiculo = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
                 if (capacidadTipoVehiculo != null){
@@ -951,6 +972,28 @@ public class CargaMasivaHelper {
         }
         catch(Exception e) {
             LOGGER.log(Level.SEVERE, String.format("Error en el parseo, revisar el valor : %s", numero));
+            return null;
+        }
+    }
+    
+    public static java.sql.Timestamp parseDate(String dateStr){
+        SimpleDateFormat dateFormatter = new SimpleDateFormat ("yyyy-MM-dd");
+        try{
+            java.util.Date date = dateFormatter.parse(dateStr);
+            return new java.sql.Timestamp(date.getTime());
+        }
+        catch(Exception e){
+            return null;
+        }
+    }
+    
+    public static java.sql.Time parseTime(String timeStr){
+        SimpleDateFormat dateFormatter = new SimpleDateFormat ("HH:mm");
+        try{
+            java.util.Date date = dateFormatter.parse(timeStr);
+            return new java.sql.Time(date.getTime());
+        }
+        catch(Exception e){
             return null;
         }
     }
