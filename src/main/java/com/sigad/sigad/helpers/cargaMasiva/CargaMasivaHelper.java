@@ -607,7 +607,8 @@ public class CargaMasivaHelper {
                     }
                     else{
                         LOGGER.log(Level.SEVERE, String.format("No se introdujo una tienda existente"));
-                        return false;
+                        //return false;
+                        nuevoUsuario.setTienda(null);
                     }
                 }
                 else{
