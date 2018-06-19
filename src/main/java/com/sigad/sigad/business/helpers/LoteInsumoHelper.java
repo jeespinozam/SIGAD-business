@@ -83,6 +83,24 @@ public class LoteInsumoHelper {
             return lotesInsumos;
         }
     }
+    
+    public ArrayList<LoteInsumo> getLoteInsumosRecibidos(Tienda currentStore) {
+        ArrayList<LoteInsumo> lotesInsumos = null;
+        Query query = null;
+        try {
+            query = session.createQuery("from LoteInsumo where tienda_id = " + currentStore.getId().toString());
+
+            if (!query.list().isEmpty()) {
+                lotesInsumos = (ArrayList<LoteInsumo>) (query.list());
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            errorMessage = e.getMessage();
+        } finally {
+            return lotesInsumos;
+        }
+    }
+
 
     public LoteInsumo getLoteInsumo(Long id) {
         LoteInsumo insumo = null;

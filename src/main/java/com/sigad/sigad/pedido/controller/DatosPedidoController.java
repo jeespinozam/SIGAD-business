@@ -311,7 +311,7 @@ public class DatosPedidoController implements Initializable {
         pedido.setVendedor(LoginController.user);
         PedidoEstadoHelper hp = new PedidoEstadoHelper();
         pedido.setTurno(cmbInicio.getValue());
-        PedidoEstado estado = hp.getEstadoByName("pendiente");
+        PedidoEstado estado = hp.getEstadoByName(Constantes.ESTADO_VENTA);
         pedido.addEstado(estado);
         pedido.setEstado(estado);
         if (btnFactura.isSelected()) {

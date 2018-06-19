@@ -149,7 +149,7 @@ public class SeleccionarProductosController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-        
+
         columnasPedidos();
         columnasProductos();
         agregarColumnasTablasPedidos();
@@ -298,6 +298,9 @@ public class SeleccionarProductosController implements Initializable {
                 } else if (ped.combo != null) {
                     nuevo = new PedidoLista((event.getNewValue() <= stock + event.getOldValue()) ? event.getNewValue() : event.getOldValue(),
                             (event.getNewValue() <= stock + event.getOldValue()) ? subNew.toString() : subOld.toString(), ped.combo);
+                } else {
+                    nuevo = new PedidoLista((event.getNewValue() <= stock + event.getOldValue()) ? event.getNewValue() : event.getOldValue(),
+                            (event.getNewValue() <= stock + event.getOldValue()) ? subNew.toString() : subOld.toString(), ped.producto);
                 }
 
                 Integer i = pedidos.indexOf(new PedidoLista(nuevo.nombre.getValue(), viewPath, index, viewPath, nuevo.codigo, viewPath, nuevo.codigo, null, null));
@@ -851,6 +854,18 @@ public class SeleccionarProductosController implements Initializable {
             this.producto = producto;
             this.combo = null;
             this.descuentoProducto = descuentoProducto;
+            this.descuentoCategoria = null;
+        }
+
+        public PedidoLista(Integer cantidad, String subtotal, Producto producto) {
+            this.nombre = new SimpleStringProperty(producto.getNombre());
+            this.precio = new SimpleStringProperty(producto.getPrecio().toString());
+            this.cantidad = new SimpleIntegerProperty(cantidad);
+            this.subtotal = new SimpleStringProperty(subtotal);
+            this.codigo = producto.getId().intValue();
+            this.producto = producto;
+            this.combo = null;
+            this.descuentoProducto = null;
             this.descuentoCategoria = null;
         }
 
