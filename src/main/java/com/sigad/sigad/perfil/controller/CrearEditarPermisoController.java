@@ -177,6 +177,7 @@ public class CrearEditarPermisoController implements Initializable {
             perfil.setDescripcion(temp.getDescripcion());
             perfil.setPermisos(temp.getPermisos());
             perfil.setActivo(temp.isActivo());
+            perfil.setEditable(temp.isEditable());
             
             profileName.setText("Selecciona un permiso para " + perfil.getNombre());
         }

@@ -160,6 +160,7 @@ public class CrearEditarPerfilController implements Initializable {
             perfil.setDescripcion(temp.getDescripcion());
             perfil.setPermisos(temp.getPermisos());
             perfil.setActivo(temp.isActivo());
+            perfil.setEditable(temp.isEditable());
             
             if(temp.isEditable()!=null && !temp.isEditable()){
                 messageLbl.setVisible(true);

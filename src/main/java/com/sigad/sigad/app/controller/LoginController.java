@@ -116,7 +116,7 @@ public class LoginController implements Initializable {
                 }
                 
                 //Crear un perfil de superadmin
-                Perfil adminProfile = new Perfil("SuperAdmin", "Super admini can create stores", true, list);
+                Perfil adminProfile = new Perfil("SuperAdmin", "Super admini can create stores", true, list, false);
 
                 String hash = encrypt("admin");
 
