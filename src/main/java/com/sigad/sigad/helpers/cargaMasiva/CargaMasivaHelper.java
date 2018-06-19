@@ -14,6 +14,7 @@ import com.sigad.sigad.business.ProductoCategoria;
 import com.sigad.sigad.business.ProductoFragilidad;
 import com.sigad.sigad.business.ProductoInsumo;
 import com.sigad.sigad.business.Proveedor;
+import com.sigad.sigad.business.ProveedorInsumo;
 import com.sigad.sigad.business.Tienda;
 import com.sigad.sigad.business.TipoMovimiento;
 import com.sigad.sigad.business.TipoPago;
@@ -56,6 +57,13 @@ public class CargaMasivaHelper {
                 rowIndex = 0;
                 // Definimos las cabeceras
                 switch(tablaCarga) {
+                    case CargaMasivaConstantes.TABLA_PROVEEDORXINSUMO:
+                        rowhead.createCell(rowIndex).setCellValue("Nombre de Proveedor");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Nombre de Insumo");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Precio de Insumo");
+                        break;
                     case CargaMasivaConstantes.TABLA_PRODUCTOCATEGORIA:
                         rowhead.createCell(rowIndex).setCellValue("Nombre");
                         rowIndex++;
@@ -314,6 +322,27 @@ public class CargaMasivaHelper {
     private static boolean SubirRegistroBD(String tablaCarga, Row row, DataFormatter dataFormatter, Session session) {
         int index = 0;
         switch(tablaCarga) {
+            case CargaMasivaConstantes.TABLA_PROVEEDORXINSUMO:
+                String nombreProveedor = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                index++;
+                String nombreInsumo = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                index++;
+                Double precioInsumoProveedor = Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                if (precioInsumoProveedor>0.0) {
+                    Proveedor provee = (Proveedor) CargaMasivaHelper.busquedaGeneralString(session, "Proveedor", new String [] {"nombre"}, new String [] {nombreProveedor});
+                    Insumo insumo = (Insumo) CargaMasivaHelper.busquedaGeneralString(session, "Insumo", new String [] {"nombre"}, new String [] {nombreInsumo});
+                    if (provee!=null && insumo!=null) {
+                        ProveedorInsumo proveedorxinsumo = new ProveedorInsumo();
+                        proveedorxinsumo.setActivo(true);
+                        proveedorxinsumo.setProveedor(provee);
+                        proveedorxinsumo.setInsumo(insumo);
+                        proveedorxinsumo.setPrecio(precioInsumoProveedor);
+                        return CargaMasivaHelper.guardarObjeto(proveedorxinsumo, session);
+                    }
+                    LOGGER.log(Level.SEVERE, "El proveedor o insumo indicado son invalidos");
+                }
+                LOGGER.log(Level.SEVERE, "El precio indicado no es valido");
+                return false;
             case CargaMasivaConstantes.TABLA_PRODUCTOCATEGORIA:
                 ProductoCategoria nuevoProdCat = new ProductoCategoria();
                 nuevoProdCat.setActivo(true);   // logica de negocio
@@ -449,9 +478,9 @@ public class CargaMasivaHelper {
                 nuevoInsumo.setActivo(true);    // logica de negocio
                 nuevoInsumo.setStockTotalFisico(0);        // logica de negocio, se inicializa nuevo insumo
                 nuevoInsumo.setStockTotalLogico(0);
-                String nombreInsumo = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
-                if (StringUtils.isNotBlank(nombreInsumo))
-                    nuevoInsumo.setNombre(nombreInsumo);
+                String nombreInsumoAux = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                if (StringUtils.isNotBlank(nombreInsumoAux))
+                    nuevoInsumo.setNombre(nombreInsumoAux);
                 else {
                     LOGGER.log(Level.SEVERE, "El nombre de insumo es un campo obligatorio");
                     return false;
