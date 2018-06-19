@@ -176,13 +176,13 @@ public class MantenimientoPedidosController implements Initializable {
                 }
             }
         });
-
+        
         eliminar.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 popup.hide();
                 try {
-
+                  
                 } catch (Exception ex) {
 
                 }
@@ -191,11 +191,12 @@ public class MantenimientoPedidosController implements Initializable {
 
         edit.setPadding(new Insets(20));
         edit.setPrefSize(145, 40);
-
+        
         eliminar.setPadding(new Insets(20));
         eliminar.setPrefSize(145, 40);
 
         VBox vBox = new VBox(edit, eliminar);
+
 
         popup = new JFXPopup();
         popup.setPopupContent(vBox);
@@ -241,7 +242,8 @@ public class MantenimientoPedidosController implements Initializable {
     void editarPedido() {
 
     }
-
+    
+ 
     @FXML
     public void handleAction(Event event) {
 
@@ -262,6 +264,7 @@ public class MantenimientoPedidosController implements Initializable {
 
         }
     }
+    
 
     class PedidoOrdenLista extends RecursiveTreeObject<PedidoOrdenLista> {
 

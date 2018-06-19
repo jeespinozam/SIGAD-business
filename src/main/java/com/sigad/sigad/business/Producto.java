@@ -301,6 +301,11 @@ public class Producto {
     }
 
     /**
+     * @return the combos
+     */
+
+    /**
+
      * @return the precioCompra
      */
     public Double getPrecioCompra() {
