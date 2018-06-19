@@ -163,7 +163,7 @@ public class CrearEditarUsuarioController implements Initializable {
             telephoneTxt.setText(user.getTelefono());
             cellphoneTxt.setText(user.getCelular());
             emailTxt.setText(user.getCorreo());
-            passwordTxt.setText(LoginController.encrypt(user.getPassword()));
+            passwordTxt.setText(LoginController.decrypt(user.getPassword()));
             isActiveBtn.setSelected(user.isActivo());
             //styles
             //passwordTxt.setEditable(false);
@@ -233,7 +233,7 @@ public class CrearEditarUsuarioController implements Initializable {
         user.setTelefono(telephoneTxt.getText());
         user.setCelular(cellphoneTxt.getText());
         user.setCorreo(emailTxt.getText());
-        user.setPassword(passwordTxt.getText());
+        user.setPassword(LoginController.encrypt(passwordTxt.getText()));
         user.setActivo(isActiveBtn.isSelected());
         
         int indexProfile = profilesListView.getSelectionModel().getSelectedIndex();

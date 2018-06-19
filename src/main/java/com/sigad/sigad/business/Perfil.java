@@ -44,6 +44,10 @@ public class Perfil {
      */
     public Perfil() {
     }
+    
+    public Perfil(boolean editable) {
+        setEditable(editable);
+    }
 
     public Perfil(String nombre, String descripcion, boolean activo) {
         this.nombre = nombre;

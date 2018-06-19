@@ -62,7 +62,7 @@ public class CrearEditarPerfilController implements Initializable {
             System.out.println(PerfilController.selectedProfile.name);
             loadFields();
         }else{
-            perfil = new Perfil();
+            perfil = new Perfil(true);
             messageLbl.setVisible(false);
         }
         
