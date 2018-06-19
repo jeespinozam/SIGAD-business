@@ -248,7 +248,7 @@ public class CrearEditarOrdenCompraController implements Initializable {
                 
                 if(capacidadActual > capacidadTotal){
                     ErrorController error = new ErrorController();
-                    error.loadDialog("Error", "No puede agregar " + (capacidadActual) + " porque supera la capacidad actual de la tienda es " + (capacidadTotal), "Ok", hiddenSp);
+                    error.loadDialog("Error", "No puede agregar " + (capacidadActual) + " porque supera la capacidad actual de la tienda:  " + (capacidadTotal), "Ok", hiddenSp);
                     return;
                 }
                 ArrayList <LoteInsumo> listaLotes = new ArrayList<>();
@@ -278,8 +278,16 @@ public class CrearEditarOrdenCompraController implements Initializable {
                 
                 
                 OrdenCompraHelper helper = new OrdenCompraHelper();
-                //edicion
-                if(!ListaOrdenesCompraController.isOrdenCreate){
+                //creacion
+                if(ListaOrdenesCompraController.isOrdenCreate){
+                    Integer id = helper.saveOrden(orden, listaLotes);
+                    if(id != null){
+                        ListaOrdenesCompraController.updateTable(orden);
+                        ListaOrdenesCompraController.ordenDialog.close();
+                    }else {
+                        ErrorController error = new ErrorController();
+                        error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
+                    }
 //                    Long id = helper.updateInsumo(insumo,null);
 //                    if(id != null){
 //                        ListaInsumoController.insumosList.remove(ListaInsumoController.selectedInsumo);
@@ -289,17 +297,6 @@ public class CrearEditarOrdenCompraController implements Initializable {
 //                        ErrorController error = new ErrorController();
 //                        error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
 //                    }
-                }
-                //creacion
-                else{
-                    Integer id = helper.saveOrden(orden, listaLotes);
-                    if(id != null){
-                        ListaOrdenesCompraController.updateTable(orden);
-                        ListaOrdenesCompraController.ordenDialog.close();
-                    }else {
-                        ErrorController error = new ErrorController();
-                        error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
-                    }
                 }
                 helper.close();
             }
@@ -479,8 +476,6 @@ public class CrearEditarOrdenCompraController implements Initializable {
     
 
     private void fillFields(){
-//        orden.setFecha(Date.from(datePick.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        //orden.setPrecioTotal(0);
         orden.setRecibido(false);
         orden.setUsuario(LoginController.user);
         orden.setProveedor(cbxProv.getValue());
@@ -497,26 +492,20 @@ public class CrearEditarOrdenCompraController implements Initializable {
     }
     
     public boolean validateFields() {
-//        if(!nombreTxt.validate()){
-//            nombreTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
-//            nombreTxt.requestFocus();
-//            return false;
-//        }else if(!tiempoTxt.validate()){
-//            tiempoTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
-//            tiempoTxt.requestFocus();
-//            return false;
-//        }else if(!descripcionTxt.validate()){
-//            descripcionTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
-//            descripcionTxt.requestFocus();
-//            return false;
-//        }
-//        else if(!volumenTxt.validate()){
-//            volumenTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
-//            volumenTxt.requestFocus();
-//            return false;
-//        }
-//        else 
-        return true;
+        // Validar que exista al menos un proveedor seleccionado
+        Integer count = 0;
+        for (int i = 0; i < insumosList.size(); i++) {
+            if(!insumosList.get(i).getCantidad().getValue().equals("")){
+                count += 1;
+            }
+        }
+        if(count == 0){
+            ErrorController error = new ErrorController();
+            error.loadDialog("Error", "Debe seleccionar al menos un insumo", "Ok", hiddenSp);
+            return false;
+        }
+        else 
+            return true;
     }
     
     class EditingCell extends TreeTableCell<InsumoViewerOrden, String> {

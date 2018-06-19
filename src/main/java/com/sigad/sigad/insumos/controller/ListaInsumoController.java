@@ -92,6 +92,14 @@ public class ListaInsumoController implements Initializable {
     
     public static class InsumoViewer extends RecursiveTreeObject<InsumoViewer>{
 
+        public Insumo getInsumo() {
+            return insumo;
+        }
+
+        public void setInsumo(Insumo insumo) {
+            this.insumo = insumo;
+        }
+
         public SimpleStringProperty getStockTotalLogico() {
             return stockTotalLogico;
         }
@@ -185,6 +193,7 @@ public class ListaInsumoController implements Initializable {
         private BooleanProperty seleccion;
         private SimpleIntegerProperty cantidad;
         private Long id;
+        private Insumo insumo;
         
         public InsumoViewer(String nombre,String descripcion, String tiempoVida,String stockTotalLogico, String stockTotalFisico, Boolean activo, String volumen, Integer cantidad,Long id) {
             this.nombre = new SimpleStringProperty(nombre);
@@ -265,7 +274,7 @@ public class ListaInsumoController implements Initializable {
             }
         }
         
-        insumosList.add(new InsumoViewer(insumo.getNombre(),
+        InsumoViewer newinsumov = new InsumoViewer(insumo.getNombre(),
                                          insumo.getDescripcion(),
                                          Integer.toString(insumo.getTiempoVida()),
                                          stockLogico.toString(),
@@ -273,7 +282,10 @@ public class ListaInsumoController implements Initializable {
                                          insumo.isActivo(),
                                          insumo.isVolumen().toString(),
                                          0,
-                                         insumo.getId()));
+                                         insumo.getId());
+        newinsumov.setInsumo(insumo);
+        
+        insumosList.add(newinsumov);
     }
     @FXML
     private void handleAction(ActionEvent event) {
@@ -335,13 +347,20 @@ public class ListaInsumoController implements Initializable {
         io.setPadding(new Insets(20));
         io.setPrefSize(145, 40);
         
-        VBox vBox = new VBox(io,delete);
+        VBox vBox;
+        if(selectedInsumo.getInsumo().isActivo()){
+           vBox = new VBox(io,edit,delete);
+           popup = new JFXPopup();
+           popup.setPopupContent(vBox);
+        }
+        else {
+           vBox = new VBox(edit);
+           popup = new JFXPopup();
+           popup.setPopupContent(vBox);
+        }
         
-        popup = new JFXPopup();
-        popup.setPopupContent(vBox);
     }
     private void deleteInsumosDialog() {
-        //delete if stock 0 validacion falta
         if((Integer.parseInt(selectedInsumo.getStockTotalLogico().getValue()) >= 0)|| (Integer.parseInt(selectedInsumo.getStockTotalFisico().getValue()) >= 0)) {
             ErrorController error = new ErrorController();
             error.loadDialog("Atención", "No puede desactivar un insumo con stock", "OK", hiddenSp);
@@ -364,7 +383,6 @@ public class ListaInsumoController implements Initializable {
             content.setActions(button);
             dialog.show();
         }
-
     }
     public void createEditInsumoDialog(boolean iscreate) throws IOException {
         isInsumoCreate = iscreate;

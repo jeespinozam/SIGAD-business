@@ -210,7 +210,7 @@ public class ListaOrdenesCompraController implements Initializable {
     }
     private void fillData() {
         OrdenCompraHelper helpero = new OrdenCompraHelper();
-        ArrayList<OrdenCompra> listaOrdenes= helpero.getOrdenes();
+        ArrayList<OrdenCompra> listaOrdenes= helpero.getOrdenesUser(LoginController.user.getId());
         if(listaOrdenes != null){
             listaOrdenes.forEach((i)->{
                 updateTable(i);
@@ -361,7 +361,7 @@ public class ListaOrdenesCompraController implements Initializable {
         
         VBox vBox;
         if(!selectedOrdenCompra.getOrdenCompra().isRecibido()){
-           vBox = new VBox(io, delete);
+           vBox = new VBox(io);
            popup = new JFXPopup();
            popup.setPopupContent(vBox);
         }

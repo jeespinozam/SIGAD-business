@@ -136,45 +136,63 @@ public class CrearEditarInsumoController implements Initializable {
                 System.out.println("VALIDADO ALL FIELDS");
                 fillFields();
                 InsumosHelper helper = new InsumosHelper();    
-                ArrayList<ProveedorInsumo> listaInsumoProv = new ArrayList<>();
+                
                 Boolean success = false;                
                 //edicion
                 if(!ListaInsumoController.isInsumoCreate){
-                    for (int i = 0; i < listaProv.size(); i++) {
-                        if(!listaProv.get(i).getPrecio().getValue().equals("")){
-                           ProveedorInsumo provin = helper.getInsumoProveedorUnit(insumo, listaProv.get(i).getProv());
-                            if(provin != null){
-                                provin.setPrecio(Double.parseDouble(listaProv.get(i).getPrecio().getValue()));
-                                success=helper.updateProveedorInsumo(provin);
-                                if(!success){
-                                    ErrorController error = new ErrorController();
-                                    error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
-                                    break;
+                    Boolean ok = helper.updateInsumo(insumo);
+                    if(ok){
+                        for (int i = 0; i < listaProv.size(); i++) {
+                            if(!listaProv.get(i).getPrecio().getValue().equals("")){
+                               ProveedorInsumo provin = helper.getInsumoProveedorUnit(insumo, listaProv.get(i).getProv());
+                                if(provin != null){
+                                    provin.setPrecio(Double.parseDouble(listaProv.get(i).getPrecio().getValue()));
+                                    success=helper.updateProveedorInsumo(provin);
+                                    if(!success){
+                                        ErrorController error = new ErrorController();
+                                        error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
+                                        break;
+                                    }
                                 }
-                            }
-                            else {
-                                ProveedorInsumo pr = new ProveedorInsumo();
-                                pr.setInsumo(insumo);
-                                pr.setProveedor(listaProv.get(i).getProv());
-                                pr.setPrecio(Double.parseDouble(listaProv.get(i).getPrecio().getValue()));
-                                pr.setActivo(true);
-                                success = helper.saveProveedorInsumo(pr);
-                                if(!success){
-                                    ErrorController error = new ErrorController();
-                                    error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
-                                    break;
+                                else {
+                                    ProveedorInsumo pr = new ProveedorInsumo();
+                                    pr.setInsumo(insumo);
+                                    pr.setProveedor(listaProv.get(i).getProv());
+                                    pr.setPrecio(Double.parseDouble(listaProv.get(i).getPrecio().getValue()));
+                                    pr.setActivo(insumo.isActivo());
+                                    success = helper.saveProveedorInsumo(pr);
+                                    if(!success){
+                                        ErrorController error = new ErrorController();
+                                        error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
+                                        break;
+                                    }
                                 }
                             }
                         }
+                        if(success){
+                            ListaInsumoController.insumosList.remove(ListaInsumoController.selectedInsumo);
+                            ListaInsumoController.updateTable(insumo);
+                            ListaInsumoController.insumoDialog.close();
+                        }
                     }
-                    if(success){
-                        ListaInsumoController.insumosList.remove(ListaInsumoController.selectedInsumo);
-                        ListaInsumoController.updateTable(insumo);
-                        ListaInsumoController.insumoDialog.close();
+                    else{
+                        ErrorController error = new ErrorController();
+                        error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
                     }
                 }
                 //creacion
                 else{
+                    ArrayList<ProveedorInsumo> listaInsumoProv = new ArrayList<>();
+                    for (int i = 0; i < listaProv.size(); i++) {
+                        if(!listaProv.get(i).getPrecio().getValue().equals("")){
+                            ProveedorInsumo pr = new ProveedorInsumo();
+                            pr.setInsumo(insumo);
+                            pr.setProveedor(listaProv.get(i).getProv());
+                            pr.setPrecio(Double.parseDouble(listaProv.get(i).getPrecio().getValue()));
+                            pr.setActivo(insumo.isActivo());
+                            listaInsumoProv.add(pr);
+                        }
+                    }
                     Long id = helper.saveInsumo(insumo, listaInsumoProv);
                     if(id != null){
                         ListaInsumoController.updateTable(insumo);
@@ -218,13 +236,26 @@ public class CrearEditarInsumoController implements Initializable {
         insumo.setNombre(nombreTxt.getText());
         insumo.setTiempoVida(Integer.parseInt(tiempoTxt.getText()));
         insumo.setVolumen(Double.parseDouble(volumenTxt.getText()));
-        insumo.setActivo(true);
-        insumo.setStockTotalFisico(0);
-        insumo.setStockTotalLogico(0);
+        insumo.setActivo(tglActive.isSelected());
+        if(ListaInsumoController.isInsumoCreate){
+            insumo.setStockTotalFisico(0);
+            insumo.setStockTotalLogico(0);
+        }
         insumo.setDescripcion(descripcionTxt.getText());
         insumo.setActivo(tglActive.isSelected());
     }
     public boolean validateFields() {
+        
+        Integer count = 0;
+        for (int i = 0; i < listaProv.size(); i++) {
+            if(!listaProv.get(i).getPrecio().getValue().equals("")){
+                count += 1;
+            }
+//            if(Integer.parseInt(listaProv.get(i).getPrecio().getValue())==0){
+//                count += 1;
+//            }
+        }
+
         if(!nombreTxt.validate()){
             nombreTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             nombreTxt.requestFocus();
@@ -241,6 +272,11 @@ public class CrearEditarInsumoController implements Initializable {
         else if(!volumenTxt.validate()){
             volumenTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             volumenTxt.requestFocus();
+            return false;
+        }
+        else if(count == 0){
+            ErrorController error = new ErrorController();
+            error.loadDialog("Error", "Debe seleccionar al menos un proveedor", "Ok", hiddenSp);
             return false;
         }
         else return true;

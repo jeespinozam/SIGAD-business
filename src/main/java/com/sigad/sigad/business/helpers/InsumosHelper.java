@@ -75,11 +75,14 @@ public class InsumosHelper {
         String hqlQuery = "from ProveedorInsumo PI where PI.proveedor = :prov_id and PI.insumo = :in_id and activo=true";
         try{
             List<ProveedorInsumo> busquedaResultado = session.createQuery(hqlQuery).setParameter("prov_id", proveedor).setParameter("in_id", insumo).list();
-            if (!busquedaResultado.isEmpty())
+            if (!busquedaResultado.isEmpty()){
                 LOGGER.log(Level.INFO, String.format("Insumo %s asociado al proveedor %s encontrado ", insumo.getNombre(), proveedor.getNombre()));
-            else
+                return busquedaResultado.get(0);
+            }
+            else{
                 LOGGER.log(Level.INFO, String.format("Insumo %s asociado al proveedor %s no encontrado ", insumo.getNombre(), proveedor.getNombre()));
-            return busquedaResultado.get(0);
+                return null;
+            }
         }
         catch(Exception e) {
             LOGGER.log(Level.WARNING, String.format("Error en la busqueda de los Insumos del proveedor %s", proveedor.getNombre()));
