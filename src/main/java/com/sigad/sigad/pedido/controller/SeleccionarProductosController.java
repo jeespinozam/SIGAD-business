@@ -353,9 +353,10 @@ public class SeleccionarProductosController implements Initializable {
         for (int i = 0; i < productoxinsumos.size(); i++) {
             ProductoInsumo get = productoxinsumos.get(i);
             System.out.println(nuevoValor + " + " + viejoValor);
-            Double nuevoStockInsumo = insumosCambiantes.get(get.getInsumo()) - nuevoValor * get.getCantidad() + (viejoValor) * get.getCantidad();
-            insumosCambiantes.put(get.getInsumo(), nuevoStockInsumo.intValue());
-
+            if (insumosCambiantes.get(get.getInsumo()) != null) {
+                Double nuevoStockInsumo = insumosCambiantes.get(get.getInsumo()) - nuevoValor * get.getCantidad() + (viejoValor) * get.getCantidad();
+                insumosCambiantes.put(get.getInsumo(), nuevoStockInsumo.intValue());
+            }
         }
         insumosCambiantes.forEach((t, u) -> {
             System.out.println(t.getNombre() + "->" + u.toString());
@@ -494,21 +495,28 @@ public class SeleccionarProductosController implements Initializable {
             Node node;
             Set<DetallePedido> detalles = new HashSet<>();
             pedido.setVolumenTotal(0.0);
+            pedido.setTotal(0.0);
             pedidos.forEach((t) -> {
                 if (t.combo != null) {
-                    DetallePedido detalle = new DetallePedido(true, t.cantidad.getValue(),  Double.valueOf(t.precio.getValue()), 0, t.combo, pedido);
+                    DetallePedido detalle = new DetallePedido(true, t.cantidad.getValue(), Double.valueOf(t.precio.getValue()), 0, t.combo, pedido);
                     detalles.add(detalle);
                     pedido.setVolumenTotal(pedido.getVolumenTotal() + t.combo.getVolumen());
-
+                    pedido.setTotal(pedido.getTotal() + t.combo.getPreciounireal() * t.cantidad.getValue());
                 } else if (t.producto != null) {
                     DetallePedido detalle = new DetallePedido(true, t.cantidad.getValue(), Double.valueOf(t.precio.getValue()), 0, t.producto, pedido, t.descuentoProducto, t.descuentoCategoria);
                     detalles.add(detalle);
                     pedido.setVolumenTotal(pedido.getVolumenTotal() + t.producto.getVolumen());
+                    if (t.descuentoCategoria != null) {
+                        pedido.setTotal(pedido.getTotal() + t.producto.getPrecio() * t.cantidad.getValue() * (1 - t.descuentoCategoria.getValue()));
+                    } else if (t.descuentoProducto != null) {
+                        pedido.setTotal(pedido.getTotal() + t.producto.getPrecio() * t.cantidad.getValue() * (1 - t.descuentoProducto.getValorPct()));
+                    } else {
+                        pedido.setTotal(pedido.getTotal() + t.producto.getPrecio() * t.cantidad.getValue());
+                    }
 
                 }
 
             });
-            pedido.setTotal(Double.valueOf(lblTotal.getText()));
             pedido.setDetallePedido(detalles);
             pedido.setActivo(true);
             pedido.setModificable(true);

@@ -57,4 +57,32 @@ public class MovimientoHelper {
         return true;
     }
     
+    public boolean updateMovement(MovimientosTienda tOld){
+        boolean ok = false;
+        try {
+            Transaction tx;
+            if(session.getTransaction().isActive()){
+                tx = session.getTransaction();
+            }else{
+                tx = session.beginTransaction();
+            }
+            
+            MovimientosTienda tNew = session.load(MovimientosTienda.class, tOld.getId());
+            
+            tNew.setCantidadMovimiento(tOld.getCantidadMovimiento());
+            tNew.setLoteInsumo(tOld.getLoteInsumo());
+            tNew.setTienda(tOld.getTienda());
+            tNew.setPedido(tOld.getPedido());
+          
+            session.merge(tNew);
+            tx.commit();
+            session.close();
+            ok = true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            this.errorMessage = e.getMessage();
+        }
+        return ok;
+    }
+    
 }

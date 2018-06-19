@@ -69,10 +69,10 @@ public class ClienteDescuentoHelper {
         ArrayList<ClienteDescuento> descuentos = null;
         Query query = null;
         try {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String date = format.format(new Date());
-            query = session.createQuery("SELECT c FROM ClienteDescuento AS c WHERE c.fechaInicio <= :today AND c.fechaFin <= :today and c.activo='true'");
-            query.setParameter("today", date);
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+//            String date = format.format(new Date());
+            query = session.createQuery("SELECT c FROM ClienteDescuento AS c WHERE c.fechaInicio <= :today AND c.fechaFin >= :today and c.activo='true'");
+            query.setParameter("today", new Date());
             descuentos = (ArrayList<ClienteDescuento>) query.list();
         } catch (Exception e) {
 

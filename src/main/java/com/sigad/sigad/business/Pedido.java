@@ -422,4 +422,32 @@ public class Pedido {
         this.descuentoCliente = descuentoCliente;
     }
 
+    /**
+     * @return the rucFactura
+     */
+    public String getRucFactura() {
+        return rucFactura;
+    }
+
+    /**
+     * @param rucFactura the rucFactura to set
+     */
+    public void setRucFactura(String rucFactura) {
+        this.rucFactura = rucFactura;
+    }
+
+    /**
+     * @return the nombreEmpresa
+     */
+    public String getNombreEmpresa() {
+        return nombreEmpresa;
+    }
+
+    /**
+     * @param nombreEmpresa the nombreEmpresa to set
+     */
+    public void setNombreEmpresa(String nombreEmpresa) {
+        this.nombreEmpresa = nombreEmpresa;
+    }
+
 }

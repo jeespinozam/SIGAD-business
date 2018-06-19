@@ -6,9 +6,13 @@
 package com.sigad.sigad.business.helpers;
 
 import com.sigad.sigad.app.controller.LoginController;
+import com.sigad.sigad.business.Constantes;
 import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.LoteInsumo;
+import com.sigad.sigad.business.MovimientosTienda;
+import com.sigad.sigad.business.Pedido;
 import com.sigad.sigad.business.Tienda;
+import com.sigad.sigad.business.TipoMovimiento;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -93,12 +97,12 @@ public class LoteInsumoHelper {
         }
         return insumo;
     }
-    
-    public ArrayList<LoteInsumo> getLoteInsumosEspecific(Tienda tienda,Insumo insumo){
+
+    public ArrayList<LoteInsumo> getLoteInsumosEspecific(Tienda tienda, Insumo insumo) {
         ArrayList<LoteInsumo> listaLotes = null;
         Query query = null;
         try {
-            query = session.createQuery("from LoteInsumo where insumo_id = " + insumo.getId().toString() + " and tienda_id = "  + tienda.getId().toString());
+            query = session.createQuery("from LoteInsumo where insumo_id = " + insumo.getId().toString() + " and tienda_id = " + tienda.getId().toString());
             if (!query.list().isEmpty()) {
                 listaLotes = (ArrayList<LoteInsumo>) query.list();
             }
@@ -107,14 +111,12 @@ public class LoteInsumoHelper {
         }
         return listaLotes;
     }
-    
-    
-            
-    public ArrayList<LoteInsumo> getLoteInsumosEspecificPositive(Tienda tienda,Insumo insumo){
+
+    public ArrayList<LoteInsumo> getLoteInsumosEspecificPositive(Tienda tienda, Insumo insumo) {
         ArrayList<LoteInsumo> listaLotes = null;
         Query query = null;
         try {
-            query = session.createQuery("from LoteInsumo where insumo_id = " + insumo.getId().toString() + " and tienda_id = "  + tienda.getId().toString() +" and stockfisico > 0");
+            query = session.createQuery("from LoteInsumo where insumo_id = " + insumo.getId().toString() + " and tienda_id = " + tienda.getId().toString() + " and stockfisico > 0");
             if (!query.list().isEmpty()) {
                 listaLotes = (ArrayList<LoteInsumo>) query.list();
             }
@@ -153,7 +155,7 @@ public class LoteInsumoHelper {
         return ok;
     }
 
-    public Boolean descontarInsumos(HashMap<Insumo, Integer> insumosHaConsumir, Tienda tienda) {
+    public Boolean descontarInsumos(HashMap<Insumo, Integer> insumosHaConsumir, Tienda tienda, Pedido pedido) {
         Boolean ok = Boolean.FALSE;
         try {
             Transaction tx;
@@ -168,22 +170,27 @@ public class LoteInsumoHelper {
 
             });
             ArrayList<LoteInsumo> seleccionados = new ArrayList<>();
+            ArrayList<Integer> cantidadConsumida = new ArrayList<>();
+            Date hoy = new Date();
             for (Map.Entry<Insumo, Integer> entry : insumosHaConsumir.entrySet()) {
                 Insumo t = entry.getKey();//Insumo
                 Integer u = entry.getValue();//Cantidad requerida del insumo
                 Integer queda = u;
                 for (LoteInsumo loteinsumo : loteinsumos) {
-                    if (loteinsumo.getInsumo().equals(t) && loteinsumo.getStockLogico() > 0 && queda > 0) {
+                    if (!loteinsumo.getFechaVencimiento().before(hoy) && loteinsumo.getInsumo().equals(t) && loteinsumo.getStockLogico() > 0 && queda > 0) {
                         Integer p = queda - loteinsumo.getStockLogico();//Queda por descontar
-                        loteinsumo.setStockLogico((p <= 0) ? loteinsumo.getStockLogico() - queda : 0);
-                        queda = (p <= 0) ? 0 : p;
+                        Integer descuento = (p <= 0) ? queda : loteinsumo.getStockLogico();
+                        loteinsumo.setStockLogico(loteinsumo.getStockLogico() - descuento);
+                        queda = queda - descuento;
                         Integer i = seleccionados.indexOf(loteinsumo);
-                        if (i >= 0){
+                        if (i >= 0) {
                             seleccionados.set(i, loteinsumo);
-                        }else{
-                             seleccionados.add(loteinsumo);
+                            cantidadConsumida.set(i, descuento);
+                        } else {
+                            seleccionados.add(loteinsumo);
+                            cantidadConsumida.add(descuento);
                         }
-                       
+
                     }
                 }
                 if (queda > 0) {
@@ -191,10 +198,42 @@ public class LoteInsumoHelper {
                 }
 
             }
+            PedidoHelper helper = new PedidoHelper();
+            helper.savePedido(pedido);
+            helper.close();
+            for (int i = 0; i < seleccionados.size(); i++) {
+                LoteInsumo get = seleccionados.get(i);
+                updateLoteInsumo(get);
+                TipoMovimientoHelper tipomovhelper = new TipoMovimientoHelper();
+                TipoMovimiento tipoMovimiento = tipomovhelper.getTipoMov(Constantes.TIPO_MOVIMIENTO_SALIDA_LOGICA);
+                tipomovhelper.close();
+                MovimientoHelper movhelper = new MovimientoHelper();
+                MovimientosTienda m = new MovimientosTienda();
+                m.setPedido(pedido);
+                m.setTienda(tienda);// falta el tipo de movimiento
+                m.setTipoMovimiento(tipoMovimiento);
+                m.setFecha(new Date());
+                m.setLoteInsumo(get);
+                m.setTrabajador(LoginController.user);
+                m.setCantidadMovimiento(cantidadConsumida.get(i));
+                movhelper.saveMovement(m);
+                movhelper.close();
+            }
 
-            seleccionados.forEach((t) -> {
-                updateLoteInsumo(t);
-            });
+//            seleccionados.forEach((t) -> {
+//                updateLoteInsumo(t);
+//
+//            });
+            for (Map.Entry<Insumo, Integer> entry : insumosHaConsumir.entrySet()) {
+                Insumo key = entry.getKey();
+                Integer value = entry.getValue();
+                InsumosHelper h = new InsumosHelper();
+                Insumo i = h.getInsumo(key.getId());
+                i.setStockTotalLogico(i.getStockTotalLogico() - value);
+                h.updateInsumo(key);
+                h.close();
+            }
+
             ok = Boolean.TRUE;
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -202,8 +241,8 @@ public class LoteInsumoHelper {
         }
         return ok;
     }
-    
-    public LoteInsumo getMostRecentLoteInsumo(Tienda tienda){
+
+    public LoteInsumo getMostRecentLoteInsumo(Tienda tienda) {
         Boolean ok = Boolean.FALSE;
         try {
             Transaction tx;
@@ -212,12 +251,11 @@ public class LoteInsumoHelper {
             } else {
                 tx = session.beginTransaction();
             }
-            
-            
+
             ArrayList<LoteInsumo> loteinsumos = getLoteInsumos(tienda);
             LoteInsumo lowestDateInsumo = loteinsumos.get(0);
             for (int i = 1; i < loteinsumos.size(); i++) {
-                if(lowestDateInsumo.getFechaVencimiento().compareTo(loteinsumos.get(i).getFechaVencimiento())>0){
+                if (lowestDateInsumo.getFechaVencimiento().compareTo(loteinsumos.get(i).getFechaVencimiento()) > 0) {
                     lowestDateInsumo = loteinsumos.get(i);
                 }
             }
@@ -227,13 +265,13 @@ public class LoteInsumoHelper {
         }
         return null;
     }
-    
-    public Double getUsedCapacity(Tienda tienda){
+
+    public Double getUsedCapacity(Tienda tienda) {
         ArrayList<LoteInsumo> listaLotes = null;
         Query query = null;
         Double totalUsed = 0.0;
         try {
-            query = session.createQuery("from LoteInsumo where tienda_id = "  + tienda.getId().toString());
+            query = session.createQuery("from LoteInsumo where tienda_id = " + tienda.getId().toString());
             if (!query.list().isEmpty()) {
                 listaLotes = (ArrayList<LoteInsumo>) query.list();
                 for (int i = 0; i < listaLotes.size(); i++) {
@@ -245,21 +283,23 @@ public class LoteInsumoHelper {
         }
         return totalUsed;
     }
-    
+
     public Long saveLoteInsumo(LoteInsumo newLote) {
         Long id = null;
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
             session.save(newLote);
-            if(newLote.getId() != null) {
+            if (newLote.getId() != null) {
                 id = newLote.getId();
             }
             tx.commit();
 //            LOGGER.log(Level.FINE, "Insumo guardado con exito");
             this.errorMessage = "";
         } catch (Exception e) {
-            if (tx!=null)   tx.rollback();
+            if (tx != null) {
+                tx.rollback();
+            }
             this.errorMessage = e.getMessage();
 //            LOGGER.log(Level.SEVERE, String.format("Ocurrio un error al tratar de crear el loteinsumo %s", newLote.getId()));
             System.out.println("====================================================================");
@@ -268,7 +308,5 @@ public class LoteInsumoHelper {
         }
         return id;
     }
-            
-            
-            
+
 }

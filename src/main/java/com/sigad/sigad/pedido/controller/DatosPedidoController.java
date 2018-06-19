@@ -5,8 +5,18 @@
  */
 package com.sigad.sigad.pedido.controller;
 
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.jfoenix.controls.*;
+import com.jfoenix.validation.RequiredFieldValidator;
 import com.sigad.sigad.app.controller.ErrorController;
+import com.sigad.sigad.app.controller.HomeController;
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.ClienteDescuento;
 import com.sigad.sigad.business.ClienteDireccion;
@@ -22,9 +32,16 @@ import com.sigad.sigad.business.ProductoInsumo;
 import com.sigad.sigad.business.ProductosCombos;
 import com.sigad.sigad.business.Usuario;
 import com.sigad.sigad.business.helpers.ClienteDescuentoHelper;
+import com.sigad.sigad.business.helpers.GeneralHelper;
 import com.sigad.sigad.business.helpers.LoteInsumoHelper;
+import com.sigad.sigad.business.helpers.PdfHelper;
 import com.sigad.sigad.business.helpers.PedidoHelper;
+import com.sigad.sigad.business.helpers.UsuarioHelper;
 import com.sigad.sigad.deposito.helper.PedidoEstadoHelper;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Time;
@@ -33,6 +50,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -42,17 +60,17 @@ import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.util.Callback;
 
 /**
  * FXML Controller class
@@ -95,7 +113,7 @@ public class DatosPedidoController implements Initializable {
     private JFXComboBox<String> cmbInicio;
 
     @FXML
-    private JFXComboBox<String> cmbDireccion;
+    private JFXTextField txtdestino;
 
     @FXML
     private JFXTextField txtTotal;
@@ -127,7 +145,10 @@ public class DatosPedidoController implements Initializable {
     @FXML
     private JFXTextField txtDireccion;
 
-    private final ObservableList<String> direcciones = FXCollections.observableArrayList();
+    @FXML
+    private JFXTextField txtigv;
+
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private HashMap<Insumo, Integer> insumos = new HashMap<>();
     /**
      * Initializes the controller class.
@@ -136,12 +157,7 @@ public class DatosPedidoController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
-    }
-
-    public void llenarComboBox() {
-        cmbDireccion.setItems(direcciones);
-        direcciones.add(pedido.getDireccionDeEnvio());
+        cmbInicio.getItems().addAll("M", "T", "N");
     }
 
     public void initModel(Pedido pedido, StackPane stackPane) {
@@ -149,50 +165,142 @@ public class DatosPedidoController implements Initializable {
         this.stackPane = stackPane;
         txtTotal.setText(pedido.getTotal().toString());
         txtTotal.setDisable(true);
-        llenarComboBox();
+        txtdestino.setText(pedido.getDireccionDeEnvio());
+        txtCliente.setText(pedido.getCliente().toString());
+        txtcorreo.setText(pedido.getCliente().getCorreo());
+
         obtenerDescuentos();
 
     }
 
-    public void obtenerDescuentos() {
-        try {
-            ClienteDescuentoHelper helper = new ClienteDescuentoHelper();
-            ArrayList<ClienteDescuento> descuentos = helper.getDescuentosVigentes();
-            helper.close();
-            Integer numPedidos = pedido.getCliente().getPedidoCliente().size();
-            for (Iterator<ClienteDescuento> iterator = descuentos.iterator(); iterator.hasNext();) {
-                ClienteDescuento t = iterator.next();
-                if (t.getTipo() == Constantes.TIPO_DCTO_USUARIO_X_MONTO) {
-                    if (pedido.getTotal() < t.getCondicion()) {
-                        iterator.remove();
-                    }
-                } else if (t.getTipo() == Constantes.TIPO_DCTO_USUARIO_X_NPEDIDOS) {
-                    if (numPedidos < t.getCondicion()) {
-                        iterator.remove();
-                    }
+    @FXML
+    void clickBoleta(MouseEvent event) {
+        txtdoc.setPromptText("DNI");
+        txtdoc.setText(pedido.getCliente().getDni());
+        txtdoc.setDisable(true);
+        txtDireccion.setDisable(true);
+        txtEmpresa.setDisable(true);
+    }
+
+    @FXML
+    void clickFactura(MouseEvent event) {
+        txtdoc.setPromptText("RUC");
+        txtdoc.setText("");
+        txtdoc.setDisable(false);
+        txtDireccion.setDisable(false);
+        txtEmpresa.setDisable(false);
+    }
+
+    public void setuValidations() {
+
+        JFXDatePicker minDate = new JFXDatePicker();
+        minDate.setValue(LocalDate.now(ZoneId.systemDefault())); // colocar la fecha de hoy como el minimo
+
+        final Callback<DatePicker, DateCell> dayCellFactory;
+
+        dayCellFactory = (final DatePicker datePicker) -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (item.isBefore(minDate.getValue())) {
+                    setDisable(true);
+                    setVisible(false);
+
+                } else {
+                    setVisible(true);
+                    setDisable(false);
                 }
             }
 
-            ClienteDescuento descuentoCliente = descuentos.stream().max(Comparator.comparing(ClienteDescuento::getValue)).orElseThrow(NoSuchElementException::new);
-            if (descuentoCliente != null) {
-                pedido.setTotal(pedido.getTotal() * (1 - descuentoCliente.getValue()));
-                pedido.setDescuentoCliente(descuentoCliente);
-                txtTipo.setText("Por superar " + descuentoCliente.getCondicion().toString() + " en " + descuentoCliente.getTipo());
-                txtDescuento.setText(String.valueOf(descuentoCliente.getValue() * 100) + " %");
-                txtTotalPago.setText(pedido.getTotal().toString());
-            } else {
-                txtDescuento.setText("No aplica");
-                txtTotalPago.setText(pedido.getTotal().toString());
+        };
+        dpFechaEntrega.setDayCellFactory(dayCellFactory);
 
+        dpFechaEntrega.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+
+            try {
+
+                if (newValue.length() == 10) {
+                }
+            } catch (Exception e) {
+                System.out.println("Entre al catch");
+                System.err.println(e.getLocalizedMessage());
             }
+        });
 
-        } catch (Exception e) {
-
-        }
     }
 
-    public void isValid() {
+    public void obtenerDescuentos() {
+//        try {
+        ClienteDescuentoHelper helper = new ClienteDescuentoHelper();
+        ArrayList<ClienteDescuento> descuentos = helper.getDescuentosVigentes();
+        helper.close();
+        System.out.println(descuentos.size());
+        UsuarioHelper us = new UsuarioHelper();
+        Usuario u = us.getUser(pedido.getCliente().getId().intValue());
+        Integer numPedidos = u.getPedidoCliente().size();
+        for (Iterator<ClienteDescuento> iterator = descuentos.iterator(); iterator.hasNext();) {
+            ClienteDescuento t = iterator.next();
+            System.out.println(t.getTipo() + t.getFechaInicio() + t.getValue());
+            if (t.getTipo().equals(Constantes.TIPO_DCTO_USUARIO_X_MONTO)) {
+                System.out.println("++++->" + pedido.getTotal() + "---" + t.getCondicion());
+                if (pedido.getTotal() < t.getCondicion()) {
+                    System.out.println("--->" + pedido.getTotal() + "---" + t.getCondicion());
+                    iterator.remove();
+                }
+            } else if (t.getTipo().equals(Constantes.TIPO_DCTO_USUARIO_X_NPEDIDOS)) {
+                if (numPedidos < t.getCondicion()) {
+                    iterator.remove();
+                }
+            }
+        }
+        descuentos.forEach((t) -> {
+            System.out.println(t.getCondicion().toString() + t.getFechaInicio() + t.getFechaFin());
+        });
+        ClienteDescuento descuentoCliente = null;
+        if (descuentos.size() > 0) {
+            descuentoCliente = descuentos.stream().max(Comparator.comparing(ClienteDescuento::getValue)).orElseThrow(NoSuchElementException::new);
+        }
+        if (descuentoCliente != null) {
+            pedido.setTotal(pedido.getTotal() * (1 - descuentoCliente.getValue()));
+            pedido.setDescuentoCliente(descuentoCliente);
+            txtTipo.setText("Por superar " + descuentoCliente.getCondicion().toString() + " en " + descuentoCliente.getTipo());
+            txtDescuento.setText(String.valueOf(descuentoCliente.getValue() * 100) + " %");
+            txtTotalPago.setText(pedido.getTotal().toString());
+        } else {
+            txtDescuento.setText("No aplica");
+            Double igv = GeneralHelper.roundTwoDecimals(pedido.getTotal() * HomeController.IGV);
+            txtigv.setText(igv.toString());
+            txtTotalPago.setText(GeneralHelper.roundTwoDecimals(pedido.getTotal() + igv).toString());
 
+        }
+
+//        } catch (Exception e) {
+//
+//        }
+    }
+
+    public Boolean validateFields() {
+        if (btnFactura.isSelected() && !txtDireccion.validate() && txtDireccion.getLength() == 0) {
+            txtDireccion.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+            txtDireccion.requestFocus();
+            return false;
+        } else if (btnFactura.isSelected() && !txtEmpresa.validate() && txtEmpresa.getLength() == 0) {
+            txtEmpresa.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+            txtEmpresa.requestFocus();
+            return false;
+        } else if (btnFactura.isSelected() && txtdoc.getLength() != 11) {
+            txtdoc.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+            txtdoc.requestFocus();
+            return false;
+        } else if (!btnFactura.isSelected() && !btnBoleta.isSelected()) {
+            ErrorController err = new ErrorController();
+            err.loadDialog("Aviso", "Seleccion un documento legal", "ok", stackPane);
+            return false;
+        } else {
+
+            return true;
+        }
     }
 
     public void construirPedido() {
@@ -206,7 +314,29 @@ public class DatosPedidoController implements Initializable {
         PedidoEstado estado = hp.getEstadoByName("pendiente");
         pedido.addEstado(estado);
         pedido.setEstado(estado);
+        if (btnFactura.isSelected()) {
+            pedido.setNombreEmpresa(txtEmpresa.getText());
+            pedido.setRucFactura(txtdoc.getText());
+        }
         hp.close();
+
+    }
+
+    @FXML
+    public void generarDocumento(MouseEvent event) throws DocumentException {
+        PdfHelper helper = new PdfHelper();
+        if (btnBoleta.isSelected()) {
+            helper.crearBoletaVenta(pedido);
+            ErrorController err = new ErrorController();
+            err.loadDialog("Aviso", "Documento generado satisfactoriamente", "Ok", stackPane);
+        } else if (btnFactura.isSelected()) {
+            helper.crearFacturaVenta(pedido);
+            ErrorController err = new ErrorController();
+            err.loadDialog("Aviso", "Documento generado satisfactoriamente", "Ok", stackPane);
+        } else {
+            ErrorController err = new ErrorController();
+            err.loadDialog("Aviso", "No ha seleccionado un tipo de documento", "Ok", stackPane);
+        }
 
     }
 
@@ -224,11 +354,14 @@ public class DatosPedidoController implements Initializable {
     @FXML
     void registrarPedido(MouseEvent event) {
         try {
+            if (!validateFields()) {
+                return;
+            }
             construirPedido();
 
             for (DetallePedido dp : pedido.getDetallePedido()) {
                 if (dp.getProducto() != null) {
-                    calcularInsumos(dp.getProducto(), dp.getCantidad() );
+                    calcularInsumos(dp.getProducto(), dp.getCantidad());
                 } else if (dp.getCombo() != null) {
                     ComboPromocion p = dp.getCombo();
                     for (ProductosCombos productosCombos : p.getProductosxComboArray()) {
@@ -238,16 +371,15 @@ public class DatosPedidoController implements Initializable {
             }
 
             LoteInsumoHelper lihelper = new LoteInsumoHelper();
-            Boolean ok = lihelper.descontarInsumos(insumos, pedido.getTienda());
+            Boolean ok = lihelper.descontarInsumos(insumos, pedido.getTienda(), pedido);
             if (ok) {
-                PedidoHelper helper = new PedidoHelper();
-                helper.savePedido(pedido);
-                helper.close();
+                ErrorController err = new ErrorController();
+                err.loadDialog("Alerta", "El pedido fue guardado satisfactoriamente", "ok", stackPane);
             } else {
                 ErrorController err = new ErrorController();
                 err.loadDialog("Alerta", "No hay insumos", "ok", stackPane);
             }
-//            gotoInicio();
+            gotoInicio();
 
         } catch (Exception ex) {
         }
