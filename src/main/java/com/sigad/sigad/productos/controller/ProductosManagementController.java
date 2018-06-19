@@ -82,13 +82,15 @@ public class ProductosManagementController implements Initializable {
     private static Producto producto = null;
     private static Boolean update = false;
     private static Usuario currentUser = LoginController.user;
+    @FXML
+    private JFXTextField filtro;
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         initializeResources();
-        if(ProductosIndexController.selectedProduct != null){
+        if(ProductosIndexController.selectedProductList != null){
             this.update = true;
             loadProduct(ProductosIndexController.selectedProduct);
         }
@@ -100,6 +102,17 @@ public class ProductosManagementController implements Initializable {
             public void handle(ActionEvent event){
                 saveProduct();
             }
+        });
+        
+        agregarFiltro();
+    }
+    
+    public void agregarFiltro() {
+        filtro.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            insumoTable.setPredicate((TreeItem<InsumoLista> t) -> {
+                Boolean flag = t.getValue().nombre.getValue().contains(newValue) || t.getValue().precio.getValue().contains(newValue) || t.getValue().cantidad.getValue().contains(newValue) || t.getValue().id.getValue().contains(newValue);
+                return flag;
+            });
         });
     }
     
