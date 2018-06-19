@@ -72,6 +72,8 @@ public class ProductosManagementController implements Initializable {
     private JFXButton saveBtn;
     private static Producto producto = null;
     private static Boolean update = false;
+    @FXML
+    private JFXTextField filtro;
     /**
      * Initializes the controller class.
      */
@@ -90,6 +92,17 @@ public class ProductosManagementController implements Initializable {
             public void handle(ActionEvent event){
                 saveProduct();
             }
+        });
+        
+        agregarFiltro();
+    }
+    
+    public void agregarFiltro() {
+        filtro.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            insumoTable.setPredicate((TreeItem<InsumoLista> t) -> {
+                Boolean flag = t.getValue().nombre.getValue().contains(newValue) || t.getValue().precio.getValue().contains(newValue) || t.getValue().cantidad.getValue().contains(newValue) || t.getValue().id.getValue().contains(newValue);
+                return flag;
+            });
         });
     }
     

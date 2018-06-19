@@ -188,7 +188,7 @@ public class CrearEditarUsuarioController implements Initializable {
             dniTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             dniTxt.requestFocus();
             return false;
-        }else if(dniTxt.getText().length()<8){
+        }else if(dniTxt.getText().length()!=8){
             ErrorController r= new ErrorController();
             r.loadDialog("Error", "Debe el dni debe tener 8 dígitos", "Ok", hiddenSp);
             dniTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));

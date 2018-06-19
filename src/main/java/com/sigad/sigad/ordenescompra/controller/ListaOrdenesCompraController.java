@@ -9,6 +9,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXPopup;
+import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableRow;
 import com.jfoenix.controls.JFXTreeTableView;
@@ -81,10 +82,8 @@ public class ListaOrdenesCompraController implements Initializable {
     @FXML
     private JFXButton addBtn;
     
-    @FXML
     public static JFXDialog ordenDialog;
     
-    @FXML
     private JFXPopup popup;
     
     public static boolean isOrdenCreate;
@@ -96,6 +95,8 @@ public class ListaOrdenesCompraController implements Initializable {
     JFXTreeTableColumn<OrdenCompraViewer,Number> precioCol = new JFXTreeTableColumn<>("Precio");
     JFXTreeTableColumn<OrdenCompraViewer,String> recibidoCol = new JFXTreeTableColumn<>("Estado");
     static ObservableList<OrdenCompraViewer> ordenesList;
+    @FXML
+    private JFXTextField filtro;
     
     public static class OrdenCompraViewer extends RecursiveTreeObject<OrdenCompraViewer>{
 
@@ -174,7 +175,16 @@ public class ListaOrdenesCompraController implements Initializable {
         setColumns();
         addColumns();
         fillData();
-
+        agregarFiltro();
+    }
+    
+    public void agregarFiltro() {
+        filtro.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            tblOrdenesCompra.setPredicate((TreeItem<OrdenCompraViewer> t) -> {
+                Boolean flag = t.getValue().codigo.getValue().contains(newValue) || t.getValue().fecha.getValue().contains(newValue) || t.getValue().precio.getValue().toString().contains(newValue) || t.getValue().recibido.getValue().contains(newValue);
+                return flag;
+            });
+        });
     }
     private void setColumns() {
         codCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<OrdenCompraViewer, String> param) -> 
