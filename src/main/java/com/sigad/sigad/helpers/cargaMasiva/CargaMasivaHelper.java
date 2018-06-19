@@ -62,7 +62,6 @@ public class CargaMasivaHelper {
                 rowIndex = 0;
                 // Definimos las cabeceras
                 switch(tablaCarga) {
-<<<<<<< HEAD
                     case CargaMasivaConstantes.TABLA_PRODUCTODESCUENTO:
                         rowhead.createCell(rowIndex).setCellValue("Nombre del Producto");
                         rowIndex++;
@@ -83,8 +82,6 @@ public class CargaMasivaHelper {
                         rowIndex++;
                         rowhead.createCell(rowIndex).setCellValue("Fecha Fin(dd/mm/yyyy)");
                         break;
-=======
->>>>>>> 0c4872f713928d66f5866f8161eced9e72cf1037
                     case CargaMasivaConstantes.TABLA_PROVEEDORXINSUMO:
                         rowhead.createCell(rowIndex).setCellValue("Nombre de Proveedor");
                         rowIndex++;
@@ -350,7 +347,6 @@ public class CargaMasivaHelper {
     private static boolean SubirRegistroBD(String tablaCarga, Row row, DataFormatter dataFormatter, Session session) {
         int index = 0;
         switch(tablaCarga) {
-<<<<<<< HEAD
             case CargaMasivaConstantes.TABLA_PRODUCTODESCUENTO:
                 String nombreProd = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 index++;
@@ -420,8 +416,6 @@ public class CargaMasivaHelper {
                     LOGGER.log(Level.SEVERE, "No se pudo convertir fechas de inicio  o fin");
                     return false;
                 }
-=======
->>>>>>> 0c4872f713928d66f5866f8161eced9e72cf1037
             case CargaMasivaConstantes.TABLA_PROVEEDORXINSUMO:
                 String nombreProveedor = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 index++;
@@ -439,17 +433,11 @@ public class CargaMasivaHelper {
                         proveedorxinsumo.setPrecio(precioInsumoProveedor);
                         return CargaMasivaHelper.guardarObjeto(proveedorxinsumo, session);
                     }
-<<<<<<< HEAD
                     else
                         LOGGER.log(Level.SEVERE, "El proveedor o insumo indicado son invalidos");
                 }
                 else
                     LOGGER.log(Level.SEVERE, "El precio indicado no es valido");
-=======
-                    LOGGER.log(Level.SEVERE, "El proveedor o insumo indicado son invalidos");
-                }
-                LOGGER.log(Level.SEVERE, "El precio indicado no es valido");
->>>>>>> 0c4872f713928d66f5866f8161eced9e72cf1037
                 return false;
             case CargaMasivaConstantes.TABLA_PRODUCTOCATEGORIA:
                 ProductoCategoria nuevoProdCat = new ProductoCategoria();
