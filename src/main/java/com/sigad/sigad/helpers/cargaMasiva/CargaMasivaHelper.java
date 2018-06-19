@@ -11,6 +11,7 @@ import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Permiso;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoCategoria;
+import com.sigad.sigad.business.ProductoCategoriaDescuento;
 import com.sigad.sigad.business.ProductoFragilidad;
 import com.sigad.sigad.business.ProductoInsumo;
 import com.sigad.sigad.business.Proveedor;
@@ -22,6 +23,9 @@ import com.sigad.sigad.business.Usuario;
 import com.sigad.sigad.business.Vehiculo;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -57,6 +61,15 @@ public class CargaMasivaHelper {
                 rowIndex = 0;
                 // Definimos las cabeceras
                 switch(tablaCarga) {
+                    case CargaMasivaConstantes.TABLA_DESCUENTOSCATEGORIA:
+                        rowhead.createCell(rowIndex).setCellValue("Nombre de Categoria de Producto");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Descuento(%)");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Fecha Inicio(dd/mm/yyyy)");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Fecha Fin(dd/mm/yyyy)");
+                        break;
                     case CargaMasivaConstantes.TABLA_PROVEEDORXINSUMO:
                         rowhead.createCell(rowIndex).setCellValue("Nombre de Proveedor");
                         rowIndex++;
@@ -322,6 +335,39 @@ public class CargaMasivaHelper {
     private static boolean SubirRegistroBD(String tablaCarga, Row row, DataFormatter dataFormatter, Session session) {
         int index = 0;
         switch(tablaCarga) {
+            case CargaMasivaConstantes.TABLA_DESCUENTOSCATEGORIA:
+                String nombreCategoriaProd = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                System.out.println(nombreCategoriaProd);
+                index++;
+                Double dsctoCategoria = Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+                try {
+                    Date fechaInicio = df.parse(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                    index++;
+                    Date fechaFin = df.parse(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                    if (dsctoCategoria!=null && dsctoCategoria>0.0) {
+                        LOGGER.log(Level.INFO, "Orden de fechas correcto");
+                        ProductoCategoria pc = (ProductoCategoria) CargaMasivaHelper.busquedaGeneralString(session, "ProductoCategoria", new String[] {"nombre"}, new String [] {nombreCategoriaProd});
+                        if (pc!=null) {
+                            ProductoCategoriaDescuento nuevoPCD = new ProductoCategoriaDescuento();
+                            nuevoPCD.setCategoria(pc);
+                            nuevoPCD.setValue(dsctoCategoria);
+                            nuevoPCD.setFechaInicio(new java.sql.Date(fechaInicio.getTime()));
+                            nuevoPCD.setFechaFin(new java.sql.Date(fechaFin.getTime()));
+                            nuevoPCD.setActivo(true);
+                            return CargaMasivaHelper.guardarObjeto(nuevoPCD, session);
+                        }
+                        LOGGER.log(Level.WARNING, "No se encontro a la categoria referenciada");
+                    }
+                    else
+                        LOGGER.log(Level.WARNING, "Las fechas que se indican no tiene validaciones entre ellas");
+                    return false;
+                }
+                catch(Exception e) {
+                    LOGGER.log(Level.SEVERE, "No se pudo convertir fechas de inicio  o fin");
+                    return false;
+                }
             case CargaMasivaConstantes.TABLA_PROVEEDORXINSUMO:
                 String nombreProveedor = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 index++;
@@ -339,9 +385,11 @@ public class CargaMasivaHelper {
                         proveedorxinsumo.setPrecio(precioInsumoProveedor);
                         return CargaMasivaHelper.guardarObjeto(proveedorxinsumo, session);
                     }
-                    LOGGER.log(Level.SEVERE, "El proveedor o insumo indicado son invalidos");
+                    else
+                        LOGGER.log(Level.SEVERE, "El proveedor o insumo indicado son invalidos");
                 }
-                LOGGER.log(Level.SEVERE, "El precio indicado no es valido");
+                else
+                    LOGGER.log(Level.SEVERE, "El precio indicado no es valido");
                 return false;
             case CargaMasivaConstantes.TABLA_PRODUCTOCATEGORIA:
                 ProductoCategoria nuevoProdCat = new ProductoCategoria();
