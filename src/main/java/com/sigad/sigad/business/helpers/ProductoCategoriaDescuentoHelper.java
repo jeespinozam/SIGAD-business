@@ -7,8 +7,10 @@ package com.sigad.sigad.business.helpers;
 
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.ProductoCategoriaDescuento;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.hibernate.Session;
@@ -69,8 +71,9 @@ public class ProductoCategoriaDescuentoHelper {
         ArrayList<ProductoCategoriaDescuento> descuentos = new ArrayList<>();
         Query query = null;
         try {
-            query = session.createQuery("from ProductoCategoriaDescuento where categoria_id='" + productocategoria_id + "'");
-
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            query = session.createQuery("SELECT c FROM ProductoCategoriaDescuento AS c WHERE c.fechaInicio <= :today AND c.fechaFin >= :today  AND categoria_id='" + productocategoria_id + "'");
+            query.setParameter("today", new Date());
             if (!query.list().isEmpty()) {
                 descuentos = (ArrayList<ProductoCategoriaDescuento>) query.list();
                 
@@ -93,8 +96,9 @@ public class ProductoCategoriaDescuentoHelper {
         List<ProductoCategoriaDescuento> descuentos = null;
         Query query = null;
         try {
-            query = session.createQuery("from ProductoCategoriaDescuento where categoria_id='" + productocategoria_id + "'");
-
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            query = session.createQuery("SELECT c FROM ProductoCategoriaDescuento AS c WHERE c.fechaInicio <= :today AND c.fechaFin >= :today  AND categoria_id='" + productocategoria_id + "'");
+            query.setParameter("today", new Date());
             descuentos = (List<ProductoCategoriaDescuento>) query.list();
         } catch (Exception e) {
 

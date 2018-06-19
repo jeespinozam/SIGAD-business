@@ -238,6 +238,20 @@ public class DetallePedido {
         this.descuentoCategoria = descuentoCategoria;
     }
 
+    /**
+     * @return the pedido
+     */
+    public Pedido getPedido() {
+        return pedido;
+    }
+
+    /**
+     * @param pedido the pedido to set
+     */
+    public void setPedido(Pedido pedido) {
+        this.pedido = pedido;
+    }
+
   
     
 }
