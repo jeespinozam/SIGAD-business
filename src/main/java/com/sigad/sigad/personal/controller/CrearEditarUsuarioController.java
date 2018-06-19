@@ -113,12 +113,14 @@ public class CrearEditarUsuarioController implements Initializable {
                     if(id != null){
                         PersonalController.updateTable(user);
                         PersonalController.userDialog.close();
+                        
                     }else{
                         ErrorController error = new ErrorController();
                         error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
                     }
                     
                 }
+                helper.close();
             }
         });
         
@@ -163,7 +165,7 @@ public class CrearEditarUsuarioController implements Initializable {
             telephoneTxt.setText(user.getTelefono());
             cellphoneTxt.setText(user.getCelular());
             emailTxt.setText(user.getCorreo());
-            passwordTxt.setText(LoginController.decrypt(user.getPassword()));
+            passwordTxt.setText(user.getPassword());
             isActiveBtn.setSelected(user.isActivo());
             //styles
             //passwordTxt.setEditable(false);
@@ -233,11 +235,7 @@ public class CrearEditarUsuarioController implements Initializable {
         user.setTelefono(telephoneTxt.getText());
         user.setCelular(cellphoneTxt.getText());
         user.setCorreo(emailTxt.getText());
-        if(PersonalController.isUserCreate){
-           user.setPassword(LoginController.encrypt(passwordTxt.getText()));
-        }else{
-           user.setPassword(passwordTxt.getText());
-        }
+        user.setPassword(LoginController.encrypt(passwordTxt.getText()));
         user.setActivo(isActiveBtn.isSelected());
         
         int indexProfile = profilesListView.getSelectionModel().getSelectedIndex();
