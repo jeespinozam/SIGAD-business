@@ -401,4 +401,5 @@ public class Usuario {
     public void setDescuentoCliente(Set<ClienteDescuento> descuentoCliente) {
         this.descuentoCliente = descuentoCliente;
     }
+
 }
