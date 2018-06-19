@@ -12,6 +12,7 @@ import com.sigad.sigad.business.Permiso;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoCategoria;
 import com.sigad.sigad.business.ProductoCategoriaDescuento;
+import com.sigad.sigad.business.ProductoDescuento;
 import com.sigad.sigad.business.ProductoFragilidad;
 import com.sigad.sigad.business.ProductoInsumo;
 import com.sigad.sigad.business.Proveedor;
@@ -61,6 +62,17 @@ public class CargaMasivaHelper {
                 rowIndex = 0;
                 // Definimos las cabeceras
                 switch(tablaCarga) {
+                    case CargaMasivaConstantes.TABLA_PRODUCTODESCUENTO:
+                        rowhead.createCell(rowIndex).setCellValue("Nombre del Producto");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Descuento(%)");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Stockmaximo");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Fecha Inicio(dd/mm/yyyy)");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Fecha Fin(dd/mm/yyyy)");
+                        break;
                     case CargaMasivaConstantes.TABLA_DESCUENTOSCATEGORIA:
                         rowhead.createCell(rowIndex).setCellValue("Nombre de Categoria de Producto");
                         rowIndex++;
@@ -335,6 +347,42 @@ public class CargaMasivaHelper {
     private static boolean SubirRegistroBD(String tablaCarga, Row row, DataFormatter dataFormatter, Session session) {
         int index = 0;
         switch(tablaCarga) {
+            case CargaMasivaConstantes.TABLA_PRODUCTODESCUENTO:
+                String nombreProd = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                index++;
+                Double dsctoProd = Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                Integer stockmaximo = Integer.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                try {
+                    DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+                    index++;
+                    Date fechaInicio = df.parse(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                    index++;
+                    Date fechaFin = df.parse(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                    if (dsctoProd!=null && dsctoProd>0.0) {
+                        Producto prod = (Producto) CargaMasivaHelper.busquedaGeneralString(session, "Producto", new String[] {"nombre"}, new String [] {nombreProd});
+                        if (prod!=null) {
+                            ProductoDescuento nuevoDescProd = new ProductoDescuento();
+                            nuevoDescProd.setActivo(true);
+                            nuevoDescProd.setCodCupon(null);
+                            nuevoDescProd.setDuracionDias(null);
+                            nuevoDescProd.setProducto(prod);
+                            nuevoDescProd.setValorPct(dsctoProd);
+                            nuevoDescProd.setFechaInicio(fechaInicio);
+                            nuevoDescProd.setFechaFin(fechaFin);
+                            nuevoDescProd.setStockMaximo(stockmaximo);
+                            return CargaMasivaHelper.guardarObjeto(nuevoDescProd, session);
+                        }
+                        LOGGER.log(Level.WARNING, "No se encontro producto referenciada");
+                    }
+                    else
+                        LOGGER.log(Level.WARNING, "Las fechas que se indican no tiene validaciones entre ellas");
+                    return false;
+                }
+                catch(Exception e) {
+                    LOGGER.log(Level.SEVERE, "No se pudo convertir fechas de inicio  o fin");
+                    return false;
+                }
             case CargaMasivaConstantes.TABLA_DESCUENTOSCATEGORIA:
                 String nombreCategoriaProd = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 System.out.println(nombreCategoriaProd);
