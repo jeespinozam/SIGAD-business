@@ -9,6 +9,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXPopup;
+import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
@@ -30,6 +31,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -60,7 +62,6 @@ public class MantenimientoPedidosController implements Initializable {
     /**
      * Initializes the controller class.
      */
-    @FXML
     JFXPopup popup;
     @FXML
     JFXButton moreBtn;
@@ -70,13 +71,9 @@ public class MantenimientoPedidosController implements Initializable {
     JFXDialog viewDialog;
     @FXML
     JFXTreeTableColumn<PedidoOrdenLista, Integer> id = new JFXTreeTableColumn<>("ID");
-    @FXML
     JFXTreeTableColumn<PedidoOrdenLista, String> cliente = new JFXTreeTableColumn<>("Cliente");
-    @FXML
-    JFXTreeTableColumn<PedidoOrdenLista, String> destino = new JFXTreeTableColumn<>("Destinatario");
-    @FXML
+    JFXTreeTableColumn<PedidoOrdenLista, String> destino = new JFXTreeTableColumn<>("Dirección destino");
     JFXTreeTableColumn<PedidoOrdenLista, String> fecha = new JFXTreeTableColumn<>("Fecha");
-    @FXML
     JFXTreeTableColumn<PedidoOrdenLista, String> estado = new JFXTreeTableColumn<>("Estado");
     @FXML
     private JFXTreeTableView<PedidoOrdenLista> tablaPedidos;
@@ -86,6 +83,10 @@ public class MantenimientoPedidosController implements Initializable {
     public static final String viewPath = "/com/sigad/sigad/pedido/view/mantenimientoPedidos.fxml";
     private Boolean isEdit;
 
+    @FXML
+    private JFXTextField filtro;
+    @FXML
+    private JFXButton btnNuevo;
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
@@ -93,7 +94,15 @@ public class MantenimientoPedidosController implements Initializable {
         agregarColumnas();
         cargarDatos();
     }
-
+    
+    public void agregarFiltro() {
+        filtro.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            tablaPedidos.setPredicate((TreeItem<PedidoOrdenLista> t) -> {
+                Boolean flag = t.getValue().id.getValue().toString().contains(newValue) || t.getValue().cliente.getValue().contains(newValue) || t.getValue().direccion.getValue().contains(newValue) || t.getValue().fecha.getValue().contains(newValue);
+                return flag;
+            });
+        });
+    }
     public void columnas() {
         id.setPrefWidth(70);
         id.setCellValueFactory((TreeTableColumn.CellDataFeatures<PedidoOrdenLista, Integer> param) -> param.getValue().getValue().id.asObject());
