@@ -9,6 +9,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXPopup;
+import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableRow;
 import com.jfoenix.controls.JFXTreeTableView;
@@ -30,6 +31,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -71,10 +73,8 @@ public class ListaInsumoController implements Initializable {
     @FXML
     private JFXButton addBtn;
 
-    @FXML
     public static JFXDialog insumoDialog;
     
-    @FXML
     private JFXPopup popup;
     
     public static boolean isInsumoCreate;
@@ -89,6 +89,8 @@ public class ListaInsumoController implements Initializable {
     JFXTreeTableColumn<InsumoViewer,String> volumenCol = new JFXTreeTableColumn<>("Volumen");
     JFXTreeTableColumn<InsumoViewer,String> estadoCol = new JFXTreeTableColumn<>("Estado");
     static ObservableList<InsumoViewer> insumosList;
+    @FXML
+    private JFXTextField filtro;
     
     public static class InsumoViewer extends RecursiveTreeObject<InsumoViewer>{
 
@@ -213,7 +215,18 @@ public class ListaInsumoController implements Initializable {
         setColumns();
         addColumns();
         fillData();
+        agregarFiltro();
     }    
+    
+    public void agregarFiltro() {
+        filtro.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            tblInsumos.setPredicate((TreeItem<InsumoViewer> t) -> {
+                Boolean flag = t.getValue().nombre.getValue().contains(newValue) || t.getValue().volumen.getValue().contains(newValue) || t.getValue().stockTotalLogico.getValue().contains(newValue) || t.getValue().stockTotalFisico.getValue().contains(newValue) || t.getValue().activo.getValue().toString().contains(newValue);
+                return flag;
+            });
+        });
+    }
+    
     private void setColumns(){
         nombreCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<InsumoViewer, String> param) -> param.getValue().getValue().getNombre() //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         );

@@ -352,14 +352,14 @@ public class RegistrarDescuentoProductoController implements Initializable {
             txtStockMaximo.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             txtStockMaximo.requestFocus();
             return false;
+        } else if (txtFechaInicio.getValue() == null) {
+            lblError.setText("Fecha inicio incorrecta");
+            return false;
         } else if (txtFechaInicio.getValue().isAfter(txtFechaFin.getValue())) {
             lblError.setText("Verifique el rango de fechas");
             return false;
-        } else if (txtFechaInicio.getValue() == null) {
-            lblError.setText("Verifique el rango de fechas");
-            return false;
-        } else if (txtFechaFin.getValue() == null) {
-            lblError.setText("Verifique el rango de fechas");
+        }  else if (txtFechaFin.getValue() == null) {
+            lblError.setText("Fecha fin incorrecta");
             return false;
         } else {
 

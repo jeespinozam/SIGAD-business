@@ -167,12 +167,14 @@ public class CrearEditarUsuarioController implements Initializable {
                     if(id != null){
                         PersonalController.updateTable(user);
                         PersonalController.userDialog.close();
+                        
                     }else{
                         ErrorController error = new ErrorController();
                         error.loadDialog("Error", helper.getErrorMessage(), "Ok", hiddenSp);
                     }
                     
                 }
+                helper.close();
             }
         });
         
@@ -217,7 +219,7 @@ public class CrearEditarUsuarioController implements Initializable {
             telephoneTxt.setText(user.getTelefono());
             cellphoneTxt.setText(user.getCelular());
             emailTxt.setText(user.getCorreo());
-            passwordTxt.setText(LoginController.encrypt(user.getPassword()));
+            passwordTxt.setText(user.getPassword());
             isActiveBtn.setSelected(user.isActivo());
             //styles
             //passwordTxt.setEditable(false);
@@ -242,7 +244,7 @@ public class CrearEditarUsuarioController implements Initializable {
             dniTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             dniTxt.requestFocus();
             return false;
-        }else if(dniTxt.getText().length()<8){
+        }else if(dniTxt.getText().length()!=8){
             ErrorController r= new ErrorController();
             r.loadDialog("Error", "Debe el dni debe tener 8 dígitos", "Ok", hiddenSp);
             dniTxt.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
@@ -287,7 +289,7 @@ public class CrearEditarUsuarioController implements Initializable {
         user.setTelefono(telephoneTxt.getText());
         user.setCelular(cellphoneTxt.getText());
         user.setCorreo(emailTxt.getText());
-        user.setPassword(passwordTxt.getText());
+        user.setPassword(LoginController.encrypt(passwordTxt.getText()));
         user.setActivo(isActiveBtn.isSelected());
         
         int indexProfile = profilesListView.getSelectionModel().getSelectedIndex();
