@@ -6,6 +6,7 @@
 package com.sigad.sigad.helpers.cargaMasiva;
 
 import com.sigad.sigad.app.controller.LoginController;
+import com.sigad.sigad.business.ClienteDescuento;
 import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.Perfil;
 import com.sigad.sigad.business.Permiso;
@@ -28,8 +29,10 @@ import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
@@ -62,6 +65,19 @@ public class CargaMasivaHelper {
                 rowIndex = 0;
                 // Definimos las cabeceras
                 switch(tablaCarga) {
+                    case CargaMasivaConstantes.TABLA_DESCUENTOXUSUARIO:
+                        rowhead.createCell(rowIndex).setCellValue("Tipo de Descuento Cliente");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Condicion");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Valor de Descuento");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Fecha Inicio(dd/mm/yyyy)");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Fecha Fin(dd/mm/yyyy)");
+                        rowIndex++;
+                        rowhead.createCell(rowIndex).setCellValue("Ingrese correo de los clientes separados por comas");
+                        break;
                     case CargaMasivaConstantes.TABLA_PRODUCTODESCUENTO:
                         rowhead.createCell(rowIndex).setCellValue("Nombre del Producto");
                         rowIndex++;
@@ -347,6 +363,41 @@ public class CargaMasivaHelper {
     private static boolean SubirRegistroBD(String tablaCarga, Row row, DataFormatter dataFormatter, Session session) {
         int index = 0;
         switch(tablaCarga) {
+            case CargaMasivaConstantes.TABLA_DESCUENTOXUSUARIO:
+                String tipoDscto = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                index++;
+                Double condicionDscto = Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                Double valorDscto = Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                index++;
+                try {
+                    DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+                    Date fechaInicio = df.parse(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                    index++;
+                    Date fechaFin = df.parse(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                    index++;
+                    String clientesCorreos = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
+                    String [] correosFiltrados = clientesCorreos.split(",");
+                    // guardamos el descuento de usuario
+                    ClienteDescuento nuevoClieDesc = new ClienteDescuento();
+                    nuevoClieDesc.setActivo(true);
+                    nuevoClieDesc.setTipo(tipoDscto);
+                    nuevoClieDesc.setCondicion(condicionDscto);
+                    nuevoClieDesc.setValue(valorDscto);
+                    nuevoClieDesc.setFechaInicio(new java.sql.Date(fechaInicio.getTime()));
+                    nuevoClieDesc.setFechaFin(new java.sql.Date(fechaFin.getTime()));
+                    Set<Usuario> listaUsuarioClientes = new HashSet<>();
+                    for (int i=0;i<correosFiltrados.length;i++) {
+                        Usuario usuarioCliente = (Usuario) CargaMasivaHelper.busquedaGeneralString(session, "Usuario", new String[] {"correo"}, new String [] {correosFiltrados[i]});
+                        listaUsuarioClientes.add(usuarioCliente);
+                    }
+                    nuevoClieDesc.setClientes(listaUsuarioClientes);
+                    return CargaMasivaHelper.guardarObjeto(nuevoClieDesc, session);
+                }
+                catch(Exception e) {
+                    LOGGER.log(Level.SEVERE, "No se pudo convertir fechas de inicio  o fin");
+                    return false;
+                }
             case CargaMasivaConstantes.TABLA_PRODUCTODESCUENTO:
                 String nombreProd = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 index++;
