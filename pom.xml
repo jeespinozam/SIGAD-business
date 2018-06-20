@@ -108,14 +108,11 @@
             <artifactId>itextpdf</artifactId>
             <version>5.0.6</version>
         </dependency>
-
-    </dependencies>
-        <!-- https://mvnrepository.com/artifact/jasperreports/jasperreports -->
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
             <version>6.4.0</version>
         </dependency>
- 
-   </dependencies>
+    </dependencies>
+    <!-- https://mvnrepository.com/artifact/jasperreports/jasperreports -->
 </project>
