@@ -26,7 +26,7 @@ public class ClienteDescuento {
     private Long id;
     private Boolean activo;
     private String tipo;// Monto o NumeroDePedidos
-    private Double value;
+    private Double valor;
     private Double condicion; //condicion mas de 
     private Date fechaInicio;
     private Date fechaFin;
@@ -79,14 +79,14 @@ public class ClienteDescuento {
      * @return the value
      */
     public Double getValue() {
-        return value;
+        return valor;
     }
 
     /**
      * @param value the value to set
      */
     public void setValue(Double value) {
-        this.value = value;
+        this.valor = value;
     }
 
     /**

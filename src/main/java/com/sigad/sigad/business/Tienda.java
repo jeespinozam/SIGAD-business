@@ -8,6 +8,7 @@ package com.sigad.sigad.business;
 import com.grupo1.simulated_annealing.Locacion;
 import com.grupo1.simulated_annealing.Servicio;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -184,10 +185,11 @@ public class Tienda {
     public HashMap<Insumo, Integer> getInsumos(){
         ArrayList<LoteInsumo> li= new ArrayList(getLotesInsumo());
         HashMap<Insumo, Integer> hm = new HashMap<>();
+        Date hoy = new Date();
         for (LoteInsumo loteInsumo : li) {
-            if (hm.get(loteInsumo.getInsumo()) == null){
+            if (!loteInsumo.getFechaVencimiento().before(new Date()) && hm.get(loteInsumo.getInsumo()) == null){
                 hm.put(loteInsumo.getInsumo(), loteInsumo.getStockLogico());
-            }else{
+            }else if (!loteInsumo.getFechaVencimiento().before(new Date())){
                 hm.put(loteInsumo.getInsumo(),hm.get(loteInsumo.getInsumo()) + loteInsumo.getStockLogico());
             }
             

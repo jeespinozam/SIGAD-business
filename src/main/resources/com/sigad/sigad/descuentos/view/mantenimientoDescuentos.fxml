@@ -4,7 +4,7 @@
 <?import com.jfoenix.controls.JFXTabPane?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import com.jfoenix.controls.JFXTreeTableView?>
-<?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
+<!--<?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>-->
 <?import java.net.URL?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
@@ -19,7 +19,7 @@
         <URL value="@/styles/mantenimientodescuentos.css" />
     </stylesheets>
    <children>
-      <JFXTabPane prefHeight="680.0" prefWidth="1010.0">
+      <JFXTabPane prefHeight="680.0" prefWidth="1010.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <tabs>
             <Tab text="Descuentos por productos">
               <content>
@@ -71,9 +71,9 @@
                                          <children>
                                             <Label layoutX="32.0" layoutY="7.0" prefHeight="34.0" prefWidth="262.0" text="Descuentos por productos" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="31.0" AnchorPane.topAnchor="6.0" />
                                             <JFXButton fx:id="moreBtnProducto" layoutX="847.0" layoutY="-2.0" onAction="#handleAction" text=" " AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
-                                               <graphic>
+<!--                                               <graphic>
                                                   <MaterialDesignIconView glyphName="DOTS_VERTICAL" />
-                                               </graphic>
+                                               </graphic>-->
                                             </JFXButton>
                                             <JFXTextField fx:id="filtroProducto" layoutX="712.0" layoutY="7.0" prefHeight="29.0" prefWidth="203.0" promptText="Buscar" AnchorPane.bottomAnchor="11.0" AnchorPane.rightAnchor="61.0" AnchorPane.topAnchor="6.0" />
                                          </children>
@@ -81,9 +81,9 @@
                                       <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                                          <children>
                                             <JFXButton fx:id="btnAddDescuento" alignment="CENTER" layoutX="833.0" layoutY="5.0" onMouseClicked="#gotAgregarDescuento" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
-                                               <graphic>
+<!--                                               <graphic>
                                                   <MaterialDesignIconView glyphName="PLUS" />
-                                               </graphic>
+                                               </graphic>-->
                                             </JFXButton>
                                          </children>
                                       </AnchorPane>
@@ -145,9 +145,9 @@
                                          <children>
                                             <Label layoutX="32.0" layoutY="7.0" prefHeight="34.0" prefWidth="213.0" text="Descuentos por categoría" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="31.0" AnchorPane.topAnchor="6.0" />
                                             <JFXButton fx:id="moreBtnCategoria" layoutX="847.0" layoutY="-2.0" onAction="#handleAction" text=" " AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
-                                               <graphic>
+<!--                                               <graphic>
                                                   <MaterialDesignIconView glyphName="DOTS_VERTICAL" />
-                                               </graphic>
+                                               </graphic>-->
                                             </JFXButton>
                                             <JFXTextField fx:id="filtroCategoria" layoutX="712.0" layoutY="7.0" prefHeight="29.0" prefWidth="203.0" promptText="Buscar" AnchorPane.bottomAnchor="11.0" AnchorPane.rightAnchor="61.0" AnchorPane.topAnchor="6.0" />
                                          </children>
@@ -155,9 +155,9 @@
                                       <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                                          <children>
                                             <JFXButton fx:id="btnAddDescCat" alignment="CENTER" layoutX="833.0" layoutY="5.0" onMouseClicked="#gotAgregarDescuento" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
-                                               <graphic>
+<!--                                               <graphic>
                                                   <MaterialDesignIconView glyphName="PLUS" />
-                                               </graphic>
+                                               </graphic>-->
                                             </JFXButton>
                                          </children>
                                       </AnchorPane>
@@ -219,9 +219,9 @@
                                          <children>
                                             <Label layoutX="32.0" layoutY="7.0" prefHeight="34.0" prefWidth="306.0" text="Descuentos por clientes" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="31.0" AnchorPane.topAnchor="6.0" />
                                             <JFXButton fx:id="moreBtnCliente" layoutX="847.0" layoutY="-2.0" onAction="#handleAction" text=" " AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
-                                               <graphic>
+<!--                                               <graphic>
                                                   <MaterialDesignIconView glyphName="DOTS_VERTICAL" />
-                                               </graphic>
+                                               </graphic>-->
                                             </JFXButton>
                                             <JFXTextField fx:id="filtroCliente" layoutX="712.0" layoutY="7.0" prefHeight="29.0" prefWidth="203.0" promptText="Buscar" AnchorPane.bottomAnchor="11.0" AnchorPane.rightAnchor="61.0" AnchorPane.topAnchor="6.0" />
                                          </children>
@@ -229,9 +229,9 @@
                                       <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                                          <children>
                                             <JFXButton fx:id="btnAddDescCliente" alignment="CENTER" layoutX="833.0" layoutY="5.0" onMouseClicked="#gotAgregarDescuento" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
-                                               <graphic>
+<!--                                               <graphic>
                                                   <MaterialDesignIconView glyphName="PLUS" />
-                                               </graphic>
+                                               </graphic>-->
                                             </JFXButton>
                                          </children>
                                       </AnchorPane>

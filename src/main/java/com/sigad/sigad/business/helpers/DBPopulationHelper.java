@@ -116,7 +116,7 @@ public class DBPopulationHelper extends BaseHelper {
     }
 
     private Usuario getUsuarioOrdenCompraAlAzar() throws Exception {
-        Usuario usuario;
+        Usuario usuario = null;
         String perfil1 = "Encargado de almacen";
         try {
             usuario = (Usuario) session
@@ -124,12 +124,13 @@ public class DBPopulationHelper extends BaseHelper {
                             + "u.perfil.nombre = :perfil1 and "
                             + "u.tienda is not null order by rand()")
                     .setParameter("perfil1", perfil1)
+                    .setMaxResults(1)
                     .getSingleResult();
         } catch (Exception ex) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
-            throw new Exception(String.format("No se pudo obtener un usuario "
-                    + "con perfil '%s'. ¿Existe?¿Tiene tienda asignada?",
-                    perfil1));
+//            throw new Exception(String.format("No se pudo obtener un usuario "
+//                    + "con perfil '%s'. ¿Existe?¿Tiene tienda asignada?",
+//                    perfil1));
         }
         return usuario;
     }

@@ -19,71 +19,58 @@
         <URL value="@/styles/datospedido.css" />
     </stylesheets>
    <children>
-      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="69.0" layoutX="84.0" layoutY="100.0" smooth="false" stroke="TRANSPARENT" strokeLineCap="ROUND" strokeType="INSIDE" width="851.0">
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="75.0" layoutX="80.0" layoutY="66.0" smooth="false" stroke="TRANSPARENT" strokeLineCap="ROUND" strokeType="INSIDE" width="851.0">
          <effect>
             <DropShadow color="#00000082" />
          </effect>
       </Rectangle>
-      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="227.0" layoutX="84.0" layoutY="189.0" smooth="false" stroke="TRANSPARENT" strokeLineCap="ROUND" strokeType="INSIDE" width="435.0">
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="184.0" layoutX="80.0" layoutY="334.0" smooth="false" stroke="TRANSPARENT" strokeLineCap="ROUND" strokeType="INSIDE" width="851.0">
          <effect>
             <DropShadow color="#00000082" />
          </effect>
       </Rectangle>
-      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="227.0" layoutX="540.0" layoutY="189.0" smooth="false" stroke="TRANSPARENT" strokeLineCap="ROUND" strokeType="INSIDE" width="395.0">
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="166.0" layoutX="536.0" layoutY="152.0" smooth="false" stroke="TRANSPARENT" strokeLineCap="ROUND" strokeType="INSIDE" width="395.0">
          <effect>
             <DropShadow color="#00000082" />
          </effect>
       </Rectangle>
-      <Label layoutX="101.0" layoutY="200.0" text="Pago">
+      <Label layoutX="130.0" layoutY="340.0" text="Pago">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <Label layoutX="554.0" layoutY="192.0" text="Fecha entrega">
+      <Label layoutX="560.0" layoutY="173.0" text="Fecha entrega">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <Label id="modalidad" layoutX="105.0" layoutY="259.0" text="Moldalidad" />
-      <Label layoutX="105.0" layoutY="288.0" text="Tipo de pago :" />
-      <JFXRadioButton id="btnBoleta" fx:id="btnBoleta" layoutX="224.0" layoutY="259.0" text="Boleta">
+      <Label id="modalidad" layoutX="130.0" layoutY="369.0" text="Modalidad :" />
+      <Label layoutX="536.0" layoutY="369.0" text="Tipo de pago :" />
+      <JFXRadioButton id="btnBoleta" fx:id="btnBoleta" layoutX="249.0" layoutY="369.0" onMouseClicked="#clickBoleta" text="Boleta">
          <toggleGroup>
             <ToggleGroup fx:id="genero" />
          </toggleGroup></JFXRadioButton>
-      <JFXRadioButton id="btnFactura" fx:id="btnFactura" layoutX="331.0" layoutY="259.0" text="Factura" toggleGroup="$genero" />
-      <JFXRadioButton id="btnEfectivo" fx:id="btnEfectivo" layoutX="224.0" layoutY="288.0" text="Efectivo">
+      <JFXRadioButton id="btnFactura" fx:id="btnFactura" layoutX="361.0" layoutY="369.0" onMouseClicked="#clickFactura" text="Factura" toggleGroup="$genero" />
+      <JFXRadioButton id="btnEfectivo" fx:id="btnEfectivo" layoutX="655.0" layoutY="369.0" selected="true" text="Efectivo - Depósito">
          <toggleGroup>
             <ToggleGroup fx:id="pago" />
          </toggleGroup></JFXRadioButton>
-      <JFXTextField id="txtMonto" fx:id="txtMonto" layoutX="331.0" layoutY="284.0" text="Monto" />
-      <JFXRadioButton id="btnPOS" fx:id="btnPOS" layoutX="224.0" layoutY="327.0" text="POS: Tarjeta" toggleGroup="$pago" />
-      <JFXComboBox id="cmbTarjeta" fx:id="cmbTarjeta" layoutX="334.0" layoutY="323.0" promptText="-" />
       
-      <Label layoutX="101.0" layoutY="107.0" text="Direccion">
+      <Label layoutX="94.0" layoutY="76.0" text="Destino">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="127.0" layoutX="84.0" layoutY="454.0" smooth="false" stroke="TRANSPARENT" strokeLineCap="ROUND" strokeType="INSIDE" width="858.0">
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="99.0" layoutX="80.0" layoutY="528.0" smooth="false" stroke="TRANSPARENT" strokeLineCap="ROUND" strokeType="INSIDE" width="851.0">
          <effect>
             <DropShadow color="#00000082" />
          </effect>
       </Rectangle>
-      <Label layoutX="101.0" layoutY="466.0" text="Dedicatoria">
+      <JFXTextArea fx:id="cmbDedicatoria" labelFloat="true" layoutX="103.0" layoutY="559.0" prefHeight="57.0" prefWidth="806.0" promptText="Dedicatoria">
          <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
-      <JFXTextArea fx:id="cmbDedicatoria" layoutX="105.0" layoutY="502.0" prefHeight="52.0" prefWidth="806.0" />
-      <JFXButton id="btnCancelar" fx:id="btnCancelar" buttonType="RAISED" layoutX="684.0" layoutY="606.0" style="-fx-background-color: #FFFFFF;" text="Cancelar">
-         <font>
-            <Font size="14.0" />
-         </font>
-         <effect>
-            <DropShadow />
-         </effect>
-      </JFXButton>
-      <JFXButton id="btnRegistrar" fx:id="btnRegistrar" buttonType="RAISED" layoutX="814.0" layoutY="606.0" onMouseClicked="#registrarPedido" style="-fx-background-color: #FFFFFF;" text="Guardar Pedido">
+            <Font size="10.0" />
+         </font></JFXTextArea>
+      <JFXButton id="btnCancelar" fx:id="btnCancelar" buttonType="RAISED" layoutX="500.0" layoutY="636.0" style="-fx-background-color: #FFFFFF;" text="Cancelar">
          <font>
             <Font size="14.0" />
          </font>
@@ -91,16 +78,86 @@
             <DropShadow />
          </effect>
       </JFXButton>
-      <Label layoutX="84.0" layoutY="41.0" prefHeight="36.0" prefWidth="172.0" text="Datos del pedido">
+      <JFXButton id="btnRegistrar" fx:id="btnRegistrar" buttonType="RAISED" layoutX="818.0" layoutY="636.0" onMouseClicked="#registrarPedido" style="-fx-background-color: #FFFFFF;" text="Guardar Pedido">
+         <font>
+            <Font size="14.0" />
+         </font>
+         <effect>
+            <DropShadow />
+         </effect>
+      </JFXButton>
+      <Label layoutX="76.0" layoutY="23.0" prefHeight="36.0" prefWidth="172.0" text="Datos del pedido">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <Label layoutX="571.0" layoutY="258.0" text="Fecha de entrega" />
-      <Label layoutX="757.0" layoutY="258.0" text="Turno" />
-      <JFXDatePicker id="dpFechaEntrega" fx:id="dpFechaEntrega" defaultColor="#455a64" layoutX="571.0" layoutY="284.0" prefHeight="25.0" prefWidth="157.0" />
-      <JFXComboBox fx:id="cmbInicio" layoutX="757.0" layoutY="284.0" prefHeight="25.0" prefWidth="144.0" promptText="M" />
-      
-      <JFXComboBox fx:id="cmbDireccion" layoutX="116.0" layoutY="127.0" prefHeight="30.0" prefWidth="795.0" />
+      <Label layoutX="560.0" layoutY="215.0" text="Fecha de entrega" />
+      <Label layoutX="746.0" layoutY="215.0" text="Turno" />
+      <JFXDatePicker id="dpFechaEntrega" fx:id="dpFechaEntrega" defaultColor="#455a64" layoutX="560.0" layoutY="241.0" prefHeight="25.0" prefWidth="157.0" />
+      <JFXComboBox fx:id="cmbInicio" layoutX="746.0" layoutY="241.0" prefHeight="25.0" prefWidth="144.0" promptText="M" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="166.0" layoutX="80.0" layoutY="152.0" smooth="false" stroke="TRANSPARENT" strokeLineCap="ROUND" strokeType="INSIDE" width="435.0">
+         <effect>
+            <DropShadow color="#00000082" />
+         </effect>
+      </Rectangle>
+      <JFXTextField fx:id="txtTotal" disable="true" labelFloat="true" layoutX="118.0" layoutY="168.0" prefHeight="25.0" prefWidth="201.0" promptText="SubTotal">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </JFXTextField>
+      <JFXTextField fx:id="txtDescuento" disable="true" labelFloat="true" layoutX="118.0" layoutY="206.0" prefHeight="25.0" prefWidth="201.0" promptText="Descuento por cliente (%)">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </JFXTextField>
+      <JFXTextField fx:id="txtTotalPago" disable="true" labelFloat="true" layoutX="118.0" layoutY="284.0" prefHeight="25.0" prefWidth="201.0" promptText="Total a pagar">
+         <font>
+            <Font name="System Bold" size="10.0" />
+         </font>
+      </JFXTextField>
+      <JFXTextField fx:id="txtCliente" disable="true" labelFloat="true" layoutX="128.0" layoutY="401.0" prefHeight="25.0" prefWidth="383.0" promptText="Cliente">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </JFXTextField>
+      <JFXTextField fx:id="txtEmpresa" disable="true" labelFloat="true" layoutX="128.0" layoutY="486.0" prefHeight="25.0" prefWidth="383.0" promptText="Empresa">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </JFXTextField>
+      <JFXTextField fx:id="txtdoc" disable="true" labelFloat="true" layoutX="128.0" layoutY="438.0" prefHeight="25.0" prefWidth="383.0" promptText="R.U.C.">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </JFXTextField>
+      <JFXTextField fx:id="txtcorreo" disable="true" labelFloat="true" layoutX="536.0" layoutY="401.0" prefHeight="25.0" prefWidth="256.0" promptText="Correo">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </JFXTextField>
+      <JFXButton id="btnCancelar" fx:id="btnGenerar" buttonType="RAISED" layoutX="619.0" layoutY="636.0" onMouseClicked="#generarDocumento" style="-fx-background-color: #FFFFFF;" text="Generar Comprobante">
+         <font>
+            <Font size="14.0" />
+         </font>
+         <effect>
+            <DropShadow />
+         </effect>
+      </JFXButton>
+      <JFXTextField fx:id="txtTipo" disable="true" labelFloat="true" layoutX="349.0" layoutY="206.0" prefHeight="25.0" prefWidth="157.0" promptText="Tipo">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </JFXTextField>
+      <JFXTextField fx:id="txtDireccion" disable="true" labelFloat="true" layoutX="528.0" layoutY="486.0" prefHeight="25.0" prefWidth="383.0" promptText="Direccion">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </JFXTextField>
+      <JFXTextField fx:id="txtdestino" disable="true" layoutX="94.0" layoutY="100.0" prefHeight="25.0" prefWidth="795.0" />
+      <JFXTextField fx:id="txtigv" disable="true" labelFloat="true" layoutX="118.0" layoutY="244.0" prefHeight="25.0" prefWidth="201.0" promptText="IGV">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </JFXTextField>
    </children>
 </AnchorPane>

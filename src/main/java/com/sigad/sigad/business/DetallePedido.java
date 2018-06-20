@@ -82,6 +82,24 @@ public class DetallePedido {
         this.descuento = descuento;
     }
     
+    public DetallePedido( boolean activo, Integer cantidad, Double precioUnitario, Integer numEntregados, Producto producto, Pedido pedido, ProductoDescuento descuento, ProductoCategoriaDescuento descuentoCategoria) {
+        this.activo = activo;
+        this.cantidad = cantidad;
+        this.precioUnitario = precioUnitario;
+        this.numEntregados = numEntregados;
+        this.producto = producto;
+        this.pedido = pedido;
+        this.descuento = descuento;
+    }
+    
+    public DetallePedido( boolean activo, Integer cantidad, Double precioUnitario, Integer numEntregados, ComboPromocion combo, Pedido pedido) {
+        this.activo = activo;
+        this.cantidad = cantidad;
+        this.precioUnitario = precioUnitario;
+        this.numEntregados = numEntregados;
+        this.pedido = pedido;
+        this.combo = combo;
+    }
     
     
     /**

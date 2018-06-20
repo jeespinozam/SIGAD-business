@@ -54,7 +54,7 @@ public class RegistrarClienteController implements Initializable {
     JFXTreeTableColumn<DireccionesLista, String> direccion = new JFXTreeTableColumn<>("Direccion");
     @FXML
     JFXTreeTableColumn<DireccionesLista, String> nombre = new JFXTreeTableColumn<>("Nombre");
-
+    ClienteDireccion c ;
     @FXML
     private JFXTextField txtNombre;
 
@@ -91,6 +91,7 @@ public class RegistrarClienteController implements Initializable {
     private JFXButton btnAgregarDireccion;
     @FXML
     private Usuario cliente;
+    Boolean registrar;
 
     /**
      * Initializes the controller class.
@@ -101,6 +102,7 @@ public class RegistrarClienteController implements Initializable {
         agregarColumnasDireccion();
         agregarColumnasTablasClientes();
         initValidator();
+        registrar = Boolean.FALSE;
     }
 
     public void cargarCliente(Integer codigo) {
@@ -248,15 +250,6 @@ public class RegistrarClienteController implements Initializable {
         });
         /**/
         
-        r = new RequiredFieldValidator();
-        r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
-        r.setMessage("Agrega una direccion");
-        txtnuevaDir.getValidators().add(r);
-        
-        r = new RequiredFieldValidator();
-        r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
-        r.setMessage("Agrega una direccion");
-        txtnuevoNom.getValidators().add(r);
 
     }
 
@@ -291,7 +284,7 @@ public class RegistrarClienteController implements Initializable {
             txtcel.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             txtcel.requestFocus();
             return false;
-        } else if (txtcel.getText().length() < 9) {
+        } else if (txtcel.getText().length() < 9 ) {
             ErrorController r = new ErrorController();
             r.loadDialog("Error", "El celular debe tener 9 dígitos", "Ok", hiddenSp);
             txtcel.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
@@ -306,16 +299,16 @@ public class RegistrarClienteController implements Initializable {
             r.loadDialog("Error", "El correo no es válido", "Ok", hiddenSp);
             txtcorreo.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             txtcorreo.requestFocus();
-            return false;
-        } else if (direcciones.size() <= 0) {
-            ErrorController r = new ErrorController();
-            r.loadDialog("Error", "Ingrese al menos una dirección", "Ok", hiddenSp);
-            txtnuevaDir.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
-            txtnuevaDir.requestFocus();
-            txtnuevoNom.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
-            txtnuevoNom.requestFocus();
-            return false;
-        }
+            return false;}
+//        } else if (direcciones.size() <= 0 && !registrar) {
+//            ErrorController r = new ErrorController();
+//            r.loadDialog("Error", "Ingrese al menos una dirección", "Ok", hiddenSp);
+//            txtnuevaDir.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+//            txtnuevaDir.requestFocus();
+//            txtnuevoNom.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
+//            txtnuevoNom.requestFocus();
+//            return false;
+//        }
         return true;
     }
 
@@ -403,7 +396,7 @@ public class RegistrarClienteController implements Initializable {
         PerfilHelper perfilHelper = new PerfilHelper();
         Perfil perfil = perfilHelper.getProfile("Cliente");
         perfilHelper.close();
-        UsuarioHelper usuarioHelper = new UsuarioHelper();
+         UsuarioHelper usuarioHelper = new UsuarioHelper();
         ArrayList<Usuario> usuarios = usuarioHelper.getUsers(perfil);
         usuarioHelper.close();
         if (usuarios != null) {
@@ -413,9 +406,11 @@ public class RegistrarClienteController implements Initializable {
         }
     }
 
-    public void initModel(StackPane stackPane) {
-
+    public void initModel(StackPane stackPane, ClienteDireccion direccion) {
+        
         this.stackPane = stackPane;
+        registrar = Boolean.TRUE;
+        
     }
 
     @FXML
@@ -447,6 +442,10 @@ public class RegistrarClienteController implements Initializable {
             this.codigo = codigo;
         }
 
+        public DireccionesLista (ClienteDireccion direccion) {
+            this.nombre = new SimpleStringProperty(direccion.getNombreDireccion());
+            this.direccion = new SimpleStringProperty(direccion.getDireccionCliente());
+        }
         @Override
         public boolean equals(Object o) {
             if (o instanceof DireccionesLista) {

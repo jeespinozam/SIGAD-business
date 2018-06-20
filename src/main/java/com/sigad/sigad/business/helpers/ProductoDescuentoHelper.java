@@ -8,8 +8,12 @@ package com.sigad.sigad.business.helpers;
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoDescuento;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -18,14 +22,10 @@ import org.hibernate.query.Query;
  *
  * @author Alexandra
  */
-public class ProductoDescuentoHelper {
-
-    Session session = null;
-    private String errorMessage = "";
+public class ProductoDescuentoHelper extends BaseHelper {
 
     public ProductoDescuentoHelper() {
-        session = LoginController.serviceInit();
-        session.beginTransaction();
+        super();
     }
 
     public ArrayList<ProductoDescuento> getDescuentos() {
@@ -65,12 +65,18 @@ public class ProductoDescuentoHelper {
 
     public ProductoDescuento getDescuentoByProducto(Integer producto_id) {
         ProductoDescuento descuento = null;
+        ArrayList<ProductoDescuento> descuentos = new ArrayList<>();
         Query query = null;
         try {
-            query = session.createQuery("from ProductoDescuento where producto_id='" + producto_id + "' and activo=true ");
+
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            query = session.createQuery("SELECT c FROM ProductoDescuento AS c WHERE c.fechaInicio <= :today AND c.fechaFin >= :today  AND producto_id='" + producto_id + "' AND activo=true ");
+            query.setParameter("today", new Date());
 
             if (!query.list().isEmpty()) {
-                descuento = (ProductoDescuento) query.list().get(0);
+                descuentos = (ArrayList<ProductoDescuento>) query.list();
+                descuento = descuentos.stream().max(Comparator.comparing(ProductoDescuento::getValorPct)).orElseThrow(NoSuchElementException::new);
+
             }
         } catch (Exception e) {
 
@@ -107,18 +113,18 @@ public class ProductoDescuentoHelper {
 
     ;
     
-     public Long saveDescuento(ProductoDescuento p){
+     public Long saveDescuento(ProductoDescuento p) {
         Long id = null;
         try {
             Transaction tx;
-            if(session.getTransaction().isActive()){
+            if (session.getTransaction().isActive()) {
                 tx = session.getTransaction();
-            }else{
+            } else {
                 tx = session.beginTransaction();
             }
-            
+
             session.save(p);
-            if(p.getId() != null){
+            if (p.getId() != null) {
                 id = p.getId();
             }
             tx.commit();
@@ -129,25 +135,24 @@ public class ProductoDescuentoHelper {
         }
         return id;
     }
-     
-     
-     public boolean updateDescuento(ProductoDescuento uOld){
+
+    public boolean updateDescuento(ProductoDescuento uOld) {
         boolean ok = false;
         try {
             Transaction tx;
-            if(session.getTransaction().isActive()){
+            if (session.getTransaction().isActive()) {
                 tx = session.getTransaction();
-            }else{
+            } else {
                 tx = session.beginTransaction();
             }
-             
+
             ProductoDescuento uNew = session.load(ProductoDescuento.class, uOld.getId());
-            
+
             uNew.setFechaInicio(uOld.getFechaInicio());
             uNew.setFechaFin(uOld.getFechaFin());
             uNew.setStockMaximo(uOld.getStockMaximo());
             uNew.setValorPct(uOld.getValorPct());
-            
+
             session.merge(uNew);
             tx.commit();
             session.close();
@@ -158,8 +163,5 @@ public class ProductoDescuentoHelper {
         }
         return ok;
     }
-    
-    public void close() {
-        session.getTransaction().commit();
-    }
+
 }

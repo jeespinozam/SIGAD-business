@@ -24,19 +24,15 @@ import org.hibernate.query.Query;
  *
  * @author Alexandra
  */
-public class ProductoHelper {
-
-    Session session = null;
-    private String errorMessage = "";
+public class ProductoHelper extends BaseHelper {
 
     public ProductoHelper() {
-        session = LoginController.serviceInit();
-        session.beginTransaction();
         // Add new Employee object
 //        Producto prod = new Producto("Rosas", "/images/rosa.jpg", 15, 12.0,Boolean.TRUE);
 //        Producto prod2 = new Producto("Chocolates", "/images/chocolate.jpg", 15,12.0, Boolean.TRUE);
 //        session.save(prod);
 //        session.save(prod2);
+        super();
     }
 
     public ArrayList<Producto> getProducts() {
@@ -57,11 +53,13 @@ public class ProductoHelper {
             return list;
         }
 
-    };
+    }
+
+    ;
 
     public HashMap<Producto, Integer> getProductsByTend(Tienda tienda) {
         try {
-            
+
             Set<CapacidadTienda> capacidades = tienda.getCapacidadTiendas();
             HashMap<Producto, Integer> hm = new HashMap<>();
             ArrayList<Producto> productos = getProducts();
@@ -120,37 +118,39 @@ public class ProductoHelper {
             this.errorMessage = e.getMessage();
         }
         return product;
-    };
+    }
 
-    public Producto getProducto(Long id){
+    ;
+
+    public Producto getProducto(Long id) {
         Producto producto = null;
         Query query = null;
         try {
             query = session.createQuery("from Producto where id=" + id);
-            
-            if(!query.list().isEmpty()){
-               producto = (Producto)( query.list().get(0));
+
+            if (!query.list().isEmpty()) {
+                producto = (Producto) (query.list().get(0));
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             this.errorMessage = e.getMessage();
-        } finally{
+        } finally {
             return producto;
-        }        
+        }
     }
-    
-    public Long saveProduct(Producto newProduct){
+
+    public Long saveProduct(Producto newProduct) {
         Long id = null;
         try {
             Transaction tx;
-            if(session.getTransaction().isActive()){
+            if (session.getTransaction().isActive()) {
                 tx = session.getTransaction();
-            }else{
+            } else {
                 tx = session.beginTransaction();
             }
 
             session.save(newProduct);
-            if(newProduct.getId() != null){
+            if (newProduct.getId() != null) {
                 id = newProduct.getId();
             }
             tx.commit();
@@ -161,18 +161,18 @@ public class ProductoHelper {
         } finally {
             return id;
         }
-    }    
+    }
 
-    public boolean updateProduct(Producto product){
+    public boolean updateProduct(Producto product) {
         boolean ok = false;
         try {
             Transaction tx;
-            if(session.getTransaction().isActive()){
+            if (session.getTransaction().isActive()) {
                 tx = session.getTransaction();
-            }else{
+            } else {
                 tx = session.beginTransaction();
             }
-            
+
             session.merge(product);
             tx.commit();
             session.close();
@@ -182,10 +182,6 @@ public class ProductoHelper {
             this.errorMessage = e.getMessage();
         }
         return ok;
-    }
-    
-    public void close() {
-        session.getTransaction().commit();
     }
 
 }

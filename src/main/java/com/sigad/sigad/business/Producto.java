@@ -301,20 +301,11 @@ public class Producto {
     }
 
     /**
-<<<<<<< HEAD
      * @return the combos
      */
-    public Set<ProductosCombos> getCombos() {
-        return combos;
-    }
 
     /**
-     * @param combos the combos to set
-     */
-    public void setCombos(Set<ProductosCombos> combos) {
-        this.combos = combos;
-    }
-    /**
+
      * @return the precioCompra
      */
     public Double getPrecioCompra() {
@@ -326,6 +317,20 @@ public class Producto {
      */
     public void setPrecioCompra(Double precioCompra) {
         this.precioCompra = precioCompra;
+    }
+
+    /**
+     * @return the combos
+     */
+    public Set<ProductosCombos> getCombos() {
+        return combos;
+    }
+
+    /**
+     * @param combos the combos to set
+     */
+    public void setCombos(Set<ProductosCombos> combos) {
+        this.combos = combos;
     }
 
     

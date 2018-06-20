@@ -18,7 +18,6 @@ import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.business.Pedido;
 import com.sigad.sigad.business.Tienda;
 import com.sigad.sigad.business.helpers.PedidoHelper;
-import com.sigad.sigad.perfil.controller.SolicitarDireccionController;
 import java.io.IOException;
 import java.net.URL;
 import java.text.DateFormat;
@@ -45,11 +44,13 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.util.Callback;
 
 /**
  * FXML Controller class
@@ -67,6 +68,8 @@ public class MantenimientoPedidosController implements Initializable {
     @FXML
     StackPane hiddenSp;
     JFXDialog direccionDialog;
+    JFXDialog viewDialog;
+    @FXML
     JFXTreeTableColumn<PedidoOrdenLista, Integer> id = new JFXTreeTableColumn<>("ID");
     JFXTreeTableColumn<PedidoOrdenLista, String> cliente = new JFXTreeTableColumn<>("Cliente");
     JFXTreeTableColumn<PedidoOrdenLista, String> destino = new JFXTreeTableColumn<>("Dirección destino");
@@ -79,6 +82,7 @@ public class MantenimientoPedidosController implements Initializable {
     private final ObservableList<PedidoOrdenLista> pedidos = FXCollections.observableArrayList();
     public static final String viewPath = "/com/sigad/sigad/pedido/view/mantenimientoPedidos.fxml";
     private Boolean isEdit;
+
     @FXML
     private JFXTextField filtro;
     @FXML
@@ -130,6 +134,39 @@ public class MantenimientoPedidosController implements Initializable {
         tablaPedidos.getColumns().setAll(id, cliente, destino, fecha, estado);
         tablaPedidos.setRoot(rootPedido);
         tablaPedidos.setShowRoot(false);
+        tablaPedidos.setRowFactory(new Callback<TreeTableView<PedidoOrdenLista>, TreeTableRow<PedidoOrdenLista>>() {
+            @Override
+            public TreeTableRow<PedidoOrdenLista> call(TreeTableView<PedidoOrdenLista> param) {
+                TreeTableRow<PedidoOrdenLista> row = new TreeTableRow<>();
+                row.setOnMouseClicked((event) -> {
+                    if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                        PedidoOrdenLista rowData = row.getItem();
+                        pedido = rowData.pedido;
+                        verPedido();
+
+                    }
+                });
+                return row; //To change body of generated lambdas, choose Tools | Templates.
+            }
+        });
+
+    }
+
+    public void verPedido() {
+        try {
+            JFXDialogLayout content = new JFXDialogLayout();
+            content.setHeading(new Text("Encontrar tienda mas cercana"));
+            Node node;
+            FXMLLoader loader = new FXMLLoader(MantenimientoPedidosController.this.getClass().getResource(EditarEliminarPedidoController.viewPath));
+            node = (Node) loader.load();
+            EditarEliminarPedidoController el = loader.getController();
+            el.initModel(isEdit, pedido, hiddenSp);
+            content.setBody(node);
+            viewDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
+            viewDialog.show();
+        } catch (IOException ex) {
+            Logger.getLogger(MantenimientoPedidosController.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }
 
@@ -142,7 +179,7 @@ public class MantenimientoPedidosController implements Initializable {
             public void handle(ActionEvent event) {
                 popup.hide();
                 try {
-                    //editarPedido();
+                    verPedido();
                 } catch (Exception ex) {
 
                 }
