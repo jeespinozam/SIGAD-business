@@ -58,6 +58,7 @@ public class VehiculoTipoController implements Initializable {
     private StackPane stackPane;
 
     private SimplePopupMenuFactory<Modo> menuFactory;
+    //private SimplePopupMenuFactory<VehiculoTipoController.Modo> menuFactory;
     private VehiculoTipoListaController listarController;
 
     /**
