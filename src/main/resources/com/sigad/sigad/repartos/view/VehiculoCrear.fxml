@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.JFXTreeTableView?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane fx:id="hiddenSp" prefHeight="450.0" prefWidth="760.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sigad.sigad.app.repartos.controller.VehiculoCrearController">
+    <children>
+      <AnchorPane fx:id="containerPane" prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <GridPane prefHeight="450.0" prefWidth="760.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="184.0" minWidth="10.0" prefWidth="123.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="323.0" minWidth="10.0" prefWidth="247.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="316.0" minWidth="10.0" prefWidth="244.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="145.0" minWidth="10.0" prefWidth="145.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints maxHeight="128.0" minHeight="10.0" prefHeight="43.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="182.0" minHeight="10.0" prefHeight="182.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="225.0" minHeight="10.0" prefHeight="192.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="86.0" minHeight="0.0" prefHeight="31.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <AnchorPane prefHeight="212.0" prefWidth="289.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <children>
+                        <JFXTextField fx:id="nombreTxt" layoutX="28.0" layoutY="22.0" prefHeight="27.0" prefWidth="191.0" promptText="Nombre" />
+                        <JFXTextField fx:id="placaTxt" layoutX="28.0" layoutY="91.0" prefHeight="27.0" prefWidth="191.0" promptText="Placa" />
+                        <Label layoutX="28.0" layoutY="151.0" prefHeight="0.0" prefWidth="144.0" text="TIpo de Vehiculo" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane prefHeight="143.0" prefWidth="316.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                     <children>
+                        <JFXTextArea fx:id="descripcionTxtArea" layoutX="17.0" layoutY="32.0" prefHeight="98.0" prefWidth="210.0" promptText="Descripción" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane prefHeight="194.0" prefWidth="479.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2">
+                     <children>
+                        <JFXTreeTableView fx:id="tblTipoVehiculo" prefHeight="194.0" prefWidth="495.0">
+                           <columnResizePolicy>
+                              <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </JFXTreeTableView>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </GridPane>
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>
