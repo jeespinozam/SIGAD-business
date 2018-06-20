@@ -342,6 +342,8 @@ public class SeleccionarProductosController implements Initializable {
 
     public void recalcularStockProducto(Producto producto, Integer nuevoValor, Integer viejoValor) {//Producto
 
+        ProductoHelper helper = new ProductoHelper();
+        producto = helper.getProductById(producto.getId().intValue());
         ArrayList<ProductoInsumo> productoxinsumos = new ArrayList(producto.getProductoxInsumos());
         for (int i = 0; i < productoxinsumos.size(); i++) {
             ProductoInsumo get = productoxinsumos.get(i);
@@ -373,6 +375,8 @@ public class SeleccionarProductosController implements Initializable {
 
     public Integer mostrarMaximoStockProducto(Producto t) {
         Integer st = Integer.MAX_VALUE;
+        ProductoHelper helper = new ProductoHelper();
+        t = helper.getProductById(t.getId().intValue());
         for (ProductoInsumo p : t.getProductoxInsumos()) {
             Integer cantidadInsumo = insumosCambiantes.get(p.getInsumo());
             cantidadInsumo = (cantidadInsumo == null) ? 0 : cantidadInsumo;
@@ -535,10 +539,10 @@ public class SeleccionarProductosController implements Initializable {
         ArrayList<Producto> productosDB = gest.getProducts();
         gest.close();
         if (productosDB != null) {
-            productosDB.forEach((p) -> {
+            for (Producto p : productosDB) {
                 Producto t = p;
                 prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), "0", t.getCategoria().getNombre(), tienda.getDescripcion(), t.getImagen(), t.getId().intValue(), t));
-            });
+            }
 
         }
         ComboPromocionHelper helper = new ComboPromocionHelper();
@@ -550,6 +554,8 @@ public class SeleccionarProductosController implements Initializable {
             });
 
         }
+        TiendaHelper h = new TiendaHelper();
+        tienda = h.getStore(tienda.getId().intValue());
         insumos = tienda.getInsumos();
         insumosCambiantes = new HashMap(insumos);
         mostrarMaximoStock();

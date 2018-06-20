@@ -19,14 +19,12 @@ import org.hibernate.query.Query;
  *
  * @author Alexandra
  */
-public class ComboPromocionHelper {
+public class ComboPromocionHelper extends BaseHelper{
 
-    Session session = null;
-    private String errorMessage = "";
+  
 
     public ComboPromocionHelper() {
-        session = LoginController.serviceInit();
-        session.beginTransaction();
+        super();
     }
 
     public ArrayList<ComboPromocion> getCombos() {
@@ -147,7 +145,5 @@ public class ComboPromocionHelper {
         return ok;
     }
 
-    public void close() {
-        session.getTransaction().commit();
-    }
+   
 }

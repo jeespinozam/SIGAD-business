@@ -119,7 +119,7 @@ public class DescripcionProductosController implements Initializable {
         this.idProducto = idProducto;
         ProductoHelper helper = new ProductoHelper();
         producto = helper.getProductById(idProducto);
-        helper.close();
+        
         if (producto != null) {
             txtNombre.setText((producto.getNombre() != null) ? producto.getNombre() : "");
             txtPrecioBase.setText((producto.getPrecio() != null) ? producto.getPrecio().toString() : "");
@@ -135,16 +135,18 @@ public class DescripcionProductosController implements Initializable {
             }
 
         }
-        llenarTablaDescuento();
         ArrayList<ProductoInsumo> pd = new ArrayList((producto.getProductoxInsumos() != null) ? producto.getProductoxInsumos() : new ArrayList<>());
         pd.forEach((t) -> {
             insumos.add(new InsumosLista(t.getInsumo(), t.getCantidad().intValue()));
         });
+        llenarTablaDescuento();
+
     }
 
     public void initModel(ComboPromocion combo) {
         //db
-        this.combo = combo;
+        ComboPromocionHelper ch = new ComboPromocionHelper();
+        this.combo = ch.getComboById(combo.getId().intValue());
 
         if (combo != null) {
             lblProductosInsumos.setText("Productos");

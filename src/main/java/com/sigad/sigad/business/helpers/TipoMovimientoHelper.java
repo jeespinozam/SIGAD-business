@@ -17,24 +17,13 @@ import org.hibernate.query.Query;
  *
  * @author chrs
  */
-public class TipoMovimientoHelper {
-    Session session = null;
-    private String errorMessage = "";
-    private final static Logger LOGGER = Logger.getLogger(InsumosHelper.class.getName());
-    
-    /////////////////////////
+public class TipoMovimientoHelper extends BaseHelper{
+      /////////////////////////
     
     public TipoMovimientoHelper() {
-        session = LoginController.serviceInit();
+        super();
     }
-    
-    public void close(){
-        session.close();
-    }
-    
-    public String getErrorMessage(){
-        return errorMessage;
-    }
+  
     
     public ArrayList<TipoMovimiento> getTiposMovimientos(){
         ArrayList<TipoMovimiento> tipos = null;

@@ -28,27 +28,13 @@ import org.hibernate.query.Query;
  *
  * @author chrs
  */
-public class LoteInsumoHelper {
-
-    Session session = null;
-    private String errorMessage = "";
+public class LoteInsumoHelper extends BaseHelper{
 
     public LoteInsumoHelper() {
-        session = LoginController.serviceInit();
+        super();
     }
 
-    /*Close session*/
-    public void close() {
-        session.close();
-    }
-
-    /**
-     * @return the errorMessage
-     */
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
+  
     /*Get all stores*/
     public ArrayList<LoteInsumo> getLoteInsumos() {
         ArrayList<LoteInsumo> lotesInsumos = null;

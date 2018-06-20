@@ -21,14 +21,10 @@ import org.hibernate.query.Query;
  *
  * @author Alexandra
  */
-public class ProductoCategoriaDescuentoHelper {
-
-    Session session = null;
-    private String errorMessage = "";
+public class ProductoCategoriaDescuentoHelper extends BaseHelper {
 
     public ProductoCategoriaDescuentoHelper() {
-        session = LoginController.serviceInit();
-        session.beginTransaction();
+        super();
     }
 
     public ArrayList<ProductoCategoriaDescuento> getDescuentos() {
@@ -76,7 +72,7 @@ public class ProductoCategoriaDescuentoHelper {
             query.setParameter("today", new Date());
             if (!query.list().isEmpty()) {
                 descuentos = (ArrayList<ProductoCategoriaDescuento>) query.list();
-                
+
                 descuento = descuentos.stream().max(Comparator.comparing(ProductoCategoriaDescuento::getValue)).orElseThrow(NoSuchElementException::new);
             }
         } catch (Exception e) {
@@ -163,7 +159,4 @@ public class ProductoCategoriaDescuentoHelper {
         return ok;
     }
 
-    public void close() {
-        session.getTransaction().commit();
-    }
 }

@@ -37,7 +37,7 @@ import com.sigad.sigad.business.helpers.LoteInsumoHelper;
 import com.sigad.sigad.business.helpers.PdfHelper;
 import com.sigad.sigad.business.helpers.PedidoHelper;
 import com.sigad.sigad.business.helpers.UsuarioHelper;
-import com.sigad.sigad.deposito.helper.PedidoEstadoHelper;
+import com.sigad.sigad.business.helpers.PedidoEstadoHelper;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -313,9 +313,9 @@ public class DatosPedidoController implements Initializable {
 
     public void construirPedido() {
         pedido.setMensajeDescripicion(cmbDedicatoria.getText());
-        Date date = Date.from(dpFechaEntrega.getValue().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
-        Timestamp timeStamp = new Timestamp(date.getTime());
-        pedido.setFechaVenta(timeStamp);
+            Date date = Date.from(dpFechaEntrega.getValue().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+            Timestamp timeStamp = new Timestamp(date.getTime());
+            pedido.setFechaVenta(timeStamp);
         pedido.setVendedor(LoginController.user);
         PedidoEstadoHelper hp = new PedidoEstadoHelper();
         pedido.setTurno(cmbInicio.getValue());

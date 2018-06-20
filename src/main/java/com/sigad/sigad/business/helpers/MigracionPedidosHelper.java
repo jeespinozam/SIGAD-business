@@ -6,6 +6,7 @@
 package com.sigad.sigad.business.helpers;
 
 import com.google.maps.errors.ApiException;
+import com.sigad.sigad.app.controller.HomeController;
 import com.sigad.sigad.business.Constantes;
 import com.sigad.sigad.business.DetallePedido;
 import com.sigad.sigad.business.Insumo;
@@ -18,10 +19,12 @@ import com.sigad.sigad.business.ProductoDescuento;
 import com.sigad.sigad.business.ProductoInsumo;
 import com.sigad.sigad.business.Tienda;
 import com.sigad.sigad.business.Usuario;
-import com.sigad.sigad.deposito.helper.PedidoEstadoHelper;
 import com.sigad.sigad.pedido.controller.SolicitarDireccionController;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
@@ -34,7 +37,7 @@ import org.apache.commons.lang3.tuple.Pair;
  *
  * @author Alexandra
  */
-public class MigracionPedidosHelper {
+public class MigracionPedidosHelper{
 
     private ArrayList<Pedido> pedidos = new ArrayList<>();
     ;
@@ -54,7 +57,7 @@ public class MigracionPedidosHelper {
     public MigracionPedidosHelper() {
         //crear
         pedidos = new ArrayList<>();
-        cantidadPedidos = 2;
+        cantidadPedidos = 5;
         cantidadDetalles = 5;
         rand = new Random();
         ProductoHelper helper = new ProductoHelper();
@@ -78,6 +81,7 @@ public class MigracionPedidosHelper {
     public void crearPedidos() {
         TiendaHelper helper = new TiendaHelper();
         ArrayList<Tienda> tiendas = helper.getStores();
+        helper.close();
         Integer z = 0;
         for (Tienda ti : tiendas) {
             TiendaHelper helperTienda = new TiendaHelper();
@@ -109,21 +113,30 @@ public class MigracionPedidosHelper {
                 PedidoEstadoHelper hp = new PedidoEstadoHelper();
                 PedidoEstado estado = hp.getEstadoByName(Constantes.ESTADO_VENTA);
                 pedido.addEstado(estado);
+                pedido.setActivo(true);
                 pedido.setEstado(estado);
+                pedido.setTurno("T");
+                hp.close();
+                Date date = new Date();
+                Timestamp timeStamp = new Timestamp(date.getTime());
+                pedido.setFechaVenta(timeStamp);
                 r = r + 1;
                 Set<DetallePedido> detalles = new HashSet<>();
                 int n = rand.nextInt(cantidadDetalles) + 1;
+                Double total = 0.0;
+                Double volumen = 0.0;
                 for (int j = 0; j < n; j++) {
-                    if (disponibles.size()==0) {
+                    if (disponibles.size() == 0) {
                         break;
                     }
                     System.out.println(disponibles.size());
-                    int indexProd = rand.nextInt(disponibles.size() - 1) + 1;
+                    int indexProd = rand.nextInt(disponibles.size());
                     Producto producto = disponibles.get(indexProd);
                     DetallePedido detalle = new DetallePedido();
                     detalle.setProducto(producto);
                     detalle.setActivo(true);
                     detalle.setPrecioUnitario(producto.getPrecio());
+                    
                     int cant = rand.nextInt(5) + 1;
                     if (cant > maxStockProductos.get(producto)) {
                         cant = maxStockProductos.get(producto);
@@ -133,6 +146,8 @@ public class MigracionPedidosHelper {
                         prod.remove(producto);//Si ya no hay posibilida de armar el producto en esta tienda se retira
                         continue;
                     }
+                    total = total + producto.getPrecio() * cant;
+                    volumen = volumen  + producto.getVolumen() * cant;
                     detalle.setCantidad(cant);
                     detalle.setNumEntregados(0);
 
@@ -168,6 +183,8 @@ public class MigracionPedidosHelper {
                     disponibles.remove(producto);
                     recalcularStockProducto(producto, cant, 0, insumosTienda);
                 }
+                pedido.setTotal(total - HomeController.IGV * total);
+                pedido.setVolumenTotal(volumen);
                 if (detalles.size() > 0) {
                     pedido.setDetallePedido(detalles);
                     HashMap<Insumo, Integer> insumosRequeridos = new HashMap<>();
@@ -180,10 +197,13 @@ public class MigracionPedidosHelper {
                     LoteInsumoHelper lihelper = new LoteInsumoHelper();
                     Boolean ok = lihelper.descontarInsumos(insumosRequeridos, pedido.getTienda(), pedido);
                     pedidos.add(pedido);
+                    lihelper.close();
                 }
 
             }
             z = z + 1;
+            helperTienda.close();
+            
         }
         setDirecciones();
 
@@ -196,6 +216,7 @@ public class MigracionPedidosHelper {
                 Pair<Double, Double> pair = helper.geocodeAddress(t.getDireccionDeEnvio());
                 t.setCooXDireccion(pair.getLeft());
                 t.setCooYDireccion(pair.getRight());
+                
             } catch (ApiException | InterruptedException | IOException ex) {
                 Logger.getLogger(SolicitarDireccionController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -204,6 +225,8 @@ public class MigracionPedidosHelper {
     }
 
     void calcularInsumos(Producto p, Integer cantidad, HashMap<Insumo, Integer> insumos) {
+        ProductoHelper helper = new ProductoHelper();
+        p= helper.getProductById(p.getId().intValue());
         ArrayList<ProductoInsumo> pxi = new ArrayList(p.getProductoxInsumos());
         for (ProductoInsumo productoInsumo : pxi) {
             if (insumos.get(productoInsumo.getInsumo()) != null) {
@@ -216,6 +239,8 @@ public class MigracionPedidosHelper {
 
     public void recalcularStockProducto(Producto producto, Integer nuevoValor, Integer viejoValor, HashMap<Insumo, Integer> insumos) {//Producto
 
+        ProductoHelper helper = new ProductoHelper();
+        producto = helper.getProductById(producto.getId().intValue());
         ArrayList<ProductoInsumo> productoxinsumos = new ArrayList(producto.getProductoxInsumos());
         for (int i = 0; i < productoxinsumos.size(); i++) {
             ProductoInsumo get = productoxinsumos.get(i);
@@ -233,6 +258,8 @@ public class MigracionPedidosHelper {
 
     public Integer mostrarMaximoStockProducto(Producto t, HashMap<Insumo, Integer> insumos) {
         Integer st = Integer.MAX_VALUE;
+        ProductoHelper helper = new ProductoHelper();
+        t = helper.getProductById(t.getId().intValue());
         for (ProductoInsumo p : t.getProductoxInsumos()) {
             Integer cantidadInsumo = insumos.get(p.getInsumo());
             cantidadInsumo = (cantidadInsumo == null) ? 0 : cantidadInsumo;
