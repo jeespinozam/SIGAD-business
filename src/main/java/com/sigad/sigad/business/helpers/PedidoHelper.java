@@ -21,26 +21,12 @@ import org.hibernate.query.Query;
  *
  * @author Alexandra
  */
-public class PedidoHelper {
-
-    Session session = null;
-    private String errorMessage = "";
+public class PedidoHelper extends BaseHelper{
 
     public PedidoHelper() {
-        session = LoginController.serviceInit();
+        super();
     }
 
-    /*Close session*/
-    public void close() {
-        session.close();
-    }
-
-    /**
-     * @return the errorMessage
-     */
-    public String getErrorMessage() {
-        return errorMessage;
-    }
 
     
     public ArrayList<Pedido> getPedidos(){

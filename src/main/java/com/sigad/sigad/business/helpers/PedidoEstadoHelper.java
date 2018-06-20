@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sigad.sigad.deposito.helper;
+package com.sigad.sigad.business.helpers;
 
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.PedidoEstado;
+import com.sigad.sigad.business.helpers.BaseHelper;
 import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -15,20 +16,15 @@ import org.hibernate.query.Query;
  *
  * @author Alexandra
  */
-public class PedidoEstadoHelper {
+public class PedidoEstadoHelper extends BaseHelper{
 
-    Session session = null;
-    private static String errorMessage = "";
 
     public PedidoEstadoHelper() {
-        session = LoginController.serviceInit();
-        session.beginTransaction();
+        super();
     }
 
     /*Close session*/
-    public void close() {
-        session.close();
-    }
+    
 
     public PedidoEstado getEstadoByName(String name) {
         PedidoEstado p = null;
