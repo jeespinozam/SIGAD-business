@@ -110,4 +110,12 @@
         </dependency>
 
     </dependencies>
+        <!-- https://mvnrepository.com/artifact/jasperreports/jasperreports -->
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>6.4.0</version>
+        </dependency>
+ 
+   </dependencies>
 </project>

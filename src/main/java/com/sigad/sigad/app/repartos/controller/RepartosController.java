@@ -50,12 +50,12 @@ public class RepartosController implements Initializable {
                 return "Repartidores";
             }
         },
-        VEHICULOS_TIPO {
-            @Override
-            public final String toString() {
-                return "Tipos de vehículos";
-            }
-        },
+//        VEHICULOS_TIPO {
+//            @Override
+//            public final String toString() {
+//                return "Tipos de vehículos";
+//            }
+//        },
         VEHICULOS {
             @Override
             public final String toString() {
@@ -111,14 +111,36 @@ public class RepartosController implements Initializable {
                 case REPARTIDORES: {
                     break;
                 }
-                case VEHICULOS_TIPO: {
+//                case VEHICULOS_TIPO: {
+//                    try {
+//                        Node nd;
+//                        URL resource;
+//                        String resourcePath;
+//                        FXMLLoader loader;
+//
+//                        resourcePath = VehiculoTipoController.VIEW_PATH;
+//                        resource = getClass().getResource(resourcePath);
+//
+//                        loader = new FXMLLoader();
+//
+//                        nd = (Node) loader.load(resource);
+//
+//                        homeController.getFirstPanel().getChildren().setAll(nd);
+//                    } catch (IOException ex) {
+//                        Logger.getLogger(HomeController.class.getName())
+//                                .log(Level.SEVERE, null, ex);
+//                    }
+//                    break;
+//                }
+                case VEHICULOS:
+
                     try {
                         Node nd;
                         URL resource;
                         String resourcePath;
                         FXMLLoader loader;
 
-                        resourcePath = VehiculoTipoController.VIEW_PATH;
+                        resourcePath = VehiculoController.viewPath;
                         resource = getClass().getResource(resourcePath);
 
                         loader = new FXMLLoader();
@@ -130,9 +152,6 @@ public class RepartosController implements Initializable {
                         Logger.getLogger(HomeController.class.getName())
                                 .log(Level.SEVERE, null, ex);
                     }
-                    break;
-                }
-                case VEHICULOS:
                     break;
             }
         });
