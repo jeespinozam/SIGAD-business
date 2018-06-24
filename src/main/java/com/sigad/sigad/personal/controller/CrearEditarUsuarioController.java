@@ -289,7 +289,7 @@ public class CrearEditarUsuarioController implements Initializable {
         user.setTelefono(telephoneTxt.getText());
         user.setCelular(cellphoneTxt.getText());
         user.setCorreo(emailTxt.getText());
-        user.setPassword(LoginController.encrypt(passwordTxt.getText()));
+        user.setPassword(passwordTxt.getText());
         user.setActivo(isActiveBtn.isSelected());
         
         int indexProfile = profilesListView.getSelectionModel().getSelectedIndex();
