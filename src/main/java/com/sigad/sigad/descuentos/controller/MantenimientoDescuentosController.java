@@ -517,14 +517,17 @@ public class MantenimientoDescuentosController implements Initializable {
         isEdit = Boolean.FALSE;
         editRegistrarDescuento(null);
     }
+    @FXML
     void gotAgregarDescuentoCategoria(MouseEvent event) {
         isEdit = Boolean.FALSE;
         editRegistrarDescuentoCategoria(null);
     }
+    @FXML
     void gotAgregarDescuentoCliente(MouseEvent event) {
         isEdit = Boolean.FALSE;
         editRegistrarDescuentoCliente(null);
     }
+    @FXML
     void gotAgregarCombo(MouseEvent event) {
         isEdit = Boolean.FALSE;
         editRegistrarComboPromocion(null);
