@@ -45,7 +45,7 @@ public class Tienda {
     private Set<Usuario> empleadosTienda = new HashSet<Usuario>();
     @OneToMany(mappedBy = "tienda")
     private Set<LoteInsumo> lotesInsumo = new HashSet<LoteInsumo>();
-    @OneToMany
+    @OneToMany(mappedBy="tienda")
     private List<Vehiculo> vehiculos;
 
     /**
