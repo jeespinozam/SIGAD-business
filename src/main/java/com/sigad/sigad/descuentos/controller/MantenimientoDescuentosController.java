@@ -78,15 +78,10 @@ public class MantenimientoDescuentosController implements Initializable {
 
     @FXML
     private StackPane stackPaneCmb;
-    @FXML
     private JFXPopup popup;
-    @FXML
     public static JFXDialog descDialog;
-    @FXML
     public static JFXDialog descCatDialog;
-    @FXML
     public static JFXDialog descCliDialog;
-    @FXML
     public static JFXDialog comboDialog;
 
     JFXTreeTableColumn<DescuentosLista, Integer> id = new JFXTreeTableColumn<>("id");
@@ -522,17 +517,14 @@ public class MantenimientoDescuentosController implements Initializable {
         isEdit = Boolean.FALSE;
         editRegistrarDescuento(null);
     }
-    @FXML
     void gotAgregarDescuentoCategoria(MouseEvent event) {
         isEdit = Boolean.FALSE;
         editRegistrarDescuentoCategoria(null);
     }
-    @FXML
     void gotAgregarDescuentoCliente(MouseEvent event) {
         isEdit = Boolean.FALSE;
         editRegistrarDescuentoCliente(null);
     }
-    @FXML
     void gotAgregarCombo(MouseEvent event) {
         isEdit = Boolean.FALSE;
         editRegistrarComboPromocion(null);
