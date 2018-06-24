@@ -6,6 +6,7 @@
 package com.sigad.sigad.app.repartos.controller;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.validation.NumberValidator;
@@ -24,6 +25,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -55,7 +57,8 @@ public class VehiculoTipoCrearController implements Initializable {
     JFXTextArea descripcionTxtArea;
     @FXML
     StackPane stackPane;
-
+    @FXML
+    private JFXListView<Label> tipoListView;
     private JFXButton crearButton;
     private Modo modo;
     private Long currentVehiculoId;

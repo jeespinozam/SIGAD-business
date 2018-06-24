@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sigad.sigad.perfil.controller;
+package com.sigad.sigad.pedido.controller;
 
 import com.google.maps.errors.ApiException;
 import com.jfoenix.controls.*;
@@ -42,6 +42,8 @@ public class SolicitarDireccionController implements Initializable {
     private ArrayList<Tienda> tiendas;
     private Double distancia;
     private StackPane sc;
+    private Double x;
+    private Double y;
     @FXML
     private JFXButton btnBuscarTienda;
 
@@ -58,8 +60,6 @@ public class SolicitarDireccionController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
         distancia = Double.MAX_VALUE;
-        TiendaHelper helper = new TiendaHelper();
-        tiendas = helper.getStores();
 
     }
 
@@ -77,9 +77,16 @@ public class SolicitarDireccionController implements Initializable {
     @FXML
     void encontrarTiendaCercana(MouseEvent event) {
         try {
+            if (txtdireccion.getText().length() <= 0) {
+                return;
+            }
             GMapsHelper helper = GMapsHelper.getInstance();
             Pair<Double, Double> pair = helper.geocodeAddress(txtdireccion.getText());
-            tiendas.forEach((t) -> {
+            x = pair.getLeft();
+            y = pair.getRight();
+            
+            TiendaHelper helpertienda = new TiendaHelper();
+            helpertienda.getStores().forEach((t) -> {
                 Double d = GeneralHelper.distanceBetweenTwoPoints(pair.getLeft(), t.getCooXDireccion(), pair.getRight(), t.getCooYDireccion());
                 if (d < distancia) {
                     tienda = t;
@@ -104,7 +111,7 @@ public class SolicitarDireccionController implements Initializable {
             FXMLLoader loader = new FXMLLoader(SolicitarDireccionController.this.getClass().getResource(SeleccionarProductosController.viewPath));
             node = (Node) loader.load();
             SeleccionarProductosController sel = loader.getController();
-            sel.initModel(new Pedido(), sc, tienda, txtdireccion.getText());
+            sel.initModel(new Pedido(), sc, tienda, txtdireccion.getText(), x, y);
             sc.getChildren().setAll(node);
 
         } catch (Exception ex) {

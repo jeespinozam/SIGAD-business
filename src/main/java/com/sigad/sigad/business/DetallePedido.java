@@ -5,17 +5,14 @@
  */
 package com.sigad.sigad.business;
 
-import javax.validation.constraints.NotNull;
 import java.util.Date;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -85,6 +82,24 @@ public class DetallePedido {
         this.descuento = descuento;
     }
     
+    public DetallePedido( boolean activo, Integer cantidad, Double precioUnitario, Integer numEntregados, Producto producto, Pedido pedido, ProductoDescuento descuento, ProductoCategoriaDescuento descuentoCategoria) {
+        this.activo = activo;
+        this.cantidad = cantidad;
+        this.precioUnitario = precioUnitario;
+        this.numEntregados = numEntregados;
+        this.producto = producto;
+        this.pedido = pedido;
+        this.descuento = descuento;
+    }
+    
+    public DetallePedido( boolean activo, Integer cantidad, Double precioUnitario, Integer numEntregados, ComboPromocion combo, Pedido pedido) {
+        this.activo = activo;
+        this.cantidad = cantidad;
+        this.precioUnitario = precioUnitario;
+        this.numEntregados = numEntregados;
+        this.pedido = pedido;
+        this.combo = combo;
+    }
     
     
     /**
@@ -218,6 +233,20 @@ public class DetallePedido {
      */
     public void setDescuentoCategoria(ProductoCategoriaDescuento descuentoCategoria) {
         this.descuentoCategoria = descuentoCategoria;
+    }
+
+    /**
+     * @return the pedido
+     */
+    public Pedido getPedido() {
+        return pedido;
+    }
+
+    /**
+     * @param pedido the pedido to set
+     */
+    public void setPedido(Pedido pedido) {
+        this.pedido = pedido;
     }
 
   

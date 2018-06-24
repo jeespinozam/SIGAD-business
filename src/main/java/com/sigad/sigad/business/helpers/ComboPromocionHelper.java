@@ -8,6 +8,7 @@ package com.sigad.sigad.business.helpers;
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.ComboPromocion;
 import com.sigad.sigad.business.Producto;
+import com.sigad.sigad.business.ProductosCombos;
 import java.util.ArrayList;
 import java.util.List;
 import org.hibernate.Session;
@@ -18,14 +19,12 @@ import org.hibernate.query.Query;
  *
  * @author Alexandra
  */
-public class ComboPromocionHelper {
+public class ComboPromocionHelper extends BaseHelper{
 
-    Session session = null;
-    private String errorMessage = "";
+  
 
     public ComboPromocionHelper() {
-        session = LoginController.serviceInit();
-        session.beginTransaction();
+        super();
     }
 
     public ArrayList<ComboPromocion> getCombos() {
@@ -65,13 +64,13 @@ public class ComboPromocionHelper {
 
     
     
-    public List<ComboPromocion> getCombosByProducto(Integer producto_id) {
+    public List<ProductosCombos> getCombosByProducto(Integer producto_id) {
         ComboPromocion combo = null;
         Producto producto = null;
-        List<ComboPromocion> combos = new ArrayList<>();
+        List<ProductosCombos> combos = new ArrayList<>();
         Query query = null;
         try {
-            query = session.createQuery("from Producto where producto_id='" + producto_id + "' and activo=true");
+            query = session.createQuery("from Producto where id='" + producto_id + "' and activo=true");
 
             producto = (Producto) query.list().get(0);
             if (producto != null) {
@@ -146,7 +145,5 @@ public class ComboPromocionHelper {
         return ok;
     }
 
-    public void close() {
-        session.getTransaction().commit();
-    }
+   
 }
