@@ -32,6 +32,7 @@ public class Vehiculo {
         private String marca;
         private String modelo;
 
+
         public Tipo() {
         }
 
@@ -148,6 +149,8 @@ public class Vehiculo {
     private String placa;
     private String nombre;
     private String descripcion;
+    @ManyToOne
+    private Tienda tienda;
 
     public Vehiculo() {
     }
@@ -225,5 +228,19 @@ public class Vehiculo {
      */
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    /**
+     * @return the tienda
+     */
+    public Tienda getTienda() {
+        return tienda;
+    }
+
+    /**
+     * @param tienda the tienda to set
+     */
+    public void setTienda(Tienda tienda) {
+        this.tienda = tienda;
     }
 }
