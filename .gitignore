@@ -31,6 +31,6 @@ nbdist/
 /target/
 .DS_Store
 /nbproject/
-SIGAD-fx-widgets
 
-Simulated_Annealing_Algorithm
+# Other
+*.pdf
