@@ -60,7 +60,7 @@ import javafx.util.Callback;
  *
  * @author Alexandra
  */
-public class DatosPedidoController implements Initializable {
+    public class DatosPedidoController implements Initializable {
 
     Pedido pedido;
     StackPane stackPane;

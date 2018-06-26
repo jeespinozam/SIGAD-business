@@ -524,19 +524,9 @@ public class SeleccionarProductosController implements Initializable {
             pedido = pedidohelper.getPedido(pedido.getId());
             ArrayList<DetallePedido> detalle = new ArrayList(pedido.getDetallePedido());
             detalle.forEach((t) -> {
-                if (t.getProducto() != null) {
-                    if (t.getDescuentoCategoria() != null) {
-                        pedidos.add(new PedidoLista(t.getCantidad(), t., producto, descuentoCategoria))
-                    } else if (t.getDescuentoProducto() != null) {
-
-                    } else {
-
-                    }
-                } else if (t.getCombo() != null) {
-
-                }
+                pedidos.add(new PedidoLista(t));
             });
-        }
+        }   
         this.pedido = pedido;
         ProductoHelper gest = new ProductoHelper();
         ArrayList<Producto> productosDB = gest.getProducts();
@@ -969,7 +959,6 @@ public class SeleccionarProductosController implements Initializable {
             this.cantidad = new SimpleIntegerProperty(cantidad);
             if (subtotal == null) {
                 subtotal = String.valueOf(GeneralHelper.roundTwoDecimals(cantidad * producto.getPrecio() * (1 - descuentoCategoria.getValue())));
-
             }
             this.subtotal = new SimpleStringProperty(subtotal);
             this.codigo = producto.getId().intValue();
@@ -992,6 +981,46 @@ public class SeleccionarProductosController implements Initializable {
             this.subtotal = new SimpleStringProperty(subtotal);
             this.codigo = combo.getId().intValue();
             this.combo = combo;
+        }
+
+        public PedidoLista(DetallePedido detalle) {
+            if (detalle.getProducto() != null) {
+                Double sub;
+                this.nombre = new SimpleStringProperty(detalle.getProducto().getNombre());
+                this.precio = new SimpleStringProperty(detalle.getProducto().getPrecio().toString());
+                this.cantidad = new SimpleIntegerProperty(detalle.getCantidad());
+                this.producto = detalle.getProducto();
+                this.codigo = detalle.getProducto().getId().intValue();
+                if (detalle.getDescuentoCategoria() != null) {
+                    sub = GeneralHelper.roundTwoDecimals(detalle.getCantidad() * detalle.getProducto().getPrecio() * (1 - detalle.getDescuentoCategoria().getValue()));
+                    this.codigoDescuento = detalle.getDescuentoCategoria().getId().intValue();
+                    this.descuento = new SimpleStringProperty(getPct(detalle.getDescuentoCategoria().getValue()));
+                    this.combo = null;
+                    this.descuentoProducto = null;
+                    this.descuentoCategoria = detalle.getDescuentoCategoria();
+                } else if (detalle.getDescuentoProducto() != null) {
+                    sub = GeneralHelper.roundTwoDecimals(detalle.getCantidad() * detalle.getProducto().getPrecio() * (1 - detalle.getDescuentoProducto().getValorPct()));
+                    this.codigoDescuento = detalle.getDescuentoProducto().getId().intValue();
+                    this.descuento = new SimpleStringProperty(getPct(detalle.getDescuentoProducto().getValorPct()));
+                    this.combo = null;
+                    this.descuentoProducto = detalle.getDescuentoProducto();
+                    this.descuentoCategoria = null;
+                } else {
+                    sub = GeneralHelper.roundTwoDecimals(detalle.getCantidad() * detalle.getProducto().getPrecio());
+                    this.combo = null;
+                    this.descuentoProducto = null;
+                    this.descuentoCategoria = null;
+                }
+                this.subtotal = new SimpleStringProperty(sub.toString());
+            } else if (detalle.getCombo() != null) {
+                Double sub = GeneralHelper.roundTwoDecimals(detalle.getCantidad() * detalle.getCombo().getPreciounitario());
+                this.nombre = new SimpleStringProperty(detalle.getCombo().getNombre());
+                this.precio = new SimpleStringProperty(detalle.getCombo().getPreciounireal().toString());
+                this.cantidad = new SimpleIntegerProperty(detalle.getCantidad());
+                this.subtotal = new SimpleStringProperty(sub.toString());
+                this.codigo = detalle.getCombo().getId().intValue();
+                this.combo = detalle.getCombo();
+            }
         }
 
         @Override
