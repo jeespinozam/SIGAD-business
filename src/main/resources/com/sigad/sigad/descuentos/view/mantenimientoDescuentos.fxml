@@ -5,6 +5,7 @@
 <?import com.jfoenix.controls.JFXTextField?>
 <?import com.jfoenix.controls.JFXTreeTableView?>
 <?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
+<?import java.lang.String?>
 <?import java.net.URL?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
@@ -52,9 +53,9 @@
                              <children>
                                 <GridPane prefHeight="679.0" prefWidth="1011.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                   <columnConstraints>
-                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="330.8389587402344" minWidth="0.0" prefWidth="35.411977767944336" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="45.0" minWidth="0.0" prefWidth="45.0" />
                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="946.1797485351562" minWidth="10.0" prefWidth="923.5880222320557" />
-                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="152.8389892578125" minWidth="10.0" prefWidth="39.74908447265625" />
+                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="45.0" minWidth="10.0" prefWidth="45.0" />
                                   </columnConstraints>
                                   <rowConstraints>
                                       <RowConstraints maxHeight="220.8389434814453" minHeight="10.0" prefHeight="54.78278350830078" vgrow="SOMETIMES" />
@@ -80,10 +81,11 @@
                                       </AnchorPane>
                                       <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                                          <children>
-                                            <JFXButton fx:id="btnAddDescuento" alignment="CENTER" layoutX="833.0" layoutY="5.0" onMouseClicked="#gotAgregarDescuento" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
-                                               <graphic>
-                                                  <MaterialDesignIconView glyphName="PLUS" />
-                                               </graphic>
+                                            <JFXButton fx:id="btnAddDescuento" alignment="CENTER" layoutX="833.0" layoutY="5.0" onMouseClicked="#gotAgregarDescuento" stylesheets="@../../../../../styles/ui_styles.css" text="+" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
+                                             <styleClass>
+                                                <String fx:value="btn-general" />
+                                                <String fx:value="btn-circular" />
+                                             </styleClass>
                                             </JFXButton>
                                          </children>
                                       </AnchorPane>
@@ -126,9 +128,9 @@
                              <children>
                                 <GridPane prefHeight="679.0" prefWidth="1011.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                   <columnConstraints>
-                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="330.8389587402344" minWidth="0.0" prefWidth="35.411977767944336" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="45.0" minWidth="0.0" prefWidth="45.0" />
                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="946.1797485351562" minWidth="10.0" prefWidth="923.5880222320557" />
-                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="152.8389892578125" minWidth="10.0" prefWidth="39.74908447265625" />
+                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="45.0" minWidth="10.0" prefWidth="45.0" />
                                   </columnConstraints>
                                   <rowConstraints>
                                       <RowConstraints maxHeight="220.8389434814453" minHeight="10.0" prefHeight="54.78278350830078" vgrow="SOMETIMES" />
@@ -154,10 +156,11 @@
                                       </AnchorPane>
                                       <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                                          <children>
-                                            <JFXButton fx:id="btnAddDescCat" alignment="CENTER" layoutX="833.0" layoutY="5.0" onMouseClicked="#gotAgregarDescuentoCategoria" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
-                                               <graphic>
-                                                  <MaterialDesignIconView glyphName="PLUS" />
-                                               </graphic>
+                                            <JFXButton fx:id="btnAddDescCat" alignment="CENTER" layoutX="833.0" layoutY="5.0" onMouseClicked="#gotAgregarDescuentoCategoria" stylesheets="@../../../../../styles/ui_styles.css" text="+" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
+                                             <styleClass>
+                                                <String fx:value="btn-general" />
+                                                <String fx:value="btn-circular" />
+                                             </styleClass>
                                             </JFXButton>
                                          </children>
                                       </AnchorPane>
@@ -200,9 +203,9 @@
                              <children>
                                 <GridPane prefHeight="679.0" prefWidth="1011.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                   <columnConstraints>
-                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="330.8389587402344" minWidth="0.0" prefWidth="35.411977767944336" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="45.0" minWidth="0.0" prefWidth="45.0" />
                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="946.1797485351562" minWidth="10.0" prefWidth="923.5880222320557" />
-                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="152.8389892578125" minWidth="10.0" prefWidth="39.74908447265625" />
+                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="45.0" minWidth="10.0" prefWidth="45.0" />
                                   </columnConstraints>
                                   <rowConstraints>
                                       <RowConstraints maxHeight="220.8389434814453" minHeight="10.0" prefHeight="54.78278350830078" vgrow="SOMETIMES" />
@@ -228,10 +231,11 @@
                                       </AnchorPane>
                                       <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                                          <children>
-                                            <JFXButton fx:id="btnAddDescCliente" alignment="CENTER" layoutX="833.0" layoutY="5.0" onMouseClicked="#gotAgregarDescuentoCliente" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
-                                               <graphic>
-                                                  <MaterialDesignIconView glyphName="PLUS" />
-                                               </graphic>
+                                            <JFXButton fx:id="btnAddDescCliente" alignment="CENTER" layoutX="833.0" layoutY="5.0" onMouseClicked="#gotAgregarDescuentoCliente" stylesheets="@../../../../../styles/ui_styles.css" text="+" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
+                                             <styleClass>
+                                                <String fx:value="btn-general" />
+                                                <String fx:value="btn-circular" />
+                                             </styleClass>
                                             </JFXButton>
                                          </children>
                                       </AnchorPane>
@@ -274,9 +278,9 @@
                              <children>
                                 <GridPane prefHeight="679.0" prefWidth="1011.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                   <columnConstraints>
-                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="330.8389587402344" minWidth="0.0" prefWidth="35.411977767944336" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="45.0" minWidth="0.0" prefWidth="45.0" />
                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="946.1797485351562" minWidth="10.0" prefWidth="923.5880222320557" />
-                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="152.8389892578125" minWidth="10.0" prefWidth="39.74908447265625" />
+                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="45.0" minWidth="10.0" prefWidth="45.0" />
                                   </columnConstraints>
                                   <rowConstraints>
                                       <RowConstraints maxHeight="220.8389434814453" minHeight="10.0" prefHeight="54.78278350830078" vgrow="SOMETIMES" />
@@ -302,10 +306,11 @@
                                       </AnchorPane>
                                       <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                                          <children>
-                                            <JFXButton fx:id="btnAddCombo" alignment="CENTER" layoutX="833.0" layoutY="5.0" onMouseClicked="#gotAgregarCombo" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
-                                               <graphic>
-                                                  <MaterialDesignIconView glyphName="PLUS" />
-                                               </graphic>
+                                            <JFXButton fx:id="btnAddCombo" alignment="CENTER" layoutX="833.0" layoutY="5.0" onMouseClicked="#gotAgregarCombo" stylesheets="@../../../../../styles/ui_styles.css" text="+" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
+                                             <styleClass>
+                                                <String fx:value="btn-circular" />
+                                                <String fx:value="btn-general" />
+                                             </styleClass>
                                             </JFXButton>
                                          </children>
                                       </AnchorPane>

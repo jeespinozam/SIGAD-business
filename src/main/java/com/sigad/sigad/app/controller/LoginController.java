@@ -103,7 +103,6 @@ public class LoginController implements Initializable {
                 list.add(new Permiso(1, "Perfiles", "FINGERPRINT"));
                 list.add(new Permiso(11, "Estadísticas", "ELEVATION_RISE"));
                 list.add(new Permiso(0, "Carga Masiva", "ARROW_UP_BOLD_CIRCLE"));
-                list.add(new Permiso(12, "Configuraciones", "SETTINGS"));
                 list.add(new Permiso(6, "Productos", "ART_TRACK"));
                 list.add(new Permiso(10, "Movimientos", "CLOCK_FAST"));
                 
