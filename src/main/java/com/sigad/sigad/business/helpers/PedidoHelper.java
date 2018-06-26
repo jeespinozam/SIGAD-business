@@ -21,15 +21,13 @@ import org.hibernate.query.Query;
  *
  * @author Alexandra
  */
-public class PedidoHelper extends BaseHelper{
+public class PedidoHelper extends BaseHelper {
 
     public PedidoHelper() {
         super();
     }
 
-
-    
-    public ArrayList<Pedido> getPedidos(){
+    public ArrayList<Pedido> getPedidos() {
         ArrayList<Pedido> pedidos = null;
         Query query = null;
         try {
@@ -38,11 +36,29 @@ public class PedidoHelper extends BaseHelper{
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             errorMessage = e.getMessage();
-        } finally{
+        } finally {
             return pedidos;
         }
-    };
-    public ArrayList<Pedido> getPedidosCliente(Long userId){
+    }
+
+    ;
+    
+    public Pedido getPedido(Long pedido_id) {
+        Pedido pedido = null;
+        Query query = null;
+        try {
+            query = session.createQuery("from Pedido where id = " + pedido_id);
+            pedido = (Pedido) query.list().get(0);
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            errorMessage = e.getMessage();
+        } finally {
+            return pedido;
+        }
+    }
+
+    ;
+    public ArrayList<Pedido> getPedidosCliente(Long userId) {
         ArrayList<Pedido> pedidos = null;
         Query query = null;
         try {
@@ -51,12 +67,12 @@ public class PedidoHelper extends BaseHelper{
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             errorMessage = e.getMessage();
-        } finally{
+        } finally {
             return pedidos;
         }
     }
-    
-    public ArrayList<Pedido> getPedidosVendedor(Long userId){
+
+    public ArrayList<Pedido> getPedidosVendedor(Long userId) {
         ArrayList<Pedido> pedidos = null;
         Query query = null;
         try {
@@ -65,10 +81,11 @@ public class PedidoHelper extends BaseHelper{
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             errorMessage = e.getMessage();
-        } finally{
+        } finally {
             return pedidos;
         }
     }
+
     /*Get all the Pedidos*/
     public Long savePedido(Pedido pedido) {
         Long id = null;
@@ -79,9 +96,9 @@ public class PedidoHelper extends BaseHelper{
             } else {
                 tx = session.beginTransaction();
             }
-            
+
             session.save(pedido);
-            if (pedido.getId()== null) {
+            if (pedido.getId() == null) {
                 id = pedido.getId();
             }
             tx.commit();

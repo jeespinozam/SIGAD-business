@@ -25,6 +25,7 @@ import com.sigad.sigad.business.helpers.CapacidadTiendaHelper;
 import com.sigad.sigad.business.helpers.ComboPromocionHelper;
 import com.sigad.sigad.business.helpers.GeneralHelper;
 import com.sigad.sigad.business.helpers.InsumosHelper;
+import com.sigad.sigad.business.helpers.PedidoHelper;
 import com.sigad.sigad.business.helpers.ProductoCategoriaDescuentoHelper;
 import com.sigad.sigad.business.helpers.ProductoDescuentoHelper;
 import com.sigad.sigad.business.helpers.ProductoHelper;
@@ -51,10 +52,12 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ContentDisplay;
@@ -74,6 +77,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
@@ -100,6 +104,8 @@ public class SeleccionarProductosController implements Initializable {
     private StackPane stackPane;
 
     @FXML
+    JFXButton moreBtn;
+    @FXML
     private JFXPopup popup;
     @FXML
     public static JFXDialog userDialog;
@@ -119,8 +125,6 @@ public class SeleccionarProductosController implements Initializable {
     @FXML
     JFXTreeTableColumn<ProductoLista, String> almacen = new JFXTreeTableColumn<>("Almacen");
     @FXML
-    JFXTreeTableColumn<PedidoLista, Boolean> eliminar = new JFXTreeTableColumn<>("Eliminar");
-    @FXML
     JFXTreeTableColumn<PedidoLista, String> nombrePedido = new JFXTreeTableColumn<>("Nombre");
     @FXML
     JFXTreeTableColumn<PedidoLista, String> precioPedido = new JFXTreeTableColumn<>("Precio");
@@ -139,6 +143,7 @@ public class SeleccionarProductosController implements Initializable {
     private Label lblTotal;
     @FXML
     private Label lbligv;
+    PedidoLista pedidoListaSeleccionado;
 
     private Pedido pedido;
     private HashMap<Insumo, Integer> insumos = new HashMap<>();
@@ -235,23 +240,8 @@ public class SeleccionarProductosController implements Initializable {
     }
 
     public void columnasPedidos() {
-        eliminar.setPrefWidth(80);
-        eliminar.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<PedidoLista, Boolean>, ObservableValue<Boolean>>() {
-            @Override
-            public ObservableValue<Boolean> call(TreeTableColumn.CellDataFeatures<PedidoLista, Boolean> p) {
-                return new SimpleBooleanProperty(p.getValue() != null);
-            }
-        });
-        //Adding the Button to the cell
-        eliminar.setCellFactory(new Callback<TreeTableColumn<PedidoLista, Boolean>, TreeTableCell<PedidoLista, Boolean>>() {
-            @Override
-            public TreeTableCell<PedidoLista, Boolean> call(TreeTableColumn<PedidoLista, Boolean> p) {
-                return new ButtonCell();
-            }
 
-        });
-
-        nombrePedido.setPrefWidth(80);
+        nombrePedido.setPrefWidth(180);
         nombrePedido.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<PedidoLista, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<PedidoLista, String> param) {
@@ -447,7 +437,6 @@ public class SeleccionarProductosController implements Initializable {
 
     public void mostrarInfoProducto(Integer codigo) {
         try {
-            popup = new JFXPopup();
             JFXDialogLayout content = new JFXDialogLayout();
             content.setHeading(new Text("Producto"));
             Node node;
@@ -468,7 +457,6 @@ public class SeleccionarProductosController implements Initializable {
 
     public void mostrarInfoCombo(ComboPromocion combo) {
         try {
-            popup = new JFXPopup();
             JFXDialogLayout content = new JFXDialogLayout();
             content.setHeading(new Text("Producto"));
             Node node;
@@ -527,21 +515,36 @@ public class SeleccionarProductosController implements Initializable {
         }
     }
 
-    public void initModel(Pedido pedido, StackPane stack, Tienda tienda, String direccion, Double x, Double y) {
+    public void initModel(Pedido pedido, StackPane stack) {
         stackPane = stack;
-        this.pedido = pedido;
-        this.pedido.setTienda(tienda);
-        this.pedido.setDireccionDeEnvio(direccion);
-        this.pedido.setCooXDireccion(x);
-        this.pedido.setCooYDireccion(y);
+
         //Basede datos
+        if (pedido.getId() != null) {
+            PedidoHelper pedidohelper = new PedidoHelper();
+            pedido = pedidohelper.getPedido(pedido.getId());
+            ArrayList<DetallePedido> detalle = new ArrayList(pedido.getDetallePedido());
+            detalle.forEach((t) -> {
+                if (t.getProducto() != null) {
+                    if (t.getDescuentoCategoria() != null) {
+                        pedidos.add(new PedidoLista(t.getCantidad(), t., producto, descuentoCategoria))
+                    } else if (t.getDescuentoProducto() != null) {
+
+                    } else {
+
+                    }
+                } else if (t.getCombo() != null) {
+
+                }
+            });
+        }
+        this.pedido = pedido;
         ProductoHelper gest = new ProductoHelper();
         ArrayList<Producto> productosDB = gest.getProducts();
         gest.close();
         if (productosDB != null) {
             for (Producto p : productosDB) {
                 Producto t = p;
-                prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), "0", t.getCategoria().getNombre(), tienda.getDescripcion(), t.getImagen(), t.getId().intValue(), t));
+                prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), "0", t.getCategoria().getNombre(), pedido.getTienda().getDescripcion(), t.getImagen(), t.getId().intValue(), t));
             }
 
         }
@@ -554,11 +557,73 @@ public class SeleccionarProductosController implements Initializable {
             });
 
         }
+
         TiendaHelper h = new TiendaHelper();
-        tienda = h.getStore(tienda.getId().intValue());
+        Tienda tienda = h.getStore(pedido.getTienda().getId().intValue());
         insumos = tienda.getInsumos();
         insumosCambiantes = new HashMap(insumos);
         mostrarMaximoStock();
+    }
+
+    @FXML
+    public void handleAction(Event event) {
+
+        if (event.getSource() == moreBtn) {
+            int count = treeViewPedido.getSelectionModel().getSelectedCells().size();
+            System.out.println("Cantidad de filas: " + count);
+            if (count > 1) {
+                ErrorController error = new ErrorController();
+                error.loadDialog("Atención", "Debe seleccionar solo un admiregistro de la tabla", "Ok", stackPane);
+            } else if (count <= 0) {
+                ErrorController error = new ErrorController();
+                error.loadDialog("Atención", "Debe seleccionar al menos un registro de la tabla", "Ok", stackPane);
+            } else {
+
+                int selected = treeViewPedido.getSelectionModel().getSelectedIndex();
+                if (treeViewPedido.getSelectionModel().getModelItem(selected) != null) {
+
+                    pedidoListaSeleccionado = treeViewPedido.getSelectionModel().getModelItem(selected).getValue();
+                    initPopup();
+                    popup.show(moreBtn, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.RIGHT);
+                } else {
+                    ErrorController error = new ErrorController();
+                    error.loadDialog("Atención", "Debe seleccionar al menos un registro de la tabla", "Ok", stackPane);
+
+                }
+
+            }
+
+        }
+    }
+
+    public void initPopup() {
+        JFXButton eliminar = new JFXButton("Eliminar");
+
+        eliminar.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                popup.hide();
+                try {
+
+                    //remove selected item from the table list
+                    prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, pedidoListaSeleccionado.codigo, null))).getSeleccion().setValue(Boolean.FALSE);
+                    //recalcularStock(prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, current.codigo, null))), 0, Integer.valueOf(current.cantidad.getValue()));
+                    mostrarMaximoStock();
+                    pedidos.remove(pedidoListaSeleccionado);
+
+                } catch (Exception ex) {
+
+                }
+            }
+        });
+
+        eliminar.setPadding(new Insets(20));
+        eliminar.setPrefSize(145, 40);
+
+        VBox vBox = new VBox(eliminar);
+
+        popup = new JFXPopup();
+        popup.setPopupContent(vBox);
     }
 
     public void calcularTotal() {
@@ -575,7 +640,7 @@ public class SeleccionarProductosController implements Initializable {
     public void agregarColumnasTablasPedidos() {
         final TreeItem<PedidoLista> rootPedido = new RecursiveTreeItem<>(pedidos, RecursiveTreeObject::getChildren);
         treeViewPedido.setEditable(true);
-        treeViewPedido.getColumns().setAll(nombrePedido, precioPedido, cantidadPedido, descuentoPedido, subTotalPedido, eliminar);
+        treeViewPedido.getColumns().setAll(nombrePedido, precioPedido, cantidadPedido, descuentoPedido, subTotalPedido);
         treeViewPedido.setRoot(rootPedido);
         treeViewPedido.setShowRoot(false);
     }
@@ -853,6 +918,7 @@ public class SeleccionarProductosController implements Initializable {
             this.nombre = new SimpleStringProperty(nombre);
             this.precio = new SimpleStringProperty(precio);
             this.cantidad = new SimpleIntegerProperty(cantidad);
+
             this.subtotal = new SimpleStringProperty(subtotal);
             this.codigo = codigo;
             this.codigoDescuento = codigoDesc;
@@ -867,6 +933,10 @@ public class SeleccionarProductosController implements Initializable {
             this.nombre = new SimpleStringProperty(producto.getNombre());
             this.precio = new SimpleStringProperty(producto.getPrecio().toString());
             this.cantidad = new SimpleIntegerProperty(cantidad);
+            if (subtotal == null) {
+                subtotal = String.valueOf(GeneralHelper.roundTwoDecimals(cantidad * producto.getPrecio()));
+
+            }
             this.subtotal = new SimpleStringProperty(subtotal);
             this.codigo = producto.getId().intValue();
             this.producto = producto;
@@ -879,6 +949,10 @@ public class SeleccionarProductosController implements Initializable {
             this.nombre = new SimpleStringProperty(producto.getNombre());
             this.precio = new SimpleStringProperty(producto.getPrecio().toString());
             this.cantidad = new SimpleIntegerProperty(cantidad);
+            if (subtotal == null) {
+                subtotal = String.valueOf(GeneralHelper.roundTwoDecimals(cantidad * producto.getPrecio() * (1 - descuentoProducto.getValorPct())));
+
+            }
             this.subtotal = new SimpleStringProperty(subtotal);
             this.codigo = producto.getId().intValue();
             this.codigoDescuento = descuentoProducto.getId().intValue();
@@ -893,6 +967,10 @@ public class SeleccionarProductosController implements Initializable {
             this.nombre = new SimpleStringProperty(producto.getNombre());
             this.precio = new SimpleStringProperty(producto.getPrecio().toString());
             this.cantidad = new SimpleIntegerProperty(cantidad);
+            if (subtotal == null) {
+                subtotal = String.valueOf(GeneralHelper.roundTwoDecimals(cantidad * producto.getPrecio() * (1 - descuentoCategoria.getValue())));
+
+            }
             this.subtotal = new SimpleStringProperty(subtotal);
             this.codigo = producto.getId().intValue();
             this.codigoDescuento = descuentoCategoria.getId().intValue();
@@ -907,6 +985,10 @@ public class SeleccionarProductosController implements Initializable {
             this.nombre = new SimpleStringProperty(combo.getNombre());
             this.precio = new SimpleStringProperty(combo.getPreciounireal().toString());
             this.cantidad = new SimpleIntegerProperty(cantidad);
+            if (subtotal == null) {
+                subtotal = String.valueOf(GeneralHelper.roundTwoDecimals(cantidad * producto.getPrecio() * (1 - descuentoCategoria.getValue())));
+
+            }
             this.subtotal = new SimpleStringProperty(subtotal);
             this.codigo = combo.getId().intValue();
             this.combo = combo;

@@ -111,7 +111,12 @@ public class SolicitarDireccionController implements Initializable {
             FXMLLoader loader = new FXMLLoader(SolicitarDireccionController.this.getClass().getResource(SeleccionarProductosController.viewPath));
             node = (Node) loader.load();
             SeleccionarProductosController sel = loader.getController();
-            sel.initModel(new Pedido(), sc, tienda, txtdireccion.getText(), x, y);
+            Pedido pedido = new Pedido();
+            pedido.setTienda(tienda);
+            pedido.setDireccionDeEnvio(txtdireccion.getText());
+            pedido.setCooXDireccion(x);
+            pedido.setCooYDireccion(y);
+            sel.initModel(pedido, sc);
             sc.getChildren().setAll(node);
 
         } catch (Exception ex) {

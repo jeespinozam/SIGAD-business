@@ -154,22 +154,32 @@ public class MantenimientoPedidosController implements Initializable {
 
     public void verPedido() {
         try {
-            JFXDialogLayout content = new JFXDialogLayout();
-            content.setHeading(new Text("Encontrar tienda mas cercana"));
             Node node;
             FXMLLoader loader = new FXMLLoader(MantenimientoPedidosController.this.getClass().getResource(EditarEliminarPedidoController.viewPath));
             node = (Node) loader.load();
             EditarEliminarPedidoController el = loader.getController();
             el.initModel(isEdit, pedido, hiddenSp);
-            content.setBody(node);
-            viewDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
-            viewDialog.show();
+            hiddenSp.getChildren().setAll(node);
         } catch (IOException ex) {
             Logger.getLogger(MantenimientoPedidosController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
 
+    
+    public void editarPedido() {
+        try {
+            Node node;
+            FXMLLoader loader = new FXMLLoader(MantenimientoPedidosController.this.getClass().getResource(SeleccionarProductosController.viewPath));
+            node = (Node) loader.load();
+            SeleccionarProductosController el = loader.getController();
+            el.initModel(pedido, hiddenSp);
+            hiddenSp.getChildren().setAll(node);
+        } catch (IOException ex) {
+            Logger.getLogger(MantenimientoPedidosController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
     public void initPopup() {
         JFXButton edit = new JFXButton("Editar");
         JFXButton eliminar = new JFXButton("Eliminar");
@@ -248,9 +258,7 @@ public class MantenimientoPedidosController implements Initializable {
         return Boolean.FALSE;
     }
 
-    void editarPedido() {
-
-    }
+   
     
  
     @FXML
