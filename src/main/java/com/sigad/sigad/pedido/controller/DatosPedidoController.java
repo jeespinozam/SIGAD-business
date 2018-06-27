@@ -374,6 +374,7 @@ import javafx.util.Callback;
                 ErrorController err = new ErrorController();
                 err.loadDialog("Alerta", "No hay insumos", "ok", stackPane);
             }
+            lihelper.close();
             gotoInicio();
 
         } catch (Exception ex) {

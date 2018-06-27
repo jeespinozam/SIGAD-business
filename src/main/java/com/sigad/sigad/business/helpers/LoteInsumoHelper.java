@@ -28,13 +28,12 @@ import org.hibernate.query.Query;
  *
  * @author chrs
  */
-public class LoteInsumoHelper extends BaseHelper{
+public class LoteInsumoHelper extends BaseHelper {
 
     public LoteInsumoHelper() {
         super();
     }
 
-  
     /*Get all stores*/
     public ArrayList<LoteInsumo> getLoteInsumos() {
         ArrayList<LoteInsumo> lotesInsumos = null;
@@ -69,7 +68,7 @@ public class LoteInsumoHelper extends BaseHelper{
             return lotesInsumos;
         }
     }
-    
+
     public ArrayList<LoteInsumo> getLoteInsumosRecibidos(Tienda currentStore) {
         ArrayList<LoteInsumo> lotesInsumos = null;
         Query query = null;
@@ -86,7 +85,6 @@ public class LoteInsumoHelper extends BaseHelper{
             return lotesInsumos;
         }
     }
-
 
     public LoteInsumo getLoteInsumo(Long id) {
         LoteInsumo insumo = null;
@@ -204,13 +202,12 @@ public class LoteInsumoHelper extends BaseHelper{
             }
             PedidoHelper helper = new PedidoHelper();
             helper.savePedido(pedido);
-            helper.close();
             for (int i = 0; i < seleccionados.size(); i++) {
                 LoteInsumo get = seleccionados.get(i);
+                session = LoginController.serviceInit();
                 updateLoteInsumo(get);
                 TipoMovimientoHelper tipomovhelper = new TipoMovimientoHelper();
                 TipoMovimiento tipoMovimiento = tipomovhelper.getTipoMov(Constantes.TIPO_MOVIMIENTO_SALIDA_LOGICA);
-                tipomovhelper.close();
                 MovimientoHelper movhelper = new MovimientoHelper();
                 MovimientosTienda m = new MovimientosTienda();
                 m.setPedido(pedido);
@@ -221,21 +218,20 @@ public class LoteInsumoHelper extends BaseHelper{
                 m.setTrabajador(LoginController.user);
                 m.setCantidadMovimiento(cantidadConsumida.get(i));
                 movhelper.saveMovement(m);
-                movhelper.close();
             }
 
 //            seleccionados.forEach((t) -> {
 //                updateLoteInsumo(t);
 //
 //            });
+            
             for (Map.Entry<Insumo, Integer> entry : insumosHaConsumir.entrySet()) {
+                InsumosHelper h = new InsumosHelper();
                 Insumo key = entry.getKey();
                 Integer value = entry.getValue();
-                InsumosHelper h = new InsumosHelper();
                 Insumo i = h.getInsumo(key.getId());
                 i.setStockTotalLogico(i.getStockTotalLogico() - value);
                 h.updateInsumo(key);
-                h.close();
             }
 
             ok = Boolean.TRUE;

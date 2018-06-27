@@ -37,17 +37,17 @@ public class Pedido {
     @NotNull
     private Double total;
     @NotNull
-    private boolean activo;
+    private Boolean activo;
     @NotNull
-    private boolean modificable;
+    private Boolean modificable;
     @NotNull
     private String mensajeDescripicion;
     @NotNull
     private String direccionDeEnvio;
     @NotNull
-    private double cooXDireccion;
+    private Double cooXDireccion;
     @NotNull
-    private double cooYDireccion;
+    private Double cooYDireccion;
     private String rucFactura;
     private String nombreEmpresa;
     
