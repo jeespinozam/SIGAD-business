@@ -16,7 +16,7 @@
             <!--jdbc:postgresql://200.16.7.71:1051/sigadtestdb-->
         </property>
         <property name = "hibernate.connection.username">
-            postgres  
+            postgres
         </property>
         <property name = "hibernate.connection.password">
             <!--8g5334-->
