@@ -268,6 +268,29 @@ public class CargaMasivaHelper {
         }
     }
     
+    public static void actualizarRegistrosEspeciales(Session session) {
+        // actualizar los precios de compra de cada producto
+        List<Producto> listaProductos = session.createCriteria(Producto.class).list();
+        List<Insumo> listaInsumos = null;   // lista de insumos del producto en cuestion
+        List<ProductoInsumo> listaProductoInsumo = null;
+        String hqlprodxinsumo = "from ProductoInsumo where producto = :productoX";
+        LOGGER.log(Level.INFO, "Se procede a actualizar los costos de cada producto");
+        for (Producto producto : listaProductos) {
+            //listaProductoInsumo = producto.getProductoxInsumos();
+            listaProductoInsumo = session.createQuery(hqlprodxinsumo).setParameter("productoX", producto).list();
+            double costoCompraProd = 0.0;
+            // recorremos cada insumo
+            for (ProductoInsumo prodInsumo : listaProductoInsumo) {
+                LOGGER.log(Level.INFO, "Cantidad requerida del insumo " + prodInsumo.getCantidad());
+                LOGGER.log(Level.INFO, "Precio de la unidad del insumo" + prodInsumo.getInsumo().getPrecio());
+                costoCompraProd += prodInsumo.getCantidad() * prodInsumo.getInsumo().getPrecio();
+            }
+            LOGGER.log(Level.INFO, String.format("El producto %s cuesta " + costoCompraProd, producto.getNombre()));
+            producto.setPrecioCompra(costoCompraProd);
+            CargaMasivaHelper.actualizarObjeto(producto, session);
+        }
+    }
+    
     /* forma de consumo : se pasa como unico parametro la ruta del archivo, el metodo identificara las hojas del archivo e iniciara la carga masiva */
     public static List<HojaReporte> CargaMasivaProceso(String archivoRuta) {
         try {
@@ -313,6 +336,7 @@ public class CargaMasivaHelper {
                     reporteFinal.add(hojaReporte);
                 }
             }
+            CargaMasivaHelper.actualizarRegistrosEspeciales(session);
             // Cerrando conexion a Base de Datos
             session.close();
             workbook.close();
