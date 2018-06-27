@@ -8,6 +8,7 @@ package com.sigad.sigad.business.helpers;
 import com.sigad.sigad.business.DetalleOrdenCompra;
 import com.sigad.sigad.business.LoteInsumo;
 import com.sigad.sigad.business.OrdenCompra;
+import com.sigad.sigad.business.Tienda;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -90,6 +91,11 @@ public class OrdenCompraHelper extends BaseHelper {
         }
         return ordenes;
     }
+//    public ArrayList<OrdenCompra> getOrdenesStore(Tienda tienda){
+//        ArrayList<OrdenCompra> ordenes = null;
+//        Query query = null;
+//        
+//    }
     public ArrayList<DetalleOrdenCompra> getDetalles(Integer id){
         ArrayList<DetalleOrdenCompra> ordenes = null;
         Query query = null;

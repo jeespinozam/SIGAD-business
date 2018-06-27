@@ -15,6 +15,7 @@ import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.jfoenix.validation.NumberValidator;
 import com.sigad.sigad.app.controller.ErrorController;
+import com.sigad.sigad.app.controller.HomeController;
 import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.Constantes;
 import com.sigad.sigad.business.DetalleOrdenCompra;
@@ -25,6 +26,7 @@ import com.sigad.sigad.business.OrdenCompra;
 import com.sigad.sigad.business.Proveedor;
 import com.sigad.sigad.business.ProveedorInsumo;
 import com.sigad.sigad.business.Tienda;
+import com.sigad.sigad.business.helpers.GeneralHelper;
 import com.sigad.sigad.business.helpers.InsumosHelper;
 import com.sigad.sigad.business.helpers.LoteInsumoHelper;
 import com.sigad.sigad.business.helpers.MovimientoHelper;
@@ -105,8 +107,10 @@ public class CrearEditarOrdenCompraController implements Initializable {
     private JFXTreeTableView<InsumoViewerOrden> tblInsumos;
     
     @FXML
-    private JFXTextField txtTotal;
-    
+    private Label lblIgv;
+
+    @FXML
+    private Label lblTotal;
     
     @FXML
     private JFXTextField txtProveedor;
@@ -385,8 +389,10 @@ public class CrearEditarOrdenCompraController implements Initializable {
                 total += s;
             }
             
-            txtTotal.setText(total.toString());
-            
+            Double totalIGV= GeneralHelper.roundTwoDecimals((total) * HomeController.IGV);
+            Double totalGeneral = GeneralHelper.roundTwoDecimals(total + totalIGV);
+            lblIgv.setText(totalIGV.toString());
+            lblTotal.setText(totalGeneral.toString());            
         });
         
         subtotalCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<InsumoViewerOrden, String> param) -> param.getValue().getValue().getSubTotal()
