@@ -185,7 +185,7 @@ public class CargaMasivaHelper {
                     case CargaMasivaConstantes.TABLA_PERFILXPERMISO:
                         rowhead.createCell(rowIndex).setCellValue("Nombre de Perfil");
                         rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Menu e Icono (separados por coma)");
+                        rowhead.createCell(rowIndex).setCellValue("Menu (separados por coma)");
                         break;
                     case CargaMasivaConstantes.TABLA_FRAGILIDAD:
                         rowhead.createCell(rowIndex).setCellValue("Valor de Fragilidad");
@@ -759,6 +759,17 @@ public class CargaMasivaHelper {
                     }
                     // identificamos la opcion y el icono en la variable permisoOpcionxIcono
                     String [] permisoAux = permisoMenuxIcono.split(",");
+                    for (int i=0;i<permisoAux.length;i++) {
+                        Permiso permisoAsociado = (Permiso) CargaMasivaHelper.busquedaGeneralString(session, "Permiso", new String [] {"menu"}, new String [] {StringUtils.trimToEmpty(permisoAux[i])});
+                        if (permisoAsociado!=null) {
+                            LOGGER.log(Level.INFO, String.format("Permiso %s encontrado con exito", permisoAux[i]));
+                            perfilAsociado.getPermisos().add(permisoAsociado);
+                        }
+                        else
+                            LOGGER.log(Level.WARNING, String.format("Permiso %s no encontrado, este permiso no sera considerado", permisoMenuxIcono));
+                    }
+                    return CargaMasivaHelper.actualizarObjeto(perfilAsociado, session);
+                    /*
                     if ((permisoAux.length == 2) && (StringUtils.isNotBlank(permisoAux[0]) && StringUtils.isNotBlank(permisoAux[1]))){
                         Permiso permisoAsociado = (Permiso) CargaMasivaHelper.busquedaGeneralString(session, "Permiso", new String [] {"menu","icono"}, new String [] {StringUtils.trimToEmpty(permisoAux[0]), StringUtils.trimToEmpty(permisoAux[1])});
                         if (permisoAsociado!=null) {
@@ -775,6 +786,7 @@ public class CargaMasivaHelper {
                         LOGGER.log(Level.WARNING, String.format("No se encontro Menu o Icono"));
                         return false;
                     }
+                    */
                 }
                 else {
                     LOGGER.log(Level.SEVERE, String.format("Perfil %s no encontrado, cancelando operacion", perfilNombreAux));
