@@ -60,7 +60,7 @@ import javafx.util.Callback;
  *
  * @author Alexandra
  */
-    public class DatosPedidoController implements Initializable {
+public class DatosPedidoController implements Initializable {
 
     Pedido pedido;
     StackPane stackPane;
@@ -141,11 +141,17 @@ import javafx.util.Callback;
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         cmbInicio.getItems().addAll("M", "T", "N");
+        setuValidations();
     }
 
     public void initModel(Pedido pedido, StackPane stackPane) {
         this.pedido = pedido;
         this.stackPane = stackPane;
+
+        if (pedido.getId() != null) {
+            LocalDate localDate = pedido.getFechaEntregaEsperada().toLocalDate();
+            dpFechaEntrega.setValue(localDate);
+        }
         txtTotal.setText(pedido.getTotal().toString());
         txtTotal.setDisable(true);
         txtdestino.setText(pedido.getDireccionDeEnvio());
@@ -296,13 +302,14 @@ import javafx.util.Callback;
 
     public void construirPedido() {
         pedido.setMensajeDescripicion(cmbDedicatoria.getText());
-            Date date = Date.from(dpFechaEntrega.getValue().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
-            Timestamp timeStamp = new Timestamp(date.getTime());
-            pedido.setFechaVenta(timeStamp);
+        Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
+        pedido.setFechaVenta(timeStamp);
+        java.sql.Date fechaentrega = java.sql.Date.valueOf(dpFechaEntrega.getValue());
+        pedido.setFechaEntregaEsperada(fechaentrega);
         pedido.setVendedor(LoginController.user);
         PedidoEstadoHelper hp = new PedidoEstadoHelper();
         pedido.setTurno(cmbInicio.getValue());
-        PedidoEstado estado = hp.getEstadoByName(Constantes.ESTADO_VENTA);
+        PedidoEstado estado = hp.getEstadoByName(Constantes.ESTADO_PENDIENTE);
         pedido.addEstado(estado);
         pedido.setEstado(estado);
         if (btnFactura.isSelected()) {
@@ -353,8 +360,7 @@ import javafx.util.Callback;
             for (DetallePedido dp : pedido.getDetallePedido()) {
                 if (dp.getProducto() != null) {
                     ProductoHelper helperProducto = new ProductoHelper();
-                    Producto producto = helperProducto.getProductById(
-                            dp.getProducto().getId().intValue());
+                    Producto producto = helperProducto.getProductById(dp.getProducto().getId().intValue());
                     calcularInsumos(producto, dp.getCantidad());
                     helperProducto.close();
                 } else if (dp.getCombo() != null) {

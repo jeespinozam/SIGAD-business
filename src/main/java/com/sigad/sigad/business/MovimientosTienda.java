@@ -34,7 +34,7 @@ public class MovimientosTienda {
     private LoteInsumo LoteInsumo;
     @ManyToOne
     private Pedido pedido;
-    public MovimientosTienda() {
+    public MovimientosTienda() {    
     }
 
     

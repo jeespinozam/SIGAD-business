@@ -24,7 +24,7 @@
                 </JFXTextField>
                 <JFXTextField fx:id="txtEstado" disable="true" labelFloat="true" layoutX="47.0" layoutY="479.0" prefHeight="25.0" prefWidth="272.0" promptText="Estado" />
                 <JFXTextField fx:id="txtDireccion" disable="true" labelFloat="true" layoutX="47.0" layoutY="442.0" prefHeight="25.0" prefWidth="272.0" promptText="Direccion" />
-                <JFXButton buttonType="RAISED" layoutX="440.0" layoutY="479.0" prefHeight="25.0" prefWidth="121.0" style="-fx-background-color: #FFFFFF;" text="Cancelar pedido">
+                <JFXButton fx:id="btnCancelar" buttonType="RAISED" layoutX="440.0" layoutY="479.0" prefHeight="25.0" prefWidth="160.0" style="-fx-background-color: #FFFFFF;" text="Cancelar pedido">
                     <effect>
                         <DropShadow color="#000000ba" />
                     </effect>
@@ -36,6 +36,11 @@
                     <JFXTextField fx:id="filtro" layoutX="712.0" layoutY="7.0" prefHeight="29.0" prefWidth="203.0" promptText="Buscar" AnchorPane.bottomAnchor="11.0" AnchorPane.rightAnchor="61.0" AnchorPane.topAnchor="6.0" />
                 </children>
                 </AnchorPane>
+            <JFXButton fx:id="btnGenerarDocumento" buttonType="RAISED" layoutX="440.0" layoutY="442.0" prefHeight="25.0" prefWidth="160.0" style="-fx-background-color: #FFFFFF;" text="Generar Documento">
+               <effect>
+                  <DropShadow color="#000000ba" />
+               </effect>
+            </JFXButton>
             </children>
         </AnchorPane>
     </children>

@@ -157,6 +157,48 @@ public class LoteInsumoHelper extends BaseHelper {
         return ok;
     }
 
+    public void devolverInsumos(HashMap<Insumo, Integer> insumosADevolver, Pedido pedido, ArrayList<MovimientosTienda> movimientosLogicos) {
+        Collections.sort(movimientosLogicos, (MovimientosTienda s1, MovimientosTienda s2) -> {
+            return s1.getLoteInsumo().getFechaVencimiento().compareTo(s2.getLoteInsumo().getFechaVencimiento());
+        });
+        movimientosLogicos.forEach((t) -> {
+            LoteInsumo lote = t.getLoteInsumo();
+            Integer cantidad = insumosADevolver.get(lote.getInsumo());
+            Integer devolucion = 0;
+            if (cantidad != null) {
+                if (cantidad != 0) {
+                    if (t.getCantidadMovimiento() <= cantidad) {//En caso en la que la cantidad que quiero devolver es mayor de lo que consumi en el lote 
+                        lote.setStockLogico(lote.getStockLogico() + t.getCantidadMovimiento());
+                        devolucion = t.getCantidadMovimiento();
+                        cantidad = cantidad - t.getCantidadMovimiento();
+                        t.setCantidadMovimiento(0);
+                        insumosADevolver.put(lote.getInsumo(), cantidad);
+                        MovimientoHelper mov = new MovimientoHelper();
+                        mov.deleteMovement(t);
+                    } else if (t.getCantidadMovimiento() > cantidad) {//En caso en la que cantidad que devuelvo es menor que lo que ocnsumi en el lote
+                        lote.setStockLogico(lote.getStockLogico() + cantidad);
+                        devolucion = cantidad;
+                        t.setCantidadMovimiento(t.getCantidadMovimiento() - cantidad);
+                        cantidad = 0;
+                        insumosADevolver.put(lote.getInsumo(), cantidad);
+                        MovimientoHelper mov = new MovimientoHelper();
+                        mov.updateMovement(t);
+                    }
+                }
+            }
+            if (session != null) {
+                session.close();
+            }
+            session = LoginController.serviceInit();
+            updateLoteInsumo(lote);
+            InsumosHelper h = new InsumosHelper();
+            Insumo i = h.getInsumo(lote.getInsumo().getId());
+            i.setStockTotalLogico(i.getStockTotalLogico() + devolucion);
+            h.updateInsumo(i);
+        });
+
+    }
+
     public Boolean descontarInsumos(HashMap<Insumo, Integer> insumosHaConsumir, Tienda tienda, Pedido pedido) {
         Boolean ok = Boolean.FALSE;
         try {
@@ -201,9 +243,17 @@ public class LoteInsumoHelper extends BaseHelper {
 
             }
             PedidoHelper helper = new PedidoHelper();
-            helper.savePedido(pedido);
+            if (pedido.getId() == null) {
+                helper.savePedido(pedido);
+            } else {
+                System.out.println("Esta actualizando...");
+                helper.updatePedido(pedido);
+            }
             for (int i = 0; i < seleccionados.size(); i++) {
                 LoteInsumo get = seleccionados.get(i);
+                if (session != null) {
+                    session.close();
+                }
                 session = LoginController.serviceInit();
                 updateLoteInsumo(get);
                 TipoMovimientoHelper tipomovhelper = new TipoMovimientoHelper();
@@ -224,7 +274,6 @@ public class LoteInsumoHelper extends BaseHelper {
 //                updateLoteInsumo(t);
 //
 //            });
-            
             for (Map.Entry<Insumo, Integer> entry : insumosHaConsumir.entrySet()) {
                 InsumosHelper h = new InsumosHelper();
                 Insumo key = entry.getKey();

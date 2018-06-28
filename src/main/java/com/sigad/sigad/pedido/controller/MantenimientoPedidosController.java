@@ -15,6 +15,7 @@ import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sigad.sigad.app.controller.ErrorController;
+import com.sigad.sigad.business.Constantes;
 import com.sigad.sigad.business.Pedido;
 import com.sigad.sigad.business.Tienda;
 import com.sigad.sigad.business.helpers.PedidoHelper;
@@ -23,6 +24,7 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -68,7 +70,8 @@ public class MantenimientoPedidosController implements Initializable {
     @FXML
     StackPane hiddenSp;
     JFXDialog direccionDialog;
-    JFXDialog viewDialog;
+    public static JFXDialog viewDialog;
+    public static JFXDialog payDialog;
     @FXML
     JFXTreeTableColumn<PedidoOrdenLista, Integer> id = new JFXTreeTableColumn<>("ID");
     JFXTreeTableColumn<PedidoOrdenLista, String> cliente = new JFXTreeTableColumn<>("Cliente");
@@ -79,7 +82,7 @@ public class MantenimientoPedidosController implements Initializable {
     private JFXTreeTableView<PedidoOrdenLista> tablaPedidos;
     Pedido pedido = new Pedido();
 
-    private final ObservableList<PedidoOrdenLista> pedidos = FXCollections.observableArrayList();
+    public static final ObservableList<PedidoOrdenLista> pedidos = FXCollections.observableArrayList();
     public static final String viewPath = "/com/sigad/sigad/pedido/view/mantenimientoPedidos.fxml";
     private Boolean isEdit;
 
@@ -87,6 +90,7 @@ public class MantenimientoPedidosController implements Initializable {
     private JFXTextField filtro;
     @FXML
     private JFXButton btnNuevo;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
@@ -94,7 +98,7 @@ public class MantenimientoPedidosController implements Initializable {
         agregarColumnas();
         cargarDatos();
     }
-    
+
     public void agregarFiltro() {
         filtro.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
             tablaPedidos.setPredicate((TreeItem<PedidoOrdenLista> t) -> {
@@ -103,6 +107,7 @@ public class MantenimientoPedidosController implements Initializable {
             });
         });
     }
+
     public void columnas() {
         id.setPrefWidth(70);
         id.setCellValueFactory((TreeTableColumn.CellDataFeatures<PedidoOrdenLista, Integer> param) -> param.getValue().getValue().id.asObject());
@@ -154,19 +159,22 @@ public class MantenimientoPedidosController implements Initializable {
 
     public void verPedido() {
         try {
+            JFXDialogLayout content = new JFXDialogLayout();
+            content.setHeading(new Text("Ver Pedido"));
             Node node;
             FXMLLoader loader = new FXMLLoader(MantenimientoPedidosController.this.getClass().getResource(EditarEliminarPedidoController.viewPath));
             node = (Node) loader.load();
             EditarEliminarPedidoController el = loader.getController();
             el.initModel(isEdit, pedido, hiddenSp);
-            hiddenSp.getChildren().setAll(node);
+            content.setBody(node);
+            viewDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
+            viewDialog.show();
         } catch (IOException ex) {
             Logger.getLogger(MantenimientoPedidosController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
 
-    
     public void editarPedido() {
         try {
             Node node;
@@ -180,11 +188,56 @@ public class MantenimientoPedidosController implements Initializable {
         }
 
     }
+
+    public void pagarPedido() {
+        try {
+            JFXDialogLayout content = new JFXDialogLayout();
+            content.setHeading(new Text("Pagar Pedido"));
+            Node node;
+            FXMLLoader loader = new FXMLLoader(MantenimientoPedidosController.this.getClass().getResource(PagoPedidoController.viewPath));
+            node = (Node) loader.load();
+            PagoPedidoController el = loader.getController();
+            el.initModel(pedido);
+            content.setBody(node);
+            payDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
+            payDialog.show();
+        } catch (IOException ex) {
+            Logger.getLogger(MantenimientoPedidosController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public static void reloadTable() {
+        MantenimientoPedidosController.pedidos.clear();
+        PedidoHelper pdhelper = new PedidoHelper();
+        ArrayList<Pedido> ps = pdhelper.getPedidos();
+        pdhelper.close();
+        ps.forEach((t) -> {
+            MantenimientoPedidosController.pedidos.add(new MantenimientoPedidosController.PedidoOrdenLista(t));
+        });
+
+    }
+
     public void initPopup() {
+
+        JFXButton ver = new JFXButton("Ver");
         JFXButton edit = new JFXButton("Editar");
         JFXButton eliminar = new JFXButton("Eliminar");
+        JFXButton pago = new JFXButton("Pagar");
+        JFXButton devolucion = new JFXButton("Devolucion");
 
         edit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                popup.hide();
+                try {
+                    editarPedido();
+                } catch (Exception ex) {
+                    Logger.getLogger(MantenimientoPedidosController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        ver.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 popup.hide();
@@ -195,13 +248,38 @@ public class MantenimientoPedidosController implements Initializable {
                 }
             }
         });
-        
+
         eliminar.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 popup.hide();
                 try {
-                  
+
+                } catch (Exception ex) {
+
+                }
+            }
+        });
+
+        pago.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                popup.hide();
+                try {
+                    pagarPedido();
+
+                } catch (Exception ex) {
+
+                }
+            }
+        });
+
+        devolucion.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                popup.hide();
+                try {
+
                 } catch (Exception ex) {
 
                 }
@@ -210,12 +288,42 @@ public class MantenimientoPedidosController implements Initializable {
 
         edit.setPadding(new Insets(20));
         edit.setPrefSize(145, 40);
-        
+
+        ver.setPadding(new Insets(20));
+        ver.setPrefSize(145, 40);
+
         eliminar.setPadding(new Insets(20));
         eliminar.setPrefSize(145, 40);
 
-        VBox vBox = new VBox(edit, eliminar);
+        pago.setPadding(new Insets(20));
+        pago.setPrefSize(145, 40);
 
+        VBox vBox = new VBox();
+        if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_PENDIENTE)) {
+            vBox.getChildren().add(edit);
+            vBox.getChildren().add(pago);
+            vBox.getChildren().add(eliminar);
+            vBox.getChildren().add(ver);
+        }
+        if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_VENTA)) {
+            vBox.getChildren().add(eliminar);
+            vBox.getChildren().add(ver);
+        }
+        if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_DESPACHO)) {
+            vBox.getChildren().add(eliminar);
+            vBox.getChildren().add(ver);
+        }
+
+        if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_FINALIZADO)) {
+            vBox.getChildren().add(ver);
+            vBox.getChildren().add(devolucion);
+        }
+        if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_CANCELADO)) {
+            vBox.getChildren().add(ver);
+        }
+        if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_DEVOLUCION)) {
+            vBox.getChildren().add(ver);
+        }
 
         popup = new JFXPopup();
         popup.setPopupContent(vBox);
@@ -258,9 +366,6 @@ public class MantenimientoPedidosController implements Initializable {
         return Boolean.FALSE;
     }
 
-   
-    
- 
     @FXML
     public void handleAction(Event event) {
 
@@ -281,9 +386,8 @@ public class MantenimientoPedidosController implements Initializable {
 
         }
     }
-    
 
-    class PedidoOrdenLista extends RecursiveTreeObject<PedidoOrdenLista> {
+    public static class PedidoOrdenLista extends RecursiveTreeObject<PedidoOrdenLista> {
 
         IntegerProperty id;
         StringProperty cliente;

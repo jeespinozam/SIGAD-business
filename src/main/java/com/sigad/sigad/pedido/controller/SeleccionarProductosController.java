@@ -13,6 +13,7 @@ import com.sigad.sigad.app.controller.LoginController;
 import com.sigad.sigad.business.ComboPromocion;
 import com.sigad.sigad.business.DetallePedido;
 import com.sigad.sigad.business.Insumo;
+import com.sigad.sigad.business.MovimientosTienda;
 import com.sigad.sigad.business.Pedido;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoCategoriaDescuento;
@@ -25,6 +26,8 @@ import com.sigad.sigad.business.helpers.CapacidadTiendaHelper;
 import com.sigad.sigad.business.helpers.ComboPromocionHelper;
 import com.sigad.sigad.business.helpers.GeneralHelper;
 import com.sigad.sigad.business.helpers.InsumosHelper;
+import com.sigad.sigad.business.helpers.LoteInsumoHelper;
+import com.sigad.sigad.business.helpers.MovimientoHelper;
 import com.sigad.sigad.business.helpers.PedidoHelper;
 import com.sigad.sigad.business.helpers.ProductoCategoriaDescuentoHelper;
 import com.sigad.sigad.business.helpers.ProductoDescuentoHelper;
@@ -146,8 +149,8 @@ public class SeleccionarProductosController implements Initializable {
     PedidoLista pedidoListaSeleccionado;
 
     private Pedido pedido;
-    private HashMap<Insumo, Integer> insumos = new HashMap<>();
-    private HashMap<Insumo, Integer> insumosCambiantes;
+    private HashMap<Insumo, Integer> insumosCambiantes = new HashMap<>();
+    private HashMap<Insumo, Integer> insumosConsumidosIniciales = new HashMap<>();//Usado solo cuando lo editasf
     private final ObservableList<PedidoLista> pedidos = FXCollections.observableArrayList();
     private final ObservableList<ProductoLista> prod = FXCollections.observableArrayList();
 
@@ -267,7 +270,7 @@ public class SeleccionarProductosController implements Initializable {
             public void handle(TreeTableColumn.CellEditEvent<PedidoLista, Integer> event) {
 
                 PedidoLista ped = event.getRowValue().getValue();
-                Integer index = prod.indexOf(new ProductoLista("", "", "0", "", "", viewPath, ped.codigo, ped.producto));
+                Integer index = prod.indexOf(new ProductoLista("", "", "0", "", "", viewPath, ped.codigo, ped.producto, false));
                 ProductoLista p = prod.get(index);
                 System.out.println(p.nombre.getValue() + p.stock.getValue());
                 Integer stock = Integer.valueOf(p.stock.getValue());
@@ -292,7 +295,7 @@ public class SeleccionarProductosController implements Initializable {
                     nuevo = new PedidoLista((event.getNewValue() <= stock + event.getOldValue()) ? event.getNewValue() : event.getOldValue(),
                             (event.getNewValue() <= stock + event.getOldValue()) ? subNew.toString() : subOld.toString(), ped.producto);
                 }
-
+                nuevo.detallePedido = ped.detallePedido;
                 Integer i = pedidos.indexOf(new PedidoLista(nuevo.nombre.getValue(), viewPath, index, viewPath, nuevo.codigo, viewPath, nuevo.codigo, null, null));
                 Integer oldValue = event.getOldValue();
                 System.out.println("i->>>>>" + i);
@@ -349,6 +352,12 @@ public class SeleccionarProductosController implements Initializable {
 
     }
 
+    /**
+     *
+     * @param item
+     * @param nuevoValor
+     * @param viejoValor
+     */
     public void recalcularStockDetalle(ProductoLista item, Integer nuevoValor, Integer viejoValor) {
         if (item.combo != null) {
             ComboPromocion combo = item.combo;
@@ -476,65 +485,295 @@ public class SeleccionarProductosController implements Initializable {
     }
 
     public void goSeleccionarCliente() {
-        try {
-            Node node;
-            Set<DetallePedido> detalles = new HashSet<>();
-            pedido.setVolumenTotal(0.0);
-            pedido.setTotal(0.0);
-            pedidos.forEach((t) -> {
-                if (t.combo != null) {
-                    DetallePedido detalle = new DetallePedido(true, t.cantidad.getValue(), Double.valueOf(t.precio.getValue()), 0, t.combo, pedido);
-                    detalles.add(detalle);
-                    pedido.setVolumenTotal(pedido.getVolumenTotal() + t.combo.getVolumen());
-                    pedido.setTotal(pedido.getTotal() + t.combo.getPreciounireal() * t.cantidad.getValue());
-                } else if (t.producto != null) {
-                    DetallePedido detalle = new DetallePedido(true, t.cantidad.getValue(), Double.valueOf(t.precio.getValue()), 0, t.producto, pedido, t.descuentoProducto, t.descuentoCategoria);
-                    detalles.add(detalle);
-                    pedido.setVolumenTotal(pedido.getVolumenTotal() + t.producto.getVolumen());
-                    if (t.descuentoCategoria != null) {
-                        pedido.setTotal(pedido.getTotal() + t.producto.getPrecio() * t.cantidad.getValue() * (1 - t.descuentoCategoria.getValue()));
-                    } else if (t.descuentoProducto != null) {
-                        pedido.setTotal(pedido.getTotal() + t.producto.getPrecio() * t.cantidad.getValue() * (1 - t.descuentoProducto.getValorPct()));
-                    } else {
-                        pedido.setTotal(pedido.getTotal() + t.producto.getPrecio() * t.cantidad.getValue());
-                    }
 
+        if (pedido.getId() != null) {
+            actualizarPedido();
+        } else {
+            try {
+                construirPedido();
+                Node node;
+                FXMLLoader loader = new FXMLLoader(SeleccionarProductosController.this.getClass().getResource(SeleccionarClienteController.viewPath));
+                node = (Node) loader.load();
+                SeleccionarClienteController desc = loader.getController();
+                desc.initModel(pedido, stackPane);
+                stackPane.getChildren().setAll(node);
+            } catch (IOException ex) {
+                Logger.getLogger(SeleccionarClienteController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+    }
+
+    public void construirPedido() {//Parte 1(Vea la continuaciin en DatosPedidoController
+        Set<DetallePedido> detalles = new HashSet<>();
+        pedido.setVolumenTotal(0.0);
+        pedido.setTotal(0.0);
+        pedidos.forEach((t) -> {
+            if (t.combo != null) {
+                DetallePedido detalle = new DetallePedido(true, t.cantidad.getValue(), Double.valueOf(t.precio.getValue()), 0, t.combo, pedido);
+                detalles.add(detalle);
+                pedido.setVolumenTotal(pedido.getVolumenTotal() + t.combo.getVolumen());
+                pedido.setTotal(pedido.getTotal() + t.combo.getPreciounireal() * t.cantidad.getValue());
+            } else if (t.producto != null) {
+                DetallePedido detalle = new DetallePedido(true, t.cantidad.getValue(), Double.valueOf(t.precio.getValue()), 0, t.producto, pedido, t.descuentoProducto, t.descuentoCategoria);
+                detalles.add(detalle);
+                pedido.setVolumenTotal(pedido.getVolumenTotal() + t.producto.getVolumen());
+                if (t.descuentoCategoria != null) {
+                    pedido.setTotal(pedido.getTotal() + t.producto.getPrecio() * t.cantidad.getValue() * (1 - t.descuentoCategoria.getValue()));
+                } else if (t.descuentoProducto != null) {
+                    pedido.setTotal(pedido.getTotal() + t.producto.getPrecio() * t.cantidad.getValue() * (1 - t.descuentoProducto.getValorPct()));
+                } else {
+                    pedido.setTotal(pedido.getTotal() + t.producto.getPrecio() * t.cantidad.getValue());
                 }
 
-            });
-            pedido.setDetallePedido(detalles);
-            pedido.setActivo(true);
-            pedido.setModificable(true);
-            FXMLLoader loader = new FXMLLoader(SeleccionarProductosController.this.getClass().getResource(SeleccionarClienteController.viewPath));
-            node = (Node) loader.load();
-            SeleccionarClienteController desc = loader.getController();
-            desc.initModel(pedido, stackPane);
-            stackPane.getChildren().setAll(node);
-        } catch (IOException ex) {
-            Logger.getLogger(SeleccionarClienteController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        });
+        pedido.setDetallePedido(detalles);
+        pedido.setActivo(true);
+        pedido.setModificable(true);
+    }
+
+//    public void actualizarPedido() {
+//        HashMap<Insumo, Integer> nuevosInsumosConsumidos = new HashMap<>();
+//        HashMap<Insumo, Integer> insumosADevolver = new HashMap<>();
+//        Set<DetallePedido> detalles = new HashSet<>();
+//        pedido.setVolumenTotal(0.0);
+//        pedido.setTotal(0.0);
+//        pedidos.forEach((t) -> {
+//            if (t.combo != null) {
+//                DetallePedido detalle = new DetallePedido(true, t.cantidad.getValue(), Double.valueOf(t.precio.getValue()), 0, t.combo, pedido);
+//                Integer cantidadADescontar = t.cantidad.getValue();
+//                Integer cantidadADevolver = 0;
+//                if (t.detallePedido != null) {
+//                    detalle.setId(t.detallePedido.getId());
+//                    cantidadADescontar = 0;// 0 por que se supone al inicio que no ha habido ni un cambio
+//                    if (detalle.getCantidad() < t.detallePedido.getCantidad()) {//Comparar lo que tengo ahora y lo que tenia
+//                        //En este caso en el que la cantidad que tengo ahora es menor a la que tenia
+//                        //se procede a una devolucion de los insumos a los que pertenecia
+//                        //Primero se busca de que lotes de donde los saque y los devuelvo//fin
+//                        cantidadADevolver = t.detallePedido.getCantidad() - detalle.getCantidad();
+//                    } else if (detalle.getCantidad() > t.detallePedido.getCantidad()) {
+//                        //En el caso que la cantidad que tengo es mayor de la que tenia
+//                        //Significa que tengo que consumir mas insumos por lo que calculo la diferencia con lo que tenia
+//                        //Y los agrego a mis insumos consumidos
+//                        cantidadADescontar = detalle.getCantidad() - t.detallePedido.getCantidad();
+//                    }
+//
+//                }
+//                System.out.println("Cantidad a descontar--->" + t.combo.getNombre() + "-->" + cantidadADescontar);
+//                System.out.println("Cantidad a devolver--->" + t.combo.getNombre() + "-->" + cantidadADevolver);
+//
+//                ComboPromocion p = t.combo;
+//                for (ProductosCombos productosCombos : p.getProductosxComboArray()) {
+//                    calcularInsumos(productosCombos.getProducto(), productosCombos.getCantidad() * cantidadADevolver, insumosADevolver);
+//                    calcularInsumos(productosCombos.getProducto(), productosCombos.getCantidad() * cantidadADescontar, nuevosInsumosConsumidos);
+//                }
+//                detalles.add(detalle);
+//                pedido.setVolumenTotal(pedido.getVolumenTotal() + t.combo.getVolumen() * t.cantidad.getValue());
+//                pedido.setTotal(pedido.getTotal() + t.combo.getPreciounireal() * t.cantidad.getValue());
+//            } else if (t.producto != null) {
+//                DetallePedido detalle = new DetallePedido(true, t.cantidad.getValue(), Double.valueOf(t.precio.getValue()), 0, t.producto, pedido, t.descuentoProducto, t.descuentoCategoria);
+//                Integer cantidadADescontar = t.cantidad.getValue();//Descontar Insumos
+//                Integer cantidadADevolver = 0;
+//                if (t.detallePedido != null) {
+//                    cantidadADescontar = 0;
+//                    detalle.setId(t.detallePedido.getId());
+//                    if (detalle.getCantidad() < t.detallePedido.getCantidad()) {//Comparar lo que tengo ahora y lo que tenia
+//                        //En este caso en el que la cantidad que tengo ahora es menor a la que tenia
+//                        //se procede a una devolucion de los insumos a los que pertenecia
+//                        //Primero se busca de que lotes de donde los saque y los devuelvo//fin
+//                        cantidadADevolver = t.detallePedido.getCantidad() - detalle.getCantidad();
+//                    } else if (detalle.getCantidad() > t.detallePedido.getCantidad()) {
+//                        //En el caso que la cantidad que tengo es mayor de la que tenia
+//                        //Significa que tengo que consumir mas insumos por lo que calculo la diferencia con lo que tenia
+//                        //Y los agrego a mis insumos consumidos
+//                        cantidadADescontar = detalle.getCantidad() - t.detallePedido.getCantidad();
+//                    }
+//
+//                }
+//                System.out.println("Cantidad a descontar--->" + t.producto.getNombre() + "-->" + cantidadADescontar);
+//                System.out.println("Cantidad a devolver--->" + t.producto.getNombre() + "-->" + cantidadADevolver);
+//                nuevosInsumosConsumidos.forEach((o, u) -> {
+//                    System.out.println("Nuevos insumos consumidos>Antes---> " + o.getNombre() + "--" + u);
+//                });
+//                insumosADevolver.forEach((o, u) -> {
+//                    System.out.println("Insumos a devolver>Antes---> " + o.getNombre() + "--" + u);
+//                });
+//                calcularInsumos(detalle.getProducto(), cantidadADevolver, insumosADevolver);
+//                calcularInsumos(t.producto, cantidadADescontar, nuevosInsumosConsumidos);
+//                nuevosInsumosConsumidos.forEach((o, u) -> {
+//                    System.out.println("Nuevos insumos consumidos>Despues---> " + o.getNombre() + "--" + u);
+//                });
+//                insumosADevolver.forEach((o, u) -> {
+//                    System.out.println("Insumos a devolver>Despues---> " + o.getNombre() + "--" + u);
+//                });
+//                detalles.add(detalle);
+//                pedido.setVolumenTotal(pedido.getVolumenTotal() + t.producto.getVolumen() * t.cantidad.getValue());
+//                if (t.descuentoCategoria != null) {
+//                    pedido.setTotal(pedido.getTotal() + t.producto.getPrecio() * t.cantidad.getValue() * (1 - t.descuentoCategoria.getValue()));
+//                } else if (t.descuentoProducto != null) {
+//                    pedido.setTotal(pedido.getTotal() + t.producto.getPrecio() * t.cantidad.getValue() * (1 - t.descuentoProducto.getValorPct()));
+//                } else {
+//                    pedido.setTotal(pedido.getTotal() + t.producto.getPrecio() * t.cantidad.getValue());
+//                }
+//
+//            } else {
+//                System.out.println("Error, no es ni combo ni producto");
+//            }
+//
+//        });
+//
+//        pedido.setDetallePedido(detalles);
+//        pedido.setActivo(true);
+//        pedido.setModificable(true);
+//        mergeInsumosConsumidosDevueltos(nuevosInsumosConsumidos, insumosADevolver);
+//        nuevosInsumosConsumidos.forEach((t, u) -> {
+//            System.out.println("Nuevos insumos consumidos---> " + t.getNombre() + "--" + u);
+//        });
+//        insumosADevolver.forEach((t, u) -> {
+//            System.out.println("Insumos a devolver---> " + t.getNombre() + "--" + u);
+//        });
+//        MovimientoHelper movHelper = new MovimientoHelper();
+//        ArrayList<MovimientosTienda> movimientos = movHelper.getLogicMovements(pedido);
+//        LoteInsumoHelper lihelper = new LoteInsumoHelper();
+////        lihelper.devolverInsumos(insumosADevolver, pedido, movimientos);
+////        Boolean ok = lihelper.descontarInsumos(nuevosInsumosConsumidos, pedido.getTienda(), pedido);
+//        if (true) {
+//            ErrorController err = new ErrorController();
+//            err.loadDialog("Alerta", "El pedido fue actualizado satisfactoriamente", "ok", stackPane);
+//        } else {
+//            ErrorController err = new ErrorController();
+//            err.loadDialog("Alerta", "No hay insumos", "ok", stackPane);
+//        }
+//
+//    }
+    public void actualizarPedido() {
+        HashMap<Insumo, Integer> insumosConsumidosFinal = new HashMap<>();
+
+        Set<DetallePedido> detalles = new HashSet<>();
+        pedido.setVolumenTotal(0.0);
+        pedido.setTotal(0.0);
+        pedidos.forEach((t) -> {
+            if (t.combo != null) {
+                DetallePedido detalle = new DetallePedido(true, t.cantidad.getValue(), Double.valueOf(t.precio.getValue()), 0, t.combo, pedido);
+                if (t.detallePedido != null) {
+                    detalle.setId(t.detallePedido.getId());
+                }
+                ComboPromocion p = t.combo;
+                for (ProductosCombos productosCombos : p.getProductosxComboArray()) {
+                    calcularInsumos(productosCombos.getProducto(), productosCombos.getCantidad() * t.cantidad.getValue(), insumosConsumidosFinal);
+                }
+                detalles.add(detalle);
+                pedido.setVolumenTotal(pedido.getVolumenTotal() + t.combo.getVolumen() * t.cantidad.getValue());
+                pedido.setTotal(pedido.getTotal() + t.combo.getPreciounireal() * t.cantidad.getValue());
+            } else if (t.producto != null) {
+                DetallePedido detalle = new DetallePedido(true, t.cantidad.getValue(), Double.valueOf(t.precio.getValue()), 0, t.producto, pedido, t.descuentoProducto, t.descuentoCategoria);
+                if (t.detallePedido != null) {
+                    detalle.setId(t.detallePedido.getId());
+                }
+                calcularInsumos(detalle.getProducto(), t.cantidad.getValue(), insumosConsumidosFinal);
+                detalles.add(detalle);
+                pedido.setVolumenTotal(pedido.getVolumenTotal() + t.producto.getVolumen() * t.cantidad.getValue());
+                if (t.descuentoCategoria != null) {
+                    pedido.setTotal(pedido.getTotal() + t.producto.getPrecio() * t.cantidad.getValue() * (1 - t.descuentoCategoria.getValue()));
+                } else if (t.descuentoProducto != null) {
+                    pedido.setTotal(pedido.getTotal() + t.producto.getPrecio() * t.cantidad.getValue() * (1 - t.descuentoProducto.getValorPct()));
+                } else {
+                    pedido.setTotal(pedido.getTotal() + t.producto.getPrecio() * t.cantidad.getValue());
+                }
+
+            } else {
+                System.out.println("Error, no es ni combo ni producto");
+            }
+
+        });
+
+        pedido.setDetallePedido(detalles);
+        pedido.setActivo(true);
+        pedido.setModificable(true);
+
+        HashMap<Insumo, Integer> nuevosInsumosConsumidos = new HashMap<>();
+        HashMap<Insumo, Integer> insumosADevolver = new HashMap<>();
+        obtenerInsumosAConsumiryADevolver(insumosConsumidosIniciales, insumosConsumidosFinal, nuevosInsumosConsumidos, insumosADevolver);
+        nuevosInsumosConsumidos.forEach((t, u) -> {
+            System.out.println("Nuevos insumos consumidos---> " + t.getNombre() + "--" + u);
+        });
+        insumosADevolver.forEach((t, u) -> {
+            System.out.println("Insumos a devolver---> " + t.getNombre() + "--" + u);
+        });
+        MovimientoHelper movHelper = new MovimientoHelper();
+        ArrayList<MovimientosTienda> movimientos = movHelper.getLogicMovements(pedido);
+        movHelper.close();
+        LoteInsumoHelper lihelper = new LoteInsumoHelper();
+        lihelper.devolverInsumos(insumosADevolver, pedido, movimientos);
+        Boolean ok = lihelper.descontarInsumos(nuevosInsumosConsumidos, pedido.getTienda(), pedido);
+        if (true) {
+            ErrorController err = new ErrorController();
+            err.loadDialog("Alerta", "El detalle del pedido fue actualizado satisfactoriamente", "ok", stackPane);
+            gotoEditarDatosPedido();
+        } else {
+            ErrorController err = new ErrorController();
+            err.loadDialog("Alerta", "No hay insumos", "ok", stackPane);
         }
     }
 
-    public void initModel(Pedido pedido, StackPane stack) {
-        stackPane = stack;
+    public void gotoEditarDatosPedido() {
+        try {
+                Node node;
+                FXMLLoader loader = new FXMLLoader(SeleccionarProductosController.this.getClass().getResource(DatosPedidoController.viewPath));
+                node = (Node) loader.load();
+                DatosPedidoController desc = loader.getController();
+                desc.initModel(pedido, stackPane);
+                stackPane.getChildren().setAll(node);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+            Logger.getLogger(DescripcionProductosController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
+    public void initModel(Pedido ped, StackPane stack) {
+        this.stackPane = stack;
+        this.pedido = ped;
         //Basede datos
+        TiendaHelper h = new TiendaHelper();
+        Tienda tienda = h.getStore(pedido.getTienda().getId().intValue());
+        insumosCambiantes = tienda.getInsumos();
+        ArrayList<DetallePedido> detalle = new ArrayList<>();
         if (pedido.getId() != null) {
             PedidoHelper pedidohelper = new PedidoHelper();
-            pedido = pedidohelper.getPedido(pedido.getId());
-            ArrayList<DetallePedido> detalle = new ArrayList(pedido.getDetallePedido());
+            this.pedido = pedidohelper.getPedidoEager(pedido.getId());
+            detalle = new ArrayList(pedido.getDetallePedido());
             detalle.forEach((t) -> {
                 pedidos.add(new PedidoLista(t));
+                if (t.getCombo() != null) {
+                    for (ProductosCombos productosCombos : t.getCombo().getProductosxComboArray()) {
+                        calcularInsumos(productosCombos.getProducto(), productosCombos.getCantidad() * t.getCantidad(), insumosConsumidosIniciales);
+                    }
+                } else if (t.getProducto() != null) {
+                    calcularInsumos(t.getProducto(), t.getCantidad(), insumosConsumidosIniciales);
+                }
             });
-        }   
-        this.pedido = pedido;
+        }
+
         ProductoHelper gest = new ProductoHelper();
         ArrayList<Producto> productosDB = gest.getProducts();
         gest.close();
         if (productosDB != null) {
-            for (Producto p : productosDB) {
-                Producto t = p;
-                prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), "0", t.getCategoria().getNombre(), pedido.getTienda().getDescripcion(), t.getImagen(), t.getId().intValue(), t));
+            for (Producto t : productosDB) {
+                boolean esta = false;
+                for (PedidoLista pedido1 : pedidos) {
+                    esta = (pedido1.producto.getId().equals(t.getId()));
+                    if (esta) {
+                        break;
+                    }
+                }
+                if (!esta) {
+                    prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), "0", t.getCategoria().getNombre(), pedido.getTienda().getDescripcion(), t.getImagen(), t.getId().intValue(), t, false));
+                } else {
+                    prod.add(new ProductoLista(t.getNombre(), t.getPrecio().toString(), "0", t.getCategoria().getNombre(), pedido.getTienda().getDescripcion(), t.getImagen(), t.getId().intValue(), t, true));
+                }
+
             }
 
         }
@@ -542,16 +781,21 @@ public class SeleccionarProductosController implements Initializable {
         ArrayList<ComboPromocion> combosDB = helper.getCombos();
         helper.close();
         if (combosDB != null) {
+
             combosDB.forEach((t) -> {
-                prod.add(new ProductoLista(t, "0"));
+                boolean esta = false;
+                for (PedidoLista pedido1 : pedidos) {
+                    esta = (pedido1.combo.getId().equals(t.getId()));
+                }
+                if (!esta) {
+                    prod.add(new ProductoLista(t, "0", false));
+                } else {
+                    prod.add(new ProductoLista(t, "0", true));
+                }
             });
 
         }
 
-        TiendaHelper h = new TiendaHelper();
-        Tienda tienda = h.getStore(pedido.getTienda().getId().intValue());
-        insumos = tienda.getInsumos();
-        insumosCambiantes = new HashMap(insumos);
         mostrarMaximoStock();
     }
 
@@ -586,6 +830,60 @@ public class SeleccionarProductosController implements Initializable {
         }
     }
 
+    void devolverInsumos(Producto producto, Integer cantidadADevolver) {
+        HashMap<Insumo, Integer> insumos = new HashMap<>();
+        calcularInsumos(producto, cantidadADevolver, insumos);
+
+    }
+
+    void calcularInsumos(Producto p, Integer cantidad, HashMap<Insumo, Integer> insumosConsumidos) {
+        ProductoHelper helper = new ProductoHelper();
+        p = helper.getProducto(p.getId());
+        ArrayList<ProductoInsumo> pxi = new ArrayList(p.getProductoxInsumos());
+        for (ProductoInsumo productoInsumo : pxi) {
+            if (insumosConsumidos.get(productoInsumo.getInsumo()) != null) {
+                insumosConsumidos.put(productoInsumo.getInsumo(), productoInsumo.getCantidad().intValue() * cantidad + insumosConsumidos.get(productoInsumo.getInsumo()));
+            } else {
+                insumosConsumidos.put(productoInsumo.getInsumo(), productoInsumo.getCantidad().intValue() * cantidad);
+            }
+        }
+    }
+
+//    void mergeInsumosConsumidosDevueltos(HashMap<Insumo, Integer> insumosAConsumir, HashMap<Insumo, Integer> insumosADevolver) {
+//        insumosAConsumir.forEach((t, u) -> {
+//            if (insumosADevolver.get(t) != null) {
+//                if (insumosAConsumir.get(t) >= insumosADevolver.get(t)) {
+//                    insumosAConsumir.put(t, insumosAConsumir.get(t) - insumosADevolver.get(t));
+//                    insumosADevolver.put(t, 0);
+//                } else {
+//                    insumosADevolver.put(t, insumosADevolver.get(t) - insumosAConsumir.get(t));
+//                    insumosAConsumir.put(t, 0);
+//                }
+//
+//            }
+//        });
+//
+//    }
+    void obtenerInsumosAConsumiryADevolver(HashMap<Insumo, Integer> insumosIniciales, HashMap<Insumo, Integer> insumosFinales,
+            HashMap<Insumo, Integer> insumosAConsumir, HashMap<Insumo, Integer> insumosADevolver) {
+        HashMap<Insumo, Integer> totalInsumos = new HashMap<>(insumosIniciales);
+        totalInsumos.putAll(insumosFinales);
+        totalInsumos.forEach((t, u) -> {
+            if (insumosFinales.get(t) != null && insumosIniciales.get(t) != null) {
+                if (insumosIniciales.get(t) < insumosFinales.get(t)) {
+                    insumosAConsumir.put(t, insumosFinales.get(t) - insumosIniciales.get(t));
+                } else {
+                    insumosADevolver.put(t, insumosIniciales.get(t) - insumosFinales.get(t));
+                }
+            } else if (insumosFinales.get(t) != null) {
+                insumosADevolver.put(t, insumosIniciales.get(t));
+            } else if (insumosIniciales.get(t) != null) {
+                insumosAConsumir.put(t, insumosFinales.get(t));
+            }
+
+        });
+    }
+
     public void initPopup() {
         JFXButton eliminar = new JFXButton("Eliminar");
 
@@ -596,10 +894,11 @@ public class SeleccionarProductosController implements Initializable {
                 try {
 
                     //remove selected item from the table list
-                    prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, pedidoListaSeleccionado.codigo, null))).getSeleccion().setValue(Boolean.FALSE);
-                    //recalcularStock(prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, current.codigo, null))), 0, Integer.valueOf(current.cantidad.getValue()));
-                    mostrarMaximoStock();
-                    pedidos.remove(pedidoListaSeleccionado);
+                    ProductoLista productoLista = prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, pedidoListaSeleccionado.codigo, null, false)));
+                    prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, pedidoListaSeleccionado.codigo, null, false))).getSeleccion().setValue(Boolean.FALSE);
+//                    recalcularStockDetalle(productoLista, 0, pedidoListaSeleccionado.cantidad.getValue());
+//                    mostrarMaximoStock();
+//                    pedidos.remove(pedidoListaSeleccionado);
 
                 } catch (Exception ex) {
 
@@ -658,7 +957,7 @@ public class SeleccionarProductosController implements Initializable {
         Producto producto;
         ComboPromocion combo;
 
-        public ProductoLista(String nombre, String precio, String stock, String categoria, String almacen, String pathImagen, Integer codigo, Producto producto) {
+        public ProductoLista(String nombre, String precio, String stock, String categoria, String almacen, String pathImagen, Integer codigo, Producto producto, Boolean estado) {
             this.nombre = new SimpleStringProperty(nombre);
             this.precio = new SimpleStringProperty(precio);
             this.stock = new SimpleStringProperty(stock);
@@ -672,7 +971,7 @@ public class SeleccionarProductosController implements Initializable {
                 Image im = new Image(GeneralHelper.defaultImage);
                 this.imagen = new ImageView(im);
             }
-            this.seleccion = new SimpleBooleanProperty(false);
+            this.seleccion = new SimpleBooleanProperty(estado);
             this.codigo = codigo;
             this.producto = producto;
             seleccion.addListener((observable, oldValue, newValue) -> {
@@ -703,7 +1002,7 @@ public class SeleccionarProductosController implements Initializable {
                 } else {
                     Integer ix = pedidos.indexOf(new PedidoLista(nombre, precio, 0, "0", codigo, "0", null, producto, null));
                     if (ix >= 0) {
-                        recalcularStockDetalle(prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, codigo, null))), 0, pedidos.get(ix).cantidad.getValue());
+                        recalcularStockDetalle(prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, codigo, null, false))), 0, pedidos.get(ix).cantidad.getValue());
                     }
                     mostrarMaximoStock();
                     pedidos.remove(new PedidoLista(nombre, precio, 0, "0", codigo, "0", null, producto, null));
@@ -712,7 +1011,7 @@ public class SeleccionarProductosController implements Initializable {
             });
         }
 
-        public ProductoLista(ComboPromocion combo, String stock) {
+        public ProductoLista(ComboPromocion combo, String stock, Boolean estado) {
             this.nombre = new SimpleStringProperty(combo.getNombre());
             this.precio = new SimpleStringProperty(combo.getPreciounireal().toString());
             this.stock = new SimpleStringProperty(stock);
@@ -725,7 +1024,7 @@ public class SeleccionarProductosController implements Initializable {
                 Image im = new Image(GeneralHelper.defaultImage);
                 this.imagen = new ImageView(im);
             }
-            this.seleccion = new SimpleBooleanProperty(false);
+            this.seleccion = new SimpleBooleanProperty(estado);
             this.codigo = combo.getId().intValue();
             this.combo = combo;
             seleccion.addListener((observable, oldValue, newValue) -> {
@@ -735,8 +1034,10 @@ public class SeleccionarProductosController implements Initializable {
                     //prod.remove(this);
                 } else {
                     Integer ix = pedidos.indexOf(new PedidoLista(0, "0", combo));
+
                     if (ix >= 0) {
-                        recalcularStockDetalle(prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, codigo, null))), 0, pedidos.get(ix).cantidad.getValue());
+                        PedidoLista ped = pedidos.get(ix);
+                        recalcularStockDetalle(prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, codigo, null, false))), 0, ped.cantidad.getValue());
                     }
                     mostrarMaximoStock();
                     pedidos.remove(new PedidoLista(0, "0", combo));
@@ -903,6 +1204,7 @@ public class SeleccionarProductosController implements Initializable {
         ComboPromocion combo;
         ProductoDescuento descuentoProducto;
         ProductoCategoriaDescuento descuentoCategoria;
+        DetallePedido detallePedido;
 
         public PedidoLista(String nombre, String precio, Integer cantidad, String subtotal, Integer codigo, String descuento, Integer codigoDesc, Producto producto, ProductoDescuento descuentoProducto) {
             this.nombre = new SimpleStringProperty(nombre);
@@ -1021,6 +1323,7 @@ public class SeleccionarProductosController implements Initializable {
                 this.codigo = detalle.getCombo().getId().intValue();
                 this.combo = detalle.getCombo();
             }
+            this.detallePedido = detalle;
         }
 
         @Override
@@ -1130,8 +1433,8 @@ public class SeleccionarProductosController implements Initializable {
                     // get Selected Item
                     PedidoLista current = (PedidoLista) ButtonCell.this.getTreeTableRow().getItem();
                     //remove selected item from the table list
-                    prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, current.codigo, null))).getSeleccion().setValue(Boolean.FALSE);
-                    //recalcularStock(prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, current.codigo, null))), 0, Integer.valueOf(current.cantidad.getValue()));
+                    prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, current.codigo, null, false))).getSeleccion().setValue(Boolean.FALSE);
+//                    recalcularStock(prod.get(prod.indexOf(new ProductoLista("", "", "0", viewPath, viewPath, viewPath, current.codigo, null))), 0, Integer.valueOf(current.cantidad.getValue()));
                     mostrarMaximoStock();
                     pedidos.remove(current);
                 }

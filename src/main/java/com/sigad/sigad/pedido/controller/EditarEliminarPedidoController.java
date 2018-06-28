@@ -18,6 +18,7 @@ import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoCategoriaDescuento;
 import com.sigad.sigad.business.ProductoDescuento;
 import com.sigad.sigad.business.helpers.GeneralHelper;
+import com.sigad.sigad.business.helpers.PedidoHelper;
 import static com.sigad.sigad.pedido.controller.SeleccionarProductosController.viewPath;
 import java.net.URL;
 import java.util.ArrayList;
@@ -91,14 +92,16 @@ public class EditarEliminarPedidoController implements Initializable {
     }
 
     public void initModel(Boolean isEdit, Pedido pedido, StackPane hiddenSp) {
-        this.pedido = pedido;
-        ArrayList<DetallePedido> d = new ArrayList<>(pedido.getDetallePedido());
+        PedidoHelper helper = new PedidoHelper();
+        this.pedido = helper.getPedidoEager(pedido.getId());
+        ArrayList<DetallePedido> d = new ArrayList<>(this.pedido.getDetallePedido());
         d.forEach((t) -> {
             pedidos.add(new PedidoLista(t));
         });
-        txtCliente.setText(pedido.getCliente().toString());
-        txtDireccion.setText(pedido.getDireccionDeEnvio());
-        txtEstado.setText(pedido.getEstado().getNombre());
+        helper.close();
+        txtCliente.setText(this.pedido.getCliente().toString());
+        txtDireccion.setText(this.pedido.getDireccionDeEnvio());
+        txtEstado.setText(this.pedido.getEstado().getNombre());
     }
 
     public void columnasPedidos() {
@@ -158,7 +161,7 @@ public class EditarEliminarPedidoController implements Initializable {
                     this.descuentoCategoria = detalle.getDescuentoCategoria();
                     this.descuentoProducto = null;
                 } else if (detalle.getDescuentoProducto() != null) {
-                    this.descuento = new SimpleDoubleProperty(detalle.getDescuentoProducto().getValorPct()* 100);
+                    this.descuento = new SimpleDoubleProperty(detalle.getDescuentoProducto().getValorPct() * 100);
                     Double s = detalle.getCantidad() * detalle.getPrecioUnitario() * (1 - detalle.getDescuentoProducto().getValorPct());
                     this.subtotal = new SimpleDoubleProperty(GeneralHelper.roundTwoDecimals(s));
                     this.descuentoProducto = detalle.getDescuentoProducto();
@@ -179,7 +182,7 @@ public class EditarEliminarPedidoController implements Initializable {
                 this.precio = new SimpleStringProperty(detalle.getPrecioUnitario().toString());
                 this.cantidad = new SimpleIntegerProperty(detalle.getCantidad());
                 this.entregados = new SimpleIntegerProperty(detalle.getNumEntregados());
-                this.subtotal = new SimpleDoubleProperty(detalle.getPrecioUnitario()* detalle.getCantidad());
+                this.subtotal = new SimpleDoubleProperty(detalle.getPrecioUnitario() * detalle.getCantidad());
                 this.descuento = new SimpleDoubleProperty(0.0);
                 this.descuentoCategoria = null;
                 this.descuentoProducto = null;
