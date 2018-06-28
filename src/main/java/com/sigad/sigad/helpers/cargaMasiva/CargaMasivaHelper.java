@@ -374,9 +374,13 @@ public class CargaMasivaHelper {
             case CargaMasivaConstantes.TABLA_DESCUENTOXUSUARIO:
                 String tipoDscto = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 index++;
-                Double condicionDscto = Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                Double condicionDscto = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if (condicionDscto==null)
+                    return false;
                 index++;
-                Double valorDscto = Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                Double valorDscto = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if (valorDscto==null)
+                    return false;
                 index++;
                 try {
                     DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
@@ -409,9 +413,13 @@ public class CargaMasivaHelper {
             case CargaMasivaConstantes.TABLA_PRODUCTODESCUENTO:
                 String nombreProd = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 index++;
-                Double dsctoProd = Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                Double dsctoProd = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if (dsctoProd==null)
+                    return false;
                 index++;
-                Integer stockmaximo = Integer.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                Integer stockmaximo = (Integer) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), true);
+                if (stockmaximo==null)
+                    return false;
                 try {
                     DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
                     index++;
@@ -445,14 +453,16 @@ public class CargaMasivaHelper {
                 String nombreCategoriaProd = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 System.out.println(nombreCategoriaProd);
                 index++;
-                Double dsctoCategoria = Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                Double dsctoCategoria = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if (dsctoCategoria==null)
+                    return false;
                 index++;
                 DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
                 try {
                     java.util.Date fechaInicio = df.parse(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                     index++;
                     java.util.Date fechaFin = df.parse(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
-                    if (dsctoCategoria!=null && dsctoCategoria>0.0) {
+                    if (dsctoCategoria>0.0) {
                         LOGGER.log(Level.INFO, "Orden de fechas correcto");
                         ProductoCategoria pc = (ProductoCategoria) CargaMasivaHelper.busquedaGeneralString(session, "ProductoCategoria", new String[] {"nombre"}, new String [] {nombreCategoriaProd});
                         if (pc!=null) {
@@ -479,7 +489,9 @@ public class CargaMasivaHelper {
                 index++;
                 String nombreInsumo = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 index++;
-                Double precioInsumoProveedor = Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                Double precioInsumoProveedor = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if (precioInsumoProveedor==null)
+                    return false;
                 if (precioInsumoProveedor>0.0) {
                     Proveedor provee = (Proveedor) CargaMasivaHelper.busquedaGeneralString(session, "Proveedor", new String [] {"nombre"}, new String [] {nombreProveedor});
                     Insumo insumo = (Insumo) CargaMasivaHelper.busquedaGeneralString(session, "Insumo", new String [] {"nombre"}, new String [] {nombreInsumo});
@@ -943,7 +955,7 @@ public class CargaMasivaHelper {
                     LOGGER.log(Level.SEVERE, "No se identifica un nombre de tipo de vehiculo para el vehiculo");
                     return false;
                 }
-                tipoVehiculoAsociado = (Vehiculo.Tipo) CargaMasivaHelper.busquedaGeneralString(session, "Vehiculo$Tipo", new String[] {"nombre"}, new String[] {nombreTipoVehiculoAsociado});
+                tipoVehiculoAsociado = (Vehiculo.Tipo) CargaMasivaHelper.busquedaGeneralString(session, Vehiculo.Tipo.class.getName(), new String[] {"nombre"}, new String[] {nombreTipoVehiculoAsociado});
                 if (tipoVehiculoAsociado == null) {
                     LOGGER.log(Level.SEVERE, "No se identifica un nombre de tipo de vehiculo para el vehiculo");
                     return false;
@@ -1002,6 +1014,7 @@ public class CargaMasivaHelper {
     
     public static Object validarParsing(String numero, boolean esInteger) {
         try {
+            numero = numero.replaceAll(",", ".");
             System.out.println(String.format("Valor a ser parseado %s", numero));
             if (esInteger)
                 return Integer.valueOf(numero);
