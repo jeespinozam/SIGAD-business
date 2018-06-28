@@ -206,13 +206,22 @@ public class ListaOrdenesCompraController implements Initializable {
     }
     private void fillData() {
         OrdenCompraHelper helpero = new OrdenCompraHelper();
-        ArrayList<OrdenCompra> listaOrdenes= helpero.getOrdenesUser(LoginController.user.getId());
+        
+        
+        ArrayList<OrdenCompra> listaOrdenes; 
+        helpero.close();
+        
+        if(LoginController.user.getPerfil().getNombre().equals(Constantes.PERFIL_SUPERADMIN)){
+            listaOrdenes = helpero.getOrdenes();
+        }
+        else{
+           listaOrdenes = helpero.getOrdenesStore(LoginController.user.getTienda());
+        }
         if(listaOrdenes != null){
             listaOrdenes.forEach((i)->{
                 updateTable(i);
             });
-        }
-        helpero.close();
+        }        
     }
     public static void updateTable(OrdenCompra orden) {
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");

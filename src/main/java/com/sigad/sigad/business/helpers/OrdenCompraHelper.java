@@ -91,11 +91,21 @@ public class OrdenCompraHelper extends BaseHelper {
         }
         return ordenes;
     }
-//    public ArrayList<OrdenCompra> getOrdenesStore(Tienda tienda){
-//        ArrayList<OrdenCompra> ordenes = null;
-//        Query query = null;
-//        
-//    }
+    public ArrayList<OrdenCompra> getOrdenesStore(Tienda tienda){
+        ArrayList<OrdenCompra> ordenes = null;
+        Query query = null;
+        try {
+            query = session.createQuery("SELECT ORD from Usuario US INNER JOIN OrdenCompra ORD on US.id = ORD.usuario where US.tienda = :tiendaId");
+            query.setParameter("tiendaId",tienda);
+            if(!query.list().isEmpty()){
+                ordenes = (ArrayList<OrdenCompra>)query.list();
+            }
+        } catch (Exception e) {
+            errorMessage = e.getMessage();
+        }
+        return ordenes;
+        
+    }
     public ArrayList<DetalleOrdenCompra> getDetalles(Integer id){
         ArrayList<DetalleOrdenCompra> ordenes = null;
         Query query = null;

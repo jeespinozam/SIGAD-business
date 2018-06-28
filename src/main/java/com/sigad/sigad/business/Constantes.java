@@ -26,6 +26,7 @@ public class Constantes {
     public static final String TIPO_MOVIMIENTO_ENTRADA_FISICA = "Entrada Fisica";
     public static final String PERFIL_CLIENTE = "Cliente";
     public static final String PERFIL_VENDEDOR = "Vendedor";
+    public static final String PERFIL_SUPERADMIN = "SuperAdmin";
     
     
 }

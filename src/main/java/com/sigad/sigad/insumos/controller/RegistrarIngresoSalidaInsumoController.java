@@ -176,20 +176,25 @@ public class RegistrarIngresoSalidaInsumoController implements Initializable {
     public void fillData(){
         TipoMovimientoHelper helpertm = new TipoMovimientoHelper();
        
-        ArrayList<TipoMovimiento> tipos = null;
+        ArrayList<TipoMovimiento> tipos;
         tipos = helpertm.getTiposMovimientos();
+        helpertm.close();
         LoteInsumoHelper helperli = new LoteInsumoHelper();
         ArrayList<LoteInsumo> insumosSpecific = helperli.getLoteInsumosEspecificPositive(LoginController.user.getTienda(),insumo);
+        helperli.close();
+        
         if(tipos!= null) {
             tipos.forEach((i)->{
-                if(!(i.getNombre().equals(Constantes.TIPO_MOVIMIENTO_SALIDA_FISICA) && insumosSpecific == null) && !i.getNombre().equals(Constantes.TIPO_MOVIMIENTO_SALIDA_LOGICA)
-                            && !i.getNombre().equals(Constantes.TIPO_MOVIMIENTO_ENTRADA_LOGICA)){
-                   cbxTipo.getItems().add(i); 
+//                if(!(i.getNombre().equals(Constantes.TIPO_MOVIMIENTO_SALIDA_FISICA) && insumosSpecific == null) && i.getNombre().equals(Constantes.TIPO_MOVIMIENTO_SALIDA_LOGICA)
+//                            && !i.getNombre().equals(Constantes.TIPO_MOVIMIENTO_ENTRADA_LOGICA)){
+//                    
+//                }
+                if((i.getNombre().equals(Constantes.TIPO_MOVIMIENTO_SALIDA_FISICA) && insumosSpecific != null)|| i.getNombre().equals(Constantes.TIPO_MOVIMIENTO_ENTRADA_FISICA) ){
+                    cbxTipo.getItems().add(i);
                 }
             });
             cbxTipo.setPromptText("Tipo Movimiento");
             cbxTipo.setConverter(new StringConverter<TipoMovimiento>() {
-                
                 Long id = null;
                 String des = null;
                 
@@ -210,7 +215,6 @@ public class RegistrarIngresoSalidaInsumoController implements Initializable {
                 }
             });
         }
-        helpertm.close();
         
         cbxTipo.valueProperty().addListener((ObservableValue<? extends Object> observable, Object oldValue, Object newValue) -> {
             TipoMovimiento li = (TipoMovimiento) newValue;
@@ -229,8 +233,7 @@ public class RegistrarIngresoSalidaInsumoController implements Initializable {
         }
         Date inputDate = new Date();
         LocalDate date = inputDate .toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        pckDate.setValue(date);
-        helperli.close();
+        pckDate.setValue(date);      
     }
     private void setColumns(){
         codigoCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<LoteInsumoViewer, String> param) -> param.getValue().getValue().getCodigo()
