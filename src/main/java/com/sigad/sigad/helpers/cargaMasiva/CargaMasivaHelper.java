@@ -185,7 +185,7 @@ public class CargaMasivaHelper {
                     case CargaMasivaConstantes.TABLA_PERFILXPERMISO:
                         rowhead.createCell(rowIndex).setCellValue("Nombre de Perfil");
                         rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Menu e Icono (separados por coma)");
+                        rowhead.createCell(rowIndex).setCellValue("Menu (separados por coma)");
                         break;
                     case CargaMasivaConstantes.TABLA_FRAGILIDAD:
                         rowhead.createCell(rowIndex).setCellValue("Valor de Fragilidad");
@@ -268,6 +268,29 @@ public class CargaMasivaHelper {
         }
     }
     
+    public static void actualizarRegistrosEspeciales(Session session) {
+        // actualizar los precios de compra de cada producto
+        List<Producto> listaProductos = session.createCriteria(Producto.class).list();
+        List<Insumo> listaInsumos = null;   // lista de insumos del producto en cuestion
+        List<ProductoInsumo> listaProductoInsumo = null;
+        String hqlprodxinsumo = "from ProductoInsumo where producto = :productoX";
+        LOGGER.log(Level.INFO, "Se procede a actualizar los costos de cada producto");
+        for (Producto producto : listaProductos) {
+            //listaProductoInsumo = producto.getProductoxInsumos();
+            listaProductoInsumo = session.createQuery(hqlprodxinsumo).setParameter("productoX", producto).list();
+            double costoCompraProd = 0.0;
+            // recorremos cada insumo
+            for (ProductoInsumo prodInsumo : listaProductoInsumo) {
+                LOGGER.log(Level.INFO, "Cantidad requerida del insumo " + prodInsumo.getCantidad());
+                LOGGER.log(Level.INFO, "Precio de la unidad del insumo" + prodInsumo.getInsumo().getPrecio());
+                costoCompraProd += prodInsumo.getCantidad() * prodInsumo.getInsumo().getPrecio();
+            }
+            LOGGER.log(Level.INFO, String.format("El producto %s cuesta " + costoCompraProd, producto.getNombre()));
+            producto.setPrecioCompra(costoCompraProd);
+            CargaMasivaHelper.actualizarObjeto(producto, session);
+        }
+    }
+    
     /* forma de consumo : se pasa como unico parametro la ruta del archivo, el metodo identificara las hojas del archivo e iniciara la carga masiva */
     public static List<HojaReporte> CargaMasivaProceso(String archivoRuta) {
         try {
@@ -313,6 +336,7 @@ public class CargaMasivaHelper {
                     reporteFinal.add(hojaReporte);
                 }
             }
+            CargaMasivaHelper.actualizarRegistrosEspeciales(session);
             // Cerrando conexion a Base de Datos
             session.close();
             workbook.close();
@@ -374,9 +398,13 @@ public class CargaMasivaHelper {
             case CargaMasivaConstantes.TABLA_DESCUENTOXUSUARIO:
                 String tipoDscto = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 index++;
-                Double condicionDscto = Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                Double condicionDscto = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if (condicionDscto==null)
+                    return false;
                 index++;
-                Double valorDscto = Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                Double valorDscto = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if (valorDscto==null)
+                    return false;
                 index++;
                 try {
                     DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
@@ -409,9 +437,13 @@ public class CargaMasivaHelper {
             case CargaMasivaConstantes.TABLA_PRODUCTODESCUENTO:
                 String nombreProd = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 index++;
-                Double dsctoProd = Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                Double dsctoProd = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if (dsctoProd==null)
+                    return false;
                 index++;
-                Integer stockmaximo = Integer.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                Integer stockmaximo = (Integer) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), true);
+                if (stockmaximo==null)
+                    return false;
                 try {
                     DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
                     index++;
@@ -445,14 +477,16 @@ public class CargaMasivaHelper {
                 String nombreCategoriaProd = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 System.out.println(nombreCategoriaProd);
                 index++;
-                Double dsctoCategoria = Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                Double dsctoCategoria = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if (dsctoCategoria==null)
+                    return false;
                 index++;
                 DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
                 try {
                     java.util.Date fechaInicio = df.parse(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
                     index++;
                     java.util.Date fechaFin = df.parse(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
-                    if (dsctoCategoria!=null && dsctoCategoria>0.0) {
+                    if (dsctoCategoria>0.0) {
                         LOGGER.log(Level.INFO, "Orden de fechas correcto");
                         ProductoCategoria pc = (ProductoCategoria) CargaMasivaHelper.busquedaGeneralString(session, "ProductoCategoria", new String[] {"nombre"}, new String [] {nombreCategoriaProd});
                         if (pc!=null) {
@@ -479,7 +513,9 @@ public class CargaMasivaHelper {
                 index++;
                 String nombreInsumo = StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index)));
                 index++;
-                Double precioInsumoProveedor = Double.valueOf(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))));
+                Double precioInsumoProveedor = (Double) CargaMasivaHelper.validarParsing(StringUtils.trimToEmpty(dataFormatter.formatCellValue(row.getCell(index))), false);
+                if (precioInsumoProveedor==null)
+                    return false;
                 if (precioInsumoProveedor>0.0) {
                     Proveedor provee = (Proveedor) CargaMasivaHelper.busquedaGeneralString(session, "Proveedor", new String [] {"nombre"}, new String [] {nombreProveedor});
                     Insumo insumo = (Insumo) CargaMasivaHelper.busquedaGeneralString(session, "Insumo", new String [] {"nombre"}, new String [] {nombreInsumo});
@@ -735,6 +771,17 @@ public class CargaMasivaHelper {
                     }
                     // identificamos la opcion y el icono en la variable permisoOpcionxIcono
                     String [] permisoAux = permisoMenuxIcono.split(",");
+                    for (int i=0;i<permisoAux.length;i++) {
+                        Permiso permisoAsociado = (Permiso) CargaMasivaHelper.busquedaGeneralString(session, "Permiso", new String [] {"menu"}, new String [] {StringUtils.trimToEmpty(permisoAux[i])});
+                        if (permisoAsociado!=null) {
+                            LOGGER.log(Level.INFO, String.format("Permiso %s encontrado con exito", permisoAux[i]));
+                            perfilAsociado.getPermisos().add(permisoAsociado);
+                        }
+                        else
+                            LOGGER.log(Level.WARNING, String.format("Permiso %s no encontrado, este permiso no sera considerado", permisoMenuxIcono));
+                    }
+                    return CargaMasivaHelper.actualizarObjeto(perfilAsociado, session);
+                    /*
                     if ((permisoAux.length == 2) && (StringUtils.isNotBlank(permisoAux[0]) && StringUtils.isNotBlank(permisoAux[1]))){
                         Permiso permisoAsociado = (Permiso) CargaMasivaHelper.busquedaGeneralString(session, "Permiso", new String [] {"menu","icono"}, new String [] {StringUtils.trimToEmpty(permisoAux[0]), StringUtils.trimToEmpty(permisoAux[1])});
                         if (permisoAsociado!=null) {
@@ -751,6 +798,7 @@ public class CargaMasivaHelper {
                         LOGGER.log(Level.WARNING, String.format("No se encontro Menu o Icono"));
                         return false;
                     }
+                    */
                 }
                 else {
                     LOGGER.log(Level.SEVERE, String.format("Perfil %s no encontrado, cancelando operacion", perfilNombreAux));
@@ -943,7 +991,7 @@ public class CargaMasivaHelper {
                     LOGGER.log(Level.SEVERE, "No se identifica un nombre de tipo de vehiculo para el vehiculo");
                     return false;
                 }
-                tipoVehiculoAsociado = (Vehiculo.Tipo) CargaMasivaHelper.busquedaGeneralString(session, "Vehiculo$Tipo", new String[] {"nombre"}, new String[] {nombreTipoVehiculoAsociado});
+                tipoVehiculoAsociado = (Vehiculo.Tipo) CargaMasivaHelper.busquedaGeneralString(session, Vehiculo.Tipo.class.getName(), new String[] {"nombre"}, new String[] {nombreTipoVehiculoAsociado});
                 if (tipoVehiculoAsociado == null) {
                     LOGGER.log(Level.SEVERE, "No se identifica un nombre de tipo de vehiculo para el vehiculo");
                     return false;
@@ -1002,6 +1050,7 @@ public class CargaMasivaHelper {
     
     public static Object validarParsing(String numero, boolean esInteger) {
         try {
+            numero = numero.replaceAll(",", ".");
             System.out.println(String.format("Valor a ser parseado %s", numero));
             if (esInteger)
                 return Integer.valueOf(numero);

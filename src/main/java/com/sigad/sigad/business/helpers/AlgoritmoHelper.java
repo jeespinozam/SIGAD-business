@@ -37,6 +37,15 @@ import org.jgrapht.graph.SimpleGraph;
  * @author cfoch
  */
 public class AlgoritmoHelper extends BaseHelper {
+
+    public AlgoritmoHelper() {
+        super();
+    }
+
+    public AlgoritmoHelper(boolean close) {
+        super(close);
+    }
+
     public Tienda getTiendaActual(Usuario usuario) {
         Tienda tienda;
         tienda = usuario.getTienda();
@@ -122,7 +131,7 @@ public class AlgoritmoHelper extends BaseHelper {
             try {
                 repartidores = (List<Usuario>) session
                         .createQuery(
-                                "from Usuario where tienda_id = :tienda_id")
+                                "from Usuario u where tienda_id = :tienda_id and u.perfil.nombre='Repartidor'")
                         .setParameter("tienda_id", tienda.getId())
                         .list();
             } catch (Exception ex) {
