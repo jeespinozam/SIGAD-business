@@ -185,7 +185,7 @@ public class CargaMasivaHelper {
                     case CargaMasivaConstantes.TABLA_PERFILXPERMISO:
                         rowhead.createCell(rowIndex).setCellValue("Nombre de Perfil");
                         rowIndex++;
-                        rowhead.createCell(rowIndex).setCellValue("Menu e Icono (separados por coma)");
+                        rowhead.createCell(rowIndex).setCellValue("Menu (separados por coma)");
                         break;
                     case CargaMasivaConstantes.TABLA_FRAGILIDAD:
                         rowhead.createCell(rowIndex).setCellValue("Valor de Fragilidad");
@@ -268,6 +268,29 @@ public class CargaMasivaHelper {
         }
     }
     
+    public static void actualizarRegistrosEspeciales(Session session) {
+        // actualizar los precios de compra de cada producto
+        List<Producto> listaProductos = session.createCriteria(Producto.class).list();
+        List<Insumo> listaInsumos = null;   // lista de insumos del producto en cuestion
+        List<ProductoInsumo> listaProductoInsumo = null;
+        String hqlprodxinsumo = "from ProductoInsumo where producto = :productoX";
+        LOGGER.log(Level.INFO, "Se procede a actualizar los costos de cada producto");
+        for (Producto producto : listaProductos) {
+            //listaProductoInsumo = producto.getProductoxInsumos();
+            listaProductoInsumo = session.createQuery(hqlprodxinsumo).setParameter("productoX", producto).list();
+            double costoCompraProd = 0.0;
+            // recorremos cada insumo
+            for (ProductoInsumo prodInsumo : listaProductoInsumo) {
+                LOGGER.log(Level.INFO, "Cantidad requerida del insumo " + prodInsumo.getCantidad());
+                LOGGER.log(Level.INFO, "Precio de la unidad del insumo" + prodInsumo.getInsumo().getPrecio());
+                costoCompraProd += prodInsumo.getCantidad() * prodInsumo.getInsumo().getPrecio();
+            }
+            LOGGER.log(Level.INFO, String.format("El producto %s cuesta " + costoCompraProd, producto.getNombre()));
+            producto.setPrecioCompra(costoCompraProd);
+            CargaMasivaHelper.actualizarObjeto(producto, session);
+        }
+    }
+    
     /* forma de consumo : se pasa como unico parametro la ruta del archivo, el metodo identificara las hojas del archivo e iniciara la carga masiva */
     public static List<HojaReporte> CargaMasivaProceso(String archivoRuta) {
         try {
@@ -313,6 +336,7 @@ public class CargaMasivaHelper {
                     reporteFinal.add(hojaReporte);
                 }
             }
+            CargaMasivaHelper.actualizarRegistrosEspeciales(session);
             // Cerrando conexion a Base de Datos
             session.close();
             workbook.close();
@@ -747,6 +771,17 @@ public class CargaMasivaHelper {
                     }
                     // identificamos la opcion y el icono en la variable permisoOpcionxIcono
                     String [] permisoAux = permisoMenuxIcono.split(",");
+                    for (int i=0;i<permisoAux.length;i++) {
+                        Permiso permisoAsociado = (Permiso) CargaMasivaHelper.busquedaGeneralString(session, "Permiso", new String [] {"menu"}, new String [] {StringUtils.trimToEmpty(permisoAux[i])});
+                        if (permisoAsociado!=null) {
+                            LOGGER.log(Level.INFO, String.format("Permiso %s encontrado con exito", permisoAux[i]));
+                            perfilAsociado.getPermisos().add(permisoAsociado);
+                        }
+                        else
+                            LOGGER.log(Level.WARNING, String.format("Permiso %s no encontrado, este permiso no sera considerado", permisoMenuxIcono));
+                    }
+                    return CargaMasivaHelper.actualizarObjeto(perfilAsociado, session);
+                    /*
                     if ((permisoAux.length == 2) && (StringUtils.isNotBlank(permisoAux[0]) && StringUtils.isNotBlank(permisoAux[1]))){
                         Permiso permisoAsociado = (Permiso) CargaMasivaHelper.busquedaGeneralString(session, "Permiso", new String [] {"menu","icono"}, new String [] {StringUtils.trimToEmpty(permisoAux[0]), StringUtils.trimToEmpty(permisoAux[1])});
                         if (permisoAsociado!=null) {
@@ -763,6 +798,7 @@ public class CargaMasivaHelper {
                         LOGGER.log(Level.WARNING, String.format("No se encontro Menu o Icono"));
                         return false;
                     }
+                    */
                 }
                 else {
                     LOGGER.log(Level.SEVERE, String.format("Perfil %s no encontrado, cancelando operacion", perfilNombreAux));
