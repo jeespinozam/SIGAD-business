@@ -205,18 +205,15 @@ public class ListaOrdenesCompraController implements Initializable {
         
     }
     private void fillData() {
-        OrdenCompraHelper helpero = new OrdenCompraHelper();
-        
-        
+        OrdenCompraHelper helpero = new OrdenCompraHelper();        
         ArrayList<OrdenCompra> listaOrdenes; 
-        helpero.close();
-        
         if(LoginController.user.getPerfil().getNombre().equals(Constantes.PERFIL_SUPERADMIN)){
             listaOrdenes = helpero.getOrdenes();
         }
         else{
            listaOrdenes = helpero.getOrdenesStore(LoginController.user.getTienda());
         }
+        helpero.close();
         if(listaOrdenes != null){
             listaOrdenes.forEach((i)->{
                 updateTable(i);
@@ -266,80 +263,6 @@ public class ListaOrdenesCompraController implements Initializable {
         JFXButton edit = new JFXButton("Editar");
         JFXButton delete = new JFXButton("No hay opciones");
         
-//        io.setOnAction((ActionEvent event) -> {
-//            popup.hide();
-//            Tienda currentStore = LoginController.user.getTienda();
-//            double capacidadTotal = currentStore.getCapacidad();
-//
-//            double capacidadActual = 0.0;
-//            LoteInsumoHelper helperli = new LoteInsumoHelper();
-//            ArrayList<LoteInsumo> lotes = helperli.getLoteInsumos(currentStore);
-//            for (int i = 0; i < lotes.size(); i++) {
-//                LoteInsumo next = lotes.get(i);
-//                capacidadActual += next.getInsumo().getStockTotalFisico()* next.getInsumo().isVolumen();
-//            }
-//
-//            OrdenCompraHelper helperoc = new OrdenCompraHelper();
-//            ArrayList<DetalleOrdenCompra> detalle = helperoc.getDetalles(selectedOrdenCompra.getOrdenCompra().getId());
-//            if(detalle!= null){
-//                for (int i = 0; i < detalle.size(); i++) {
-//                    DetalleOrdenCompra next = detalle.get(i);
-//                    capacidadActual += next.getLoteInsumo().getInsumo().isVolumen() * next.getLoteInsumo().getStockLogico();
-//                }
-//            }
-//            
-//            if(capacidadActual > capacidadTotal){
-//                ErrorController error = new ErrorController();
-//                error.loadDialog("Error", "No puede agregar " + (capacidadActual) + " porque supera la capacidad actual de la tienda es " + (capacidadTotal), "Ok", hiddenSp);
-//                return;
-//            }
-//            
-//            selectedOrdenCompra.getOrdenCompra().setRecibido(true);
-//            selectedOrdenCompra.recibido.set("Recibido");
-//            
-//            helperoc.updateOrdenCompra(selectedOrdenCompra.getOrdenCompra());
-//            helperoc.close();
-//            
-//            int index = tblOrdenesCompra.getSelectionModel().getSelectedIndex();
-//            ordenesList.remove(index);
-//            ordenesList.add(index, selectedOrdenCompra);
-//            
-//            InsumosHelper helperi = new InsumosHelper();
-//            OrdenCompraHelper helperoctemp = new OrdenCompraHelper();
-//            MovimientoHelper helpermo= new MovimientoHelper();
-//            TipoMovimientoHelper helpertm = new TipoMovimientoHelper();
-//            ArrayList<DetalleOrdenCompra> detallesOrdenes = helperoctemp.getDetalles(selectedOrdenCompra.getOrdenCompra().getId());
-//            if(detallesOrdenes!=null){
-//                for (int i = 0; i < detallesOrdenes.size(); i++) {
-//                
-//                    //stock lote ( done)
-//                    LoteInsumo loteNew = detallesOrdenes.get(i).getLoteInsumo();
-//                    loteNew.setStockFisico(loteNew.getStockLogico());
-//                    helperli.updateLoteInsumo(loteNew);
-//
-//                    //stock insumo
-//                    Insumo insumoNew = helperi.getInsumo(loteNew.getInsumo().getId());
-//                    insumoNew.setStockTotalFisico(insumoNew.getStockTotalFisico() + loteNew.getStockLogico());
-//                    helperi.updateInsumo(insumoNew);
-//                    
-//                    //registrar movimiento
-//                    MovimientosTienda movNew = new MovimientosTienda();
-//                    movNew.setCantidadMovimiento(loteNew.getStockLogico());
-//                    movNew.setFecha(new Date());
-//                    movNew.setTienda(currentStore);
-//                    movNew.setTipoMovimiento(helpertm.getTipoMov(Constantes.TIPO_MOVIMIENTO_ENTRADA_FISICA));
-//                    movNew.setTrabajador(LoginController.user);
-//                    movNew.setLoteInsumo(loteNew);
-//                    helpermo.saveMovement(movNew);
-//
-//                }
-//            }
-//            helperi.close();
-//            helperoctemp.close();
-//            helpermo.close();
-//            helpertm.close();
-//            helperli.close();
-//        });
         edit.setOnAction((ActionEvent event) -> {
             popup.hide();
             try {

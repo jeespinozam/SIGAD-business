@@ -391,7 +391,7 @@ public class ListaInsumoController implements Initializable {
         io.setPrefSize(145, 40);
         
         VBox vBox;
-        if(selectedInsumo.getInsumo().isActivo()){
+        if(selectedInsumo.getInsumo().isActivo() && !LoginController.user.getPerfil().getNombre().equals(Constantes.PERFIL_SUPERADMIN)){
            vBox = new VBox(io,edit,delete);
            popup = new JFXPopup();
            popup.setPopupContent(vBox);
