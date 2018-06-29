@@ -422,6 +422,17 @@ public class CrearEditarOrdenCompraController implements Initializable {
                 });
             }
             helperor.close();
+            
+            Double total = 0.0;
+            for (int j = 0; j < insumosList.size(); j++) {
+                Double s = Double.parseDouble(insumosList.get(j).getSubTotal().getValue());
+                total += s;
+            }
+            
+            Double totalIGV= GeneralHelper.roundTwoDecimals((total) * HomeController.IGV);
+            Double totalGeneral = GeneralHelper.roundTwoDecimals(total + totalIGV);
+            lblIgv.setText(totalIGV.toString());
+            lblTotal.setText(totalGeneral.toString());   
         }
         else{
             ProveedorHelper helperp = new ProveedorHelper();
