@@ -246,7 +246,7 @@ public class LoteInsumoHelper extends BaseHelper{
         return ok;
     }
 
-    public LoteInsumo getMostRecentLoteInsumo(Tienda tienda) {
+    public LoteInsumo getMostRecentLoteInsumo(Tienda tienda,Insumo insumo) {
         Boolean ok = Boolean.FALSE;
         try {
             Transaction tx;
@@ -256,7 +256,7 @@ public class LoteInsumoHelper extends BaseHelper{
                 tx = session.beginTransaction();
             }
 
-            ArrayList<LoteInsumo> loteinsumos = getLoteInsumos(tienda);
+            ArrayList<LoteInsumo> loteinsumos = getLoteInsumosEspecific(tienda,insumo);
             LoteInsumo lowestDateInsumo = loteinsumos.get(0);
             for (int i = 1; i < loteinsumos.size(); i++) {
                 if (lowestDateInsumo.getFechaVencimiento().compareTo(loteinsumos.get(i).getFechaVencimiento()) > 0) {
