@@ -5,6 +5,8 @@
  */
 package com.sigad.sigad.pedido.controller;
 
+import com.itextpdf.text.DocumentException;
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
@@ -12,12 +14,14 @@ import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.business.ComboPromocion;
+import com.sigad.sigad.business.Constantes;
 import com.sigad.sigad.business.DetallePedido;
 import com.sigad.sigad.business.Pedido;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoCategoriaDescuento;
 import com.sigad.sigad.business.ProductoDescuento;
 import com.sigad.sigad.business.helpers.GeneralHelper;
+import com.sigad.sigad.business.helpers.PdfHelper;
 import com.sigad.sigad.business.helpers.PedidoHelper;
 import static com.sigad.sigad.pedido.controller.SeleccionarProductosController.viewPath;
 import java.net.URL;
@@ -40,6 +44,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
 
@@ -69,6 +74,12 @@ public class EditarEliminarPedidoController implements Initializable {
 
     @FXML
     private JFXTextField txtDireccion;
+
+    @FXML
+    private JFXButton btnGenerarDocumento;
+
+    @FXML
+    private JFXButton btnCancelar;
 
     @FXML
     JFXTreeTableColumn<PedidoLista, String> nombrePedido = new JFXTreeTableColumn<>("Nombre");
@@ -102,6 +113,13 @@ public class EditarEliminarPedidoController implements Initializable {
         txtCliente.setText(this.pedido.getCliente().toString());
         txtDireccion.setText(this.pedido.getDireccionDeEnvio());
         txtEstado.setText(this.pedido.getEstado().getNombre());
+        setup();
+    }
+
+    public void setup() {
+        if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_PENDIENTE)) {
+            stackPane.getChildren().remove(btnGenerarDocumento);
+        }
     }
 
     public void columnasPedidos() {
@@ -133,6 +151,21 @@ public class EditarEliminarPedidoController implements Initializable {
         tblpedido.getColumns().setAll(nombrePedido, precioPedido, cantidadPedido, descuentoPedido, subTotalPedido, entregados);
         tblpedido.setRoot(rootPedido);
         tblpedido.setShowRoot(false);
+    }
+
+    @FXML
+    void generarBoleta(MouseEvent event) throws DocumentException {
+        PdfHelper helper = new PdfHelper();
+        if (pedido.getRucFactura() != null) {
+            helper.crearBoletaVenta(pedido);
+            ErrorController err = new ErrorController();
+            err.loadDialog("Aviso", "Documento generado satisfactoriamente", "Ok", stackPane);
+        } else {
+            helper.crearFacturaVenta(pedido);
+            ErrorController err = new ErrorController();
+            err.loadDialog("Aviso", "Documento generado satisfactoriamente", "Ok", stackPane);
+        }
+
     }
 
     class PedidoLista extends RecursiveTreeObject<PedidoLista> {

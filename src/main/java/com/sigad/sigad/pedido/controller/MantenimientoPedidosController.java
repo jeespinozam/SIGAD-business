@@ -74,10 +74,16 @@ public class MantenimientoPedidosController implements Initializable {
     public static JFXDialog payDialog;
     @FXML
     JFXTreeTableColumn<PedidoOrdenLista, Integer> id = new JFXTreeTableColumn<>("ID");
+    @FXML
     JFXTreeTableColumn<PedidoOrdenLista, String> cliente = new JFXTreeTableColumn<>("Cliente");
+    @FXML
     JFXTreeTableColumn<PedidoOrdenLista, String> destino = new JFXTreeTableColumn<>("Dirección destino");
+    @FXML
     JFXTreeTableColumn<PedidoOrdenLista, String> fecha = new JFXTreeTableColumn<>("Fecha");
+    @FXML
     JFXTreeTableColumn<PedidoOrdenLista, String> estado = new JFXTreeTableColumn<>("Estado");
+    @FXML
+    JFXTreeTableColumn<PedidoOrdenLista, String> tipopago = new JFXTreeTableColumn<>("Tipo pago");
     @FXML
     private JFXTreeTableView<PedidoOrdenLista> tablaPedidos;
     Pedido pedido = new Pedido();
@@ -117,11 +123,15 @@ public class MantenimientoPedidosController implements Initializable {
 
         destino.setPrefWidth(350);
         destino.setCellValueFactory((TreeTableColumn.CellDataFeatures<PedidoOrdenLista, String> param) -> param.getValue().getValue().direccion);
+
         fecha.setPrefWidth(100);
         fecha.setCellValueFactory((TreeTableColumn.CellDataFeatures<PedidoOrdenLista, String> param) -> param.getValue().getValue().fecha);
 
         estado.setPrefWidth(70);
         estado.setCellValueFactory((TreeTableColumn.CellDataFeatures<PedidoOrdenLista, String> param) -> param.getValue().getValue().estado);
+
+        tipopago.setPrefWidth(70);
+        tipopago.setCellValueFactory((TreeTableColumn.CellDataFeatures<PedidoOrdenLista, String> param) -> param.getValue().getValue().tipopago);
     }
 
     public void cargarDatos() {
@@ -136,7 +146,7 @@ public class MantenimientoPedidosController implements Initializable {
     public void agregarColumnas() {
         final TreeItem<PedidoOrdenLista> rootPedido = new RecursiveTreeItem<>(pedidos, RecursiveTreeObject::getChildren);
         tablaPedidos.setEditable(true);
-        tablaPedidos.getColumns().setAll(id, cliente, destino, fecha, estado);
+        tablaPedidos.getColumns().setAll(id, cliente, destino, fecha, estado, tipopago);
         tablaPedidos.setRoot(rootPedido);
         tablaPedidos.setShowRoot(false);
         tablaPedidos.setRowFactory(new Callback<TreeTableView<PedidoOrdenLista>, TreeTableRow<PedidoOrdenLista>>() {
@@ -221,7 +231,7 @@ public class MantenimientoPedidosController implements Initializable {
 
         JFXButton ver = new JFXButton("Ver");
         JFXButton edit = new JFXButton("Editar");
-        JFXButton eliminar = new JFXButton("Eliminar");
+        JFXButton eliminar = new JFXButton("Cancelar");
         JFXButton pago = new JFXButton("Pagar");
         JFXButton devolucion = new JFXButton("Devolucion");
 
@@ -254,7 +264,7 @@ public class MantenimientoPedidosController implements Initializable {
             public void handle(ActionEvent event) {
                 popup.hide();
                 try {
-
+                    
                 } catch (Exception ex) {
 
                 }
@@ -302,16 +312,24 @@ public class MantenimientoPedidosController implements Initializable {
         if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_PENDIENTE)) {
             vBox.getChildren().add(edit);
             vBox.getChildren().add(pago);
-            vBox.getChildren().add(eliminar);
             vBox.getChildren().add(ver);
-        }
-        if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_VENTA)) {
             vBox.getChildren().add(eliminar);
-            vBox.getChildren().add(ver);
+            
         }
+        if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_VENTA) && pedido.getTipoPago().getDescripcion().equals(Constantes.TIPO_PAGO_DEPOSITO)) {
+            vBox.getChildren().add(ver);
+            vBox.getChildren().add(eliminar);
+        }
+
+        if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_VENTA) && pedido.getTipoPago().getDescripcion().equals(Constantes.TIPO_PAGO_EFECTIVO)) {
+            vBox.getChildren().add(edit);
+            vBox.getChildren().add(ver);
+            vBox.getChildren().add(eliminar);
+        }
+
         if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_DESPACHO)) {
-            vBox.getChildren().add(eliminar);
             vBox.getChildren().add(ver);
+            vBox.getChildren().add(eliminar);
         }
 
         if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_FINALIZADO)) {
@@ -394,6 +412,7 @@ public class MantenimientoPedidosController implements Initializable {
         StringProperty direccion;
         StringProperty fecha;
         StringProperty estado;
+        StringProperty tipopago;
         Pedido pedido;
 
         public PedidoOrdenLista(Pedido pedido) {
@@ -404,6 +423,7 @@ public class MantenimientoPedidosController implements Initializable {
             DateFormat f = new SimpleDateFormat("dd/MM/yyyy");
             this.fecha = new SimpleStringProperty(f.format(pedido.getFechaVenta()));
             this.estado = new SimpleStringProperty(pedido.getEstado().getNombre());
+            this.tipopago = new SimpleStringProperty(pedido.getTipoPago().getDescripcion());
 
         }
 

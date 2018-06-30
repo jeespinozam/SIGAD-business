@@ -125,6 +125,7 @@ public class SolicitarDireccionController implements Initializable {
 
             x = pair.getLeft();
             y = pair.getRight();
+            System.out.println("x->" + x + "y->" + y);
             mapPicker.setMarkerAt(x, y);
             tienda = null;
             distancia = Double.MAX_VALUE;

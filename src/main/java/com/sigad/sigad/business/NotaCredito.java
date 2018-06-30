@@ -23,7 +23,7 @@ public class NotaCredito {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private Double monto;
-    private String codigo;
+    private String codigo;//8alfa
     private Date fechaVencimiento;
     private Date fechaGenerada;
     private String motivo;

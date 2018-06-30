@@ -36,7 +36,7 @@
                     <JFXTextField fx:id="filtro" layoutX="712.0" layoutY="7.0" prefHeight="29.0" prefWidth="203.0" promptText="Buscar" AnchorPane.bottomAnchor="11.0" AnchorPane.rightAnchor="61.0" AnchorPane.topAnchor="6.0" />
                 </children>
                 </AnchorPane>
-            <JFXButton fx:id="btnGenerarDocumento" buttonType="RAISED" layoutX="440.0" layoutY="442.0" prefHeight="25.0" prefWidth="160.0" style="-fx-background-color: #FFFFFF;" text="Generar Documento">
+            <JFXButton fx:id="btnGenerarDocumento" buttonType="RAISED" layoutX="440.0" layoutY="442.0" onMouseClicked="#generarBoleta" prefHeight="25.0" prefWidth="160.0" style="-fx-background-color: #FFFFFF;" text="Generar Documento">
                <effect>
                   <DropShadow color="#000000ba" />
                </effect>

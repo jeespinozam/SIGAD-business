@@ -20,6 +20,7 @@ import com.sigad.sigad.business.PedidoEstado;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoInsumo;
 import com.sigad.sigad.business.ProductosCombos;
+import com.sigad.sigad.business.TipoPago;
 import com.sigad.sigad.business.Usuario;
 import com.sigad.sigad.business.helpers.ClienteDescuentoHelper;
 import com.sigad.sigad.business.helpers.GeneralHelper;
@@ -27,6 +28,7 @@ import com.sigad.sigad.business.helpers.LoteInsumoHelper;
 import com.sigad.sigad.business.helpers.PdfHelper;
 import com.sigad.sigad.business.helpers.PedidoEstadoHelper;
 import com.sigad.sigad.business.helpers.ProductoHelper;
+import com.sigad.sigad.business.helpers.TipoPagoHelper;
 import com.sigad.sigad.business.helpers.UsuarioHelper;
 import java.io.IOException;
 import java.net.URL;
@@ -72,13 +74,16 @@ public class DatosPedidoController implements Initializable {
     private ToggleGroup genero;
 
     @FXML
+    private ToggleGroup pago;
+
+    @FXML
     private JFXRadioButton btnFactura;
 
     @FXML
     private JFXRadioButton btnEfectivo;
 
     @FXML
-    private ToggleGroup pago;
+    private JFXRadioButton btnDeposito;
 
     @FXML
     private JFXTextArea cmbDedicatoria;
@@ -118,9 +123,6 @@ public class DatosPedidoController implements Initializable {
 
     @FXML
     private JFXTextField txtcorreo;
-
-    @FXML
-    private JFXButton btnGenerar;
 
     @FXML
     private JFXTextField txtTipo;
@@ -284,7 +286,11 @@ public class DatosPedidoController implements Initializable {
             return false;
         } else if (!btnFactura.isSelected() && !btnBoleta.isSelected()) {
             ErrorController err = new ErrorController();
-            err.loadDialog("Aviso", "Seleccion un documento legal", "ok", stackPane);
+            err.loadDialog("Aviso", "Selecciona un documento legal", "ok", stackPane);
+            return false;
+        } else if (!btnDeposito.isSelected() && !btnEfectivo.isSelected()) {
+            ErrorController err = new ErrorController();
+            err.loadDialog("Aviso", "Selecciona un tipo de pago", "ok", stackPane);
             return false;
         } else if (dpFechaEntrega.getValue() == null) {
             ErrorController err = new ErrorController();
@@ -307,37 +313,35 @@ public class DatosPedidoController implements Initializable {
         java.sql.Date fechaentrega = java.sql.Date.valueOf(dpFechaEntrega.getValue());
         pedido.setFechaEntregaEsperada(fechaentrega);
         pedido.setVendedor(LoginController.user);
-        PedidoEstadoHelper hp = new PedidoEstadoHelper();
-        pedido.setTurno(cmbInicio.getValue());
-        PedidoEstado estado = hp.getEstadoByName(Constantes.ESTADO_PENDIENTE);
-        pedido.addEstado(estado);
-        pedido.setEstado(estado);
+        TipoPagoHelper tpagohelper = new TipoPagoHelper();
+        if (btnDeposito.isSelected()) {
+            TipoPago tipo = tpagohelper.getTipoPago(Constantes.TIPO_PAGO_DEPOSITO);
+            pedido.setTipoPago(tipo);
+            tpagohelper.close();
+            pedido.setTurno(cmbInicio.getValue());
+            PedidoEstadoHelper hp = new PedidoEstadoHelper();
+            PedidoEstado estado = hp.getEstadoByName(Constantes.ESTADO_PENDIENTE);
+            pedido.addEstado(estado);
+            pedido.setEstado(estado);
+            hp.close();
+        } else if (btnEfectivo.isSelected()) {
+            TipoPago tipo = tpagohelper.getTipoPago(Constantes.TIPO_PAGO_EFECTIVO);
+            pedido.setTipoPago(tipo);
+            tpagohelper.close();
+            pedido.setTurno(cmbInicio.getValue());
+            PedidoEstadoHelper hp = new PedidoEstadoHelper();
+            PedidoEstado estado = hp.getEstadoByName(Constantes.ESTADO_VENTA);
+            pedido.addEstado(estado);
+            pedido.setEstado(estado);
+            hp.close();
+        }
         if (btnFactura.isSelected()) {
             pedido.setNombreEmpresa(txtEmpresa.getText());
             pedido.setRucFactura(txtdoc.getText());
         }
-        hp.close();
+        
 
     }
-
-    @FXML
-    public void generarDocumento(MouseEvent event) throws DocumentException {
-        PdfHelper helper = new PdfHelper();
-        if (btnBoleta.isSelected()) {
-            helper.crearBoletaVenta(pedido);
-            ErrorController err = new ErrorController();
-            err.loadDialog("Aviso", "Documento generado satisfactoriamente", "Ok", stackPane);
-        } else if (btnFactura.isSelected()) {
-            helper.crearFacturaVenta(pedido);
-            ErrorController err = new ErrorController();
-            err.loadDialog("Aviso", "Documento generado satisfactoriamente", "Ok", stackPane);
-        } else {
-            ErrorController err = new ErrorController();
-            err.loadDialog("Aviso", "No ha seleccionado un tipo de documento", "Ok", stackPane);
-        }
-
-    }
-
     void calcularInsumos(Producto p, Integer cantidad) {
         ArrayList<ProductoInsumo> pxi = new ArrayList(p.getProductoxInsumos());
         for (ProductoInsumo productoInsumo : pxi) {
