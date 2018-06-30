@@ -140,7 +140,7 @@ public class EditarEliminarPedidoController implements Initializable {
 
     public void columnasPedidos() {
 
-        nombrePedido.setPrefWidth(80);
+        nombrePedido.setPrefWidth(150);
         nombrePedido.setCellValueFactory((TreeTableColumn.CellDataFeatures<PedidoLista, String> param) -> param.getValue().getValue().nombre);
 
         cantidadPedido.setPrefWidth(80);
@@ -164,7 +164,7 @@ public class EditarEliminarPedidoController implements Initializable {
     public void agregarColumnasTablasPedidos() {
         final TreeItem<PedidoLista> rootPedido = new RecursiveTreeItem<>(pedidos, RecursiveTreeObject::getChildren);
         tblpedido.setEditable(true);
-        tblpedido.getColumns().setAll(nombrePedido, precioPedido, cantidadPedido, descuentoPedido, subTotalPedido, entregados);
+        tblpedido.getColumns().setAll(nombrePedido, precioPedido, cantidadPedido, descuentoPedido, subTotalPedido);
         tblpedido.setRoot(rootPedido);
         tblpedido.setShowRoot(false);
     }
