@@ -706,7 +706,7 @@ public class SeleccionarProductosController implements Initializable {
         ArrayList<MovimientosTienda> movimientos = movHelper.getLogicMovements(pedido);
         movHelper.close();
         LoteInsumoHelper lihelper = new LoteInsumoHelper();
-        lihelper.devolverInsumos(insumosADevolver, pedido, movimientos);
+        lihelper.devolverInsumosEditar(insumosADevolver, pedido, movimientos);
         Boolean ok = lihelper.descontarInsumos(nuevosInsumosConsumidos, pedido.getTienda(), pedido);
         if (true) {
             ErrorController err = new ErrorController();
