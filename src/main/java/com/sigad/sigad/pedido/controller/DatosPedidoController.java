@@ -153,6 +153,12 @@ public class DatosPedidoController implements Initializable {
         if (pedido.getId() != null) {
             LocalDate localDate = pedido.getFechaEntregaEsperada().toLocalDate();
             dpFechaEntrega.setValue(localDate);
+            cmbInicio.setValue(pedido.getTurno());
+            cmbDedicatoria.setText(pedido.getMensajeDescripicion());
+            btnBoleta.setSelected((pedido.getRucFactura()==null));
+            btnFactura.setSelected((pedido.getRucFactura()!=null));
+            btnBoleta.setDisable(true);
+            btnFactura.setDisable(true);
         }
         txtTotal.setText(pedido.getTotal().toString());
         txtTotal.setDisable(true);

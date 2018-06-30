@@ -86,6 +86,7 @@ public class PedidoHelper extends BaseHelper {
         try {
             query = session.createQuery("from Pedido where id = " + pedido_id);
             pedido = (Pedido) query.list().get(0);
+            pedido.getEstadosPedido().size();
             pedido.getDetallePedido().forEach((t) -> {
                 t.getDescuentoCategoria();
                 t.getDescuentoProducto();

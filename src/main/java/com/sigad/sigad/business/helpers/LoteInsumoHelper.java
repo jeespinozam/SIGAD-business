@@ -279,8 +279,10 @@ public class LoteInsumoHelper extends BaseHelper {
                 Insumo key = entry.getKey();
                 Integer value = entry.getValue();
                 Insumo i = h.getInsumo(key.getId());
+                System.out.println(i.getNombre());
                 i.setStockTotalLogico(i.getStockTotalLogico() - value);
-                h.updateInsumo(key);
+                System.out.println(i.getStockTotalLogico());
+                h.updateInsumo(i);
             }
 
             ok = Boolean.TRUE;

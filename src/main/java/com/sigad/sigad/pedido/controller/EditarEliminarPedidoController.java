@@ -118,8 +118,11 @@ public class EditarEliminarPedidoController implements Initializable {
 
     public void setup() {
         if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_PENDIENTE)) {
-            stackPane.getChildren().remove(btnGenerarDocumento);
+            btnGenerarDocumento.setDisable(true);
+        }else{
+            btnGenerarDocumento.setText((pedido.getRucFactura()==null)? "Generar B  oleta" : "Generar Factura");
         }
+       
     }
 
     public void columnasPedidos() {
@@ -156,7 +159,7 @@ public class EditarEliminarPedidoController implements Initializable {
     @FXML
     void generarBoleta(MouseEvent event) throws DocumentException {
         PdfHelper helper = new PdfHelper();
-        if (pedido.getRucFactura() != null) {
+        if (pedido.getRucFactura() == null) {
             helper.crearBoletaVenta(pedido);
             ErrorController err = new ErrorController();
             err.loadDialog("Aviso", "Documento generado satisfactoriamente", "Ok", stackPane);

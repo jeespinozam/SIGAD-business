@@ -795,7 +795,7 @@ public class SeleccionarProductosController implements Initializable {
             });
 
         }
-
+        calcularTotal();
         mostrarMaximoStock();
     }
 
