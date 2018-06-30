@@ -7,6 +7,7 @@ package com.sigad.sigad.pedido.controller;
 
 import com.itextpdf.text.DocumentException;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
@@ -82,6 +83,12 @@ public class EditarEliminarPedidoController implements Initializable {
     private JFXButton btnCancelar;
 
     @FXML
+    private JFXTextArea txtmensaje;
+
+    @FXML
+    private JFXTextField txtruc;
+
+    @FXML
     JFXTreeTableColumn<PedidoLista, String> nombrePedido = new JFXTreeTableColumn<>("Nombre");
     @FXML
     JFXTreeTableColumn<PedidoLista, String> precioPedido = new JFXTreeTableColumn<>("Precio");
@@ -113,16 +120,22 @@ public class EditarEliminarPedidoController implements Initializable {
         txtCliente.setText(this.pedido.getCliente().toString());
         txtDireccion.setText(this.pedido.getDireccionDeEnvio());
         txtEstado.setText(this.pedido.getEstado().getNombre());
+        txtmensaje.setText(this.pedido.getMensajeDescripicion());
+        txtruc.setText((this.pedido.getRucFactura() == null) ? "-" : this.pedido.getRucFactura());
         setup();
     }
 
     public void setup() {
         if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_PENDIENTE)) {
             btnGenerarDocumento.setDisable(true);
-        }else{
-            btnGenerarDocumento.setText((pedido.getRucFactura()==null)? "Generar B  oleta" : "Generar Factura");
+        } else {
+            btnGenerarDocumento.setText((pedido.getRucFactura() == null) ? "Generar B  oleta" : "Generar Factura");
         }
-       
+
+    }
+    public void cancelarPedido(){
+    
+    
     }
 
     public void columnasPedidos() {

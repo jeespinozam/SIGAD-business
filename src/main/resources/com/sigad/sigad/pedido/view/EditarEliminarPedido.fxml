@@ -43,7 +43,7 @@
                </effect>
             </JFXButton>
             <JFXTextArea fx:id="txtmensaje" disable="true" labelFloat="true" layoutX="360.0" layoutY="435.0" prefHeight="71.0" prefWidth="264.0" promptText="Mensaje" />
-            <JFXTextField fx:id="txtDireccion1" disable="true" labelFloat="true" layoutX="47.0" layoutY="480.0" prefHeight="25.0" prefWidth="272.0" promptText="R.U.C." />
+            <JFXTextField fx:id="txtruc" disable="true" labelFloat="true" layoutX="47.0" layoutY="480.0" prefHeight="25.0" prefWidth="272.0" promptText="R.U.C." />
             </children>
         </AnchorPane>
     </children>
