@@ -392,6 +392,8 @@ public class SeleccionarProductosController implements Initializable {
                 prod.get(prod.indexOf(t)).stock.setValue(st.toString());
             } else if (t.combo != null) {
                 Integer ct = Integer.MAX_VALUE;
+                ComboPromocionHelper helper = new ComboPromocionHelper();
+                t.combo = helper.getComboById(t.combo.getId().intValue());
                 for (ProductosCombos c : t.combo.getProductosxComboArray()) {
                     Integer st = mostrarMaximoStockProducto(c.getProducto()) / c.getCantidad();
                     ct = (st < ct) ? st : ct;
