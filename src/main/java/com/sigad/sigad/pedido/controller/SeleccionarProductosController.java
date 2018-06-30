@@ -181,7 +181,7 @@ public class SeleccionarProductosController implements Initializable {
             goSeleccionarCliente();
         } else {
             ErrorController error = new ErrorController();
-            error.loadDialog("Atención", "Debe agregar algún producto", "Ok", stackPane);
+            error.loadDialog("Atención", "Debe agregar un producto con stock diferente a 0", "Ok", stackPane);
         }
     }
 
@@ -408,7 +408,15 @@ public class SeleccionarProductosController implements Initializable {
     public Boolean validarCamposLlenos() {
         try {
             Double total = Double.valueOf(lblTotal.getText());
-            return total != 0;
+            for (PedidoLista ped : pedidos) {
+                if(ped.cantidad.getValue() == 0)
+                    return false;
+            }
+            if (total == 0){
+                return false;
+            }else {
+                return true;
+            }
         } catch (NumberFormatException e) {
             return false;
         }
