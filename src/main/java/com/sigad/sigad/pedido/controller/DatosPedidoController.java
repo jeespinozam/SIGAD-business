@@ -5,7 +5,6 @@
  */
 package com.sigad.sigad.pedido.controller;
 
-import com.itextpdf.text.DocumentException;
 import com.jfoenix.controls.*;
 import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.app.controller.HomeController;
@@ -22,14 +21,7 @@ import com.sigad.sigad.business.ProductoInsumo;
 import com.sigad.sigad.business.ProductosCombos;
 import com.sigad.sigad.business.TipoPago;
 import com.sigad.sigad.business.Usuario;
-import com.sigad.sigad.business.helpers.ClienteDescuentoHelper;
-import com.sigad.sigad.business.helpers.GeneralHelper;
-import com.sigad.sigad.business.helpers.LoteInsumoHelper;
-import com.sigad.sigad.business.helpers.PdfHelper;
-import com.sigad.sigad.business.helpers.PedidoEstadoHelper;
-import com.sigad.sigad.business.helpers.ProductoHelper;
-import com.sigad.sigad.business.helpers.TipoPagoHelper;
-import com.sigad.sigad.business.helpers.UsuarioHelper;
+import com.sigad.sigad.business.helpers.*;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Timestamp;
@@ -38,7 +30,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
