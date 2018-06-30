@@ -14,7 +14,6 @@ import com.sigad.sigad.business.TipoMovimiento;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
@@ -22,24 +21,13 @@ import org.hibernate.query.Query;
  *
  * @author chrs
  */
-public class MovimientoHelper {
+public class MovimientoHelper extends BaseHelper{
     
-    Session session = null;
-    private String errorMessage = "";
     private final static Logger LOGGER = Logger.getLogger(InsumosHelper.class.getName());
     
-    /////////////////////////
-    
+    /////////////////////////    
     public MovimientoHelper() {
-        session = LoginController.serviceInit();
-    }
-    
-    public void close(){
-        session.close();
-    }
-    
-    public String getErrorMessage(){
-        return errorMessage;
+        super();
     }
     
     /*Get all the movements*/
