@@ -398,10 +398,6 @@ public class SeleccionarProductosController implements Initializable {
                     Integer st = mostrarMaximoStockProducto(c.getProducto()) / c.getCantidad();
                     ct = (st < ct) ? st : ct;
                 }
-                if (t.combo.getMaxDisponible() != null && t.combo.getMaxDisponible() != null
-                        && t.combo.getMaxDisponible() - t.combo.getNumVendidos() < ct) {
-                    ct = t.combo.getMaxDisponible() - t.combo.getNumVendidos();
-                }
                 prod.get(prod.indexOf(t)).stock.setValue(ct.toString());
             }
         });

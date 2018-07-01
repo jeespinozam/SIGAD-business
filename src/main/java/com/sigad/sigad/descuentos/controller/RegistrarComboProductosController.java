@@ -96,9 +96,6 @@ public class RegistrarComboProductosController implements Initializable {
     private JFXTextField txtVolumenTotal;
 
     @FXML
-    private JFXTextField txtstockMaximo;
-
-    @FXML
     private JFXTreeTableView<ProductoLista> tblProductos;
 
     @FXML
@@ -172,21 +169,6 @@ public class RegistrarComboProductosController implements Initializable {
                     txtNombre.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
                 } else {
                     txtNombre.setFocusColor(new Color(0.30, 0.47, 0.23, 1));
-                }
-            }
-        });
-
-        r = new RequiredFieldValidator();
-        r.setIcon(new MaterialDesignIconView(MaterialDesignIcon.CLOSE_CIRCLE));
-        r.setMessage("Campo obligatorio y numerico");
-        txtstockMaximo.getValidators().add(r);
-        txtstockMaximo.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            if (!newValue) {
-
-                if (!txtstockMaximo.validate()) {
-                    txtstockMaximo.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
-                } else {
-                    txtstockMaximo.setFocusColor(new Color(0.30, 0.47, 0.23, 1));
                 }
             }
         });
@@ -322,19 +304,6 @@ public class RegistrarComboProductosController implements Initializable {
             txtPrecioReal.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             txtPrecioReal.requestFocus();
             return false;
-        } else if (!txtstockMaximo.validate() && !GeneralHelper.isNumeric(txtstockMaximo.getText())) {
-            try {
-                if (Integer.valueOf(txtstockMaximo.getText()) > combo.getNumVendidos()) {
-                    txtstockMaximo.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
-                    txtstockMaximo.requestFocus();
-                }
-            } catch (NumberFormatException e) {
-                txtstockMaximo.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
-                txtstockMaximo.requestFocus();
-            } finally {
-                return false;
-            }
-
         } else {
             return true;
         }
@@ -424,11 +393,7 @@ public class RegistrarComboProductosController implements Initializable {
         Double precio = combo.getPreciounitario();
         Double precioreal = combo.getPreciounireal();
         txtPrecioBase.setText(precio.toString());
-        txtPrecioBase.setDisable(true);
         txtPrecioReal.setText(GeneralHelper.roundTwoDecimals(precioreal).toString());
-        txtPrecioReal.setDisable(true);
-        tblProductos.setEditable(false);
-        txtstockMaximo.setText(combo.getMaxDisponible().toString());
         txtDescripcion.setText(combo.getDescripcion());
         combo.getProductosxComboArray().forEach((t) -> {
             ProductoLista pd = new ProductoLista(t.getProducto(), Integer.SIZE);
@@ -441,15 +406,26 @@ public class RegistrarComboProductosController implements Initializable {
             }
         });
         calcularPrecioBase();
+        disableFields();
+    }
+
+    public void disableFields() {
+        txtNombre.setDisable(true);
+        txtFechaInicio.setDisable(true);
+        txtPrecioBase.setDisable(true);
+        txtPrecioReal.setDisable(true);
+        tblProductos.setEditable(false);
+        txtDescripcion.setDisable(true);
     }
 
     public void initModel(Boolean isedit, ComboPromocion cb, StackPane stackpane) {
         this.isEdit = isedit;
         this.stackpane = stackpane;
         agregarFiltro();
-        ComboPromocionHelper helper = new ComboPromocionHelper();
-        this.combo = helper.getComboById(cb.getId().intValue()) ;
+
         if (isedit) {
+            ComboPromocionHelper helper = new ComboPromocionHelper();
+            this.combo = helper.getComboById(cb.getId().intValue());
             cargarDatos();
         } else {
             this.combo = new ComboPromocion();
@@ -468,7 +444,6 @@ public class RegistrarComboProductosController implements Initializable {
         nuevo.setPreciounireal(Double.valueOf(txtPrecioReal.getText()));
         nuevo.setPreciounitario(Double.valueOf(txtPrecioBase.getText()));
         nuevo.setNombre(txtNombre.getText());
-        nuevo.setMaxDisponible(Integer.valueOf(txtstockMaximo.getText()));
         nuevo.setVolumen(Double.valueOf(txtVolumenTotal.getText()));
         ArrayList<ProductosCombos> pc = new ArrayList<>();
         prod.forEach((t) -> {
@@ -492,11 +467,10 @@ public class RegistrarComboProductosController implements Initializable {
 
         if (!isEdit && validateFields()) {
             construirDescuento(combo);
-            combo.setNumVendidos(0);
             helper.saveCombo(combo);
             reloadTable();
             MantenimientoDescuentosController.comboDialog.close();
-            
+
         } else if (isEdit && validateFields()) {
             construirDescuento(combo);
             helper.updateCombo(combo);
@@ -516,6 +490,7 @@ public class RegistrarComboProductosController implements Initializable {
         });
 
     }
+
     class ProductoLista extends RecursiveTreeObject<ProductoLista> {
 
         private IntegerProperty id;

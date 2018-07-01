@@ -166,8 +166,6 @@ public class RegistrarDescuentoProductoController implements Initializable {
             }
         });
 
-     
-
         JFXDatePicker minDate = new JFXDatePicker();
         minDate.setValue(LocalDate.now(ZoneId.systemDefault())); // colocar la fecha de hoy como el minimo
 
@@ -250,6 +248,13 @@ public class RegistrarDescuentoProductoController implements Initializable {
         });
     }
 
+    public void disableFields() {
+        filtro.setDisable(true);
+        txtFechaInicio.setDisable(true);
+        txtPrecio.setDisable(true);
+        txtNuevoPrecio.setDisable(true);
+    }
+
     public void initModel(Boolean isedit, ProductoDescuento pd, StackPane stackpane) {
 
         this.isEdit = isedit;
@@ -265,12 +270,9 @@ public class RegistrarDescuentoProductoController implements Initializable {
             localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
             txtFechaFin.setValue(localDate);
             Double pct = pd.getValorPct() * 100;
-            txtPrecio.setDisable(true);
             txtNuevoPrecio.setText(String.valueOf(GeneralHelper.roundTwoDecimals(pd.getValorPct() * pd.getProducto().getPrecio())));
-
-            txtNuevoPrecio.setDisable(true);
             txtDescuentopct.setText(pct.toString());
-
+            disableFields();
         }
     }
 
@@ -318,7 +320,7 @@ public class RegistrarDescuentoProductoController implements Initializable {
             txtDescuentopct.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             txtDescuentopct.requestFocus();
             return false;
-        }  else if (txtFechaInicio.getValue() == null) {
+        } else if (txtFechaInicio.getValue() == null) {
             lblError.setText("Fecha inicio incorrecta");
             return false;
         } else if (txtFechaInicio.getValue().isAfter(txtFechaFin.getValue())) {
@@ -370,7 +372,6 @@ public class RegistrarDescuentoProductoController implements Initializable {
     }
 
     public void seleccionStock() {
-
 
     }
 

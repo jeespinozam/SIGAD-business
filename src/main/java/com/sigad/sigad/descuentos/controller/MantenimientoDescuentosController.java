@@ -109,6 +109,7 @@ public class MantenimientoDescuentosController implements Initializable {
     JFXTreeTableColumn<CombosProductosLista, String> fechaInicioCmb = new JFXTreeTableColumn<>("F. Inicio");
     JFXTreeTableColumn<CombosProductosLista, String> fechaFinCmb = new JFXTreeTableColumn<>("F. Fin");
     JFXTreeTableColumn<CombosProductosLista, Double> precioBase = new JFXTreeTableColumn<>("Precio(PEN)");
+    JFXTreeTableColumn<CombosProductosLista, String> numVendidos = new JFXTreeTableColumn<>("Num Vendidos");
 
     @FXML
     private JFXTreeTableView<DescuentosLista> tblDescuentos;
@@ -298,6 +299,9 @@ public class MantenimientoDescuentosController implements Initializable {
         descCombo.setCellValueFactory((TreeTableColumn.CellDataFeatures<CombosProductosLista, String> param) -> param.getValue().getValue().descripcion);
         nombre.setPrefWidth(120);
         nombre.setCellValueFactory((TreeTableColumn.CellDataFeatures<CombosProductosLista, String> param) -> param.getValue().getValue().nombre);
+        
+        numVendidos.setPrefWidth(120);
+        numVendidos.setCellValueFactory((TreeTableColumn.CellDataFeatures<CombosProductosLista, String> param) -> param.getValue().getValue().consumidos);
     }
 
     public void columnadDescuentosClientes() {
@@ -347,7 +351,7 @@ public class MantenimientoDescuentosController implements Initializable {
     public void agregarColumnasCombos() {
         final TreeItem<CombosProductosLista> rootPedido = new RecursiveTreeItem<>(descuentosCombos, RecursiveTreeObject::getChildren);
         tblCombos.setEditable(true);
-        tblCombos.getColumns().setAll(idCombo, nombre, descCombo, fechaInicioCmb, fechaFinCmb, precioBase);
+        tblCombos.getColumns().setAll(idCombo, nombre, descCombo, fechaInicioCmb, fechaFinCmb, precioBase, numVendidos);
         tblCombos.setRoot(rootPedido);
         tblCombos.setShowRoot(false);
         tblCombos.setRowFactory(new Callback<TreeTableView<CombosProductosLista>, TreeTableRow<CombosProductosLista>>() {
@@ -669,8 +673,8 @@ public class MantenimientoDescuentosController implements Initializable {
             this.nombre = new SimpleStringProperty(combo.getNombre());
             this.fechaInicio = new SimpleStringProperty(f.format(combo.getFechaInicio()));
             this.valor = new SimpleDoubleProperty(combo.getPreciounitario());
-            //this.consumidos = new SimpleStringProperty(combo.getNumVendidos().toString());
-            //this.stockMaximo = new SimpleStringProperty(combo.getMaxDisponible().toString());
+//            this.consumidos = new SimpleStringProperty(combo.getNumVendidos().toString());
+//            this.stockMaximo = new SimpleStringProperty(combo.getMaxDisponible().toString());
             this.descripcion = new SimpleStringProperty(combo.getDescripcion());
             this.descuentoObj = combo;
         }
