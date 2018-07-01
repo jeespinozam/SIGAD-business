@@ -282,7 +282,7 @@ public class MantenimientoPedidosController implements Initializable {
             public void handle(ActionEvent event) {
                 popup.hide();
                 try {
-                    
+                    cancelarPedidoDialog();
                 } catch (Exception ex) {
 
                 }
@@ -339,12 +339,14 @@ public class MantenimientoPedidosController implements Initializable {
         }
         if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_VENTA) && pedido.getTipoPago().getDescripcion().equals(Constantes.TIPO_PAGO_DEPOSITO)) {
             vBox.getChildren().add(ver);
+            vBox.getChildren().add(devolucion);
             vBox.getChildren().add(eliminar);
         }
 
         if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_VENTA) && pedido.getTipoPago().getDescripcion().equals(Constantes.TIPO_PAGO_EFECTIVO)) {
             vBox.getChildren().add(edit);
             vBox.getChildren().add(ver);
+            vBox.getChildren().add(devolucion);
             vBox.getChildren().add(eliminar);
         }
 
@@ -404,7 +406,29 @@ public class MantenimientoPedidosController implements Initializable {
         }
         return Boolean.FALSE;
     }
-
+    
+    public void cancelarPedido(){
+    
+    }
+    
+    public void cancelarPedidoDialog() {
+        JFXDialogLayout content =  new JFXDialogLayout();
+        content.setHeading(new Text("Advertencia"));
+        content.setBody(new Text("¿Desea realmente cancelar el pedido, los cambios son irreversibles?"));
+        
+        JFXDialog dialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
+        JFXButton button = new JFXButton("Aceptar");
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                cancelarPedido();
+                dialog.close();
+            }
+        });
+        content.setActions(button);
+        dialog.show();
+    }
+    
     @FXML
     public void handleAction(Event event) {
 

@@ -29,7 +29,7 @@
                   <JFXTextField fx:id="txtEstado" disable="true" labelFloat="true" layoutX="47.0" layoutY="437.0" prefHeight="25.0" prefWidth="272.0" promptText="Estado" />
                   <JFXTextField fx:id="txtDireccion" disable="true" labelFloat="true" layoutX="47.0" layoutY="385.0" prefHeight="25.0" prefWidth="272.0" promptText="Direccion" />
                   <JFXToggleNode layoutX="392.0" layoutY="342.0" />
-                  <JFXButton fx:id="btnDevolucion" buttonType="RAISED" layoutX="554.0" layoutY="437.0" prefHeight="27.0" prefWidth="154.0" style="-fx-background-color: #FFFFFF;" text="Registrar devolución">
+                  <JFXButton fx:id="btnDevolucion" buttonType="RAISED" layoutX="554.0" layoutY="437.0" onMouseClicked="#devolucion" prefHeight="27.0" prefWidth="154.0" style="-fx-background-color: #FFFFFF;" text="Registrar devolución">
                      <effect>
                         <DropShadow color="#000000ba" />
                      </effect>
