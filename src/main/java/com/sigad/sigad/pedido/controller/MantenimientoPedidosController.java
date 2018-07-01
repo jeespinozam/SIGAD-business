@@ -216,6 +216,24 @@ public class MantenimientoPedidosController implements Initializable {
         }
     }
 
+    public void verDevolucion() {
+        try {
+            JFXDialogLayout content = new JFXDialogLayout();
+            content.setHeading(new Text("Devolucion"));
+            Node node;
+            System.out.println(DevolucionPedidoController.viewPath + EditarEliminarPedidoController.viewPath);
+            FXMLLoader loader = new FXMLLoader(MantenimientoPedidosController.this.getClass().getResource(DevolucionPedidoController.viewPath));
+            node = (Node) loader.load();
+            DevolucionPedidoController el = loader.getController();
+            el.initModel(isEdit, pedido, hiddenSp);
+            content.setBody(node);
+            viewDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
+            viewDialog.show();
+        } catch (IOException ex) {
+            Logger.getLogger(MantenimientoPedidosController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     public static void reloadTable() {
         MantenimientoPedidosController.pedidos.clear();
         PedidoHelper pdhelper = new PedidoHelper();
@@ -289,7 +307,7 @@ public class MantenimientoPedidosController implements Initializable {
             public void handle(ActionEvent event) {
                 popup.hide();
                 try {
-
+                    verDevolucion();
                 } catch (Exception ex) {
 
                 }
@@ -307,6 +325,9 @@ public class MantenimientoPedidosController implements Initializable {
 
         pago.setPadding(new Insets(20));
         pago.setPrefSize(145, 40);
+        
+        devolucion.setPadding(new Insets(20));
+        devolucion.setPrefSize(145, 40);
 
         VBox vBox = new VBox();
         if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_PENDIENTE)) {
