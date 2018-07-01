@@ -5,6 +5,9 @@
  */
 package com.sigad.sigad.pedido.controller;
 
+import com.itextpdf.text.DocumentException;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
@@ -12,12 +15,15 @@ import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.business.ComboPromocion;
+import com.sigad.sigad.business.Constantes;
 import com.sigad.sigad.business.DetallePedido;
 import com.sigad.sigad.business.Pedido;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoCategoriaDescuento;
 import com.sigad.sigad.business.ProductoDescuento;
 import com.sigad.sigad.business.helpers.GeneralHelper;
+import com.sigad.sigad.business.helpers.PdfHelper;
+import com.sigad.sigad.business.helpers.PedidoHelper;
 import static com.sigad.sigad.pedido.controller.SeleccionarProductosController.viewPath;
 import java.net.URL;
 import java.util.ArrayList;
@@ -39,6 +45,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
 
@@ -70,6 +77,18 @@ public class EditarEliminarPedidoController implements Initializable {
     private JFXTextField txtDireccion;
 
     @FXML
+    private JFXButton btnGenerarDocumento;
+
+    @FXML
+    private JFXButton btnCancelar;
+
+    @FXML
+    private JFXTextArea txtmensaje;
+
+    @FXML
+    private JFXTextField txtruc;
+
+    @FXML
     JFXTreeTableColumn<PedidoLista, String> nombrePedido = new JFXTreeTableColumn<>("Nombre");
     @FXML
     JFXTreeTableColumn<PedidoLista, String> precioPedido = new JFXTreeTableColumn<>("Precio");
@@ -91,19 +110,37 @@ public class EditarEliminarPedidoController implements Initializable {
     }
 
     public void initModel(Boolean isEdit, Pedido pedido, StackPane hiddenSp) {
-        this.pedido = pedido;
-        ArrayList<DetallePedido> d = new ArrayList<>(pedido.getDetallePedido());
+        PedidoHelper helper = new PedidoHelper();
+        this.pedido = helper.getPedidoEager(pedido.getId());
+        ArrayList<DetallePedido> d = new ArrayList<>(this.pedido.getDetallePedido());
         d.forEach((t) -> {
             pedidos.add(new PedidoLista(t));
         });
-        txtCliente.setText(pedido.getCliente().toString());
-        txtDireccion.setText(pedido.getDireccionDeEnvio());
-        txtEstado.setText(pedido.getEstado().getNombre());
+        helper.close();
+        txtCliente.setText(this.pedido.getCliente().toString());
+        txtDireccion.setText(this.pedido.getDireccionDeEnvio());
+        txtEstado.setText(this.pedido.getEstado().getNombre());
+        txtmensaje.setText(this.pedido.getMensajeDescripicion());
+        txtruc.setText((this.pedido.getRucFactura() == null) ? "-" : this.pedido.getRucFactura());
+        setup();
+    }
+
+    public void setup() {
+        if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_PENDIENTE)) {
+            btnGenerarDocumento.setDisable(true);
+        } else {
+            btnGenerarDocumento.setText((pedido.getRucFactura() == null) ? "Generar B  oleta" : "Generar Factura");
+        }
+
+    }
+    public void cancelarPedido(){
+    
+    
     }
 
     public void columnasPedidos() {
 
-        nombrePedido.setPrefWidth(80);
+        nombrePedido.setPrefWidth(150);
         nombrePedido.setCellValueFactory((TreeTableColumn.CellDataFeatures<PedidoLista, String> param) -> param.getValue().getValue().nombre);
 
         cantidadPedido.setPrefWidth(80);
@@ -127,9 +164,24 @@ public class EditarEliminarPedidoController implements Initializable {
     public void agregarColumnasTablasPedidos() {
         final TreeItem<PedidoLista> rootPedido = new RecursiveTreeItem<>(pedidos, RecursiveTreeObject::getChildren);
         tblpedido.setEditable(true);
-        tblpedido.getColumns().setAll(nombrePedido, precioPedido, cantidadPedido, descuentoPedido, subTotalPedido, entregados);
+        tblpedido.getColumns().setAll(nombrePedido, precioPedido, cantidadPedido, descuentoPedido, subTotalPedido);
         tblpedido.setRoot(rootPedido);
         tblpedido.setShowRoot(false);
+    }
+
+    @FXML
+    void generarBoleta(MouseEvent event) throws DocumentException {
+        PdfHelper helper = new PdfHelper();
+        if (pedido.getRucFactura() == null) {
+            helper.crearBoletaVenta(pedido);
+            ErrorController err = new ErrorController();
+            err.loadDialog("Aviso", "Documento generado satisfactoriamente", "Ok", stackPane);
+        } else {
+            helper.crearFacturaVenta(pedido);
+            ErrorController err = new ErrorController();
+            err.loadDialog("Aviso", "Documento generado satisfactoriamente", "Ok", stackPane);
+        }
+
     }
 
     class PedidoLista extends RecursiveTreeObject<PedidoLista> {
@@ -158,7 +210,7 @@ public class EditarEliminarPedidoController implements Initializable {
                     this.descuentoCategoria = detalle.getDescuentoCategoria();
                     this.descuentoProducto = null;
                 } else if (detalle.getDescuentoProducto() != null) {
-                    this.descuento = new SimpleDoubleProperty(detalle.getDescuentoProducto().getValorPct()* 100);
+                    this.descuento = new SimpleDoubleProperty(detalle.getDescuentoProducto().getValorPct() * 100);
                     Double s = detalle.getCantidad() * detalle.getPrecioUnitario() * (1 - detalle.getDescuentoProducto().getValorPct());
                     this.subtotal = new SimpleDoubleProperty(GeneralHelper.roundTwoDecimals(s));
                     this.descuentoProducto = detalle.getDescuentoProducto();
@@ -179,7 +231,7 @@ public class EditarEliminarPedidoController implements Initializable {
                 this.precio = new SimpleStringProperty(detalle.getPrecioUnitario().toString());
                 this.cantidad = new SimpleIntegerProperty(detalle.getCantidad());
                 this.entregados = new SimpleIntegerProperty(detalle.getNumEntregados());
-                this.subtotal = new SimpleDoubleProperty(detalle.getPrecioUnitario()* detalle.getCantidad());
+                this.subtotal = new SimpleDoubleProperty(detalle.getPrecioUnitario() * detalle.getCantidad());
                 this.descuento = new SimpleDoubleProperty(0.0);
                 this.descuentoCategoria = null;
                 this.descuentoProducto = null;

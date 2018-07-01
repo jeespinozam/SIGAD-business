@@ -5,6 +5,8 @@
  */
 package com.sigad.sigad.pedido.controller;
 
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
@@ -63,6 +65,12 @@ public class DevolucionPedidoController implements Initializable {
 
     @FXML
     private JFXTextField txtDireccion;
+    
+    @FXML
+    private JFXButton btnDevolucion;
+
+    @FXML
+    private JFXTextArea txtMotivo;
 
     @FXML
     JFXTreeTableColumn<PedidoLista, String> nombrePedido = new JFXTreeTableColumn<>("Nombre");
@@ -82,8 +90,8 @@ public class DevolucionPedidoController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
         // TODO
-        //columnasPedidos();
-        //agregarColumnasTablasPedidos();
+        columnasPedidos();
+        agregarColumnasTablasPedidos();
         
     }    
     
