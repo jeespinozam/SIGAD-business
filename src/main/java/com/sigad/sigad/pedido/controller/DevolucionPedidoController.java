@@ -14,13 +14,22 @@ import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sigad.sigad.business.ComboPromocion;
 import com.sigad.sigad.business.DetallePedido;
+import com.sigad.sigad.business.Insumo;
+import com.sigad.sigad.business.MovimientosTienda;
 import com.sigad.sigad.business.Pedido;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoCategoriaDescuento;
 import com.sigad.sigad.business.ProductoDescuento;
+import com.sigad.sigad.business.ProductoInsumo;
+import com.sigad.sigad.business.ProductosCombos;
 import com.sigad.sigad.business.helpers.GeneralHelper;
+import com.sigad.sigad.business.helpers.LoteInsumoHelper;
+import com.sigad.sigad.business.helpers.MovimientoHelper;
+import com.sigad.sigad.business.helpers.PedidoHelper;
+import com.sigad.sigad.business.helpers.ProductoHelper;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import javafx.beans.property.DoubleProperty;
@@ -35,6 +44,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 
 /**
@@ -47,9 +57,8 @@ public class DevolucionPedidoController implements Initializable {
     /**
      * Initializes the controller class.
      */
-    
     public static final String viewPath = "/com/sigad/sigad/pedido/view/DevolucionPedido.fxml";
-    
+
     Pedido pedido;
     @FXML
     private StackPane stackPane;
@@ -65,7 +74,7 @@ public class DevolucionPedidoController implements Initializable {
 
     @FXML
     private JFXTextField txtDireccion;
-    
+
     @FXML
     private JFXButton btnDevolucion;
 
@@ -85,18 +94,19 @@ public class DevolucionPedidoController implements Initializable {
     @FXML
     JFXTreeTableColumn<PedidoLista, Integer> entregados = new JFXTreeTableColumn<>("Entregados");
     private final ObservableList<PedidoLista> pedidos = FXCollections.observableArrayList();
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
         // TODO
         columnasPedidos();
         agregarColumnasTablasPedidos();
-        
-    }    
-    
+
+    }
+
     public void initModel(Boolean isEdit, Pedido pedido, StackPane hiddenSp) {
-        this.pedido = pedido;
+        PedidoHelper helper = new PedidoHelper();
+        this.pedido = helper.getPedidoEager(pedido.getId());
         ArrayList<DetallePedido> d = new ArrayList<>(pedido.getDetallePedido());
         d.forEach((t) -> {
             pedidos.add(new PedidoLista(t));
@@ -131,10 +141,50 @@ public class DevolucionPedidoController implements Initializable {
     public void agregarColumnasTablasPedidos() {
         final TreeItem<PedidoLista> rootPedido = new RecursiveTreeItem<>(pedidos, RecursiveTreeObject::getChildren);
         tblpedido.setEditable(true);
-        tblpedido.getColumns().setAll(nombrePedido, precioPedido, cantidadPedido, descuentoPedido, subTotalPedido, entregados);
+        tblpedido.getColumns().setAll(nombrePedido, precioPedido, cantidadPedido, descuentoPedido, subTotalPedido);
         tblpedido.setRoot(rootPedido);
         tblpedido.setShowRoot(false);
     }
+
+    @FXML
+    void devolucion(MouseEvent event) {
+        HashMap<Insumo, Integer> insumos = new HashMap<>();
+        pedidos.forEach((t) -> {
+            if (t.combo != null) {
+                DetallePedido detalle = new DetallePedido(true, t.cantidad.getValue(), Double.valueOf(t.precio.getValue()), 0, t.combo, pedido);
+                ComboPromocion p = t.combo;
+                for (ProductosCombos productosCombos : p.getProductosxComboArray()) {
+                    calcularInsumos(productosCombos.getProducto(), productosCombos.getCantidad() * t.cantidad.getValue(), insumos);
+                }
+            } else if (t.producto != null) {
+                DetallePedido detalle = new DetallePedido(true, t.cantidad.getValue(), Double.valueOf(t.precio.getValue()), 0, t.producto, pedido, t.descuentoProducto, t.descuentoCategoria);
+                calcularInsumos(detalle.getProducto(), t.cantidad.getValue(), insumos);
+            } else {
+                System.out.println("Error, no es ni combo ni producto");
+            }
+
+        });
+
+        MovimientoHelper movHelper = new MovimientoHelper();
+        ArrayList<MovimientosTienda> movimientos = movHelper.getLogicMovements(pedido);
+        movHelper.close();
+        LoteInsumoHelper lihelper = new LoteInsumoHelper();
+        lihelper.devolverInsumos(insumos, pedido, movimientos);
+    }
+
+    void calcularInsumos(Producto p, Integer cantidad, HashMap<Insumo, Integer> insumosConsumidos) {
+        ProductoHelper helper = new ProductoHelper();
+        p = helper.getProducto(p.getId());
+        ArrayList<ProductoInsumo> pxi = new ArrayList(p.getProductoxInsumos());
+        for (ProductoInsumo productoInsumo : pxi) {
+            if (insumosConsumidos.get(productoInsumo.getInsumo()) != null) {
+                insumosConsumidos.put(productoInsumo.getInsumo(), productoInsumo.getCantidad().intValue() * cantidad + insumosConsumidos.get(productoInsumo.getInsumo()));
+            } else {
+                insumosConsumidos.put(productoInsumo.getInsumo(), productoInsumo.getCantidad().intValue() * cantidad);
+            }
+        }
+    }
+
     class PedidoLista extends RecursiveTreeObject<PedidoLista> {
 
         StringProperty nombre;
@@ -161,7 +211,7 @@ public class DevolucionPedidoController implements Initializable {
                     this.descuentoCategoria = detalle.getDescuentoCategoria();
                     this.descuentoProducto = null;
                 } else if (detalle.getDescuentoProducto() != null) {
-                    this.descuento = new SimpleDoubleProperty(detalle.getDescuentoProducto().getValorPct()* 100);
+                    this.descuento = new SimpleDoubleProperty(detalle.getDescuentoProducto().getValorPct() * 100);
                     Double s = detalle.getCantidad() * detalle.getPrecioUnitario() * (1 - detalle.getDescuentoProducto().getValorPct());
                     this.subtotal = new SimpleDoubleProperty(GeneralHelper.roundTwoDecimals(s));
                     this.descuentoProducto = detalle.getDescuentoProducto();
@@ -182,7 +232,7 @@ public class DevolucionPedidoController implements Initializable {
                 this.precio = new SimpleStringProperty(detalle.getPrecioUnitario().toString());
                 this.cantidad = new SimpleIntegerProperty(detalle.getCantidad());
                 this.entregados = new SimpleIntegerProperty(detalle.getNumEntregados());
-                this.subtotal = new SimpleDoubleProperty(detalle.getPrecioUnitario()* detalle.getCantidad());
+                this.subtotal = new SimpleDoubleProperty(detalle.getPrecioUnitario() * detalle.getCantidad());
                 this.descuento = new SimpleDoubleProperty(0.0);
                 this.descuentoCategoria = null;
                 this.descuentoProducto = null;
@@ -212,5 +262,5 @@ public class DevolucionPedidoController implements Initializable {
         }
 
     }
-    
+
 }

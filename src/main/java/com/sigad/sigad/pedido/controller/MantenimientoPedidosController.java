@@ -339,12 +339,14 @@ public class MantenimientoPedidosController implements Initializable {
         }
         if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_VENTA) && pedido.getTipoPago().getDescripcion().equals(Constantes.TIPO_PAGO_DEPOSITO)) {
             vBox.getChildren().add(ver);
+            vBox.getChildren().add(devolucion);
             vBox.getChildren().add(eliminar);
         }
 
         if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_VENTA) && pedido.getTipoPago().getDescripcion().equals(Constantes.TIPO_PAGO_EFECTIVO)) {
             vBox.getChildren().add(edit);
             vBox.getChildren().add(ver);
+            vBox.getChildren().add(devolucion);
             vBox.getChildren().add(eliminar);
         }
 

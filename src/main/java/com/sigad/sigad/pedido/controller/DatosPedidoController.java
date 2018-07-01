@@ -150,6 +150,10 @@ public class DatosPedidoController implements Initializable {
             btnFactura.setSelected((pedido.getRucFactura()!=null));
             btnBoleta.setDisable(true);
             btnFactura.setDisable(true);
+            btnEfectivo.setSelected(pedido.getTipoPago().getDescripcion().equals(Constantes.TIPO_PAGO_EFECTIVO));
+            btnDeposito.setSelected(pedido.getTipoPago().getDescripcion().equals(Constantes.TIPO_PAGO_DEPOSITO));
+            btnEfectivo.setDisable(true);
+            btnDeposito.setDisable(true);
         }
         txtTotal.setText(pedido.getTotal().toString());
         txtTotal.setDisable(true);
