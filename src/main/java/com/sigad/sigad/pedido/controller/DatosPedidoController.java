@@ -369,10 +369,12 @@ public class DatosPedidoController implements Initializable {
                     calcularInsumos(producto, dp.getCantidad());
                     helperProducto.close();
                 } else if (dp.getCombo() != null) {
-                    ComboPromocion p = dp.getCombo();
+                    ComboPromocionHelper helperCombo = new ComboPromocionHelper();
+                    ComboPromocion p = helperCombo.getComboById(dp.getCombo().getId().intValue());
                     for (ProductosCombos productosCombos : p.getProductosxComboArray()) {
                         calcularInsumos(productosCombos.getProducto(), productosCombos.getCantidad() * dp.getCantidad());
                     }
+                    helperCombo.close();
                 }
             }
 
