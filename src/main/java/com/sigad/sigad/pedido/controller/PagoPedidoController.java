@@ -114,6 +114,9 @@ public class PagoPedidoController implements Initializable {
             txtmontoBanco.setText(montoBanco.toString());
             txtMontoPagado.setText(txtMontoTotal.getText());
             MantenimientoPedidosController.reloadTable();
+            ErrorController err = new ErrorController();
+            err.loadDialog("Alerta", "El pago fue exitoso", "Ok", stackPane);
+            MantenimientoPedidosController.payDialog.close();
         }
 
     }
