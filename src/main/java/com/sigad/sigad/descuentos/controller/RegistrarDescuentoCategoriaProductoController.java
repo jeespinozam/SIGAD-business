@@ -61,7 +61,7 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
 
     @FXML
     private Label lblerrorc;
-    
+
     @FXML
     private JFXButton btnGuardar;
 
@@ -89,11 +89,10 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
         categoriasproductos = FXCollections.observableArrayList(categorias);
         cmbCategorias.setItems(categoriasproductos);
         cmbCategorias.setPromptText("Categorias");
-        
+
 //        cmbCategorias.setOnAction((event) -> {
 //            pc.setCategoria(cmbCategorias.getSelectionModel().getSelectedItem());
 //        });
-
     }
 
     public void initModel(Boolean isedit, ProductoCategoriaDescuento pc, StackPane st) {
@@ -229,7 +228,7 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
         } else if (cmbCategorias.getValue() == null) {
             lblerrorc.setText("Verifique el rango de fechas");
             return false;
-        }else {
+        } else {
             lblError.setText("");
             lblerrorc.setText("");
             return true;
@@ -247,6 +246,13 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
         cmbCategorias.getItems().clear();
         cmbCategorias.getItems().add(pc.getCategoria());
         cmbCategorias.setValue(pc.getCategoria());
+        disableFields();
+    }
+
+    public void disableFields() {
+        txtValuePct.setDisable(true);
+        txtFechaInicio.setDisable(true);
+        cmbCategorias.setDisable(true);
     }
 
     public void construirDescuento() {

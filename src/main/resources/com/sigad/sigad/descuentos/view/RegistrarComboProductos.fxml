@@ -42,6 +42,5 @@
       </Label>
       <JFXTextField fx:id="txtPrecioCompra" disable="true" labelFloat="true" layoutX="47.0" layoutY="199.0" prefHeight="25.0" prefWidth="143.0" promptText="Precio compra total (S/.)" />
       <JFXTextField fx:id="txtVolumenTotal" disable="true" labelFloat="true" layoutX="375.0" layoutY="246.0" prefHeight="25.0" prefWidth="143.0" promptText="Volumen Total" />
-      <JFXTextField fx:id="txtstockMaximo" labelFloat="true" layoutX="375.0" layoutY="199.0" prefHeight="25.0" prefWidth="143.0" promptText="Stock Maximo" />
     </children>
 </AnchorPane>

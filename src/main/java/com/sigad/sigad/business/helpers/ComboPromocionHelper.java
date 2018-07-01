@@ -127,7 +127,6 @@ public class ComboPromocionHelper extends BaseHelper{
 
             uNew.setFechaInicio(uOld.getFechaInicio());
             uNew.setFechaFin(uOld.getFechaFin());
-            uNew.setMaxDisponible(uOld.getMaxDisponible());
             uNew.setActivo(uOld.getActivo());
             uNew.setNombre(uOld.getNombre());
             uNew.setDescripcion(uOld.getDescripcion());

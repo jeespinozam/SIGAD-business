@@ -105,33 +105,6 @@ public class ComboPromocion {
         this.preciounitario = preciounitario;
     }
 
-    /**
-     * @return the maxDisponible
-     */
-    public Integer getMaxDisponible() {
-        return maxDisponible;
-    }
-
-    /**
-     * @param maxDisponible the maxDisponible to set
-     */
-    public void setMaxDisponible(Integer maxDisponible) {
-        this.maxDisponible = maxDisponible;
-    }
-
-    /**
-     * @return the numVendidos
-     */
-    public Integer getNumVendidos() {
-        return numVendidos;
-    }
-
-    /**
-     * @param numVendidos the numVendidos to set
-     */
-    public void setNumVendidos(Integer numVendidos) {
-        this.numVendidos = numVendidos;
-    }
 
     /**
      * @return the fechaInicio

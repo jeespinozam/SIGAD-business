@@ -108,6 +108,14 @@ public class RegistrarDescuentoClientesController implements Initializable {
         cmbTiposDescuento.getItems().clear();
         cmbTiposDescuento.getItems().add(pc.getTipo());
         cmbTiposDescuento.setValue(pc.getTipo());
+        disableFields();
+    }
+
+    public void disableFields() {
+        cmbTiposDescuento.setDisable(true);
+        txtFechaInicio.setDisable(true);
+        txtCondicion.setDisable(true);
+        txtValue.setDisable(true);
     }
 
     public void initModel(Boolean isedit, ClienteDescuento pc, StackPane st) {
