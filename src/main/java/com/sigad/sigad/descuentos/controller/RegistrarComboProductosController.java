@@ -447,7 +447,8 @@ public class RegistrarComboProductosController implements Initializable {
         this.isEdit = isedit;
         this.stackpane = stackpane;
         agregarFiltro();
-        this.combo = cb;
+        ComboPromocionHelper helper = new ComboPromocionHelper();
+        this.combo = helper.getComboById(cb.getId().intValue()) ;
         if (isedit) {
             cargarDatos();
         } else {
