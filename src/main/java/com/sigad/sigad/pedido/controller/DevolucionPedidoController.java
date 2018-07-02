@@ -194,9 +194,8 @@ public class DevolucionPedidoController implements Initializable {
         ped.addEstado(estado);
         ped.setEstado(estado);
         pedidoHelper.savePedido(ped);
-
-        generarNotadeCredito();
         MantenimientoPedidosController.reloadTable();
+        generarNotadeCredito();
         loadDialog("Aviso", "La devolucion se ha procesado", "Ok", stackPane);
     }
 
