@@ -235,6 +235,10 @@ public class MantenimientoPedidosController implements Initializable {
         }
     }
 
+    public void cancelarPedido() {
+
+    }
+
     public static void reloadTable() {
         MantenimientoPedidosController.pedidos.clear();
         PedidoHelper pdhelper = new PedidoHelper();
@@ -286,15 +290,15 @@ public class MantenimientoPedidosController implements Initializable {
                     if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_PENDIENTE)) {
                         cancelarPedidoDialog("¿Desea cancelar este pedido de todas maneras?");
                     } else if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_VENTA)) {
-                         cancelarPedidoDialog("Si cancela en este punto no existirá ninguna devolución en caso haya realizado el pago, presione continuar si quiere realizar esta acción de todas formas");
+                        cancelarPedidoDialog("Si cancela en este punto no existirá ninguna devolución en caso haya realizado el pago, presione continuar si quiere realizar esta acción de todas formas");
                     } else if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_DESPACHO)) {
-                         cancelarPedidoDialog("Este estado significa que el pedido se encuentra en transcurso de despacho y no puede ser cancelado.");
+                        cancelarPedidoDialog("Este estado significa que el pedido se encuentra en transcurso de despacho y no puede ser cancelado.");
                     } else if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_CANCELADO)) {
 
                     } else if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_FINALIZADO)) {
 
                     }
-                    
+
                 } catch (Exception ex) {
 
                 }
@@ -351,14 +355,14 @@ public class MantenimientoPedidosController implements Initializable {
         }
         if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_VENTA) && pedido.getTipoPago().getDescripcion().equals(Constantes.TIPO_PAGO_DEPOSITO)) {
             vBox.getChildren().add(ver);
-            vBox.getChildren().add(devolucion);
+//            vBox.getChildren().add(devolucion);
             vBox.getChildren().add(eliminar);
         }
 
         if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_VENTA) && pedido.getTipoPago().getDescripcion().equals(Constantes.TIPO_PAGO_EFECTIVO)) {
             vBox.getChildren().add(edit);
             vBox.getChildren().add(ver);
-            vBox.getChildren().add(devolucion);
+//            vBox.getChildren().add(devolucion);
             vBox.getChildren().add(eliminar);
         }
 
@@ -417,10 +421,6 @@ public class MantenimientoPedidosController implements Initializable {
             Logger.getLogger(MantenimientoPedidosController.class.getName()).log(Level.SEVERE, null, ex);
         }
         return Boolean.FALSE;
-    }
-
-    public void cancelarPedido() {
-
     }
 
     public void cancelarPedidoDialog(String mensaje) {

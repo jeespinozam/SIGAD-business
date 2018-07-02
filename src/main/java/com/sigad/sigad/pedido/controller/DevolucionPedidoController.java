@@ -12,11 +12,15 @@ import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.business.ComboPromocion;
+import com.sigad.sigad.business.Constantes;
 import com.sigad.sigad.business.DetallePedido;
 import com.sigad.sigad.business.Insumo;
 import com.sigad.sigad.business.MovimientosTienda;
+import com.sigad.sigad.business.NotaCredito;
 import com.sigad.sigad.business.Pedido;
+import com.sigad.sigad.business.PedidoEstado;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoCategoriaDescuento;
 import com.sigad.sigad.business.ProductoDescuento;
@@ -25,10 +29,15 @@ import com.sigad.sigad.business.ProductosCombos;
 import com.sigad.sigad.business.helpers.GeneralHelper;
 import com.sigad.sigad.business.helpers.LoteInsumoHelper;
 import com.sigad.sigad.business.helpers.MovimientoHelper;
+import com.sigad.sigad.business.helpers.NotaCreditoHelper;
+import com.sigad.sigad.business.helpers.PedidoEstadoHelper;
 import com.sigad.sigad.business.helpers.PedidoHelper;
 import com.sigad.sigad.business.helpers.ProductoHelper;
+import com.sigad.sigad.business.helpers.TipoPagoHelper;
 import java.net.URL;
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -46,6 +55,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  * FXML Controller class
@@ -94,6 +104,7 @@ public class DevolucionPedidoController implements Initializable {
     @FXML
     JFXTreeTableColumn<PedidoLista, Integer> entregados = new JFXTreeTableColumn<>("Entregados");
     private final ObservableList<PedidoLista> pedidos = FXCollections.observableArrayList();
+    private PedidoEstado estado;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -101,6 +112,9 @@ public class DevolucionPedidoController implements Initializable {
         // TODO
         columnasPedidos();
         agregarColumnasTablasPedidos();
+        PedidoEstadoHelper helper = new PedidoEstadoHelper();
+        estado = helper.getEstadoByName(Constantes.ESTADO_DEVOLUCION);
+        helper.close();
 
     }
 
@@ -170,6 +184,33 @@ public class DevolucionPedidoController implements Initializable {
         movHelper.close();
         LoteInsumoHelper lihelper = new LoteInsumoHelper();
         lihelper.devolverInsumos(insumos, pedido, movimientos);
+        PedidoHelper pedidoHelper = new PedidoHelper();
+        Pedido ped = pedidoHelper.getPedido(pedido.getId());
+        ped.addEstado(estado);
+        ped.setEstado(estado);
+        pedidoHelper.savePedido(ped);
+        ErrorController err = new ErrorController();
+        err.loadDialog("Aviso", "El pedido se ha devuelto", "Ok", stackPane);
+        generarNotadeCredito();
+        MantenimientoPedidosController.returnDialog.close();
+        MantenimientoPedidosController.reloadTable();
+    }
+
+    void generarNotadeCredito() {
+        NotaCredito n = new NotaCredito();
+        n.setCodigo(alphanumericRandom());
+        n.setMonto(pedido.getTotal());
+        n.setFechaGenerada(new Date(Calendar.getInstance().getTime().getTime()));
+        n.setMotivo(txtMotivo.getText());
+        n.setPedidoOrigen(pedido);
+        NotaCreditoHelper helper = new NotaCreditoHelper();
+        helper.saveNotaCredito(n);
+        helper.close();
+
+    }
+
+    public String alphanumericRandom() {
+        return RandomStringUtils.randomAlphanumeric(11);
     }
 
     void calcularInsumos(Producto p, Integer cantidad, HashMap<Insumo, Integer> insumosConsumidos) {

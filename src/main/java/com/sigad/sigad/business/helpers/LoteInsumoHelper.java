@@ -234,7 +234,6 @@ public class LoteInsumoHelper extends BaseHelper {
             return s1.getLoteInsumo().getFechaVencimiento().compareTo(s2.getLoteInsumo().getFechaVencimiento());
         });
         TipoMovimientoHelper tipohelper = new TipoMovimientoHelper();
-        TipoMovimiento tipomovLogico = tipohelper.getTipoMov(Constantes.TIPO_MOVIMIENTO_ENTRADA_LOGICA);
         TipoMovimiento tipomovFisico = tipohelper.getTipoMov(Constantes.TIPO_MOVIMIENTO_SALIDA_FISICA);
         tipohelper.close();
         movimientosLogicos.forEach((t) -> {
@@ -247,20 +246,15 @@ public class LoteInsumoHelper extends BaseHelper {
                         lote.setStockLogico(lote.getStockLogico() + t.getCantidadMovimiento());
                         devolucion = t.getCantidadMovimiento();
                         cantidad = cantidad - t.getCantidadMovimiento();
-                        t.setCantidadMovimiento(0);
                         insumosADevolver.put(lote.getInsumo(), cantidad);
                     } else if (t.getCantidadMovimiento() > cantidad) {//En caso en la que cantidad que devuelvo es menor que lo que ocnsumi en el lote
                         lote.setStockLogico(lote.getStockLogico() + cantidad);
                         devolucion = cantidad;
-                        t.setCantidadMovimiento(t.getCantidadMovimiento() - cantidad);
                         cantidad = 0;
                         insumosADevolver.put(lote.getInsumo(), cantidad);
                     }
                     MovimientoHelper mov = new MovimientoHelper();
-                    MovimientosTienda newMovLogico = new MovimientosTienda(cantidad, new Date(), tipomovLogico, LoginController.user, pedido.getTienda(), lote, pedido);
-                    MovimientosTienda newMovFisico = new MovimientosTienda(cantidad, new Date(), tipomovFisico, LoginController.user, pedido.getTienda(), lote, pedido);
-                    mov.saveMovement(newMovLogico);
-                    mov = new MovimientoHelper();
+                    MovimientosTienda newMovFisico = new MovimientosTienda(devolucion, new Date(), tipomovFisico, LoginController.user, pedido.getTienda(), lote, pedido);
                     mov.saveMovement(newMovFisico);
                 }
             }
