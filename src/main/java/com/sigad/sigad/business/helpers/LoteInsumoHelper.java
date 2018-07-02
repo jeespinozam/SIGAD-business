@@ -234,7 +234,7 @@ public class LoteInsumoHelper extends BaseHelper {
             return s1.getLoteInsumo().getFechaVencimiento().compareTo(s2.getLoteInsumo().getFechaVencimiento());
         });
         TipoMovimientoHelper tipohelper = new TipoMovimientoHelper();
-        TipoMovimiento tipomovFisico = tipohelper.getTipoMov(Constantes.TIPO_MOVIMIENTO_SALIDA_FISICA);
+        TipoMovimiento tipomovFisico = tipohelper.getTipoMov(Constantes.TIPO_MOVIMIENTO_ENTRADA_FISICA);
         tipohelper.close();
         movimientosLogicos.forEach((t) -> {
             LoteInsumo lote = t.getLoteInsumo();
