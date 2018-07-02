@@ -21,11 +21,14 @@ import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
 /**
  * FXML Controller class
@@ -89,34 +92,51 @@ public class PagoPedidoController implements Initializable {
                 if (nota == null) {
                     ErrorController err = new ErrorController();
                     err.loadDialog("Alerta", "La nota de credito no existe", "Ok", stackPane);
+                    return;
+                } else if (nota.getPedidoPago() != null) {
+                    ErrorController err = new ErrorController();
+                    err.loadDialog("Alerta", "La nota de credito ya fue usada", "Ok", stackPane);
+                    return;
                 } else {
                     nota.setPedidoPago(pedido);
                     txtmontonota.setText(GeneralHelper.roundTwoDecimals(nota.getMonto()).toString());
                     helpernota.saveNotaCredito(nota);
                 }
             }
+
             PedidoEstadoHelper estadohelper = new PedidoEstadoHelper();
             PedidoEstado pedidoestado = estadohelper.getEstadoByName(Constantes.ESTADO_VENTA);
             estadohelper.close();
             PedidoHelper pedidohelper = new PedidoHelper();
             Pedido ped = pedidohelper.getPedido(pedido.getId());
-            if (ped.getCodigoBanco() == null) {
+            Double montoBanco = Double.valueOf(txtMontoTotal.getText()) - Double.valueOf(txtmontonota.getText());
+            if (ped.getCodigoBanco() == null && montoBanco >= 0.0 && txtDepositoBanco.getText().length() != 0) {
+                txtmontoBanco.setText(montoBanco.toString());
                 ped.setCodigoBanco(txtDepositoBanco.getText());
                 ped.addEstado(pedidoestado);
                 ped.setEstado(pedidoestado);
                 pedidohelper.savePedido(ped);
-            } else {
+            } else if (ped.getCodigoBanco() != null) {
                 ErrorController err = new ErrorController();
                 err.loadDialog("Alerta", "Ya fue ingresado el pago", "Ok", stackPane);
                 txtDepositoBanco.setText(ped.getCodigoBanco());
+                return;
+            } else if (txtDepositoBanco.getText().length() == 0 && montoBanco >= 0.0) {
+                ErrorController err = new ErrorController();
+                err.loadDialog("Alerta", "Falta el codigo del banco", "Ok", stackPane);
+                txtDepositoBanco.setText(ped.getCodigoBanco());
+                return;
+            } else {
+                ped.addEstado(pedidoestado);
+                ped.setEstado(pedidoestado);
+                pedidohelper.savePedido(ped);
             }
-            Double montoBanco = Double.valueOf(txtMontoTotal.getText()) - Double.valueOf(txtmontonota.getText());
-            txtmontoBanco.setText(montoBanco.toString());
             txtMontoPagado.setText(txtMontoTotal.getText());
             MantenimientoPedidosController.reloadTable();
             ErrorController err = new ErrorController();
             err.loadDialog("Alerta", "El pago fue exitoso", "Ok", stackPane);
-            MantenimientoPedidosController.payDialog.close();
+            btnVerificar.setDisable(true);
+
         }
 
     }
@@ -138,7 +158,7 @@ public class PagoPedidoController implements Initializable {
         txtDepositoBanco.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (!newValue) {
 
-                if (!txtDepositoBanco.validate()) {
+                if (txtDepositoBanco.getText().length() == 0 || txtDepositoBanco.getText().length() == 8) {
                     txtDepositoBanco.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
                 } else {
                     txtDepositoBanco.setFocusColor(new Color(0.30, 0.47, 0.23, 1));
@@ -158,15 +178,15 @@ public class PagoPedidoController implements Initializable {
     }
 
     public boolean validateFields() {
-        if (txtDepositoBanco.getText().length() != 8) {
+        if (txtDepositoBanco.getText().length() > 0 && txtDepositoBanco.getText().length() != 8) {
             ErrorController r = new ErrorController();
-            r.loadDialog("Error", "El numero de deposito debe tener 8 digitos", "Ok", stackPane);
+            r.loadDialog("Error", "El numero de deposito debe tener 8 caracteres", "Ok", stackPane);
             txtDepositoBanco.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             txtDepositoBanco.requestFocus();
             return false;
         } else if (txtnotaCredito.getText().length() > 0 && txtnotaCredito.getText().length() != 11) {
             ErrorController r = new ErrorController();
-            r.loadDialog("Error", "La nota de credito debe tener 8 digitos", "Ok", stackPane);
+            r.loadDialog("Error", "La nota de credito debe tener 8 caracteres", "Ok", stackPane);
             txtDepositoBanco.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             txtDepositoBanco.requestFocus();
             return false;
