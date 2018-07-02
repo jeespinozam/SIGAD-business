@@ -226,7 +226,7 @@ public class MantenimientoPedidosController implements Initializable {
             FXMLLoader loader = new FXMLLoader(MantenimientoPedidosController.this.getClass().getResource(DevolucionPedidoController.viewPath));
             node = (Node) loader.load();
             DevolucionPedidoController el = loader.getController();
-            el.initModel(isEdit, pedido, hiddenSp);
+            el.initModel(pedido, hiddenSp);
             content.setBody(node);
             returnDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
             returnDialog.show();
