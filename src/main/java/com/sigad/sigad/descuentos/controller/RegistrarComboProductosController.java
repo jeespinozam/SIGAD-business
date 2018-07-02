@@ -440,6 +440,7 @@ public class RegistrarComboProductosController implements Initializable {
         Date dateFin = Date.valueOf(txtFechaFin.getValue());
         nuevo.setFechaInicio(dateIni);
         nuevo.setFechaFin(dateFin);
+        nuevo.setActivo(true);
         nuevo.setDescripcion(txtDescripcion.getText());
         nuevo.setPreciounireal(Double.valueOf(txtPrecioReal.getText()));
         nuevo.setPreciounitario(Double.valueOf(txtPrecioBase.getText()));

@@ -260,6 +260,7 @@ public class RegistrarDescuentoCategoriaProductoController implements Initializa
         Date dateIni = Date.valueOf(txtFechaInicio.getValue());
         Date dateFin = Date.valueOf(txtFechaFin.getValue());
         pc.setFechaInicio(dateIni);
+        pc.setActivo(true);
         pc.setFechaFin(dateFin);
         pc.setValue(Double.valueOf(txtValuePct.getText()) / 100);
 
