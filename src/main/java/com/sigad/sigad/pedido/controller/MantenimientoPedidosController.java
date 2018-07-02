@@ -285,6 +285,7 @@ public class MantenimientoPedidosController implements Initializable {
         cancelDialog.close();
         ErrorController err = new ErrorController();
         err.loadDialog("Aviso", "El pedido fue cancelado", "Ok", hiddenSp);
+        reloadTable();
     }
     
     void calcularInsumos(Producto p, Integer cantidad, HashMap<Insumo, Integer> insumosConsumidos) {
