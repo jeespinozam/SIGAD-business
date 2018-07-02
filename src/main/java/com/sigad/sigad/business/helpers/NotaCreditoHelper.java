@@ -70,11 +70,11 @@ public class NotaCreditoHelper extends BaseHelper {
     }
     
     /*Get profile by name, if nothin then null*/
-    public NotaCredito getNota(Pedido pedido) {
+    public NotaCredito getNota(Long pedido_id) {
         NotaCredito p = null;
         Query query = null;
         try {
-            query = session.createQuery("from NotaCredito where pedidoorigen_id=" + pedido.getId());
+            query = session.createQuery("from NotaCredito where pedidoorigen_id=" + pedido_id);
             p = (NotaCredito) query.list().get(0);
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
