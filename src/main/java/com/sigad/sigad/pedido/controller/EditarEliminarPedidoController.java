@@ -215,7 +215,6 @@ public class EditarEliminarPedidoController implements Initializable {
                 this.nombre = new SimpleStringProperty(detalle.getProducto().getNombre());
                 this.precio = new SimpleStringProperty(detalle.getPrecioUnitario().toString());
                 this.cantidad = new SimpleIntegerProperty(detalle.getCantidad());
-                this.entregados = new SimpleIntegerProperty(detalle.getNumEntregados());
                 if (detalle.getDescuentoCategoria() != null) {
                     this.descuento = new SimpleDoubleProperty(detalle.getDescuentoCategoria().getValue() * 100);
                     Double s = detalle.getCantidad() * detalle.getPrecioUnitario() * (1 - detalle.getDescuentoCategoria().getValue());
