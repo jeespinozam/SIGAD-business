@@ -188,7 +188,7 @@ public class EditarEliminarPedidoController implements Initializable {
         if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_DEVOLUCION)) {
             System.out.println("Entro a esttado devolucion");
             NotaCreditoHelper helpernota = new NotaCreditoHelper();
-            nota = helpernota.getNota(pedido.getId());
+            nota = helpernota.getNota(pedido);
             helpernota.close();
             helper.crearNotaDeCredito(pedido, nota);
             ErrorController err = new ErrorController();
