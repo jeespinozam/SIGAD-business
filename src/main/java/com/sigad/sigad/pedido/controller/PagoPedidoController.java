@@ -147,7 +147,7 @@ public class PagoPedidoController implements Initializable {
         });
         txtnotaCredito.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
-                if (txtnotaCredito.getText().length() == 0 || txtnotaCredito.getText().length() == 8) {
+                if (txtnotaCredito.getText().length() == 0 || txtnotaCredito.getText().length() == 11) {
                     txtnotaCredito.setFocusColor(new Color(0.30, 0.47, 0.23, 1));
                 } else {
                     txtnotaCredito.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
@@ -164,7 +164,7 @@ public class PagoPedidoController implements Initializable {
             txtDepositoBanco.setFocusColor(new Color(0.58, 0.34, 0.09, 1));
             txtDepositoBanco.requestFocus();
             return false;
-        } else if (txtnotaCredito.getText().length() > 0 && txtnotaCredito.getText().length() != 8) {
+        } else if (txtnotaCredito.getText().length() > 0 && txtnotaCredito.getText().length() != 11) {
             ErrorController r = new ErrorController();
             r.loadDialog("Error", "La nota de credito debe tener 8 digitos", "Ok", stackPane);
             txtDepositoBanco.setFocusColor(new Color(0.58, 0.34, 0.09, 1));

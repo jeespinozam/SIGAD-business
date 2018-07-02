@@ -17,11 +17,13 @@ import com.sigad.sigad.app.controller.ErrorController;
 import com.sigad.sigad.business.ComboPromocion;
 import com.sigad.sigad.business.Constantes;
 import com.sigad.sigad.business.DetallePedido;
+import com.sigad.sigad.business.NotaCredito;
 import com.sigad.sigad.business.Pedido;
 import com.sigad.sigad.business.Producto;
 import com.sigad.sigad.business.ProductoCategoriaDescuento;
 import com.sigad.sigad.business.ProductoDescuento;
 import com.sigad.sigad.business.helpers.GeneralHelper;
+import com.sigad.sigad.business.helpers.NotaCreditoHelper;
 import com.sigad.sigad.business.helpers.PdfHelper;
 import com.sigad.sigad.business.helpers.PedidoHelper;
 import static com.sigad.sigad.pedido.controller.SeleccionarProductosController.viewPath;
@@ -61,6 +63,7 @@ public class EditarEliminarPedidoController implements Initializable {
      */
     public static final String viewPath = "/com/sigad/sigad/pedido/view/EditarEliminarPedido.fxml";
     Pedido pedido;
+    NotaCredito nota;
     @FXML
     private StackPane stackPane;
 
@@ -128,14 +131,21 @@ public class EditarEliminarPedidoController implements Initializable {
     public void setup() {
         if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_PENDIENTE)) {
             btnGenerarDocumento.setDisable(true);
+        }
+        if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_DEVOLUCION)) {
+            txtmensaje.setPromptText("Motivo de la devolucion");
+            btnCancelar.setDisable(true);
+        } else if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_CANCELADO)) {
+            btnCancelar.setDisable(true);
+            btnGenerarDocumento.setDisable(true);
         } else {
-            btnGenerarDocumento.setText((pedido.getRucFactura() == null) ? "Generar B  oleta" : "Generar Factura");
+            btnGenerarDocumento.setText((pedido.getRucFactura() == null) ? "Generar Boleta" : "Generar Factura");
         }
 
     }
-    public void cancelarPedido(){
-    
-    
+
+    public void cancelarPedido() {
+
     }
 
     public void columnasPedidos() {
@@ -174,6 +184,14 @@ public class EditarEliminarPedidoController implements Initializable {
         PdfHelper helper = new PdfHelper();
         if (pedido.getRucFactura() == null) {
             helper.crearBoletaVenta(pedido);
+            ErrorController err = new ErrorController();
+            err.loadDialog("Aviso", "Documento generado satisfactoriamente", "Ok", stackPane);
+        }
+        if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_DEVOLUCION)) {
+            NotaCreditoHelper helpernota = new NotaCreditoHelper();
+            nota = helpernota.getNota(pedido);
+            helpernota.close();
+            helper.crearNotaDeCredito(pedido, nota);
             ErrorController err = new ErrorController();
             err.loadDialog("Aviso", "Documento generado satisfactoriamente", "Ok", stackPane);
         } else {

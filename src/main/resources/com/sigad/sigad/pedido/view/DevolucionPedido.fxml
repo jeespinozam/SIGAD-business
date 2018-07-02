@@ -34,7 +34,7 @@
                         <DropShadow color="#000000ba" />
                      </effect>
                   </JFXButton>
-                  <JFXTextArea fx:id="txtMotivo" focusColor="#455a64" layoutX="361.0" layoutY="327.0" prefHeight="84.0" prefWidth="347.0" promptText="Motivo de devolucion" />
+                  <JFXTextArea fx:id="txtMotivo" focusColor="#455a64" labelFloat="true" layoutX="361.0" layoutY="327.0" prefHeight="84.0" prefWidth="347.0" promptText="Motivo de devolucion" />
                 
                     </children>
                 </AnchorPane>
