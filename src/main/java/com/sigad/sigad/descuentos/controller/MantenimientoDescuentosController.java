@@ -351,7 +351,7 @@ public class MantenimientoDescuentosController implements Initializable {
     public void agregarColumnasCombos() {
         final TreeItem<CombosProductosLista> rootPedido = new RecursiveTreeItem<>(descuentosCombos, RecursiveTreeObject::getChildren);
         tblCombos.setEditable(true);
-        tblCombos.getColumns().setAll(idCombo, nombre, descCombo, fechaInicioCmb, fechaFinCmb, precioBase, numVendidos);
+        tblCombos.getColumns().setAll(idCombo, nombre, descCombo, fechaInicioCmb, fechaFinCmb, precioBase);
         tblCombos.setRoot(rootPedido);
         tblCombos.setShowRoot(false);
         tblCombos.setRowFactory(new Callback<TreeTableView<CombosProductosLista>, TreeTableRow<CombosProductosLista>>() {

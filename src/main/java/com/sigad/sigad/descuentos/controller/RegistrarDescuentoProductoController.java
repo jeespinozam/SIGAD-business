@@ -253,6 +253,7 @@ public class RegistrarDescuentoProductoController implements Initializable {
         txtFechaInicio.setDisable(true);
         txtPrecio.setDisable(true);
         txtNuevoPrecio.setDisable(true);
+        txtDescuentopct.setDisable(true);
     }
 
     public void initModel(Boolean isedit, ProductoDescuento pd, StackPane stackpane) {
