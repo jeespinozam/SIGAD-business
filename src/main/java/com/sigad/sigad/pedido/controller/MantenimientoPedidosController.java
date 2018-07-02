@@ -71,6 +71,7 @@ public class MantenimientoPedidosController implements Initializable {
     StackPane hiddenSp;
     JFXDialog direccionDialog;
     public static JFXDialog viewDialog;
+    public static JFXDialog returnDialog;
     public static JFXDialog payDialog;
     @FXML
     JFXTreeTableColumn<PedidoOrdenLista, Integer> id = new JFXTreeTableColumn<>("ID");
@@ -227,13 +228,13 @@ public class MantenimientoPedidosController implements Initializable {
             DevolucionPedidoController el = loader.getController();
             el.initModel(pedido, hiddenSp);
             content.setBody(node);
-            viewDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
-            viewDialog.show();
+            returnDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
+            returnDialog.show();
         } catch (IOException ex) {
             Logger.getLogger(MantenimientoPedidosController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public static void reloadTable() {
         MantenimientoPedidosController.pedidos.clear();
         PedidoHelper pdhelper = new PedidoHelper();
@@ -282,7 +283,18 @@ public class MantenimientoPedidosController implements Initializable {
             public void handle(ActionEvent event) {
                 popup.hide();
                 try {
-                    cancelarPedidoDialog();
+                    if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_PENDIENTE)) {
+                        cancelarPedidoDialog("¿Desea cancelar este pedido de todas maneras?");
+                    } else if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_VENTA)) {
+                         cancelarPedidoDialog("Si cancela en este punto no existirá ninguna devolución en caso haya realizado el pago, presione continuar si quiere realizar esta acción de todas formas");
+                    } else if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_DESPACHO)) {
+                         cancelarPedidoDialog("Este estado significa que el pedido se encuentra en transcurso de despacho y no puede ser cancelado.");
+                    } else if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_CANCELADO)) {
+
+                    } else if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_FINALIZADO)) {
+
+                    }
+                    
                 } catch (Exception ex) {
 
                 }
@@ -325,7 +337,7 @@ public class MantenimientoPedidosController implements Initializable {
 
         pago.setPadding(new Insets(20));
         pago.setPrefSize(145, 40);
-        
+
         devolucion.setPadding(new Insets(20));
         devolucion.setPrefSize(145, 40);
 
@@ -335,7 +347,7 @@ public class MantenimientoPedidosController implements Initializable {
             vBox.getChildren().add(pago);
             vBox.getChildren().add(ver);
             vBox.getChildren().add(eliminar);
-            
+
         }
         if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_VENTA) && pedido.getTipoPago().getDescripcion().equals(Constantes.TIPO_PAGO_DEPOSITO)) {
             vBox.getChildren().add(ver);
@@ -406,16 +418,16 @@ public class MantenimientoPedidosController implements Initializable {
         }
         return Boolean.FALSE;
     }
-    
-    public void cancelarPedido(){
-    
+
+    public void cancelarPedido() {
+
     }
-    
-    public void cancelarPedidoDialog() {
-        JFXDialogLayout content =  new JFXDialogLayout();
+
+    public void cancelarPedidoDialog(String mensaje) {
+        JFXDialogLayout content = new JFXDialogLayout();
         content.setHeading(new Text("Advertencia"));
-        content.setBody(new Text("¿Desea realmente cancelar el pedido, los cambios son irreversibles?"));
-        
+        content.setBody(new Text(mensaje));
+
         JFXDialog dialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
         JFXButton button = new JFXButton("Aceptar");
         button.setOnAction(new EventHandler<ActionEvent>() {
@@ -428,7 +440,7 @@ public class MantenimientoPedidosController implements Initializable {
         content.setActions(button);
         dialog.show();
     }
-    
+
     @FXML
     public void handleAction(Event event) {
 
