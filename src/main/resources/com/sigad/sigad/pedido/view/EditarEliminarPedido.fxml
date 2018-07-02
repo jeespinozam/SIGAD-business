@@ -32,13 +32,15 @@
                     <JFXTextField fx:id="filtro" layoutX="712.0" layoutY="7.0" prefHeight="29.0" prefWidth="203.0" promptText="Buscar" AnchorPane.bottomAnchor="11.0" AnchorPane.rightAnchor="61.0" AnchorPane.topAnchor="6.0" />
                 </children>
                 </AnchorPane>
-            <JFXButton fx:id="btnGenerarDocumento" buttonType="RAISED" layoutX="658.0" layoutY="445.0" onMouseClicked="#generarBoleta" prefHeight="25.0" prefWidth="160.0" style="-fx-background-color: #FFFFFF;" text="Generar Documento">
+            <JFXButton fx:id="btnGenerarDocumento" buttonType="RAISED" layoutX="651.0" layoutY="494.0" onMouseClicked="#generarBoleta" prefHeight="25.0" prefWidth="160.0" style="-fx-background-color: #FFFFFF;" text="Generar Documento">
                <effect>
                   <DropShadow color="#000000ba" />
                </effect>
             </JFXButton>
-            <JFXTextArea fx:id="txtmensaje" disable="true" labelFloat="true" layoutX="360.0" layoutY="435.0" prefHeight="71.0" prefWidth="264.0" promptText="Mensaje" />
-            <JFXTextField fx:id="txtruc" disable="true" labelFloat="true" layoutX="47.0" layoutY="480.0" prefHeight="25.0" prefWidth="272.0" promptText="R.U.C." />
+            <JFXTextArea fx:id="txtmensaje" disable="true" labelFloat="true" layoutX="360.0" layoutY="417.0" prefHeight="53.0" prefWidth="264.0" promptText="Mensaje" />
+            <JFXTextField fx:id="txtruc" disable="true" labelFloat="true" layoutX="47.0" layoutY="494.0" prefHeight="25.0" prefWidth="272.0" promptText="R.U.C." />
+            <JFXTextField fx:id="txtTotal" disable="true" labelFloat="true" layoutX="690.0" layoutY="367.0" prefHeight="25.0" prefWidth="130.0" promptText="Total" />
+            <JFXTextField fx:id="txtTurno" disable="true" labelFloat="true" layoutX="360.0" layoutY="367.0" prefHeight="25.0" prefWidth="264.0" promptText="Turno del pedido" />
             </children>
         </AnchorPane>
     </children>

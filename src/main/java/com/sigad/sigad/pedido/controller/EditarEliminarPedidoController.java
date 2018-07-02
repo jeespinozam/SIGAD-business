@@ -89,6 +89,12 @@ public class EditarEliminarPedidoController implements Initializable {
     private JFXTextField txtruc;
 
     @FXML
+    private JFXTextField txtTotal;
+
+    @FXML
+    private JFXTextField txtTurno;
+
+    @FXML
     JFXTreeTableColumn<PedidoLista, String> nombrePedido = new JFXTreeTableColumn<>("Nombre");
     @FXML
     JFXTreeTableColumn<PedidoLista, String> precioPedido = new JFXTreeTableColumn<>("Precio");
@@ -121,6 +127,8 @@ public class EditarEliminarPedidoController implements Initializable {
         txtDireccion.setText(this.pedido.getDireccionDeEnvio());
         txtEstado.setText(this.pedido.getEstado().getNombre());
         txtmensaje.setText(this.pedido.getMensajeDescripicion());
+        txtTotal.setText(this.pedido.getTotal().toString());
+        txtTurno.setText(this.pedido.getTurno());
         txtruc.setText((this.pedido.getRucFactura() == null) ? "-" : this.pedido.getRucFactura());
         setup();
     }
@@ -177,16 +185,16 @@ public class EditarEliminarPedidoController implements Initializable {
     @FXML
     void generarBoleta(MouseEvent event) throws DocumentException {
         PdfHelper helper = new PdfHelper();
-        if (pedido.getRucFactura() == null) {
-            helper.crearBoletaVenta(pedido);
-            ErrorController err = new ErrorController();
-            err.loadDialog("Aviso", "Documento generado satisfactoriamente", "Ok", stackPane);
-        }
         if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_DEVOLUCION)) {
+            System.out.println("Entro a esttado devolucion");
             NotaCreditoHelper helpernota = new NotaCreditoHelper();
             nota = helpernota.getNota(pedido);
             helpernota.close();
             helper.crearNotaDeCredito(pedido, nota);
+            ErrorController err = new ErrorController();
+            err.loadDialog("Aviso", "Documento generado satisfactoriamente", "Ok", stackPane);
+        } else if (pedido.getRucFactura() == null) {
+            helper.crearBoletaVenta(pedido);
             ErrorController err = new ErrorController();
             err.loadDialog("Aviso", "Documento generado satisfactoriamente", "Ok", stackPane);
         } else {
