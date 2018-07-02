@@ -25,11 +25,6 @@
                 </JFXTextField>
                 <JFXTextField fx:id="txtEstado" disable="true" labelFloat="true" layoutX="47.0" layoutY="367.0" prefHeight="25.0" prefWidth="272.0" promptText="Estado del pedido" />
                 <JFXTextField fx:id="txtDireccion" disable="true" labelFloat="true" layoutX="47.0" layoutY="445.0" prefHeight="25.0" prefWidth="272.0" promptText="Direccion destino" />
-                <JFXButton fx:id="btnCancelar" buttonType="RAISED" layoutX="658.0" layoutY="493.0" prefHeight="25.0" prefWidth="160.0" style="-fx-background-color: #FFFFFF;" text="Cancelar pedido">
-                    <effect>
-                        <DropShadow color="#000000ba" />
-                    </effect>
-                </JFXButton>
                 <AnchorPane layoutX="47.0" layoutY="27.0" prefHeight="44.0" prefWidth="771.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #C8C8C8;;">
                 <children>
                     <Label layoutX="32.0" layoutY="7.0" prefHeight="34.0" prefWidth="311.0" text="Ventas" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="32.0" AnchorPane.topAnchor="7.0" />
