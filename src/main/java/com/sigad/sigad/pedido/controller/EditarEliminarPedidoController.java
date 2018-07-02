@@ -83,9 +83,6 @@ public class EditarEliminarPedidoController implements Initializable {
     private JFXButton btnGenerarDocumento;
 
     @FXML
-    private JFXButton btnCancelar;
-
-    @FXML
     private JFXTextArea txtmensaje;
 
     @FXML
@@ -134,9 +131,7 @@ public class EditarEliminarPedidoController implements Initializable {
         }
         if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_DEVOLUCION)) {
             txtmensaje.setPromptText("Motivo de la devolucion");
-            btnCancelar.setDisable(true);
         } else if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_CANCELADO)) {
-            btnCancelar.setDisable(true);
             btnGenerarDocumento.setDisable(true);
         } else {
             btnGenerarDocumento.setText((pedido.getRucFactura() == null) ? "Generar Boleta" : "Generar Factura");
@@ -220,7 +215,6 @@ public class EditarEliminarPedidoController implements Initializable {
                 this.nombre = new SimpleStringProperty(detalle.getProducto().getNombre());
                 this.precio = new SimpleStringProperty(detalle.getPrecioUnitario().toString());
                 this.cantidad = new SimpleIntegerProperty(detalle.getCantidad());
-                this.entregados = new SimpleIntegerProperty(detalle.getNumEntregados());
                 if (detalle.getDescuentoCategoria() != null) {
                     this.descuento = new SimpleDoubleProperty(detalle.getDescuentoCategoria().getValue() * 100);
                     Double s = detalle.getCantidad() * detalle.getPrecioUnitario() * (1 - detalle.getDescuentoCategoria().getValue());

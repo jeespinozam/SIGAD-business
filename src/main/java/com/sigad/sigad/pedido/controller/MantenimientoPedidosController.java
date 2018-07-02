@@ -15,16 +15,30 @@ import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sigad.sigad.app.controller.ErrorController;
+import com.sigad.sigad.business.ComboPromocion;
 import com.sigad.sigad.business.Constantes;
+import com.sigad.sigad.business.DetallePedido;
+import com.sigad.sigad.business.Insumo;
+import com.sigad.sigad.business.MovimientosTienda;
 import com.sigad.sigad.business.Pedido;
+import com.sigad.sigad.business.PedidoEstado;
+import com.sigad.sigad.business.Producto;
+import com.sigad.sigad.business.ProductoInsumo;
+import com.sigad.sigad.business.ProductosCombos;
 import com.sigad.sigad.business.Tienda;
+import com.sigad.sigad.business.helpers.ComboPromocionHelper;
+import com.sigad.sigad.business.helpers.LoteInsumoHelper;
+import com.sigad.sigad.business.helpers.MovimientoHelper;
+import com.sigad.sigad.business.helpers.PedidoEstadoHelper;
 import com.sigad.sigad.business.helpers.PedidoHelper;
+import com.sigad.sigad.business.helpers.ProductoHelper;
 import java.io.IOException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -70,6 +84,7 @@ public class MantenimientoPedidosController implements Initializable {
     @FXML
     StackPane hiddenSp;
     JFXDialog direccionDialog;
+    JFXDialog cancelDialog;
     public static JFXDialog viewDialog;
     public static JFXDialog returnDialog;
     public static JFXDialog payDialog;
@@ -236,7 +251,53 @@ public class MantenimientoPedidosController implements Initializable {
     }
 
     public void cancelarPedido() {
-
+        HashMap<Insumo, Integer> insumos = new HashMap<>();
+        PedidoHelper phelper = new PedidoHelper();
+        Pedido ped =  phelper.getPedidoEager(pedido.getId());
+        ped.getDetallePedido().forEach((dp) -> {
+            if (dp.getProducto() != null) {
+                ProductoHelper helperProducto = new ProductoHelper();
+                Producto producto = helperProducto.getProductById(dp.getProducto().getId().intValue());
+                calcularInsumos(producto, dp.getCantidad(), insumos);
+                helperProducto.close();
+            } else if (dp.getCombo() != null) {
+                ComboPromocionHelper helperCombo = new ComboPromocionHelper();
+                ComboPromocion p = helperCombo.getComboById(dp.getCombo().getId().intValue());
+                for (ProductosCombos productosCombos : p.getProductosxComboArray()) {
+                    calcularInsumos(productosCombos.getProducto(), productosCombos.getCantidad() * dp.getCantidad(), insumos);
+                }
+                helperCombo.close();
+            }
+        });
+        MovimientoHelper movHelper = new MovimientoHelper();
+        ArrayList<MovimientosTienda> movimientos = movHelper.getLogicMovements(ped);
+        movHelper.close();
+        LoteInsumoHelper lihelper = new LoteInsumoHelper();
+        lihelper.devolverInsumosEditar(insumos, ped, movimientos);
+        PedidoEstadoHelper helper = new PedidoEstadoHelper();
+        PedidoEstado newestado = helper.getEstadoByName(Constantes.ESTADO_CANCELADO);
+        helper.close();
+        PedidoHelper pedidoHelper = new PedidoHelper();
+        ped = pedidoHelper.getPedido(ped.getId());
+        ped.addEstado(newestado);
+        ped.setEstado(newestado);
+        pedidoHelper.savePedido(ped);
+        cancelDialog.close();
+        ErrorController err = new ErrorController();
+        err.loadDialog("Aviso", "El pedido fue cancelado", "Ok", hiddenSp);
+    }
+    
+    void calcularInsumos(Producto p, Integer cantidad, HashMap<Insumo, Integer> insumosConsumidos) {
+        ProductoHelper helper = new ProductoHelper();
+        p = helper.getProducto(p.getId());
+        ArrayList<ProductoInsumo> pxi = new ArrayList(p.getProductoxInsumos());
+        for (ProductoInsumo productoInsumo : pxi) {
+            if (insumosConsumidos.get(productoInsumo.getInsumo()) != null) {
+                insumosConsumidos.put(productoInsumo.getInsumo(), productoInsumo.getCantidad().intValue() * cantidad + insumosConsumidos.get(productoInsumo.getInsumo()));
+            } else {
+                insumosConsumidos.put(productoInsumo.getInsumo(), productoInsumo.getCantidad().intValue() * cantidad);
+            }
+        }
     }
 
     public static void reloadTable() {
@@ -428,17 +489,16 @@ public class MantenimientoPedidosController implements Initializable {
         content.setHeading(new Text("Advertencia"));
         content.setBody(new Text(mensaje));
 
-        JFXDialog dialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
+        cancelDialog = new JFXDialog(hiddenSp, content, JFXDialog.DialogTransition.CENTER);
         JFXButton button = new JFXButton("Aceptar");
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 cancelarPedido();
-                dialog.close();
             }
         });
         content.setActions(button);
-        dialog.show();
+        cancelDialog.show();
     }
 
     @FXML

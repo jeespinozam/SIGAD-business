@@ -6,6 +6,8 @@
 package com.sigad.sigad.pedido.controller;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTreeTableColumn;
@@ -49,12 +51,15 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 import org.apache.commons.lang3.RandomStringUtils;
 
 /**
@@ -189,11 +194,29 @@ public class DevolucionPedidoController implements Initializable {
         ped.addEstado(estado);
         ped.setEstado(estado);
         pedidoHelper.savePedido(ped);
-        ErrorController err = new ErrorController();
-        err.loadDialog("Aviso", "El pedido se ha devuelto", "Ok", stackPane);
+
         generarNotadeCredito();
-        MantenimientoPedidosController.returnDialog.close();
         MantenimientoPedidosController.reloadTable();
+        loadDialog("Aviso", "La devolucion se ha procesado", "Ok", stackPane);
+    }
+
+    @FXML
+    public void loadDialog(String title, String message, String okText, StackPane stackpane) {
+        JFXDialogLayout content = new JFXDialogLayout();
+        content.setHeading(new Text(title));
+        content.setBody(new Text(message));
+
+        JFXDialog dialog = new JFXDialog(stackpane, content, JFXDialog.DialogTransition.CENTER);
+        JFXButton button = new JFXButton(okText);
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+                MantenimientoPedidosController.returnDialog.close();
+            }
+        });
+        content.setActions(button);
+        dialog.show();
     }
 
     void generarNotadeCredito() {
