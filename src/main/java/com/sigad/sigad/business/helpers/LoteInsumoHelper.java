@@ -243,12 +243,14 @@ public class LoteInsumoHelper extends BaseHelper {
             if (cantidad != null) {
                 if (cantidad != 0) {
                     if (t.getCantidadMovimiento() <= cantidad) {//En caso en la que la cantidad que quiero devolver es mayor de lo que consumi en el lote 
+                        lote.setStockFisico(lote.getStockFisico()+ t.getCantidadMovimiento());
                         lote.setStockLogico(lote.getStockLogico() + t.getCantidadMovimiento());
                         devolucion = t.getCantidadMovimiento();
                         cantidad = cantidad - t.getCantidadMovimiento();
                         insumosADevolver.put(lote.getInsumo(), cantidad);
                     } else if (t.getCantidadMovimiento() > cantidad) {//En caso en la que cantidad que devuelvo es menor que lo que ocnsumi en el lote
                         lote.setStockLogico(lote.getStockLogico() + cantidad);
+                        lote.setStockFisico(lote.getStockFisico()+ cantidad);
                         devolucion = cantidad;
                         cantidad = 0;
                         insumosADevolver.put(lote.getInsumo(), cantidad);
