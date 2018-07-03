@@ -151,7 +151,12 @@ public class MovimientosController implements Initializable {
     }
 
     private void updateTable(MovimientosTienda p) {
-        String fullname = p.getTrabajador().getNombres() + " " + p.getTrabajador().getApellidoPaterno() + " " + p.getTrabajador().getApellidoMaterno();
+        String fullname;
+        if(p.getTrabajador() != null){
+            fullname = p.getTrabajador().getNombres() + " " + p.getTrabajador().getApellidoPaterno() + " " + p.getTrabajador().getApellidoMaterno();
+        }else{
+            fullname = "";
+        }
         data.add(
                 new Movement(
                         new SimpleStringProperty(p.getId().toString()),

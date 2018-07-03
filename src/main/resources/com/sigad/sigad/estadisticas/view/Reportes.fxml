@@ -7,7 +7,7 @@
 <?import javafx.scene.text.Font?>
 
 
-<AnchorPane id="AnchorPane" prefHeight="457.0" prefWidth="655.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/9" fx:controller="com.sigad.sigad.estadisticas.controller.ReportesController">
+<AnchorPane id="AnchorPane" prefHeight="457.0" prefWidth="655.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.141" fx:controller="com.sigad.sigad.estadisticas.controller.ReportesController">
    <children>
       <Label layoutX="20.0" layoutY="26.0" prefHeight="38.0" prefWidth="269.0" text="Reportes del sistema">
          <font>
