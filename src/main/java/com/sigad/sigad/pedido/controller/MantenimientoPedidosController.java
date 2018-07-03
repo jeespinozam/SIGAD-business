@@ -354,7 +354,8 @@ public class MantenimientoPedidosController implements Initializable {
                     } else if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_VENTA)) {
                         cancelarPedidoDialog("Si cancela en este punto no existirá ninguna devolución en caso haya realizado el pago, presione continuar si quiere realizar esta acción de todas formas");
                     } else if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_DESPACHO)) {
-                        cancelarPedidoDialog("Este estado significa que el pedido se encuentra en transcurso de despacho y no puede ser cancelado.");
+                        ErrorController err = new ErrorController();
+                        err.loadDialog("Aviso", "Este estado significa que el pedido se encuentra en transcurso de despacho y no puede ser cancelado.", "Ok", hiddenSp);
                     } else if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_CANCELADO)) {
 
                     } else if (pedido.getEstado().getNombre().equals(Constantes.ESTADO_FINALIZADO)) {
